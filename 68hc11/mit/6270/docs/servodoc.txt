@@ -1,0 +1,44 @@
+To:6.270
+cc:
+Subject:Servo motor code
+--------
+Hello all,
+
+Thanks to the efforts of P.K. and Anne Wright, the code to operate the
+kit servo motor is now fully functional and ready to use.
+
+Please note the following documentation CHANGES and ADDITIONS from the
+description in the course notes:
+
+The servo motor must be turned on with the function
+
+	int servo_on(int dummy);
+
+The "servo_on" function takes a dummy integer variable and returns a
+dummy integer variable.
+
+To turn the servo motor off, use the function
+
+	int servo_off(int dummy);
+
+The servo motor in the kit operates over about 180 degrees of turn.
+To set the angle, modify the integer variable "servo_pulse_wavetime".
+Setting this variable between values of 600 and 5000 control the full
+range of movement.  The default value is 2000.
+
+Note:  If the servo is on, and the "servo_pulse_wavetime" is set
+outside of the range just mentioned, the servo motor will continuously
+drive into its physical stops, trying to achieve the out-of-bound
+setting.  Obviously, this is not good for the motor.
+
+The program "servotst.c" is a good test program to run to put your
+servo through its paces.  If you're confused about how to use the
+servo functions, just take a look at this program (in
+/mit/6.270/lib/ic).
+
+Enjoy!!
+
+	- Fred
+
+P.S.  This message will be copied into /mit/6.270/doc92 for ease of
+reference.

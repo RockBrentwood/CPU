@@ -1,0 +1,113 @@
+## Please note that ImageCraft address has been changed to
+	P.O.Box 64226, Sunnyvale, CA 94086
+the latest release as of Jan 15 1994 is version 0.41.
+
+Please note that it is no longer necessary to do the global variable fix
+below. It is only necessary to change the data section start address in crt.s.
+If you use from the miniboard library as your crt.s, you may need to 
+incorporate portion of the crt.s file from the icc11 package.
+
+(the following was written by Fred Martin)
+## Richard Man (imagecft@netcom.com)
+
+	    Information on Using icc11 with the Mini Board
+	    ----------------------------------------------
+
+icc11, a new 6811 C-language cross compiler, has recently become
+available.  Developed by Richard Man of ImageCraft (P.O. Box 6, North
+Chelmsford, MA 01863; E-mail: imagecft@netcom.com), the icc11 compiler
+runs on MS-DOS systems.  As of this writing, it is in pre-general
+release version 0.30.
+
+icc11 is important because it the first freely available high-quality
+6811 C compiler.  While ImageCraft will sell the general release
+version, it plans to continue distributing a prior version for free.
+
+The compiler is available from the Mini Board FTP site
+(cherupakha.media.mit.edu) in directory pub/miniboard/icc11.  Also
+available is a version of the Mini Board libraries customized to work
+with icc11, named "minilib.s."
+
+This document explains how to install and use the minilib.s library
+with the icc11 compiler.
+
+
+Installing and using minilib.s--------------------------
+
+The Mini Board library file is in pub/miniboard/icc11/minilib.s on the
+FTP server.  To install, you replace icc11's default run-time library
+file (crt.s) with minilib.s; i.e., you rename minilib.s to be crt.s.
+That's it for installation.  You may wish to keep a copy of the
+original crt.s around in the interest of future use.
+
+The icc11 compiler is easy to use and quite functional.  To compile a
+C file, you say "icc11 myfile.c" at the MS-DOS command line, and it
+compiles your file and links it with the run-time library file.
+
+The following Mini Board functions described in the Mini Board Technical
+Reference are available with the icc11 minilib.s file:  analog(),
+digital(), motor(), off(), button(), msleep(), tone(), printdec(), and
+getchar().  In addition, the functions putchar(), peek(), peekword(),
+poke(), and pokeword() are available.  The "time" counter variable may
+be accessed.  For documentation on using these functions, please see
+the comment block at the start of the minilib.s file.  The functions
+should work just as described in the Mini Board Technical Reference.
+
+
+Using globals with icc11 version 0.30------------------
+
+It is a little tricky to create global variables with version 0.30 of
+icc11.  To do so, one must define the globals in an assembly file
+separate from the C file, declare the globals as "extern's" in the C
+file, and then link them together at the command line invokation of
+icc11.  (This complexity will probably be resolved in the next release
+of icc11.)
+
+An example will show how this is done.  Your C file, for example,
+"myfile.c", declares the globals using the "extern" feature:
+
++-myfile.c:----------------------------------------+
+| 						   |
+| extern int i;					   |
+| extern char j;				   |
+| extern int k[];				   |
+| 						   |
+| main() 					   |
+| {						   |
+| ....						   |
+| /* uses globals above */			   |
+| }						   |
++----end-------------------------------------------+
+
+You must now create an assembly file "myfile.s" which allocates space
+for these globals, as follows:
+
++-myfile.s:------------------------------------------------------+
+| 								 |
+| ORG	__global_start	* this line must come first		 |
+| 								 |
+| _i:	RMB	2	* integer uses two bytes		 |
+| _j:	RMB	1	* character uses one byte		 |
+| _k:	RMB	10	* array of 5 integers or 10 characters	 |
++----end---------------------------------------------------------+
+
+Notice several things about the .s file.  First is the ORG statement,
+which must come first and be copied verbatim (the label
+"__global_start" begins with a double underscore).  Each C global must
+have space allocated for it using the RMB (Reserve Memory Block)
+command, and the global name must be preceded by a single underscore.
+You must allocate the proper amount of space for each global.  As
+noted in the sample file comments, an integer requires two bytes and a
+requires character one byte.  An array requires enough storage for
+each element of its type.
+
+When compiling the program, you would say "icc11 myfile.c myfile.s" in
+order to link the two files together.  The minilib.s library is linked
+automatically, since it is installed as the default runtime library
+file (crt.s).
+
+I encourage any Mini Board user who (a) has a PC or SoftPC setup and
+(b) hasn't bought Dunfield's Micro-C to download icc11 and start
+playing with it.  It's a big win.
+
+	-Fred

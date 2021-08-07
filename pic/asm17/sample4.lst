@@ -1,0 +1,88 @@
+sample4    ASM17 Sample Code                                     PIC-ASM17 01.08 RELEPage 1
+           Sample 4 - Convert a BCD held in 4 LSBs of F0x18
+
+ Addr      Data     Line     Statement
+------ ------------ ----  ------------------------------------------------------------------
+                      3.          LIST     COLUMNS=132, LINES=58, NOWRAP
+                      4.  
+000000                5.          NOLIST
+000000                6.  #include "regs.def"
+                      8*  ;
+                      9.  ;       The 4 MSBs are assumed zero to a 7-segment code.  The 7
+                     10.  ;       segment code is output via I/O Port C.  This program
+                     11.  ;       illustrates the use of a computed GOTO instruction.  This code
+                     12.  ;       assumes a typicaly 7-segment display.
+                     13.  ;
+       0             14.          ORG      0x00
+000000               15.  Start                              ;
+000000 580A          16.          movpf    0x18,wreg         ; Starting address of table from 18
+000001               17.                                     ;   Move BCD number as offset into
+000001               18.                                     ;   w register
+000001 E005 F        19.          call     CONVERT           ; Call the convesion subroutine.
+000002               20.                                     ;   The program counter executes the
+000002               21.                                     ;   next instruction at CONVERT
+000002               22.                                     ;
+000002 B801          23.          movlb    1                 ; Select register bank 1
+000003               24.                                     ;
+000003 0111          25.          movwf    portc             ; Output the 7 segment code via I/O
+000004               26.                                     ;   Port C.  the 7-segment display
+000004               27.                                     ;   will now show the BCD number and
+000004               28.                                     ;   this output will remain stable
+000004               29.                                     ;   until Port C is set to a new
+000004               30.                                     ;   value.
+000004 C010 F        31.          goto     exit              ;
+000005               32.                                     ;
+000005               33.  CONVERT                            ;
+000005 0F02          34.          addwf    pclo              ; Compute goto
+000006               35.                                     ; Add the BCD offset to the PC.  This
+000006               36.                                     ; is a compted goto.  Because the
+000006               37.                                     ; ninth bit of PC is set to zero
+000006               38.                                     ; by an "addwf 2", the CONVERT
+000006               39.                                     ; routine must be located within
+000006               40.                                     ; 0x00 to 0xff.
+000006 B601          41.          retlw    00000001b         ; complement of 0 in 7-segment code
+000007 B64F          42.          retlw    01001111b         ; complement of 1 in 7-segment code
+000008 B612          43.          retlw    00010010b         ; complement of 2 in 7-segment code
+000009 B606          44.          retlw    00000110b         ; complement of 3 in 7-segment code
+00000A B64C          45.          retlw    01001100b         ; complement of 4 in 7-segment code
+00000B B624          46.          retlw    00100100b         ; complement of 5 in 7-segment code
+00000C B660          47.          retlw    01100000b         ; complement of 6 in 7-segment code
+00000D B60F          48.          retlw    00001111b         ; complement of 7 in 7-segment code
+00000E B600          49.          retlw    00000000b         ; complement of 8 in 7-segment code
+00000F B60C          50.          retlw    00001100b         ; complement of 9 in 7-segment code
+000010               51.                                     ;
+000010               52.  exit                               ;
+000010               53.          END                        ;
+
+
+Line #     Symbol      Type LC   Value           Line #     Symbol      Type LC   Value  
+------ --------------- ---- --- --------         ------ --------------- ---- --- --------
+   33. CONVERT          L    0         5            42. porte            K             15
+   15. Start            L    0         0            52. pr1              K             14
+   11. alusta           K              4            53. pr2              K             15
+   22. bsr              K              F            55. pr3h             K             17
+   60. ca1h             K             17            54. pr3l             K             16
+   59. ca1l             K             16            66. pw1dch           K             12
+   69. ca2h             K             15            64. pw1dcl           K             10
+   68. ca2l             K             14            67. pw2dch           K             13
+   13. cpusta           K              6            65. pw2dcl           K             11
+   27. ddrb             K             11            30. rcreg            K             14
+   37. ddrc             K             10            29. rcsta            K             13
+   39. ddrd             K             12            19. rtcch            K              C
+   41. ddre             K             14            18. rtccl            K              B
+   52. exit             L    0        10            12. rtcsta           K              5
+    8. fsr0             K              1            33. spbrg            K             17
+   16. fsr1             K              9            21. tblptrh          K              E
+    7. indf0            K              0            20. tblptrl          K              D
+   15. indf1            K              8            70. tcon1            K             16
+   14. intsta           K              7            71. tcon2            K             17
+   10. pchi             K              3            48. tmr1             K             10
+    9. pclo             K              2            49. tmr2             K             11
+   44. pie              K             17            51. tmr3h            K             13
+   43. pir              K             16            50. tmr3l            K             12
+   26. porta            K             10            32. txreg            K             16
+   28. portb            K             12            31. txsta            K             15
+   38. portc            K             11            17. wreg             K              A
+   40. portd            K             13         
+
+Object code length: 16 (0x10) 16-bit words

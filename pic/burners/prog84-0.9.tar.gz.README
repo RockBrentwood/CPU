@@ -1,0 +1,18 @@
+WHAT IS THIS?							wiml@netcom.com
+-------------							v0.9  26Dec1994
+
+A PIC programmer. Specifically, I wrote this to program
+  a PIC 16C84
+  through the parallel printer port
+  of a Linux box
+  using the PIC's serial programming mode
+  and a homebuilt programmer loosely based on David Tait's.
+
+However, it uses a configuration file which should allow it to use almost
+any parallel-port based programmer; and the low-level I/O is in a
+separate file which could easily be replaced for operating systems
+other than Linux.
+
+This is *not* a "production" programmer; it doesn't do supply margining,
+or probably a bunch of other things. However, you have the source,
+so you can make it do whatever you want.

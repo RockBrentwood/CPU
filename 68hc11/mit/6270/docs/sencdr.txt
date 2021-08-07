@@ -1,0 +1,43 @@
+To:6.270
+cc:
+Subject:Shaft encoder routines installed
+--------
+Hello everyone,
+
+The shaft encoder software is now working (I think).  Shaft encoder
+routines "sencdrNN.icb" are available for NN= 12 to 19.
+
+
+Please note the following if you are going to use shaft encoders:
+
+* The routines sample the sensor at a rate of 250 Hertz, not the 1000
+Hertz specified in the notes.  Therefore, sensor transitions can only
+be detected at this rate or more slowly.
+
+* Probably it is most suitable to put the shaft encoder sensor on the
+final drive shaft or the next to final geardown.
+
+* The velocities are calculated approx. 8 times per second, not the 16
+times per second specified in the notes.
+
+* Each shaft encoder routine that is installed will consume
+approximately 4% of the overall CPU time.
+
+
+The reason for the changes in the spec's of the routines is due to the
+excessive CPU load required to sample the sensors at the 1000 Hz. rate
+previously specified.  The routines implemented in this fashion
+consume about 12% CPU time PER ENCODER.
+
+If for some reason you require this faster sampling rate, routines
+"fencdrNN.icb" are available.  These routines also sample the
+velocities at twice the rate of the "sencdrNN" routines, so you will
+get velocity readings one-half as large when using these routines.
+BUT---there should be no reason to use the routines---move your shaft
+encoder down to a slower shaft and use the other routines.  Give your
+CPU a break.
+
+
+Please send bugs to fredm@amt.
+
+	- Fred

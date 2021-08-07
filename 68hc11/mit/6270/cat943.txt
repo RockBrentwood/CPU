@@ -1,0 +1,610 @@
+6270 Technologies Catalog
+
+6270 Technologies					Issue: #4
+One Kendall Square #312				September-December 1994
+P.O. Box 9171
+Cambridge, MA 02139
+(617) 492-5425 Phone/Fax
+pkoberoi@delphi.com
+
+The goal of 6270 Technologies is to try to provide access to the 6.270
+technology developed at MIT for the 6.270 Course.  The main products are
+the 6.270 boards, LEGO, batteries, and spare parts, but now we are
+trying to distribute additional mobile robot kits.
+
+SPECIALS
+
+All specials are delay delivery specials.  Orders must be placed by
+October 20th, and delivery will be by the end of November.
+
+RUGWARRIOR-U 
+Unassembled Rug Warrior mobile robot kit.  Includes all
+components to build a Rug Warrior from the book Mobile
+Robots:Inspiration to Implementation by Jones and Flynn.  Contains the
+parts listed in the book to make the processor board with the PCB board.
+ Also included are enough LEGO pieces to build the chasis for the robot,
+the servos to allow the robot to move, a copy of the public domain IC,
+with manuals, and a serial download cable.  This kit will allow you to
+get going with your Rug Warrior project.  This is a special offer good
+until October 31st.  Delivery will be by mid December, so this is an
+ideal holiday gift. 
+Cost: $300  			 Shipping: $15
+
+6270RBK-US
+Unassembled Rev 2.21 6.270 board kit which contains the part to make the
+6.270 controller system described later.  Includes assembly manual. 
+Place an order by October 31st, and delivery will be by the end of
+November.
+Cost: $140				Shipping: $7.50
+
+6270RBK-AS
+Assembled Rev 2.21 controller and expansion boards with parts for
+remaining boards win the 6.270 controller system.  Includes assembly
+manual. Place an order by October 31st and delivery will be made by the
+end of November.
+Cost: $300				Shipping: $7.50
+
+
+
+
+
+6.270 Controller System
+
+The 6.270 Controller System is comprised of 3 main components and 2 side
+components.  The heart of the system is the Controller Board, Expansion
+Board, and LCD.  The system was designed to teach undergraduates at MIT
+about robotics, and systems intergration during a one month intensive
+course.  The boards were designed to allow for flexibility and
+creativity in the robots the students built.  Therefore, the boards do
+not contain any sensors built on them like the Rug Warrior system, but
+instead contain ports in which you can plug your sensors and actuators
+into
+
+Controller Board
+
+The 6.270 system is based on the Motorola 6811 microprocessor with a 32K
+RAM.  The controller board can run on its own, but an additional
+expansion board allows for more ports and an LCD helps in debugging the
+system.  The memory is battery backed with the processor batteries in
+place.  When using the Interactive C environment, about 16K is available
+for programming space.
+
+Outputs:
+
+The controller board features the control of 4 bidirectional motors. 
+The motors are controlled through dual H-Bridge circuits to allow for
+separate motor battery and controller battery power.  Using the IC
+environment, the motors can be pulse width modulated to get different
+speeds.  In addition, the currents supplied to the motors are fed back
+to the processor's A/D to give you access to how hard the motors are
+working.  In addition to the motor outputs there is a 40kHz modulated
+output which can be used for ultrasonics, or IR transmission.  An LCD
+can is connected to the board to allow for printing of states and
+values.  This assists in debugging the system.  Also one servo output.
+
+Inputs:
+
+The board has 8 digital inputs and 4 analog inputs.  Two of the digital
+inputs can be used to read shaft encoders and as accumulators.  Four of
+the inputs can be used with the IR transmitter to look for specific
+frequencies with the IC environment.  There is a serial input to connect
+to a host computer for downloading.
+
+Expansion Board
+
+The expansion board provides for an addition 2 bidirectional motor
+outputs, and multiplexes the analog input into 16 analog inputs.   There
+are 4 dip switches and a frob knob for whatever comes to mind.  There is
+also a prototyping space where you can interface your own circuits to
+the board.
+
+IR Transmitter 
+
+The IR transmitter board is used for broadcasting IR in all directions. 
+In the MIT contest, each robot transmits a modulated 40kHz of IR so the
+other robot(s) can locate it.  This in conjunction with the SHARPIR can
+allow for robot interaction.
+
+Battery Charger Boards
+
+The battery charger board is used for recharging the Gates Cyclon
+batteries configured for 6 Volts. 
+
+
+6270RBK-U -- Unassembled 6.270 Board kit 
+Unassembled kit containing all the parts for the 6.270 controller
+system.  The unassmbled kit is not recommended for people who do not
+have soldering experience.  It contains the assembly manuals.
+Cost: $225		S&H: $5
+
+6270RBK-AX -- Assembled 6.270 Board kit 
+Contains fully assembled 6.270 controller board, and expansion board. 
+The IR transmitter board, battery charger and LCD are unassembled, but
+the parts are included.  The 6.270 microprocessor system is fully
+functional and in operational condition upon arrival.  This prevents
+endless time in debugging and soldering that you may not want to spend.
+Cost: $375		S&H: $7.50
+
+
+Complete 6.270 Kits
+
+The set of 6.270 kits provides you with a complete set of components to
+explore mobile robots.  The kits were designed similar to the kits that
+are given to the MIT 6.270 students.  They have been used at other
+Universities and for robot competitions.  The kits are based on the
+6.270 Controller system, and the LEGO Dacta system.  They allow you
+flexibility to design many different types of robots from task specific
+to generic robots.  These kits are idea for setting up a course or a
+robot compeition 
+
+Included in the complete kits:
+
+1. 6.270 Controller System (assembled or unassembled) described earlier.
+
+2. 6.270 manuals.  These are the course notes that are handed out to the
+students when they are taking the course at MIT.  It includes
+information about the boards, LEGO, senors, and Interactive C.
+
+3. LEGOKIT1.  Contains LEGO for building the chasis and appendages for
+your robot.  See LEGO section in the catalog for more information.
+
+4. Sensors. Assortment of touch sensors that can be used as bump
+sensors, or internal switches for actuators.  An assortment of IR
+transmitter reciever pairs which can be used for reflectance, shaft
+encoding, or determining ambiant light.  Also contains CdS photocells
+for regular light.  The Sharp IR sensors are included for detecting
+40kHz of IR light.
+
+5. Motor Batteries.  Contains 2 sets of Gates Motor batteries. One can
+be recharging while using the other set.  These batteries are combined
+in series to provide 6V at 2.5ahr.
+
+6. Acutators. 4 Mabuchi motors which can be interfaced with the LEGO
+system, and one servo.
+
+7. Serial Cable.  Serial cable to connect a DB9 RS232 with the
+controller board.
+
+8. Interactive C.  Pubically available version of Interactive C.  
+
+
+6270KIT-U --Unassembled Controller Cost: 	$550
+6270KIT-A --Assembled Contoller Cost: 		$700
+Shipping: $15
+
+
+LEGO PARTS
+
+6270 Technologies offers discounts on spare parts and some Resource Sets
+from the LEGO DACTA line.  Purchases from $100 to $300 receive 5%
+discount, $300 to $500 -- 10%, and over $500 is a 15% discount.  These
+discounts apply to LEGO components that do not have a special price.
+
+Since LEGO has been the key structural component to the 6.270 Robots
+developed at MIT, we offer two sets of spare parts which provide ample
+building material for small Mobile Robots.    These kits are the same as
+the ones used in the MIT course.  Other kits provide by LEGO such as the
+Resource Kits provide a good basic collection of LEGO.
+
+6270 Technologies only deals with the LEGO DACTA division.  We do not
+sell retail LEGO components.  LEGO DACTA is the Educational division of
+LEGO System, and is used in schools throughout the school.  We feel that
+it is a great tool along with the 6.270 System to teach systems
+integration between mechanical and electrical components.
+
+Add 5% to LEGO Prices for Shipping.
+
+Kits Assembled from Spare Parts:
+
+TUTEBOT KIT: (TUTE-L)
+Qty	Part No	Description		Retail
+2	9859	4.5V Motor		38.00
+1	9851	Connectors and Toggle	24.25
+1	9853	Gear Set		17.85
+1	9855	Tire and Wheel Set	13.80
+1	9856	Axel Set		15.50
+2	9857	Plate Set		39.70
+1	9858	Brick Set		23.25
+2	9867	Touch Sensors		22.00
+1	9861	Connecting Leads	19.00
+		Total Retail		213.35
+		Special Price		190.00
+
+LEGO ROBOT KIT I from 6270 Technologies (LEGOKIT-I)
+Qty	Part No	Description		Retail
+1	9851	Connectors , Piston Rod	24.25
+1	9852	Chain Links		18.00
+2	9853	Gear Set		35.70
+1	9854	Gear Racks		7.00
+1	9855	Tires, Pulley Wheels	13.80
+1	9856	Cross Axels		15.50
+2	9857	Plates			39.70
+1	9858	Red/Blue Beams		23.25
+1	9862	Universal Joints	15.50	
+.33	9869	Base Plate		2.75
+1	9871	Yellow Beams		15.50
+		Total Retail		211.00
+		Special Price		190.00
+No longer available after 1994
+
+
+LEGO ROBOT KIT 2 from 6270 Technologies (LEGOKIT-II)
+Qty	Part No	Description		Retail
+3	9822	Beams			42.00
+1	9852	Chain Links		18.00
+1	9854	Worm Gear Pack		7.00
+3	9963	Bushings, Axel Ext.	27.00
+3	9964	Connector Pegs		21.00
+5	9965	8, 16 Gears		25.00
+3	9966	24, 40 Gears		18.00
+1	9967	Differential		6.00
+1	9968	Pulley Wheels		6.00
+1	9969	Tires			9.00
+2	9970	Small Axles		12.00
+1	9971	Large Axles		6.00
+4	9972	Plates			48.00
+.33	9869	Base Plate		2.75
+		Total Retail		247.75
+		Special Price		218.00
+
+If you would like images of these parts, or copies of a DACTA catalog,
+send email to pkoberoi@delphi.com
+
+
+1994 LEGO DACTA CATALOG
+
+1030	TECHNIC I Set 
+179 elements including gears, beams, pulleys,
+wheels, and more. 20 sctivity cards to build 29 models and 23 challeng
+problems
+Retail Price: $60.00	
+
+9702	 LEGO DACTA Simple Control Building Set (NEW ITEM 9V Motor). 220
+elements, including grear, pulleys, beams, ets. 9 Volt motor, lamp,
+sound elements, and connecting leads. 4 Activity cards with step-by-step
+model building instructions. 4 Challenging models	Plastic Tray
+Retail Price: $67.50	
+
+1032	TECHNIC II Set
+278 elements including chain links, differenetial gear, worm gear,etc.
+4.5 volt motor and battery box for 3 'C' batteries. 20 activity cards.
+Storage Tray
+Retail Price: $80.00	
+
+9605	4.5V TECHNIC Resource Set
+1516 elements including many from the TECHNIC I (#1030) and TECHNIC II
+(#1032) (4.5 volt)sets.Large Storage Trays.Activity Cards are not
+included. 
+Retail Price: $206.00	
+
+9609	9V Technology Resource Set  (NEW ITEM)
+1733 pieces including new elements such as: 9 volt motor,battery box, 9
+volt wire system, cam wheels, axel extenders,and a metal crane
+hook.Building instructions are not included.Not compatible with the 4.5
+volt materials.
+Retail Price: $199.00	
+
+9820	Geared turntable
+	(12) Swivel Plate 1 x 2 studs - blue
+	(20) Turntable 2 x 2 grey
+Retail Price: $5.75	
+
+9821	Rubber Bands
+	(1) String
+	(16) Rubber band - small
+	(32) Rubber band - medium
+	(24) Rubber band - large
+	(24) Rubber band - extra large
+Retail Price: $14.00	
+
+9822	Beams (Red)
+	(24) Brick 1 x 2 studs
+	(16) Brick 1 x 4 studs
+	(8) Brick 1 x 6 studs
+	(8) Brick 1 x 8 studs
+	(4) Brick 1 x 10 studs
+	(4) Brick 1 x 12 studs
+	(4) Brick 1 x 16 studs
+Retail Price: $14.00	
+
+9823	Beams (Blue)
+	Same as 9822 except color
+
+9824	Beams (Blue)
+	Same as 9822 except color
+
+9825	Pneumatic Elements
+	(1) Pneumatic spring pump
+	(1) Pneumatic cylinder
+	(1) Two way valve
+Retail Price: $7.00	
+
+9826	Pneumatic Tubing
+	2 x 100 cm black tubing
+	1 x 40 cm grey tubing
+	Tee connector
+Retail Price: $11.25	
+
+9852	Chain Link Pack
+	(175) Chain Link
+	(54) Broad Link
+Retail Price: $18.00	
+
+9854	Worm Gear Pack
+	(12) Gear Rack
+	(10) Worm Gear
+Retail Price: $7.00	
+
+9863	Weighted Brick pack
+	(4) Weighted element (6 x 2 x 2) studs
+Retail Price: $6.50	
+
+9864	Green building plates (3) (8 x 16) studs
+Retail Price: $6.50	
+
+9876	Turntables
+	(2) TECHNIC Turntable
+Retail Price: $8.50	
+
+9960	Crane hook, Cam, Propeller
+	(1) Crane hook
+	(8) cam gear
+	(4) Propeller
+Retail Price: $7.00
+
+9961	White Belts
+	4 x 2.0cm
+	4 x 2.4cm
+	4 x 2.8cm
+	4 x 3.3cm
+Retail Price: $10.00	
+
+9962	Flat tiles
+	(4) 1 x 2 Flat
+	(4) 1 x 4 Flat
+	(2) 1 x 8 Flat
+	(2) 2 x 2 Flat
+Retail Price: $7.00	
+
+9963	Axel Extenders, bushings
+	(12) Not sure 
+	(32) Stop Bush
+	(24) Small pulley
+	(4) Universal joint
+	(16) Piston Rod
+Retail Price: $9.00	
+
+9964	Connector Pegs
+	(16) Black Connectors (???)
+	(32) Grey Connectors (???)
+	(8) Connector peg with stud
+	(8) Connector peg with cross axel
+Retail Price: $7.00	
+
+9965	Gears 8, 10 tooth
+	(10) 8 Tooth Gears
+	(8) 16 Tooth Gears
+Retail Price: $5.00	
+
+9966	Gears 24, 40 tooth
+	(12) 24 Tooth Gears
+	(4) 40 Tooth Gears
+Retail Price: $6.00	
+
+9967	Differential, bevel gears
+	(12) Bevel Gears
+	(1) Differential
+	(1) Small Differential (??)
+	(4) Crown Gears
+Retail Price: $6.00	
+
+9968	Pulley Wheels
+	(12) Pulley Wheel
+	(8) O ring Tires
+	(2) Steering Wheel
+Retail Price: $6.00	
+
+9969	Tires, Spoked Hubbs
+	(8) Small Tires
+	(4) Large Tires
+	(12) Hubs
+Retail Price: $9.00	
+
+9970	Axels - Short
+	(4) 2 Stud Long Axel
+	(8) 3 Stud Long Axel
+	(12) 4 Stud Long Axel
+	(12) 6 Stud Long Axel
+Retail Price: $6.00	
+
+9971	Axels - Long
+	(8) 8 Stud Long Axel
+	(8) 10 Stud Long Axel
+	(8) 12 Stud Long Axel
+Retail Price: $6.00	
+
+9972	Plates (Red)
+	(24) Plate 1 x 2 studs
+	(8) Plate 1 x 3 studs
+	(8) Plate 1 x 4 studs
+	(8) Plate 1 x 6 studs
+	(8) Plate 1 x 8 studs
+	(4) Plate 1 x 10 studs
+	(8) Plate 2 x 10 studs
+	(8) Plate 2 x 8 studs
+	(4) Plate 2 x 6 studs
+	(8) Plate 2 x 4 studs
+	(4) Plate 2 x 3 studs
+	(4) Plate 2 x 2 studs
+	(2) Plate 4 x 4 studs
+	(2) Plate 2 x 10 studs
+	(2) Plate 4 x 6 studs
+Retail Price: $12.00	
+
+9973	Plates - Blue
+	Same as 9972 except for color
+
+9974	Plates - Yellow	
+	Same as 9972 except for color
+
+9262	438 Extra LEGO Bricks
+Retail Price: $28.70	
+
+9454	LEGO Function Set (350 Pieces)
+Retail Price: $42.45	
+
+9859	TECHNIC Motor 4.5 volt
+Retail Price: $18.00	
+
+9860	Battery Box (4.5 volt)
+Retail Price: $11.15	
+
+9861	Connecting leads (8)
+Retail Price: $18.00	
+
+9867	Touch Sensor
+Retail Price: $9.55	
+
+9892	Brick Separator (2)
+Retail Price: $3.75	
+
+
+
+Spare Parts Sets
+
+
+
+6270RBK-BB -- 6.270 Bare Boards
+All 5 6.270 bare boards.  There are no additional parts with this item.  You must supply your own parts.
+Cost: $30		S&H: $3
+
+6270RBK-HP -- Hard to get parts for the 6.270 Board
+These are parts that are difficult to get in small quantities.  This item includes: (1) 68HC11A1, (1) 32K Static Ram, (5) L293D,  (1) 52 pin PLCC socket, (1) 16X2 LCD, (1) DS12333-10
+Cost: $80		S&H: $3
+
+IBMCAB9 -- DB9 RS-232 to RJ11 cable for downloading to the microprocessor board.
+Cost: $15		S&H: $3
+
+IBMCAB25 -- DB25 RS-232 to RJ11 cable for downloading to the
+microprocessor board. 
+Cost: $15		S&H: $3
+
+ICDISK -- IC on a disk for IBM PC's.  Includes getting started manual.
+Cost: $5		S&H: $3
+
+SHARPIR -- Set of 4 Sharp IR Sensors GP1U52x
+Cost: $15		S&H: $3
+
+L293D -- $4.00
+
+6270MAN -- 6.270 Notes
+Includes section on IC, a new section on all the past contests, a section on getting familiar with the kit, and everything we distribute to the students in the MIT course.
+Cost: $20	
+
+
+GATEBAT -- New Gates Sealed Lead Acid Cells
+Sold in sets of three.  These are the "Cyclon" cells that are D-size cells with a rating of 2.5AHr at 2V.  3 can be soldered in series to get 6V. Weight: .41 lbs per cell.  Expected Float Life: 8 years. Peak power: (@135A) 135W.  Cycle Life: 200 at 100% discharge on a daily basis, 2000 at 25% discharge.  New cells !!!
+Cost: $18.00		S&H: $5
+
+VID-PAST -- Videos from past 6.270 contest.  A collection of video clips from the past 5 years 93 -- RoboKnights ; 92 -- Robo Cup Soccer (unavailable); 91 -- RoboPong (15 min) ; 90 -- RoboPuck ; 89 -- King of the Mountain (10 min).
+Cost: $10		S&H: $3
+
+VIID-93 -- Entire Video Footage from the 1993 RoboKnights competition.
+Cost: $10		S&H: $3
+
+TSA -- Touch Sensor Assortment
+(2) Long Lever Switch
+(2) Roller Switch
+(4) Small Lever Switch
+(4) Micro Lever Switch
+(4) Micro Push Switch
+Cost: $30		S&H: $3
+
+LSA -- Light Sensor Assortment
+(2) Break beam sensors
+(4) IR transmitter/ Reciever Pair Bundle
+(4) Phototransistors
+(6) CdS Photo Cells
+Cost: $30		S&H: $3
+
+
+Order Form
+
+6270 Technologies
+Pankaj Oberoi
+One Kendall Square #312
+P.O. Box 9171
+Cambridge, MA 02139
+Phone: (617) 492-5425
+Fax: (617) 492-5425
+
+Name: _______________________
+Address: _____________________
+_____________________________
+City: _________________________
+State: ________  Zip: ___________
+Date Ordered: _________________
+Payment:  
+Check: _____  Money Order: _____
+PO Number: __________________
+Telephone: ___________________
+Fax: _________________________
+
+Shipping:All shipping will be done via UPS ground unless otherwise
+stated on order.  If faster service is desired, please contact for
+shipping charges.  Most parts are delivered from 2-4 weeks from the
+order date.  International orders are shipped via Federal Express, and
+charges are sent to the recipient.  Please contact for international
+shipping charges.
+
+How to order:The best form of ordering is through the mail or electronic
+mail. You may also phone or fax in orders. The phone is: (617) 492-5425.
+ The fax is on a voice line, but will switch if a fax is dectected.  A
+check or approved PO must be recieved before any parts are shipped.  
+
+Payment:You may send a check/money order in the mail for the cost of the
+components and shipping. COD may be sent in the US, but not to Post
+Office Boxes, and there is no Fed. Express COD.  An addition $5.00
+service fee will be charged for all COD orders.  Refused shipments will
+be subject to a 20% restocking fee and the shipping charges. 
+
+
+
+	Description	Qty	Unit Price	Total	S&H
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+
+9
+
+10
+
+			Subtotal
+
+			Total
+
+
+For Questions/Ordering:
+
+Electronic Mail: PKOBEROI@DELPHI.COM
+
+Voice Phone: (617) 492-5425
+Fax Orders: (617) 492-5425
+
+
+
+

@@ -1,0 +1,104 @@
+               +----------------------------------+
+               | 8-Bit  Microcontroller Examples  |
+               +----------------------------------+
+
+
+                   (press S to stop listing)
+
+
+    ** Assemblers/Disassemblers **
+ML-ASM51.ZIP  128000  12-17-90  MetaLink's 8051 family macro assembler.
+                                (used in most of our app notes)
+A51.ZIP        40960   5-22-92  PseudoSam 8051 Cross Assembler, V1.4.09
+AS31.ZIP       26624   6-17-90  C source for an 8051 assembler, and a
+                                simple monitor from Ken Stauffer.
+D51.ZIP        19200   1-09-92  Fast 3 pass 8051 disassembler.
+DIS8051F.ZIP   27169   7-12-91  DataSync's latest 8031/51 disassembler.
+DIS_8048.ZIP    7287   3-17-92  8048 Family Disassembler.
+    ** BASIC **
+BAS051.ZIP     32768   1-29-90  Converts IBM BASIC to '51 assembly.
+BASIC-52.ZIP   51200   4-01-91  Source files for BASIC-52 interpreter.
+BASIC31.ZIP    14336   3-17-92  BASIC-52 for 8031/8051 in external EPROM
+TB-51.ZIP     100352   4-01-91  TinyBASIC for 8031, w/ source files.
+TB51ML23.ZIP   77824   5-05-92  MetaLink ASM compatible tiny BASIC.
+    ** FORTH **
+EFORTH51.ZIP   37888   2-18-91  eFORTH environment for the 8051.
+FORTH51.ZIP   158720   3-17-92  FORTH for 8051 family.
+XD8051.ZIP     36864   2-18-91  F-PC Forth environment for the 8051.
+    ** Monitors/Debuggers **
+DB51KS.EXE     30592   1-09-92  Combined RS751/DEBUG51 for RT apps.
+DEBUG51.ZIP     5632   5-22-92  80C51 code debugging tool from Axxon.
+MON.C           6656   7-17-90  Simple minded monitor in C.
+MON31-11.ZIP    9216   3-13-90  Simple monitor routines for the 8031
+                                 with PseudoSam assembly source.
+MONPLUS.ZIP    23552   7-26-90  A re-written and expanded 8031 monitor
+                                based on Ron Stubbers' original one.
+    ** Misc. Information and Utility **
+80C451          2258   5-22-92  Orcad library element for 80C451 LCC.
+80C552          3072   2-06-90  Schematic symbol for use with Orcad.
+DEMO_PWM.ZIP  222592   5-22-92  Converts music to 8052 BASIC PWM
+                                program.
+REGC552.H       9714   2-18-91  80C552 C declarations for Franklin C.
+REG552.INC     10536   2-18-91  80C552 declaration for Franklin asm.
+OBJUTILS.ZIP   15104   5-21-90  Object file utilities to convert hex
+                                files to binary and vice versa.
+PCI2C.ZIP     199552   7-10-90  Software V3.2 for I2C PC printer port
+                                adapter (needs board in order to use).
+PCI2CBD.ZIP     1920  12-04-90  Schematic of I2C PC printer port adapter
+PPTA.ZIP       64000   3-19-92  Microcontroller overview presentation
+                                in a Windows Powerpoint file.
+PPTB.ZIP       71296   3-19-92  Microcontroller technical presentation
+                                in a Windows Powerpoint file.
+SPGMV14.ZIP     8576   5-22-92  V1.4 firmware for V1.X SPGM-100 prgmrs.
+SPGMV26.ZIP     8960   5-22-92  V2.6 firmware for V2.X SPGM-100 prgmrs.
+TUTOR51.ZIP     8192   2-13-90  TSR help screens with most of the common
+                                8051 device info - handy
+    ** Code Examples **
+AD1.ASM         1024   7-25-89  A/D code for the `C552.
+AN429.ZIP       5504   5-21-92  Source for app note on '752 air flow 
+                                measurement (AN429).
+BOOTSTRP.ZIP    7296   6-04-92  Hex file Load-and-Go using 8051 UART.
+CLOCK.ZIP       4864   5-22-92  Example of real time clock fm Sytronics.
+COFFEY.ASM      3712   2-13-90  Displays the contents of the S87C752
+                                A/D SFRs.
+DEMO752.ASM     8668   5-22-92  Demonstration program for the A/D and
+                                PWM features of the 8xC752.
+FRAME10.ASM    13696   3-17-92  751 code for the 7-bit digital video 
+                                demo board.
+I2C528.EXE     57472   5-01-92  I2C drivers for 8xC528 from app note
+                                AN438.
+I2C552-C.ZIP    7808   5-21-90  I2C drivers for the 8xC552 with a C 
+                                language interface.
+I2C751MM.ZIP   10240   6-04-92  8xC751 Multimaster I2C Routines. 
+                                (replaces old 'Red Book' code)
+I2C8584.ZIP     8832   5-21-90  Code from app note AN425 using the 8584
+                                I2C to parallel bus i/f with the 80C31.
+I2CAPP.ZIP      4352   5-22-92  Source code for the app note AN422 on
+                                single master I2C with the 8xC751/752.
+I2CBITS.ASM     9998   5-22-92  I2C single master code for ANY 8051 type
+                                controller. 'Bit bangs' I2C on port pins
+I2CDEMO.ZIP    15488   5-22-92  I2C Evaluation Board (part# S87C00K SD)
+                                control program (for 8xC751).
+I2CINIT.ZIP     4096   5-22-92  Lets 8xC751 do system init of I2C and
+                                other devices (via reset pulse).
+I2CSLV.ZIP      3072   4-25-90  I2C slave routines for the 87C751/752.
+INTRUPTS.ASM    4352   7-25-89  Demo of extra external interrupts on C51
+MATH51.ZIP      6144   2-12-91  Multi-byte math routines for the 8051
+MTV.ZIP         5760   5-21-92  Demo program with a sample font and 
+                                asm definitions for 8xC054 (MTV).
+PRN256K.ZIP     4352   5-22-92  8xC451 code (from AN417) for a 256K
+                                printer buffer. Schematic in data book.
+RS751.ASM       8471   5-22-92  Simplex UART routines for the 751 & 752.
+SAMPLES.ZIP     9600   5-22-92  Sample 80C552 subroutines fm Sytronics.
+SERIAL.ZIP      2304   5-22-92  8xC751 serial stream generator.
+SERIAL_1.ASM    5120   7-25-89  87C751 serial stream generator.
+TIMERI.ZIP      2176   5-22-92  Examples of Timer I used without I2C on
+                                the 8xC751/752 microcontrollers.
+WARMBOOT.ZIP    2816   6-19-90  Demo program to distinguish warm & cold
+                                start conditions on 80C51 based parts.
+    ** New (unsorted) Files **
+MTVFNTED.ZIP   14848   6-29-92  Font editor for the MTV (8xC054).
+                                Includes a sample character set.
+MM751.ZIP      10624   7-08-92  Multimaster I2C code for the 8xC751/752.
+                                From app note AN430.
+

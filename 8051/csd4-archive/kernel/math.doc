@@ -1,0 +1,205 @@
+     A R B I T R A R Y   P R E C I S I O N   M A T H   R O U T I N E S
+
+(0) Overview
+   To facilitate development of mathematical software on 8051-family of
+processors, a set of routines has been developed that allows arithmetic
+operations to be performed on data objects of arbitrary precision, and on
+floating point data objects.  These routines will operate only on objects
+located in the 8051 internal data memory.
+
+(1) Arbitrary Precision Routines
+   All the following routines use the following registers:
+
+   R0 ... points to the destination data object located in internal memory.
+   R1 ... points to the source data object, if there is one.
+   R2 ... indicates the size of the data objects being operated on.
+
+These are the routines.  In this list, the names "Src" and "Dest" are used to
+indicate the source and destination objects.
+
+ClearX:    "Dest = 0"
+CopyX:     "Dest = Src"
+CplX:      "Src = ~Src"
+RolX:      "rotate Src left through the carry, C"
+ShiftX:    "shift Src left, high bit goes into C"
+LessX:     "C = (Src < Dest)"
+ZeroX:     "C = (Src == 0)"
+IncX:      "Dest++"
+CarryX:    "Dest += C"
+DecX:      "Dest--"
+BorrowX:   "Dest -= C"
+AddX:      "Dest += Src, carry goes into C"
+SubbX:     "Dest -= (Src + C), borrow goes into C"
+SubtractX: "Dest -= Src, borrow goes into C";
+NegX:      "Dest = -Dest"
+Inc10X:    "Increment Src in BCD format"
+
+The BCD increment operation (Inc10X) would take a data object of value,
+
+                       03 05 06 06 09 09h
+
+for instance, and "increment" it to
+
+                       03 05 06 07 00 00h
+
+As an example of how these routines are used, if the following declarations
+had been made:
+
+X equ 30  ;;; allocate 3 bytes at registers 30-32 for X
+Y equ 33  ;;; allocate 3 bytes at registers 33-35 for Y
+
+and if X, and Y were initialized as follows:
+
+   mov X, #43h
+   mov (X + 1), #24h
+   mov (X + 2), #02h   ;;; X = 22443h;
+   mov Y, #24h
+   mov (Y + 1), #00h
+   mov (Y + 2), #20h   ;;; Y = 200024h;
+
+then the following sequence:
+
+   mov R0, #X
+   mov R1, #Y
+   mov R2, #3
+   call AddX   ;;; X += Y;
+
+will carry out the operation indicated in the command above, and the X
+data object will have the value 222467h in the following format:
+
+           register  30  31  32
+           contents  67h 24h 22h
+
+The carry flag, C, will be cleared.
+
+(2) The Multiplication Routines
+   (A) MultiplyX
+   The MultiplyX routine is actually an "add-and-multiply" operation that
+allows you to accumulate the products into a data object.
+   The operation performed is:
+
+                         Z += X*Y;
+
+The user defines the X data object by setting the variable ArgX to point to
+the data object, and setting SizeX to indicate the size of the object pointed
+to by ArgX.  The same thing goes with Y, with respect to the variables ArgY
+and SizeY.  The data object, Z, is pointed to by ArgZ.
+
+   So, for example, if the following declarations were made:
+
+Cycles equ 30 ;;; allocate 2 bytes at 30-31
+Total  equ 32 ;;; allocate 4 bytes at 32-35
+Product equ 36 ;;; allocate 6 bytes at 36-41
+
+then the following will add the product of Cycles and Total into Product:
+
+                mov ArgX, #Cycles
+                mov SizeX, #2
+                mov ArgY, #Total
+                mov SizeY, #4
+                mov ArgZ, #Product
+                call MultiplyX     ;;; Product += Cycles*Total;
+
+   (B) MulByR1
+   This is a routine that allows you to multiply a data object ("Dest") by
+a single byte.  The following registers are used:
+
+      R0 ... Points to the "Dest"
+      R1 ... Points to the multiplier byte
+      R2 ... Indicates the size of Dest.
+
+A multiplication is performed, the result is placed in "Dest", and the carry
+byte is placed in R3.  For instance, if the following declaration was made
+
+X equ 30 ;;; allocate 3 bytes to X
+
+with the initialization:
+
+                mov X, #7dh
+                mov (X + 1), #24h
+                mov (X + 2), #35h ;;; X = 35247dh;
+
+then this operation:
+
+                mov R0, #X
+                mov R1, #10h
+                mov R2, #3
+                call MulByR1  ;;; X += 10h;
+
+will multiply "X" by 10 (hexadecimal), so that X now will have the value
+5247d0h, formatted as follows:
+
+               register 30  31  32
+               contents d0h 47h 52h
+
+and R3 will have the carry (3).
+
+(3) The Fixed Point Routines
+   (A) DivideX
+   DivideX will carry out an arbitrary precision division (up to 8 bytes).
+The operand and divisor should be loaded into the registers Op, and Divisor.
+After DivideX, the registers Quo, and Fract will contain the integer part
+and decimal part of the quotient.  The effect is to carry out the operation:
+
+                        "Quo.Fract = Op/Divisor"
+
+   (B) Sqrt64
+   Sqrt64 calculates the square root of an 8-byte data object located in
+register W, and returns a 4-byte result in register Q:
+
+                         "Q = sqrt(W)"
+
+For instance, if the following initialization is carried out:
+ 
+                      mov W, #21h
+                      mov (W + 1), #43h
+                      mov (W + 2), #45h
+                      mov (W + 3), #23h
+                      mov (W + 4), #01h
+                      mov (W + 5), #00h
+                      mov (W + 6), #00h
+                      mov (W + 7), #00h  ;;; W = 123454321h
+
+then, the operation
+
+                      call Sqrt64
+
+will load Q with the square root (which is 11111h):
+
+                   register  Q   Q+1  Q+2  Q+3
+                   contents 11h  11h  01h  00h
+
+if W had be interpreted as a fixed-point quantity (12345.4321h), then
+the square root would still be a valid result, when properly interpreted
+(namely Q = 111.11h).  So this operation (and DivideX) works just as well
+with fixed-point arithmetic.
+
+(4) Allocating Registers
+   The assembler that I normally use does not handle relative addressing.  That
+means that I have to allocate the registers defined above by hand each time
+I include this library.  If your assembler does not have the ability to handle
+relocatible segments, you will likewise have to do the mapping of register
+variables by hand.  In the library provided, these registers have been mapped
+as follows:
+
+For MultiplyX: SizeX   equ 30h ;;; 1 byte
+               SizeY   equ 31h ;;; 1 byte
+               ArgX    equ 32h ;;; 1 byte
+               ArgY    equ 33h ;;; 1 byte
+               ArgZ    equ 34h ;;; 1 byte
+
+For DivideX:   SizeX   equ 30h ;;; 1 byte
+               Op      equ 35h ;;; 8 bytes
+               Divisor equ 3dh ;;; 8 bytes
+               Quo     equ 45h ;;; 8 bytes
+               Fract   equ 4dh ;;; 8 bytes
+               Rem     equ 55h ;;; 8 bytes
+
+For Sqrt64:    Q       equ 35h ;;; 8 bytes
+               D       equ 3dh ;;; 8 bytes
+               X       equ 45h ;;; 8 bytes
+               W       equ 4dh ;;; 8 bytes
+               Y       bit F0
+
+The overlapping segments for DivideX and Sqrt64 are no major problem since these
+routines are never executed concurrently in any of my applications.

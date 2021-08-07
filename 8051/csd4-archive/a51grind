@@ -1,0 +1,11 @@
+a51:\
+	:bb=\::be=\dret|jmp|ajmp|sjmp|ljmp|reti\d|;:\
+	:oc:\
+	:lb=':le=':\
+	:sb=":se=":\
+	:cb=;;:ce=$:\
+        :kw=ds rb rw db byte dw word org at seg end global public\
+        extern include if else equ set high low by code xdata data sft bit\
+	acall add addc ajmp anl cjne clr cpl da dec div djnz inc jb jbc jc\
+	jmp jnb jnc jnz jz lcall ljmp mov movc movx mul nop orl pop push\
+	ret reti rl rlc rr rrc setb sjmp subb swap xch xchd xrl:

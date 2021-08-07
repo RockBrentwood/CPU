@@ -1,0 +1,36 @@
+Date:	Wed, 27 Jul 1994 20:52:41 +0300
+From:	Don Lekei <72677.2623@compuserve.com>
+To:	pic <pic@figment.mit.edu>
+Subject: Re:More rookie questions
+
+Derrick Early asked:
+> I'm curious to know if I'm using the right assembler for the pic 16c64.  
+> Presently, I'm using the MPASM Assembler for PIC16/17, version 1.15.  
+> I saw some notes about another assembler that I didn't know was 
+available.
+> This caused me to wonder if I am using the best tool.  Does someone have
+> a list of assemblers?  What assemblers are you using?
+
+ASPIC, available as shareware from several ftp sites, Microchip BBS, and 
+the author's support BBS ((604) 597-3479), is 5 to 20 times faster than 
+MPALC or MPASM. It's powerful features allow considerable code compression, 
+since they make complex constructs much more maintainable.
+
+It has some unique features such as character set translation, automatic 
+register bank management, text packing, true bit labels, full support for 
+IDE's like Brief, Codewrite, Winedit and Multiedit (even with multi-file 
+projects). It also works properly in makefiles, supports environment 
+variables, allows fuse and EEPROM data definition, automatically generates 
+RETLW tables, and more.
+
+A complete working source code is provided as a code framework. It is 
+called DEMO.ZIP, and it is the complete source of a pocket logic analyzer 
+with LCD, KEYBOARD, etc. (Registered users also get the schematics and 
+block diagram).
+
+Sorry if that sounded a bit biased, but I actually did try to use 
+restraint.
+
+-Don Lekei  (author of ASPIC)
+72677.2623@compuserve.com
+LEKEI on Microchip's BBS

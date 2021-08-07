@@ -1,0 +1,46 @@
+Bug list for:
+		PICALC 16c5x assembler Version 3.03
+
+This file contains all known bugs for PICALC versions 3.03 Released
+throgh version 4.00 Released.
+
+Last file update:  Thursday  07 Jan 93
+-----------------------------------------------------------------------
+
+Priority:       1
+
+Date:           5/20/93
+
+Version:        4.11
+
+Description:    Can't assemble code for the 16C84
+
+Fixed:          4.11.01
+
+Modification:   who:    why:
+05/20/93        dpc     Added original.  Complaint is that the wrong
+                        instruction set is used when assembling
+                        16c84 code.
+05/20/93        dpc     Fixed 'if' statement in object.c
+                
+
+-----------------------------------------------------------------------
+
+Priority:       3
+
+Date:           5/20/93
+
+Version:        4.11
+
+Description:    Default output file format is different than 4.0, and
+                does not match the help screen.
+
+Fixed:          4.11.01
+
+Modification:   who:    why:
+5/20/93         dpc     Added original bug report.
+                        Set the output file format to inhx8m.
+-----------------------------------------------------------------------
+
+End of file.
+

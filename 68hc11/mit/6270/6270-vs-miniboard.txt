@@ -1,0 +1,56 @@
+Original document by Fred Martin
+Updated by Randy Sargent, July 29, 1994
+
+>       I have a small question related to the boards used at the MIT
+> around the Motorola 68hc11: can you explain me what are the main differences
+> between the miniboard and the 6270 board, from the hardware and software
+> points of view? For example, I have the impression that the 6270 is
+> easier to program since the interactive C-compiler seems to be ready to use.
+
+Here are the primary differences between the two:
+
+HARDWARE-
+
+The Mini Board has no external memory, so it's limited to the 2K
+internal EEPROM of the 'hc811e2 version of the chip.  There are
+drivers for 4 motors, and the rest of the 6811 pins are brought out to
+headers.
+
+The 6.270 board has 32K of RAM, and also comes with an expansion board
+giving you 2 more motor outputs (for a total of 6), and lots more
+analog sensor inputs (using a multiplexer chips).  It also has an LCD
+screen.
+
+SOFTWARE-
+
+Because of the memory limitations, the Mini Board is best programmed
+in assembly language, or a limited version of C (e.g., Dunfield's
+Micro-C system [a $100 product], or Richard Man's free icc11
+compiler).
+
+The 6.270 board has a custom software environment, Interactive C,
+which is a multi-tasking, interactive version of the C language.  It's
+a pretty cool system.  A free version of Interactive C is available from
+cher.media.mit.edu in pub/interactive-c.  Sources are available.
+
+SUMMARY-
+
+The Mini Board is a lot easier to get started with.  The board itself
+is smaller, has many fewer chips, is easier to build, and is easier to
+debug.  If you have a DOS system, the Micro-C environment is quite
+simple to use, and while not interactive or multi-tasking, is
+functional.  You will be limited by the 2K of memory, however.
+
+The 6.270 board is great once you get it working, but will be a bear to
+debug if you have bad solder joints or the like.  It takes 10 to 12 hours
+to build.  If you want to go with the 6.270 board, try to buy a completed
+and tested board; P.K. Oberoi (spedhead@mit.edu) does provide this service.
+Interactive C is a lot of fun to use, and the 32K of memory is enough to do
+a significant project.
+
+Another thing to keep in mind regarding Interactive C is that it
+cannot build ROM-able applications.  There were several design choices
+made during its development which require that it run from RAM.  This
+means that you can't build serious applications with it, since RAM
+isn't suitable for something that has to really work for a long time.
+For experimentation and general playing around, though, IC is great.

@@ -1,0 +1,574 @@
+Bug list for:   ASM17 17CXX assembler version 1.07.02
+		This document reports the known bugs for the released
+		version 1.07.01 and patched version 1.07.02
+______________________________________________________________________________
+Key words:      Bug, #ifdef, #ifndef
+Description:    #ifdef and #ifndef works only with symbols defined using
+		#define statement
+		Example:
+		Line No.        
+		  1     #define         x       1
+		  2     variable        y       1
+		  3
+		  4     #ifdef  x
+		  5             Messg   "#ifdef works only with symbols
+		  6                      defined using #define"
+		  7     #else
+		  8             Messg   "#ifdef does not work with symbols
+		  9                      defined using variable,constant,
+		 10                       set, equ"
+		 11     #endif
+		 12     #ifdef  y
+		 13             Messg   "#ifdef works only with symbols	
+		 14                      defined using #define"
+		 15     #else
+		 16             Messg   "#ifdef does not work with symbols
+		 17                      defined using variable,constant,
+		 18                      set, equ"
+		 19     #endif
+		When assembled, line 4 generates a correct Messg on line 5,
+		whereas line 12 generates a Messg on line 16
+Work around:    None
+Related Prob:   None
+#SSR:           1100
+Version:        ASM17 1.07.01
+Date:           15 Mar 92
+Reported by :   Nirmala konan
+Test File:      IFDEF.ASM
+Status:         Fixed 1.07.01
+Severity:       Affected code 
+		
+______________________________________________________________________________
+
+Key words:      Bug call, goto
+Description:    In goto and call instructions, if the branch address is
+		specified as absolute constant then it has to be an
+		offset within the page .
+		Example:
+		Line No.
+			     org     0x2000
+		1            goto    0x2003
+		2            goto    lab
+		3            movlw   1
+		4    lab     movlw   2       
+		When assemled  line 1 generates an error "offset exceesds
+		8K page boundary". Line 2 genrates the correct code
+		though the branch is to the same address of  0x2003
+		through label.
+Work around:    Use labels instead of absolute address
+Related Prob:   None
+SSR#:           1101
+Version:        ASM17 1.07.01
+Date:           15 Mar 92
+Reported by :   Nirmala konan
+Test File:      RANGERR.ASM
+Status:         Fixed 1.07.01
+Severity:       Affected code
+______________________________________________________________________________
+		
+Key words:      Bug, fill
+Description:    The fill directive does not work when the filler value
+		is an instruction.
+		Example:
+			org     0x40
+			Fill    SLEEP
+			movlw   0x0e
+			movlw   0x0f
+		When assembled and linked generates following .lst and
+		.hex files
+		.lst
+			40              41.             org     0x40
+			0003            42              Fill    SLEEP
+					43.
+			000040 B00E     44.             movlw   0x0e
+			000041 B00F     45.             movlw   0x0f
+		.hex
+			:00000001FF
+
+
+Work around:    None
+Related Prob:   None
+SSR#:           1102
+Version:        ASM17 1.07.01
+Date:           15 Mar 92
+Reported by :   Nirmala konan
+Test File:      FILL.ASM
+Status:         Fixed 1.07.02
+Severity:       Affected code 
+______________________________________________________________________________
+
+Key words:      Bug, cmdlopt
+Description:    Invalid syntax of command line switches and option errors,
+		results in hanging up of the system.
+		Example:
+			Invalid syntax          
+			
+			asm17 / filename    ; missing 'h'
+			asm17 /a filename   ; missing value for option '/a'
+			asm17 /F filename   ; missing value for option '/F'
+			asm17 /l            ; missing filename
+			.
+			.
+
+Work around:    Follow correct syntax
+Related Prob:   None
+SSR#:           1103
+Version:        ASM17 1.07.01
+Date:           15 Mar 92
+Reported by :   Nirmala konan
+Test File:      cmdlopt.bat
+Status:         Fixed 1.07.01
+Severity:       Affected code 
+
+______________________________________________________________________________
+
+
+Key words:      Bug, Binary expression
+Description:    Binary expressions are not recognised.
+		Example:        
+			a   = a << 1
+Work around:    a<<=1
+Related Prob:   None
+SSR#:           1104
+Version:        ASM17 1.07.01
+Date:           10 Apr 92
+Reported by :   Nirmala konan
+Test File:      Arithop.asm     
+Status:         Fixed 1.07.02
+Severity:       Affected code 
+______________________________________________________________________________
+
+Key words:      Bug, Nested #F
+Description:    When #if  control statement evalutes to false,
+		the next  subsequent #if ....#endif block was not skipped.
+		Example:        
+			x       equ     0
+			y       equ     1
+			#if(x)
+				...
+				...
+				#if(y)               ; These lines were not  
+					movlw  0xA   ; skipped..
+					movlw  0xB
+				#endif
+			#endif
+
+Work around:    None    
+Related Prob:   None
+SSR#:           1105
+Version:        ASM17 1.07.01
+Date:           10 Apr 92
+Reported by :   Nirmala konan
+Test File:      Arithop.Asm
+Status:         Fixed 1.07.02    
+Severity:       Affected code    
+______________________________________________________________________________
+
+Key words:      Bug, Escape 
+Description:    Escape character for formfeed('\f') and aphostrophe (\'')
+		did not produce the correct code        
+Work around:    None
+Related Prob:   None
+SSR#:           1106
+Version:        ASM17 1.07.01
+Date:           10 Apr 92
+Reported by :   Nirmala konan
+Test File:      asmdir.asm
+Status:         Fixed 1.07.02
+Severity:       Affected code   
+______________________________________________________________________________
+
+Key words       Bug, zero length files
+Description:    If non existing file is invoked for assembling, then
+			a) Error message is included
+			b) .LST and .ERA files are created
+Work around:    None        
+Related Prob:   None
+SSR#:           1107
+Version:        ASM17 1.07.01
+Date:           10 Apr 92
+Reported  by:   Drew Kranak
+Test File:      JUNK.ASM
+Status:         Fixed 1.07.02
+Severity:       Nuisance        
+______________________________________________________________________________
+Key words       Bug, Help screen
+Description:    Option letters should be displayed in lower case letters.
+Work around:    None
+Related Prob:   None
+SSR#:           1108
+Version:        ASM17 1.07.01
+Date:           10 Apr 92
+Reported  by:   Drew Kranak
+Test File:      Test.asm
+Status:         Fixed 1.07.02
+Severity:       Nuisence
+
+______________________________________________________________________________
+
+Key words       Bug, While loop count
+Description:    While loop should have a fault count limit equal to 64k
+Work around:    None
+Related Prob:   None
+SSR#:           1109
+Version:        ASM17 1.06
+Date:           10 Apr 92
+Reported  by:   Drew Kranak
+Test File:      While.asm
+Status:         Fixed  1.07.02
+Severity:       Locks the system        
+
+______________________________________________________________________________
+
+Key words       Bug, PC                                                     
+Description:    If PC counter is greater than 65k, then abort the program
+Work around:    None
+SSR#:           1110
+Related Prob:   None
+Version:        ASM17 1.06
+Date:           10 Apr 92
+Reported  by:   Drew Kranak
+Test File:      pc64k.asm
+Status:         Fixed 1.07.02
+Severity:       Locks the system        
+
+______________________________________________________________________________
+
+Key words       Bug, Zero length 
+Description:    Zero length .ERA and .ERL files are generated
+Work around:    None
+Related Prob:   None
+SSR#:           1111
+Version:        ASM17 1.07.01
+Date:           10 Apr 92
+Reported  by:   Drew Kranak
+Test File:      asmdir.asm
+Status:         Fixed 1.07.02
+Severity:       Nuisence
+
+_________________________________________________________________________________
+
+Key words       Bug, Error file
+Description:    ERROR files do not show line numbers
+Work around:    None
+Related Prob:   None
+SSR#:           1112
+Version:        ASM17 1.07.01
+Date:           10 Apr 92
+Reported  by:   Drew Kranak
+Test File:      File1.Asm 
+Status:         Fixed 1.7.02
+Severity:       Nuisence        
+_________________________________________________________________________________
+
+Key words       Bug, Ctrl c
+Description:    If control 'C' is invoked from program, then all output
+		files should be deleted except .LST file, which should
+		be closed with an abort message.
+Work around:    None
+Related Prob:   None
+SSR#:           1113
+Version:        ASM17 1.06
+Date:           10 Apr 92
+Reported  by:   Drew Kranak
+Test File:      JUNK.ASM
+Status:         Fixed 1.07.02
+Severity:       Nuisence
+______________________________________________________________________________
+Keywords:       Bug, Ambiguous  error message
+Description:    Many error messages are inapplicable 
+		or confusing relative to the actual problem
+		Example: 
+			if v(i)  is used instead of #v(i)
+Work around:    None
+Related Prob:   None
+SSR#:           1114
+Version:        ASM17 1.07.01
+Date:           10 Apr 92
+Reported  by:   Drew Kranak
+Test File:      File1.Asm
+Status:         Unscheduled
+Severity:       Nuisence
+______________________________________________________________________________
+
+
+Key words:      Bug, Empty  ()
+Description:    No variable specified within paranthesis, did not
+		report any error message. Insted treated the operand's 
+		value  as zero.
+		Example:        
+			movlw   ()
+Work around:    None
+Related Prob:   None
+Version:        ASM17 1.07.01
+SSR#:           1115
+Date:           10 Apr 92
+Reported by :   Nirmala konan
+Test File:      Arithop.Asm
+Status:         Unscheduled
+Severity:       Nuiscence
+______________________________________________________________________________
+Key words:      Bug, Incorrect error message
+Description:    Incorrect error message when expression  contained
+		incorrect octal value.
+		Example: 
+			movlw  0x400 + \1280 + 010000000000b
+			'\1280' is incorrect octal value
+Work around:    None
+Related Prob:   None
+Version:        ASM17 1.07.01
+SSR#:           1116
+Date:           10 Apr 92
+Reported by :   Nirmala konan
+Test File:      Arithop.Asm
+Status:         Unscheduled
+Severity:       Affected code
+______________________________________________________________________________
+
+Key words:      Bug, Unflagged error
+Description:    when 'SET' directive is preccded by '.', did not
+		flag an error.
+		Example: 
+			X  .SET    10  ; '.SET' is not the correct syntax
+Work around:    use 'SET' instead of  '.SET'
+Related Prob:   None
+SSR#:           1117
+Version:        ASM17 1.07.02
+Date:           10 AUG 92
+Reported by :   DREW KRANAK
+Test File:      ASMDIR.ASM
+Status:         Unscheduled
+Severity:       Nuiscence 
+______________________________________________________________________________
+
+Key words:      Bug, Missing error message
+Description:    In all the instructions when operands are missing,
+		value of '0' is assumed without flagging an error message.
+		Example :       
+			movfp  ; it generates 0x6000
+			movpf  ; it generates 0x4000
+			movlw  ; it generates 0xB000
+Work around:    None    
+Related Prob:   None
+SSR#:           1118
+Version:        ASM17 1.07.02
+Date:           11 AUG 92
+Reported by :   Nirmala Konan
+Test File:      OPCODES.ASM, with messages_10702 switch on
+Status:         Unscheduled
+Severity:       Nuiscence 
+
+______________________________________________________________________________
+
+Key words:      Bug, Missing error message 
+Description:    In  instructions of type 'opcode f,d'  when destination 
+		field 'd' is greater than 1, did not flag an error. 
+		Example: 
+			addwf   8,2     ; Generates 0x0F08
+			andwf   8,3     ; Generates 0x0B08
+Work around:    None    
+Related Prob:   None
+SSR#:           1119            
+Version:        ASM17 1.07.02
+Date:           11 AUG 92
+Reported by :   Nirmala Konan
+Test File:      OPCODES.ASM, with messages_10702 switch on
+Status:         Unscheduled
+Severity:       Nuiscence 
+______________________________________________________________________________
+
+Key words:      Bug, Maximum address switch in LINK17
+Description:    In LINK17, '/a aaaa' , switch to restrict the maximum
+		address is not implimented correctly.
+		Example:        
+			ASM17 aoption.asm       ; Sets the default maximum
+						; address to 64k
+			Link17 /a 0x100 aoption ; Issues the warning message 
+		"Maximum address set via -a option is less than the Maximum 
+		Address set in Assembler" and resets the maximum address
+		back to the one set by ASSEMBLER
+
+Work around:    None    
+Related Prob:   None
+SSR#:           1120
+Version:        ASM17 1.07.02
+Date:           13 AUG 92
+Reported by :   Nirmala Konan
+Test File:      AOPTION.ASM
+Status:         Unscheduled
+Severity:       Affected code
+
+______________________________________________________________________________
+Key words:      Bug, FILL switch in LINK17
+Description:    In LINK17, '/F value' , switch to specify the filler
+		value to be used for gaps in memory is not implimented
+		correctly.
+	
+		Example: 
+			FILLOPT.ASM has a ORG statement based at 0x20. 
+			After executing the  following two commands, 
+			FILLOPT.HEX file should have the value
+			'0xFFAA' from 0 to 0x20 locations.      
+			
+			ASM17 fillopt                   
+			Link17 /F 0xFFAA  fillopt
+
+			FILLOPT.HEX doesn't show the value 'OXFFAA' in memory gaps 
+			i.e 0 to 0x20
+Work around:    Specify the filler value by using  '/f ' option in ASM17
+Related Prob:   None
+SSR#:           1121
+Version:        ASM17 1.07.02
+Date:           18 AUG 92
+Reported by :   Nirmala Konan
+Test File:      FILLOPT.ASM
+Status:         Unscheduled
+Severity:       Affected code 
+______________________________________________________________________________
+
+Key words:      Bug, Bad expression
+Description:    Failed to generate error messages for the following 
+		invalid expressions.
+		movlw   +-3  ; Generates the code 0xB0FD
+		movlw   3~   ; Generates the code 0xB0FC
+Work around:    None
+Related Prob:   None
+SSR#:           1122
+Version:        ASM17 1.07.02
+Date:           24 AUG 92
+Reported by :   Nirmala Konan
+Test File:      ARITHOP.ASM
+Status:         Unscheduled
+Severity:       Affected code 
+______________________________________________________________________________
+
+Key words:      Bug, Preprocessor handling
+Description:    
+		Example:        
+		Line No.        
+		 1      #define test1   1
+		 2      #ifdef   test1
+		 3         movlw  1
+		 4         movlw  2
+		 5      #endif
+		 6      #ifdef test2
+		 7      #define x   1
+		 8      #define y   2
+		 9      #endif
+		In the above piece of code, Lines 7 and 8 were not skipped 
+
+Work around:    None
+Related Prob:   None
+SSR#:           1123
+Version:        ASM17 1.07.02
+Date:           24 AUG 92
+Reported by :   Nirmala Konan
+Test File:      ASMDIR.ASM
+Status:         Unscheduled
+Severity:       Affected code 
+______________________________________________________________________________
+
+Key words:      Bug, Parsing Labels
+Description:    When first column contained one of the following symbols -
+		~`!$%^&*(){}-+|\:"'<,>.?/, assembler didnot generate any error 
+		message. Supposed to generate "Illegal label". 
+Work around:    None
+Related Prob:   None
+SSR#:           1124
+Version:        ASM17 1.07.02
+Date:           31 AUG 92
+Reported by :   Nirmala Konan
+Test File:      LABELS.ASM
+Status:         Unscheduled
+Severity:       Affected code 
+______________________________________________________________________________
+
+Key words:      Bug, Parsing Labels
+Description:    When the labels contained one of these symbols - 
+		~`!$%^&*(){}-+|\:"'<,>.?/, Assembler failed to parse
+		correctly
+		Example:
+		lab~1
+		The error message produced was -  "Invalid opcode or command '1' "
+		 
+Work around:    None
+Related Prob:   None
+SSR#:           1125
+Version:        ASM17 1.07.02
+Date:           31 AUG 92
+Reported by :   Nirmala Konan
+Test File:      LABELS.ASM
+Status:         Unscheduled
+Severity:       Affected code 
+______________________________________________________________________________
+
+Key words:      Bug, Parsing Labels
+Description:    Assembler failed to produce error message when label contained             
+		one of these illegal characters - "@#$".
+		Example:
+			org 0x0
+		lab#25
+		lab@26
+		lab26@
+			goto    lab#25  ; Generates the code 0xC000
+			goto    lab@26  ; Generates the code 0xC000 
+			goto    lab26@  ; Generates the code 0xC000 
+			       
+
+Work around:    None
+Related Prob:   None
+SSR#:           1126
+Version:        ASM17 1.07.02
+Date:           31 AUG 92
+Reported by :   Nirmala Konan
+Test File:      LABELS.ASM
+Status:         Unscheduled
+Severity:       Affected code 
+______________________________________________________________________________
+
+Key words:      Bug, Parsing Command Line Variable
+Description:    Assembler did not parse the command line variable '/d'             
+		in the following situation
+		
+		Example:
+			asm17   test   /d  flag = 1
+		Produced the following error message
+
+Work around:    asm17 test /d flag=1
+Related Prob:   None
+SSR#:           1127
+Version:        ASM17 1.08.01 
+Date:           29 Sept 92
+Reported by :   Nirmala Konan
+Test File:      TEST.ASM
+Status:         Unscheduled
+Severity:       Affected code 
+______________________________________________________________________________
+
+Key words:      Bug, Forward Reference in Macro Body
+Description:    Forward referencing within a macro body is not              
+		implimented. When used, generates the error
+		message - " Illegal operand"  
+		
+
+		Example:
+		test    macro
+			.local  lab1
+			goto    labl1    ; Error : Illegal Operand
+		lab1   nop
+			endm
+		 Produced
+
+Work around:    None
+Related Prob:   None
+SSR#:           1128
+Version:        ASM17 1.08.01 
+Date:           29 Sept 92
+Reported by :   Nirmala Konan
+Test File:      TEST.ASM
+Status:         Unscheduled
+Severity:       Affected code 
+______________________________________________________________________________
+		
+
+					

@@ -1,0 +1,22 @@
+#
+#  ASM17 Demonstration Make file
+#	 for project RainBird
+#
+.nosilent
+pic = RainBird
+
+#PICPROG: $(pic).obj  $(pic).hex
+
+$(pic).hex: $(pic).obj
+
+$(pic).obj: $(pic).asm
+
+
+.suffixes: .asm .obj .hex
+.obj.hex:
+	link17	$<
+
+.asm.obj:
+	asm17	$<
+
+

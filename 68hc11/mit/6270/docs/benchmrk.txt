@@ -1,0 +1,58 @@
+To:6.270
+cc:
+Subject:benchmarking program available
+--------
+I have installed a program to test what percent of your CPU is taken
+up by background processes (IR reception, shaft encoder routines,
+and the like).  
+
+The program lives in a file named "benchmrk.c" in the IC library
+directory.  After loading the file, the function "float benchmark()"
+will be defined.
+
+The benchmark() routine returns a number approximating the percentage
+of CPU cycles AVAILABLE FOR USER PROGRAMS.
+
+Following is a sample transcript.  Notice the difference after the
+infrared reception software is enabled.
+
+	- Fred
+
+
+C> load benchmrk.c
+Loading benchmrk.c.
+Initializing interrupts
+Downloading 3256 bytes (addresses 8000-8CB7):  3256 loaded
+Globals initialized.
+C> benchmark();
+Downloading 6 bytes (addresses C200-C205):  6 loaded
+Returned <float> 66.443993
+C> benchmark();
+Downloading 6 bytes (addresses C200-C205):  6 loaded
+Returned <float> 65.561996
+C> ir_receive_on();
+Downloading 6 bytes (addresses C200-C205):  6 loaded
+Returned <void>
+C> benchmark();
+Downloading 6 bytes (addresses C200-C205):  6 loaded
+Returned <float> 50.393997
+C> benchmark();
+Downloading 6 bytes (addresses C200-C205):  6 loaded
+Returned <float> 50.351997
+C> load sencdr12.icb
+Loading sencdr12.icb.
+Initializing interrupts
+Downloading 3403 bytes (addresses 8000-8D4A):  3403 loaded
+Globals initialized.
+C> benchmark();
+Downloading 6 bytes (addresses C200-C205):  6 loaded
+Returned <float> 63.000000
+C> ir_receive_on();
+Downloading 6 bytes (addresses C200-C205):  6 loaded
+Returned <void>
+C> benchmark();
+Downloading 6 bytes (addresses C200-C205):  6 loaded
+Returned <float> 47.681999
+C> benchmark();
+Downloading 6 bytes (addresses C200-C205):  6 loaded
+Returned <float> 47.447998

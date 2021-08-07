@@ -1,0 +1,86 @@
+                              BCL Help: BCL Editor
+
+                                 IDE HELP
+
+                       Page 1   Editing a Source File
+                       Page 2   Editing Compile Errors
+                       Page 3   Running From DOS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@
+BCLEDIT                                                            Page 1 of 3
+                            Editing a Source File
+
+  To edit a source file using BCLEDIT from the IDE, the editor must be
+  correctly installed in the IDE.  From the Option Selection screen, move the
+  cursor to "Editor:" and press <Enter>.  The following information must be
+  entered.  Make sure the full path to the BCLEDIT.EXE file is correct:
+
+      Editor Name  :  C:\C6805\BCLEDIT.EXE
+      Command Line : @source.ext
+
+  Press F10 when this information has been entered.
+
+  To edit a file, select the filename from the Main Menu of the IDE with
+  the "Load New File" command.  If you type a wildcard, a list of matching
+  filenames is display.  Select a filename, then use the "Edit Source File"
+  command to run BCLEDIT.
+
+
+
+@
+BCLEDIT                                                            Page 2 of 3
+                            Editing Compile Errors
+
+  If the compiler finds errors in your program, and you have the BCLEDIT
+  editor installed in the IDE, the IDE automatically runs the editor in a
+  split screen mode.  The bottom screen displays each error message with the
+  line highlighted.  The top screen displays the same source file and is a
+  "live" editor.
+
+  Press F9 and F10 to move through the list of errors.  As each is displayed,
+  changes can be made to the source file in the top window.  Once you have
+  made the changes you want, you can save the edited file and recompile.
+
+
+
+
+
+
+
+
+@
+BCLEDIT                                                            Page 3 of 3
+                            Running From DOS
+
+  You can also use BCLEDIT from the DOS command line by typing
+
+      bcledit <filename>
+
+  You can specify a default extension on the command that is to be used when
+  you type a filename without an extension.  The IDE passes the Default
+  Extension from the Option Selection screen to BCLEDIT.  You can also force
+  BCLEDIT to use a different video mode than the default.  For these features,
+  use one of the following command line arguments:
+
+      x=<ext>   where <ext> is the extension used for filenames without one
+      v=<video> where <video> is one of MONO, CGA, EGA or VGA.
+
+  eg:
+      bcledit test x=05c    Runs the editor and automatically adds ".05C"
+                            to filenames typed without an extension.
+
+@
+

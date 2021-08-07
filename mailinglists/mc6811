@@ -1,0 +1,300 @@
+Welcome to the MC68HC11 mailing list. (last modified 15 March 1993)
+ 
+This list is dedicated to discussions concerning the MC68HC11
+single-chip microcontroller, its support chips, and the popular
+EVB system.
+ 
+Also, for the time being, discussions on the hc16 dsp chip
+are welcome until such time as another forum is created, or
+the volume of traffic dictates a split.
+ 
+This is a semi-moderated group.  Requests to subscribe,
+unsubscribe, or other administrivia is handled on a case by
+case basis.
+ 
+Please help keep the clutter in the group down. If you want
+to subscribe, de-subscribe, or have other requests to make
+about the mailing list, please send that sort of mail to
+mc68hc11-request@hipp.etsu.edu rather than the submission address,
+mc68hc11@hipp.etsu.edu. In order to avoid generating
+endless mail loops (messages bouncing back and forth between
+mindless mailers) some heuristics are applied to messages to
+screen out those which appear to be errors or requests to be
+added / deleted - if your message is less than 25 words or
+longer than 5000 words, or contains "suspect" phrases
+(such as subscribe) it will be routed to me and not sent
+to the list.  If necessary, I'll post it manually when I have
+a chance to look at it.
+ 
+Additionally, please read the FAQ list below before posting.
+Your question might be answered before you get your first
+article!
+ 
+Incidentally, hipp stands for the "Historic Image Processing
+Project" - the main use of the storage on this PC.
+ 
+FREQUENTLY ASKED QUESTIONS
+ 
+0. "Who are you?"
+ 
+        Nick Sayer orginated the list, but found it growing very
+        rapidly and straining the connectivity resources of his machine.
+        I voluenteered to take the list over since I've been using the HC11
+        EVB in my classes for several years.  There are now about 300
+        subscribers on the list located in 13 different countries.
+ 
+ The list is originated at the Department of Computer and Information
+ Sciences of East Texas State University, located in Commerce, Texas
+ about 60 miles east of Dallas.  It was previously located in Flagstaff
+ Arizona, but was moved from there due to the lack of support for the
+ list and the fact that the administratior was laid off due to budget
+ cutbacks in higher education in Arizona.
+ 
+ Perhaps of some interest is that the list is being run on a 386 based
+ PC using the GNU copyleft 386BSD unix system, a terrific piece of
+ software for the price (free).
+ 
+         ---Bob Wier,
+               list admin (wier@hipp.etsu.edu or wier@merlin.etsu.edu)
+ 
+1. "What is the MC68HC11?"
+ 
+ It is a group of single-chip microcontrollers made by Motorola
+ based on the 6800 CPU. Unlike many such chips, however, the
+ chip can boot into an extended mode which replaces two of
+ the parallel ports with a complete address and data bus.
+ The very same chip, therefore, can be used for prototype AND
+ for the final product. This is truly a terrific chip!
+ 
+ The base model is the MC68HC11A8. It has the 6800 CPU, 8K of
+ factory programmed ROM, 512 bytes of EEPROM, 256 bytes of RAM,
+ 1 serial port, 8 A/D converters, a timer/counter unit, a serial
+ communications channel (NOT an asynchronous serial port),
+ and 5 parallel ports. The A1 is used in the EVB, and is the same
+ thing without the ROM.
+ 
+2. "What is the EVB or MC68HC11EVB?"
+ 
+ It is a circuit board containing a MC68HC11A1, a PRU (port
+ replacement unit - replaces the two ports taken up by the address
+ bus), 8K of external ROM - which contains a powerful monitor, and
+ two RS-232 ports.
+ 
+ You can plug one end of a cable into the EVB and the other end
+ into a socket in a product that would take a MC68HC11 and use
+ the monitor to debug the prototype hardware, or plug that cable
+ into a big storage scope and debug the software.... the mind
+ boggles.
+ 
+3. "How and/or where can I purchase an EVB?"
+ 
+        For the past several years, Motorola has run a "student design
+        contest" which has encouraged the use of the hc11/evb in
+        university courses.  Thus universitys are frequently in a
+  position to order the EVB (or you may find them available off
+        the shelf at the U bookstore).
+ 
+        A number of "standard" electronics and component suppliers also
+        carry the board.
+ 
+        The EVB actually comes in three flavors -
+ 
+        The original EVB - which is what the moderator has used for several
+        years in design courses - a terrific deal for students at the
+original
+        price of $68.11 (cute...).  Instead of having them buy a text
+        (which would probably cost that anyway), they just bought an EVB
+        and got to take the computer with them at the end of the semester.
+        The course(s) was taught from the technical manuals included with
+        the kit.
+ 
+        The EVB requires a dumb ascii terminal or better (Mac or PC
+        recommended) and a power supply with +5, and +/- 12 v (to run the
+        RS232 interface).
+ 
+        Unfortunately the current production status of the EVB is unknown.
+ 
+        In the fall of 1991 Motorola introduced two new products, the EVBII
+and
+        the EVBU:
+ 
+        The EVBII is a redesign of the EVB using "modern" technology, such
+        as a charge pump chip to develop the RS232 voltages. It also has
+        available a subsidary logic analyzer board.  I've not had time
+        to look at this extensively yet.  Also, the price range is up around
+        $150, making it too expensive for an individual student purchase
+        plan (at least at state supported universities).
+ 
+        To fill the gap left by the EVB, there is the EVBU (university
+        model) which is available at the original EVB price of $68.11.
+        (The last I heard, the EVB was available at $88, but hasn't been
+        confirmed recently).  The EVBU is a usable microcontroller, but
+        is limited in such respects as memeory supplied.  It does have
+        a wire wrap area (and in fact one student group here this spring
+        used and EVBU in a project and wire wrapped in a subsidiary
+        EPROM chip - not a big deal). It also includes a Real Time
+        Clock chip (although a number of boards received here early in
+        the production run were missing it).
+ 
+        Using a Mac or a PC with the EVB / EVBU / EVBII gives you a
+        complete development system at a VERY reasonable cost (assuming
+        you already have the computer).  Freeware / Shareware is
+        available (cross - compilers, monitors, simple C compilers)
+        either at the ftp site here or elsewhere.
+ 
+        There was also an EVM (evaluation module) which was a higher
+        level product than the EVB.  I'm not sure if it's still in
+        production or what it might cost.
+ 
+ The address and phone number for Motorola University Support is:
+ 
+        Motorola SPS
+        University Support 56-106
+        P.O. Box 52073
+        Phoenix, Az 85072
+        602-952-3855
+        602-952-3621 (FAX)
+ 
+ There is an excellent introductory article in June 1991 issue of
+ Computer Craft (formerly Modern Electronics) on M68HC11 micro-
+ controller and the EVB along with the above mentioned pricing
+ and availability infromation. Circuit Cellar also publishes
+        articles from time to time on the HC11.
+ 
+        HC11 information has also appeared in Circida's Circuit Cellar Ink,
+        (he also had a column in BYTE magazine for a number of years)
+        and Midnight Engineering magazine (strong on micro controller
+content).
+        Also, if you qualify, Embedded Systems magazine is very worthwhile
+        (a "controlled circulation" magazine).
+ 
+ I strongly recommend that anyone interested in buying the EVB should
+ call the University Support to confirm availability and price, before
+ sending in any money.
+ 
+ Disclaimer: I am not connected with Motorola or Computer Craft in any
+ way other than being a happy customer.
+ 
+4. "How can I get in touch with Motorola to get technical info?"
+ 
+ As far as I can tell, Motorola University support (as they like to
+ call themselves) is headed by Fritz Wilson.
+ 
+ His office is in the Semiconductor Products Sector in
+ Phoenix, Arizona.
+ 
+ Fritz: 602-952-3855
+ 
+ They can help you with pretty much anything, but beware, it's
+ usually pretty hard to get in touch with them, and they have
+ a real annoying voice mail system. ;)
+ 
+ All requests to them must be in writing.  Students should include
+ a copy of their ID along with their written request.
+ FAX requests are accepted at the FAX number: 602-952-3621.
+ 
+ Otherwise, they give the address of:
+ 
+ P.O. BOX 52073
+ Phoenix, AZ 85072-2073
+ 
+ But, on another card I received, there is also listed the following:
+ 
+ 3102 North 56th Street
+ Phoenix, AZ 85018-6606
+ 
+ When paying for something, they hold onto personal checks
+ until they clear the bank, so you may want to send a cashiers
+ check.  If you can get your university to pay for it, you
+ can just send them the purchase order, and they will bill you.
+ 
+5. "Where can I get support software?"
+ 
+ Right Here! Just anonymous ftp into pub/hc11 on hipp.etsu.edu
+        and you will find hc11 support software, mirroring the
+        Motorola freeware bulletin board (see below).  Motorola
+        has given permission to make this available to encourge
+        wider distribution of hc11 tools via the Internet.
+        I plan on reorganizing this when I get a chance to make it
+        more logical. Honest.
+ 
+        You can call the Motorola "Freeware BBS" at 512-891-FREE (3733)
+ (1200/2400 bps). They have cross assemblers, sources for
+ the BUFFALO monitors, etc.
+ 
+        Other likely sites: here is an ARCHIE listing (as of 24 Apr 1992):
+ 
+       LOCATION (anonymous ftp via Internet) (many of these require BINARY
+                 file transfer!)
+ 
+       aix370.rrz.uni-koeln.de /programming
+       bode.ee.ualberta.ca /pub/DOS/motorola/68hc11
+       sugrfx.acs.syr.edu /pub/vr/powerglove/hc11
+       ee.utah.edu /admin
+       karazm.math.uh.edu
+       calvin.stanford.edu /motorola/68hc11
+       calvin.stanford.edu /new_uploads
+       hpcsos.col.hp.com /misc/motorola/68hc11
+       lth.se /pub/languages/assembler
+       munnari.oz.au /pub
+       nic.funet.fi /pub/msdos/interfaces/emulators
+       plaza.aarnet.edu.au /micros/pc/oak/emulators
+       rigel.acs.oakland.edu /pub/msdos
+       sun0.urz.uni-heidelberg.de /pub/msdos/simtel/emulators
+       wuarchive.wustl.edu /mirrors/msdos/emulators
+ 
+       The OLD archive/mailing site was rainbow.cse.nau.edu or alternately,
+       red.cs.tcu.edu. These should NOT be used since they have been
+       superceeded by the etsu site.
+ 
+        If you find anything really neat at these sites, I'd appreciate
+        a note so I can put it in here.
+ 
+6.      What is the PowerGlove HC11 machine?
+ 
+ The powerglove is a device originally manufactured for video game usage,'
+ but which has been adapted as a general position sensitive input device.
+ It's of interest here because one of the major interfaces was developed
+ using the hc11 - doing an ARCHIE search turns up the following sites for
+ more information.
+ 
+ Host compute1.cc.ncsu.edu   (152.1.10.46)
+ Last updated 02:47 15 Mar 1993
+ 
+    Location:
+/mirrors/wustl/graphics/graphics/mirrors/sugrfx.acs.syr.edu/powerg
+ love
+      DIRECTORY rwxr-xr-x       512  Dec  5 18:23   hc11
+ 
+ Host ftp.nau.edu   (134.114.64.70)
+ Last updated 02:41 15 Mar 1993
+ 
+    Location: /
+       DIRECTORY rwxr-xr-x       512  Dec  5 04:30   hc11
+ 
+ Host frosch.cosy.sbg.ac.at   (141.201.2.16)
+ Last updated 16:33 14 Mar 1993
+ 
+    Location: /pub/mirror/vr/powerglove
+      DIRECTORY rwxr-xr-x      1024  Feb 13 15:17   hc11
+ 
+ Host wuarchive.wustl.edu   (128.252.135.4)
+ Last updated 19:12  5 Mar 1993
+ 
+    Location: /graphics/graphics/mirrors/sugrfx.acs.syr.edu/powerglove
+      DIRECTORY rwxr-xr-x       512  Dec  5 17:23   hc11
+ 
+ Host sunsite.unc.edu   (152.2.22.81)
+ Last updated 01:00  3 Mar 1993
+ 
+    Location: /pub/academic/computer-science/virtual-reality/powerglove
+      DIRECTORY rwxr-xr-x       512  Dec  3 07:22   hc11
+ 
+ Host plaza.aarnet.edu.au   (139.130.4.6)
+ Last updated 06:43 27 Feb 1993
+ 
+    Location: /graphics/graphics/mirrors/sugrfx.acs.syr.edu/powerglove
+      DIRECTORY rwxr-xr-x       512  Feb  1 00:59   hc11
+ 
+   -    Bob Wier, keeper of the list
+

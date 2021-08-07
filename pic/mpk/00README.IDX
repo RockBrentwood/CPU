@@ -1,0 +1,42 @@
+Hello dear PIC users,
+
+this archive contains a simple PIC-Development-Center, some used shareware *,
+the Multi-Process-Kernel for PIC 16C71 and 2 older program samples using this
+MpKernel.
+*) If you take own editor and terminal software don't download boxer and tm___
+   4DOS is only required for pdc.btm!
+-----------------------------------------------------------------------------------
+
+Brief description:
+
+00readme.idx     1229  11.08.94  14,45 This file you're reading now...
+pdc.exe         25070  11.08.94  12,28 Exe-Zipped PIC-Development-Center
+pdc.idx          1064  11.08.94  12,28 Index file
+4dos50a.zip    253988  11.08.94  12,15 Used 4DOS command.com replacement
+4dos50b.zip    246668  11.08.94  12,17  "
+boxer600.zip   331424   3.02.94   9,28 Superb editor used by pdc.btm
+tm412-x.zip   ~800000	   -        -  Telemate modem programm used by pdc
+
+
+MPK          <DIR>     11.08.94  12,00
+---
+mpkv1_0.exe     45228  11.08.94  12,06 Zipped MpK source with sti and doc files
+mpkv1_0.idx      1462  11.08.94  12,05 Index file
+
+FSS          <DIR>     11.08.94  12,00
+---
+fssv1_9.exe     51050  11.08.94  12,04 Thread tension sensor IF (MpK V0.8!)
+fssv1_9.idx      2515  11.08.94  12,04 Index file
+
+FSS\ORCAD_V3.2
+--------------
+fss-2.exe       23583  11.08.94  15,06 PCB design for FSS application
+fss-2.idx        1301  11.08.94  15,05 (ORCAD V3.2x)
+
+
+LPGS         <DIR>     11.08.94  12,00
+----
+lpgsv1_8.exe    41300  11.08.94  12,05 Small helping device for a Laser
+                                       Pattern Generator to count fast X-Y-movements
+                                       and to switch a laser shutter
+lpgsv1_8.idx     1895  11.08.94  12,05 Index file

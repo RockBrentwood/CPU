@@ -1,0 +1,63 @@
+---------------------------------------------------------------------------
+Anonymous FTP server:	cher.media.mit.edu (18.85.0.47)
+This file:		~ftp/pub/6270/boards/README
+Last updated:		Thu Dec 31 16:24:55 1992
+---------------------------------------------------------------------------
+
+This directory contains printed circuit board artwork for the 6.270
+MIT Robot Design Competition hardware.
+
+Note:  This artwork is Copyright (C) by Fred Martin and MIT 1992.
+Permission is granted to use this artwork for any purpose, commercial
+or otherwise, provided that full credit is prominently given to the
+original authors of the work.
+
+File "6270v211.sit.hqx" is a Binhex'ed version of a StuffIt archive
+(for the Mac).  You will need "StuffIt" or "StuffIt Deluxe" to decode
+the archive.
+
+When you are done decoding, two files will be created:  the foil
+patterns and the component silkscreen.  These PCB files were created
+by the Profession Layout (R) software package sold by Douglas
+Electronics, Inc.
+
+You can send these files to Douglas Electronics and they will send you
+film panels which you can bring to your favorite PC board manufacturer
+for board fabrication.  When you send the files to them, make sure to
+request: component layer, solder layer, component layer solder mask,
+solder layer solder mask, silkscreen layer, and drill guide.  These
+six panels are used by your PCB manufacturer to make boards.
+
+Douglas Electronics can also do the PC board fabrication if you like,
+but they are pretty expensive (though convenient).  Talk to them for
+pricing and delivery.
+
+Douglas Electronics can be reached at: Douglas Electronics; 2777
+Alvarado St; San Leandro, CA 94577; (voice) (510) 483 8770.
+
+The file "rev2.1-schematics.sea.hqx" contains the schematics for the
+board, done using the DesignWORKS schematics package for the Mac.
+These files are perfectly useless unless you have this particular
+piece of software (it's also sold by Douglas Electronics).  Please
+don't ask me to provide schematics in any other form; PostScript
+versions of the schematics are included in the documentation.
+
+The files with suffix ".gbr" are supposed to be Gerber-format text
+files.  I cannot guarantee the accuracy or completeness of these
+files; however, they may still be useful to some.  The files are the
+following: 
+
+	V211comp.gbr		component side of boards
+	V211sold.gbr		solder side of boards
+	V211hole.gbr		drill guide
+ 	V211silk.gbr		silkscreen printing
+
+Please let me know if there are any question or problems with using
+these files.
+
+	- Fred Martin
+	  fredm@media.mit.edu
+
+	  Thu Dec 31 16:24:42 1992
+
+

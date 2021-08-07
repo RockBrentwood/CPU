@@ -1,0 +1,15 @@
+This directory contains the notes from the 1994 6.270 MIT LEGO Robot
+Design Contest.
+
+I have taken the 11 meg PS file distributed by the current organizers
+and split it up into its component chapters.  The table of contents
+chapter (toc.PS.Z) is 26 pages; the remaining chapters and appendices
+comprise 254 pages.
+
+These files is available here for your convenience only.  The original
+distribution is the file on aeneas.mit.edu in
+/pub/ACS/6.270/1994/notes1994.ps.Z.
+
+	-Fred Martin
+	fredm@media.mit.edu
+	Fri Sep  9 10:29:30 1994

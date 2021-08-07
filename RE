@@ -1,0 +1,80 @@
+
+/pub/microprocs @ ftp.funet.fi:
+the microprocessor (software) developers' archive
+-------------------------------------------------
+
+Note: This archive is one of the newest areas at ftp.funet.fi (alias 
+nic.funet.fi). It is still under construction; one day there may even
+be a proper readme-file :-). This means that almost everything can be
+changed in the near future.
+
+This archive consists of (actually, *will consist of):
+	* Tools:
+	  microprocessor software development tools (mostly cross-compilers,
+	  simulators, etc), running on some host computer.
+	  We prefer source code for these tools, binary-only distributions
+	  will not be available unless there are really good reasons...
+	* Target system (=microprocessor-based system) software:
+	  (e.g. monitor programs, library routines, etc. in assembly and 
+	  other languages) for "no particular system" (i.e. not for any 
+	  specific OS, unless the OS is included also)
+	* documents
+	* probably other related material, too.
+
+Please note that everything you'll find here have not been tested by
+archive maintainers, as testing is usually impossible since we don't
+have all and every target system that are (or may be) supported by
+these software packages.
+
+Most of things that are here are (will be) sorted to two or more directory 
+structures: To the first by target system, and to the second by subject 
+(all except one of these are symbolic links).
+(e.g. If there are multiple target systems, there will be multiple links
+from various directory structures).
+
+Currently we have following main-level directories (most of these
+are still empty):
+	Target-system-based sorting:
+	  6809		Motorola 6809 family (6809, 6809E)
+	  6800		Motorola 6800 family (6800, 6802, 6808)
+	  6801		Motorola 6801 family (6801, 6801) (superset of 6800)
+	  6805		Motorola 6805 family (many members)
+	  68hc11	Motorola 68hc11 family (many members) (superset of 6801)
+
+	  6309		superset of 6809, made by Hitachi
+
+	  H8/330	Hitachi H8 family (GNU C available)
+
+	  MCS-48	Intel MCS-48 family (8048 and others)
+	  MCS-51	Intel MCS-51 family (8051,8032 and others)
+	  MCS-80	Intel MCS-80 family (8080)
+
+	  PIC		Microchip PIC family
+
+	  Z8		Zilog Z8 family
+	  Z80		Zilog Z80 family
+
+	Subject-based sorting:
+	  assemblers	-compilers
+	  c-compilers
+	  simulators
+
+	Other directories:
+	  incoming	If you have something to upload, put it here, and
+			please take UPLOAD-INFO.FORM, write answers to
+			the questions and send it to us by email (to
+			microprocs-adm@nic.funet.fi)
+	  other-archives	copies of other archives
+
+	Files:
+	  README	This file
+	  UPLOAD-INFO.FORM	to be filled after uploads
+
+
+	(others will be added when necessary)
+
+
+Send all comments to:
+
+	microprocs-adm@nic.funet.fi
+

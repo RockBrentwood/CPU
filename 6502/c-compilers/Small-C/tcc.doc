@@ -1,0 +1,1237 @@
+NOTE : In order to store the files in the NPDSA archive, their names have been
+changed to correspond to the standard format. You will need to change the names
+to the following to match the description in this document.
+
+a02tcc.boo	->	tcc.boo
+a02getshar.exc	->	getshar
+a02mkboot.exc	->	mkboot
+a02sh.hex	->	sh_x
+a02dehex.hex	->	dehex_x
+a02shar.hex	->	shar_x
+a02unpack.exc	->	unpack
+a02tcc1.sha	->	tcc1.sha
+a02tcc2.sha	->	tcc2.sha
+a02tcc3.sha	->	tcc3.sha
+a02tcc4.sha	->	tcc4.sha
+
+ 
+
+                   Small-C compiler for the BBC Micro
+
+                              Release 0.70
+
+                         A.J.Travis  01-May-89
+
+
+INTRODUCTION
+
+Small-C is a subset of the C programming language for which a number of
+public-domain compilers have been written.  The original compiler was
+written by Ron Cain and appeared in the May 1980 issue of Dr.Dobb's
+Journal.  More recently, James E.Hendrix has improved and extended the
+original Small-C compiler and published "The Small-C Handbook", ISBN
+0-8359-7012-4 (1984).  Both compilers produce 8080 assembly language,
+which is the most popular implementation of Small-C to-date.  My 6502
+Small-C compiler for the BBC Micro is based on "RatC", a version of the
+original Ron Cain compiler described by R.E.Berry and B.A.Meekings in "A
+Book on C", ISBN 0-333-36821-5 (1984).  The 6502 compiler is written in
+Small-C and was bootstrapped using Zorland C on an Amstrad PC1512 under
+MSDOS 3.2, then transferred onto a BBC Micro using Kermit.  The compiler
+can be used to cross-compile 6502 code from an MSDOS host, or as a
+'resident' Small-C compiler on a BBC Micro. 
+
+
+DEVELOPMENT
+
+I started to implement a Small-C compiler for the BBC Micro in 1985
+because I wanted an alternative to assembly language or Forth for
+writing 6502 image processing software.  I was very impressed by the
+performance and portability of Forth, but found the language difficult
+to use.  I was aware that a sub-set of Pascal had been implemented in
+Forth, and I set about developing my own version.  However, I quickly
+realised that the virtues of using a threaded-code interpreted language
+(TIL) could be exploited just as easily by generating code for an
+interpreter conventionally, instead of using Forth itself to generate a
+'target' vocabulary.  I began to use 'C' and Unix on a DEC pdp11 at the
+time and I decided to implement a sub-set of C, instead of Pascal, on
+the BBC Micro after reading "The Small-C Handbook" by Hendrix and "A
+Book on C" by Berry and Meekings.
+
+I began by implementing "Rat-C" under Unix on the pdp11.  The Rat-C
+compiler is much smaller than the Hendrix compiler, and it also produces
+'generic' assembly code.  I wrote a translator for the generic code
+output by RatC, which generated 'JSR-threaded' code for the 6502.  A
+JSR-threaded code interpreter is a form of TIL that uses the hardware
+call-return mechanism of the processor as the low-level interpreter and
+is the most efficient way of implimenting a TIL.  The code generated was
+too verbose to produce a resident Small-C on the BBC Micro with only 29K
+of usable memory in mode 7, but I was able to develop the run-time
+support for the threaded-code interpreter and code generation model for
+the 6502. 
+
+Because of the severe memory constraints of a 'standard' BBC Micro, I
+decided to translate Rat-C into BBC Basic in order to produce a resident
+Small-C compiler that would run in 29K.  This 'tiny' C compiler ("tcc")
+in BBC Basic was intended to be a 'bootstrap' for a Small-C version of
+the 6502 compiler, and I began distributing copies of the Small-C to
+friends and colleagues.  Eventually, I sent a copy of the compiler to
+Chris Adie at Edinburgh University Micro Support Unit, and later to Alan
+Philips at the Lancaster University Micros Software Distribution
+Service. 
+
+After several more releases of the "tcc" compiler, I was approached by
+John Evans of Mijas software for permission to sell the Small-C as part
+of his 6502 assembly language development system.  I was pleased to give
+Mijas permission to use my code, which they have adapted for use with
+the Mijas 6502 symbolic debugger.  I continued to develop the 6502
+Small-C by optimising the code-generator for the 'small-machine'
+environment of the BBC Micro and, during this development, I replaced my
+earlier BBC Basic programs with Small-C versions.  Finally, I have
+produced a resident Small-C for the BBC Micro that can also be used as a
+cross compiler for the 6502 on an MSDOS host. 
+
+
+RELEASES
+
+	0.10  Jan-86  Original version
+	0.20  Apr-86  Limited distribution
+	0.30  Jul-86  Sent to Chris Adie at ERCC
+	0.40  Oct-86  First version sent to <micros@lancs.vax1>
+	0.41  Oct-86  Bug-fix release
+	0.50  Dec-86  First version used by Mijas
+	0.51  Apr-87  Limited distribution
+	0.60  Jul-88  First DOS cross-compiler
+	0.61  Dec-88  BBC Micro/Master language ROM
+	0.70  Apr-89  Current release
+
+
+CHANGES FROM RELEASE 0.5
+
+Release 0.6 of the 6502 Small-C compiler was cross-compiled on an MSDOS
+host and has been modified to avoid major incompatibilities with full
+'C'.  Previous BASIC programs, including the compiler itself, have been
+re-written in Small-C.  The Zorland C compiler objects to many of the
+'liberties' I have taken with full 'C' usage, but compiles the Small-C
+programs correctly.  An MSDOS distribution is also available containing
+executable binaries of the Small-C compiler and 6502 assembler. 
+
+Release 0.61 was a bug-fix release with corrected sideways ROM startup
+code and corrections to the "shar" program for extracting shell
+archives.  The formatted input functions atoi(), scanf(), fscanf() and
+sscanf() have been added to the compiler library in this release, and I
+have fixed a bug in "as65" which failed to detect certain illegal
+expressions in opcode operands.
+
+The Small-C release 0.70 language ROM works correctly on a BBC Master,
+and several minor bugs have been fixed in the run-time library.  This is
+the first version in which the Small-C command shell is used to compile
+and run C programs.  I have also adopted lower-case mnemonics for the
+6502 assembler, and extended the range of pre-processor directives
+supported by "tcpp".
+
+
+ACKNOWLEDGEMENTS
+
+I am grateful to Jon Welch, and Dave Prosser from the Department of
+Electronic Engineering at Bradford University who weeded out many of the
+bugs in release 0.41 of the compiler.  I am also grateful to Alan
+Philips at Lancaster University, and Rob McRon at Edinburgh University
+for their help in distributing the compiler over electronic mail
+networks.  A version of this compiler is distributed, with my
+permission, by Mijas Software as part of a 6502 assembly language
+development system for the BBC Micro.  I would like to thank John Evans
+of Mijas for his interest in the compiler which he has extended and
+adapted for use with the Mijas 6502 symbolic debugger.
+
+
+COPYRIGHT
+
+The programs in this distribution remain copyright (c) 1989 A.J.Travis,
+and should not be used for any commercial purpose without prior consent
+in writing.  The programs may be copied and further distributed for
+non-commercial use without restriction, provided a copy of this notice
+is also included. 
+
+
+AVAILABILITY
+
+Send an SAE and Acorn DFS formatted, double-sided 80 track 5.25" floppy
+(or 360K DOS formatted, 5.25" floppy for the MSDOS version). 
+Alternatively, mail me as <ajt@uk.ac.sari.rri> for an e-mail version. 
+
+	Home address:				Work address:
+
+	1 St. Nathalan Crescent,		Rowett Research Institute,
+	Banchory,				Greenburn Road,
+	Kincardineshire.			Bucksburn,
+	AB3 3YU					Aberdeen.
+						AB2 9SB
+
+	tel. Banchory 2392			tel. Aberdeen 712751 x134
+	
+
+REQUIREMENTS
+
+The "tcc" Small-C compiler requires a 'standard' BBC Micro or BBC Master
+and a twin double sided 80-track disk drive in order to recompile
+itself.  The run-time support routines and compiler library are
+contained in a Small-C language ROM/RAM image that must be present in
+order to use the compiler, but stand-alone versions of programs are
+readily produced using a compiler option.  Source programs are edited
+using Acornsoft VIEW or a similar editor, and any machine code
+monitor/debugger can be used on the object programs produced. 
+
+
+DOWNLOADING SHELL ARCHIVES
+
+Several people have reported difficulty in downloading the BBC Micro
+Small-C as Unix 'shell' archives.  These are simply a convenient way of
+distributing programs over e-mail networks and BBS's.  The "unpack"
+utility is intended to simplify the task of unpacking the archives after
+downloading them onto BBC Micro disks.  Two blank formatted 80-track
+disks are required to download and unpack the archives.  First, download
+the kermit takefile "getshar" onto drive 0: and use it to download the
+shell archives:
+
+>					; BASIC prompt
+> *xoff					; disable ARIES B32 shadow RAM
+> <break>				; press break key
+> *rload kermit 13			; load kermit ROM image in slot 13
+> <break>				; initialise ROM
+> *kermit				; invoke kermit
+BBC>					; kermit prompt
+BBC> set file type ascii cr		; setup for ascii transfer
+BBC> get getshar getshar		; transfer kermit take file "getshar"
+BBC> take getshar			; transfer shell archives
+BBC> *basic				; return to BASIC
+>					; BASIC prompt
+
+
+UNPACKING SHELL ARCHIVES
+
+After downloading the shell archives, the Small-C ROM must be
+bootstrapped, and the compiler programs must be 'unpacked' before they
+can be used:
+
+>					; BASIC prompt
+> *exec mkboot				; dehex Small-C ROM, and utils
+> *rload sh 14				; load Small-C ROM image in slot 14
+> <break>				; initialise ROM
+> *sh					; invoke tcc command shell
+$					; Small-C prompt
+$ exec :1.unpack			; unpack shell archives
+$ access *.* L				; lock all files for safety
+
+
+DOWNLOADING TCC FROM AN IBM-PC HOST
+
+The MSDOS version of the compiler is distributed via e-mail as 'boo'
+encoded archives which must be downloaded onto an IBM-PC or compatible
+micro.  The files are then unpacked using the 'deboo' and 'arc'
+utilities (available from Lancaster PDSoft distribution service).  The
+MSDOS version of the compiler can then be used to cross-compile code for
+a BBC Micro.  The DFS version of the compiler was cross-compiled on an
+Amstrad PC-1512, then transferred to a BBC Micro fitted with an Aries
+B32 RAM board using the following commands:
+
+>					; BASIC prompt
+> *xoff					; disable ARIES B32 shadow RAM
+> <break>				; press break key
+> *rload kermit 13			; load kermit ROM image in slot 13
+> <break>				; initialise ROM
+> *kermit				; invoke kermit
+BBC>					; kermit prompt
+BBC> set file type ascii cr		; setup for ascii transfer
+BBC> get get get			; transfer kermit take file "get"
+BBC> take get				; transfer tcc files
+BBC> *basic				; return to BASIC
+>					; BASIC prompt
+
+
+DFS INSTALLATION
+
+After downloading a copy of the DFS distribution disk from an MSDOS
+host, the compiler programs must be 'installed' before they can be used:
+
+>					; BASIC prompt
+> *rload sh 14				; load Small-C ROM image in slot 14
+> <break>				; initialise ROM
+> *sh					; invoke tcc command shell
+$					; Small-C prompt
+$ mode 7				; set vdu mode 7
+$ exec install				; set executable file attributes
+$ access *.* L				; lock all files for safety
+
+
+INITIAL SETUP
+
+The system is distributed in DFS format, for use on a 'standard' BBC
+Micro, but can be used under ADFS without modification.  Source programs
+are edited (using VIEW or whatever editor you have), and saved to disk. 
+The restricted number of files in the DFS catalogue means that sources
+are normally saved in ":2.*_c", and the distributed sources can be found
+on side 2 of the disk.  The distribution disk is FULL, and needs to be
+reorganised in order to use the compiler.  Side 0 of the disk contains
+the executable binaries, #include <files> and Small-C language ROM/RAM
+image.  These files must always be present in drive 0.  The files on
+side 2 must be copied to other disks in order to recompile the programs. 
+The compiler program "tccom", in particular, needs a disk to itself in
+order to recompile ...  Error recovery is virtually non-existent, and
+DFS "can't" extend problems should be avoided by periodically
+*compacting the disks. 
+
+
+EXAMPLE PROGRAM
+
+The "Towers of Hanoi" example can be compiled using the distribution disk
+in BBC drive 1/3, and a blank formatted working disk in drive 0/2 as follows:
+	
+>					; BASIC prompt
+> *drive 0				; select drive 0 on distrib. disk
+> *xoff					; disable ARIES B32 shadow RAM
+> *rload sh 14				; load Small-C ROM image in slot 14
+> <break>				; initialise ROM
+> *sh					; invoke tcc command shell
+$ copy 1 0 *.*				; copy 'system' files onto working disk
+$ copy 3 2 hanoi_c			; copy example source file 
+$ drive 2				; select drive 2 on working disk
+$ mode 7				; set vdu mode 7
+$ tcc -o hanoi hanoi_c			; compile example
+$ mode 2				; set vdu mode for "hanoi"
+$ hanoi					; run program
+$ mode 7				; reset vdu mode
+$ basic					; return to BASIC
+>					; BASIC prompt
+
+	
+See the description of each utility program for a detailed explanation
+of how to use them.  The Small-C sources are intended to be examples of
+how to use the language - if you need more help than this, consult the
+excellent "Small-C Handbook" by James E.  Hendrix.  There are also
+numerous Small-C programs available from the CP/M user group. 
+	
+	
+	
+	
+                                 MANUAL
+
+
+--------------------------------------------------------------------------------
+INDEX
+	as65
+	cmp
+	crt
+	ctype
+	demo
+	diff
+	errors
+	get, put
+	install
+	ld
+	lib
+	lpr
+	makefile [mktcc]
+	rm
+	sfa
+	sh
+	shar
+	stdio
+	sys
+	tcc
+	tccom
+	tcpp
+	unpack
+
+
+--------------------------------------------------------------------------------
+NAME
+	as65
+
+SYNOPSIS
+	as65 [-l] [-o outfile] file1 ... [filen]
+
+DESCRIPTION
+	Assembler for the 6502 processor.  This is a two pass assembler
+	that processes the concatenation of source files given as
+	command-line arguments.  Local symbols are prefixed by tilde '~'
+	and are not written to the global symbol output file.  Mnemonics
+	are lower-case, and are reserved symbols.  Underline '_' is
+	accepted as an alpha character in symbols.  Assembly language
+	routines may be called from Small-C programs, provided the
+	Small-C parameter passing conventions are observed.  In this
+	implementation, parameters are always promoted to 16-bits with
+	sign extension to the left and pushed on the data stack in
+	'reverse' order.  In addition, the compiler prepends an
+	underline '_' to the name of the Small-C function used to call
+	the assembly language routine.  The external symbols referring
+	to code in the run-time support module, and BBC MOS are passed
+	to the assembler by means of equate directives in the external
+	symbol file 'ext_s' or 'swext_s'.  If the Small-C 'end' symbols
+	~eot (end of text) and ~eod (end of data) are present, the size
+	of the text and data segments are printed in decimal, followed
+	by the assembly origin, ~eot, and ~eod values in hex.  The
+	assembler follows MOS Technology/Rockwell conventions.  Consult
+	the manufacturer's 6502 assembly language reference manual for
+	more details. 
+
+	Options:
+		-l		produce assembly language listing
+		-o name		specify name of output file
+
+	Note: The assembler can be used without an "optab" file in order
+	to generate "optab" itself from .BYTE assembler pseudo-ops.  In
+	this situation a warning is issued, but the assembly continues. 
+
+BUGS
+	JMP expects a 16-bit destination, and JMP's into page zero are
+	wrongly flagged as errors.  This arises when the assembler
+	origin is not set.  Optab is needed because there is no simple
+	way of initialising static data in the current version of tcc. 
+	Mnemtab is needed to pre-hash the mnemonics into the symbol
+	table. 
+
+FILES
+	as65.c
+	optab_s		source code to generate optab
+	:0.$.optab	6502 opcode table
+	:0.$.mnemtab	6502 mnemonics
+	o_out		default output file
+	g_out		global symbol file
+
+	
+--------------------------------------------------------------------------------
+NAME
+	cmp
+
+SYNOPSIS
+	cmp file1 file2
+
+DESCRIPTION
+	Simple byte by byte file comparison.
+
+FILES
+	cmp.c
+
+
+--------------------------------------------------------------------------------
+NAME
+	crt
+
+SYNOPSIS
+	Stand-alone Small-C run-time support
+
+DESCRIPTION
+	Large programs such as the compiler "tccom" require the Small-C
+	language ROM/RAM image to be present, but smaller programs can
+	be made 'stand-alone' using the -A option of "tcc".  This loads
+	the run-time support and compiler library in the default text
+	area above the MOS high water mark at $1900 in the i/o processor
+	memory area.  The default load address is set to $1902 in order
+	to avoid error messages from the BASIC language ROM which
+	initialises the first two bytes of this area. 
+
+BUGS
+	The entire run-time support is loaded, even though a large part
+	of it may never be referenced by the user program.  A link
+	editor is required. 
+	
+FILES
+	mkcrt		*exec file to assemble crt
+	oshdr_s		MOS entry points, and Small-C workspace definitions
+	crt0_s		stand-alone start-up code
+	crt1_s		JSR threaded code interpreter
+	sys_s		operating system interface
+	lib_s		part of the 'standard' C library
+	patch_s		control flow patch
+	ext_s		external symbol file used to link user programs
+	enter_s		entry point patch for user program
+
+
+--------------------------------------------------------------------------------
+NAME
+	ctype
+
+SYNOPSIS
+	#include <ctype.h>
+
+DESCRIPTION
+	This is a dummy file in release 0.7 - the character
+	classification table is defined in sys_s, and character
+	classification routines are written in assembly language. 
+
+BUGS
+	Should be done with pre-processor macros ...
+
+FILES
+	:0.$.ctype.h
+	sys_s
+
+	
+--------------------------------------------------------------------------------
+NAME
+	demo
+
+SYNOPSIS
+	tcc -o bm bm_c
+	tcc -o fahr fahr_c
+	tcc -o hanoi hanoi_c
+	tcc -o plot plot_c
+	tcc -o sieve sieve_c
+
+DESCRIPTION
+	Small-C demonstration programs:
+
+		bm	PCW Benchmarks
+		fahr	K & R tutorial example
+		hanoi	Towers of Hanoi (use VDU mode 2)
+		plot	Recursive squares (use VDU mode 2)
+		sieve	Sieve of Eratosthenes
+
+BUGS
+	Can't change VDU mode during program execution.
+
+FILES
+	:2.bm_c
+	:2.fahr_c
+	:2.hanoi_c
+	:2.plot_c
+	:2.sieve_c
+
+
+--------------------------------------------------------------------------------
+NAME
+	diff
+
+SYNOPSIS
+	diff file1 file2
+
+DESCRIPTION
+	Line by line file comparison.
+
+BUGS
+	Not really diff (as in Unix), but still useful.
+
+FILES
+	diff.c
+
+
+--------------------------------------------------------------------------------
+NAME
+	errors
+
+SYNOPSIS
+	Compiler error codes
+
+DESCRIPTION
+	Brief explanation of compiler error codes.  These have been
+	deleted from the compiler to save space. 
+
+BUGS
+	There are errors in the errors ...
+
+FILES
+	:0.$.errors	list of error codes
+	tccom.c		source shows where errors are detected
+
+
+--------------------------------------------------------------------------------
+NAME
+	get, put
+
+SYNOPSIS
+	*kermit
+	take get
+
+	*kermit
+	take put
+
+DESCRIPTION
+	Kermit 'take' files to download/upload "tcc" system from MSDOS
+	host.  Get "get" onto the BBC Micro first, then download the
+	rest of the files automatically using the Kermit take command. 
+	The take files assume that the MSDOS kermit is in server mode,
+	and the BBC Micro kermit is the 'local' kermit. 
+
+BUGS
+	DFS/ADFS attributes need to be set using "install"
+
+FILES
+	get		Kermit takefile
+	install		*exec file to set file attributes
+
+
+--------------------------------------------------------------------------------
+NAME
+	getshar
+
+SYNOPSIS
+	*kermit
+	take getshar
+
+DESCRIPTION
+	Kermit 'take' file to download "tcc" system from remote
+	host.  Get "getshar" onto the BBC Micro first, then download the
+	rest of the files automatically using the Kermit take command. 
+	The take files assume that the MSDOS kermit is in server mode,
+	and the BBC Micro kermit is the 'local' kermit.  The shell
+	archives are unpacked using the "unpack" command.
+
+BUGS
+	"getshar" assumes that two disk drives are available.
+
+FILES
+	getshar		Kermit takefile
+	unpack		*exec file to unpack shell archives
+
+
+--------------------------------------------------------------------------------
+NAME
+	install
+
+SYNOPSIS
+	exec install
+
+DESCRIPTION
+	Utility to set DFS/ADFS file attributes after downloading
+	binaries with Kermit from MSDOS host. 
+
+BUGS
+	Language ROM/RAM image must already be loaded.
+
+FILES
+	sfa		executable binary of utility to set file attributes
+	swcrt		Language ROM/RAM image
+
+
+--------------------------------------------------------------------------------
+NAME
+	ld
+
+SYNOPSIS
+	ld [-o outfile] [-R] file1 ... [filen]
+
+DESCRIPTION
+	Simple loader for stand-alone binaries, and ROM images of
+	Small-C programs.  No link editing is done: the loader simply
+	concatenates the binaries given as arguments with the
+	appropriate run-time support.  All external references are
+	resolved by the assembler, using the external symbol file
+	"ext_s" or "swext_s". 
+
+	Options:
+		-o outfile	specify name of output file
+		-R		load sideways ROM/RAM image
+
+BUGS
+	The order of files in the argument list is critical, and
+	relocation is impossible because the assembler produces absolute
+	binary modules. 
+
+FILES
+	a_out		default output file
+	crt		stand-alone run-time support
+	swcrt		sideways ROM/RAM run-time support
+
+
+--------------------------------------------------------------------------------
+NAME
+	lib
+
+SYNOPSIS
+	tcc -S lib.c
+	exec mkcrt
+	exec mkswcrt
+
+DESCRIPTION
+	Small-C compiler library.  A few of the 'standard' C library
+	routines have been implemented:
+
+		atoi(s)
+		fclose(fp)
+		fgets(s, n, fp)
+		fopen(name, mode)
+		fprintf(fp, fmt, arg)
+		fputs(s, fp)
+		fscanf(fp, fmt, arg)
+		gets(s)
+		itoa(s, radix)
+		printf(fmt, arg)
+		puts(s)
+		scanf(fmt, arg)
+		sscanf(s, fmt, arg)
+		sprintf(s, fmt, arg)
+		strcat(s1, s2)
+		strcmp(s1, s2)
+		strcpy(s1, s2)
+		strlen(s)
+		strncat(s1, s2, n)
+		strncmp(s1, s2, n)
+		strncpy(s1, s2, n)
+
+BUGS
+	There are lots more functions to implement ...
+
+FILES
+	lib.c		Small-C source
+	lib_s		assembly language file used to create "crt" and
+			"swcrt"
+
+
+--------------------------------------------------------------------------------
+NAME
+	lpr
+
+SYNOPSIS
+	lpr [-p] file
+
+DESCRIPTION
+	Expands tabs into spaces (for printers that can't handle tabs),
+	and paginates output if required.  Output is directed to the
+	screen and printer simultaneously using the MOS VDU driver to
+	enable the printer. 
+
+
+	Options:
+		-p	paginate output, and print header at top of page.
+
+BUGS
+	It's not a spooler - you have to wait until the printer stops.
+	
+FILES
+	lpr.c
+
+
+--------------------------------------------------------------------------------
+NAME
+	makefile [mktcc]
+	
+SYNOPSIS
+	make host
+	make
+
+DESCRIPTION
+	Zorland 'C' makefile for the MSDOS version of the "tcc"
+	compiler.  The "host" target generates *.exe files for the MSDOS
+	host system, and the default target generates 6502 binaries to
+	be downloaded onto a BBC Micro using Kermit. 
+
+BUGS
+	There is no Small-C make utility.
+
+FILES
+	makefile
+
+
+--------------------------------------------------------------------------------
+NAME
+	rm
+
+SYNOPSIS
+	rm [-f] file1 [... filen]
+
+DESCRIPTION
+	Remove the list of files given as arguments.
+
+	Options:
+		-f	force removal, even if file is locked, and don't
+			complain about non-existent files
+
+BUGS
+	Wild cards are not expanded.
+
+FILES
+	rm.c
+
+
+--------------------------------------------------------------------------------
+NAME
+	sfa
+
+SYNOPSIS
+	sfa file
+
+DESCRIPTION
+	Set file attributes under DFS/ADFS.  The load and execute
+	addresses are both set to $1902. 
+
+BUGS
+	Can't specify load and exec addresses as arguments.  The file
+	access attributes are correct for ADFS, but set the "lock"
+	attribute in DFS. 
+
+FILES
+	sfa.c
+
+
+--------------------------------------------------------------------------------
+NAME
+	sh
+
+SYNOPSIS
+	*sh
+
+DESCRIPTION
+	Small-C command "shell".  This is the Small-C Language ROM/RAM
+	image that must be present in order to use the "tcc" compiler. 
+	The *sh entry into the Small-C Language ROM/RAM allows control
+	to fall through to code immediately after the run-time support. 
+	This entry is patched to main() in the command shell by the -R
+	option of "tcc":
+
+		tcc -R -o sh sh_c
+
+	The '*' in "*sh" is used by Basic to pass a command line to the
+	MOS OSCLI (operating system command line interpreter).  This is
+	necessary when invoking Small-C from Basic or View, but is not
+	required when programs or operating system commands are invoked
+	from the Small-C command shell.
+
+BUGS
+	Global variables should not be used in programs produced with
+	the -R option because the compiler places data immediately after
+	the program text in what would then be read-only memory. 
+
+FILES
+	swcrt		Sideways ROM/RAM run-time support
+	sh.c		Small-C command shell
+
+
+--------------------------------------------------------------------------------
+NAME
+	shar
+
+SYNOPSIS
+	shar [-a] [-x] archive file1 [... filen]
+
+DESCRIPTION
+	Unix style shell archiver for e-mail distribution of tcc system. 
+	The "archive" argument specifies the name of the archive file to
+	be used.  Note: only text files can be archived with shar. 
+
+	Options:
+		-a	create archive and add files
+		-x	extract file from archive
+
+BUGS
+	Individual files cannot be extracted from an archive.  The entire
+	contents of an archive are extracted.
+
+FILES
+	shar.c
+
+
+--------------------------------------------------------------------------------
+NAME
+	stdio
+
+SYNOPSIS
+	#include <stdio.h>
+
+DESCRIPTION
+	'Standard' i/o header file.  Contains standard i/o channel
+	definitions, and the macro definitions of putchar() and
+	getchar(). 
+
+	#define BUFSIZ 256		/* size of disk i/o buffer */
+	#define NULL 0			/* null pointer of any type */
+	#define EOF (-1)		/* end-of-file 'value' */
+	#define stdin 0			/* standard (console) input stream */
+	#define stdout 1		/* standard (console) output stream */
+	#define stderr 2		/* standard (console) error stream */
+	#define FILE int		/* no structures in Small-C ... */
+	#define unsigned char *		/* no unsigned type in Small-C ... */
+
+	#define getchar() getc(stdin)
+	#define putchar(x) putc(x, stdout)
+
+BUGS
+	The FILE typedef cannot be implemented properly in Small-C, but
+	the i/o streams are used as if they are implemented as (FILE *)
+	to make Small-C a legal subset of full 'C'.  This is ok if no
+	reference is made to the FILE structure other than its use to
+	identify a stream in the 'f' i/o library (eg.  fprintf()). 
+	
+FILES
+	:0.$.stdio_h
+
+
+--------------------------------------------------------------------------------
+NAME
+	sys
+
+SYNOPSIS
+	Operating system interface
+
+DESCRIPTION
+	The interface between Small-C and the underlying BBC Micro
+	Machine Operating System (MOS) is written in assembly language. 
+	The entry points for low-level file i/o are modelled on their
+	Unix counterparts, and the character classification routines are
+	written in assembly language to increase their speed of
+	execution.  Interfaces are also provided to the MOS osbyte 'fx'
+	(effects), osword and osfile calls. 
+
+	Entry points:
+
+		Assembler	Small_C
+
+		_open		fd = open(name, rwmode);
+		_creat		fd = creat(name, pmode);
+		_close		status = close(fd);
+		_unlink		status = unlink(name);
+		_stat		stat(name, fcb);
+		_system		system(string);
+		__cmdlin	address = _cmdline()
+		_read		nread = read(fd, buf, count);
+		_write		nwritten = write(fd, buf, count);
+		_getc		c = getc(fp);
+		_putc		putc(c, fp);
+		_vdu		vdu(c);
+		_osbyte		osbyte(type, parameters);		
+		_osword		osword(type, address);
+		_osfile		osfile(name, fcb, type);
+		_isalpha	t = isalpha(c);
+		_isupper	t = isupper(c);
+		_islower	t = islower(c);
+		_isdigit	t = isdigit(c);
+		_isxdigi	t = isxdigit(c);
+		_isspace	t = isspace(c);
+		_ispunct	t = ispunct(c);
+		_isalnum	t = isalnum(c);
+		_isprint	t = isprint(c);
+		_iscntrl	t = iscntrl(c);
+		_isascii	t = isascii(c);
+		_toupper	c2 = toupper(c1);
+		_tolower	c2 = tolower(c1);
+		_toascii	c2 = toascii(c1);
+		_ctype_		char ctype_[127];
+
+BUGS
+	File descriptors (fd) are used instead of (FILE *) for getc(),
+	and putc() as in the rest of Small-C.  Pmode is ignored by
+	creat(), and the system has no record of which files were opened
+	by the user.  This means that programs must explicitly close
+	files that they open (full 'C' will normally close files opened
+	by the user on exit).  The character classification routines
+	should be macros that use conditional expressions.  "System"
+	doesn't spawn a new process, it just passes the line to the MOS
+	command line interpreter (CLI). 
+
+FILES
+	sys_s
+	ext_s		stand-alone entry points
+	swext_s		sideways ROM/RAM entry points
+
+--------------------------------------------------------------------------------
+NAME
+	tcc
+
+SYNOPSIS
+	tcc [-o outfile] [-n] [-E] [-S] [-c] [-g] [-R] [-A] [-C] file
+
+DESCRIPTION
+	This is the Small-C compilation sequencer.  It arranges the
+	various phases of the preprocessor "tcpp", compiler "tccom",
+	assembler "as65" and loader "ld" according to a list of
+	command-line arguments.  The sequencer generates a *exec file
+	under DFS/ADFS, or a *.bat file in the MSDOS version, which is
+	then executed to carry out the compilation.  By default, the
+	compiler produces ROM-dependant code which makes external
+	references into the Small-C language ROM. 
+
+	Options:
+		-o outfile	specify name of output file (default a_out)
+		-n		don't execute *exec (*.bat) file
+		-E		run preprocessor only (no compilation)
+		-S		generate an assembly language output file
+		-c		suppress load phase
+		-g		keep the global symbol output file "g_out"
+		-R		produce ROM'able code
+		-A		produce 'stand-alone' code
+		-C		insert 'C' source as comments
+	
+BUGS
+	The technique of generating a *exec file is a crude alternative
+	to the creation of child processes to carry out the compilation
+	tasks.  This could be done in the MSDOS version, but requires
+	much more effort under the Acorn MOS.  For simplicity, I have
+	used the same technique in both.  Only one source file can be
+	processed in this version, but the #include preprocessor
+	directive can be used to combine several *.c files. 
+
+FILES
+	tcc.c
+	tcpp		Small-C preprocessor
+	tccom		Small-C compiler
+	as65		6502 assembler
+	rm		file remover
+	ld		Small-C loader
+	:0.$.crt	Stand-alone run-time support, and compiler library
+	:0.$.swcrt	Sideways ROM/RAM run-time support, and compiler library
+	:0.$.ext_s	Stand-alone external references
+	:0.$.swext_s	Sideways ROM/RAM external references
+	:0.$.start_s	ROM-dependant startup code
+	:0.$.enter_s	Control-flow patch to main() from user entry point
+	compile		*exec file produced by sequencer
+
+--------------------------------------------------------------------------------
+NAME
+	tccom
+
+SYNOPSIS
+	tccom [-C] infile [outfile]
+
+DESCRIPTION
+	Tiny 'C' compiler for the MOS Technology 6502 microprocessor,
+	based on "RatC", Berry and Meeking's version of the original
+	Small-C compiler for the Intel 8080 by Ron Cain.  The main
+	difference between RatC and Ron Cain's Small-C is the use of a
+	generic processor model with two working registers instead of
+	8080 architecture.  Otherwise, the two compilers are almost
+	identical.  The compiler (tccom) is normally invoked by a
+	compilation sequencer (tcc), which arranges the various phases
+	of the pre-processor, compiler, assembler amd loader.  The
+	language features supported by "tccom" are essentially the same
+	as those supported by "RatC", with more complete flow-control,
+	and character escape sequences implemented.  Code generation is
+	'optimised' for the 6502 in a 'small' machine environment on the
+	BBC Micro.  The basic strategy is to generate code for a JSR
+	threaded code interpreter, but whenever possible the contents of
+	the 'C' primary register are kept in the 6502 X and Y registers. 
+	Two stacks are used: the 6502 hardware stack is used as the 'C'
+	return stack and is used by the JSR threaded code interpreter,
+	but the 'C' data stack is implemented in high memory using
+	page-zero locations as a stack pointer.  This allows 'C'
+	function stack-frames to be realistically large (the 6502
+	hardware stack is limited to 256 bytes in page 1).  As with
+	other implementations of Small-C, the language features
+	supported are a (severely) restricted subset of full 'C' but I
+	have made an effort to implement a legal subset that can be
+	compiled with little or no modification by a full 'C' compiler. 
+	Consult the "Small-C Handbook" by James.E.Hendrix for a more
+	complete description of the language.  Briefly, the features
+	implemented in "tcc" are:
+
+	Options:
+		-C	output source code as assembler comments
+
+	Types:
+		char	8-bit (signed) promoted to int in expressions
+		char[n]	8-bit (signed) promoted to int in expressions
+		char *	16-bit (unsigned)
+		int	16-bit (signed)
+		int[n]	16-bit (signed)
+		int *	16-bit (unsigned)
+		extern	accepted, but ignored by compiler
+
+		int function()
+		int *function()
+		char function()
+		char *function()
+
+	Operators:
+		=	assignment			(low precedence)
+		|	bitwise OR
+		^	bitwise XOR
+		&	bitwise AND
+		==	relational equal
+		!=	relational not equal
+		<=	relational less-than or equal
+		>=	relational greater-than or equal
+		>>	bitwise right shift
+		<<	bitwise left shift
+		+	arithmetic add
+		-	arithmetic subtract
+		*	arithmetic multiply
+		/	arithmetic divide (integer)
+		%	arithmetic remainder (integer)
+		-	arithmetic negation
+		*	pointer indirection
+		&	address of object
+		++	arithmetic increment	
+		--	arithmetic decrement
+		f()	function call
+		a[]	array subscript			(high precedence)
+
+	Function calls:
+
+		direct:
+			function(args);
+
+		indirect:
+			char *address;
+			address = &function;
+			address(args);
+		
+	Control-flow:
+
+		goto label
+			...
+		label:
+
+		if (expression) {
+			...
+		}
+		else {
+			...
+		}
+
+		while (expression) {
+			...
+		}
+
+		do {
+			...
+		} while (expression);
+
+		for (expression; expression; expression) {
+			...
+		}
+
+	Literal numbers:
+		ddddd	decimal (where d is 0...9)
+		0ddd	octal (where d is 0...7)
+		0xdddd	hexadecimal (where d is 0...F or 0...f)
+
+	Character escapes:
+		\n	newline
+		\t	tab
+		\b	backspace
+		\r	return
+		\f	form feed
+		\\	backslash
+		\0	NULL
+		\ddd	octal character code
+		\c	any other character (where c is the character)
+
+BUGS
+	Arrays of character pointers are (incorrectly) treated as arrays
+	of integers.  This leads to problems recovering command line
+	options prefixed by '-'.  The fix is to AND with 0xFF, and
+	various programs are commented "BUG in compiler" where this is a
+	problem.  The code to implement "for" fails on the commonly used
+	construct "for (;;)" which is used in 'endless' loops, and the
+	code generated to implement "for" needs the entire expression on
+	one line of the input stream.  The same is true for function
+	calls, where the entire argument list must be on one line.  The
+	analysis of the "for" construct is clumsy, and needs re-writing
+	to jump round the end loop action, rather than deferring code
+	generation which is used at present.  The "switch" construct has
+	not yet been implemented.
+
+FILES
+	tccom.c
+
+
+--------------------------------------------------------------------------------
+NAME
+	tcpp
+
+SYNOPSIS
+	tcpp [-Dname] infile outfile
+
+DESCRIPTION
+	Small-C preprocessor, with file inclusion and conditional
+	compilation directives.  The #asm ...  #endasm directive found
+	on other Small-C preprocessors is deliberately omitted because
+	it leads to non-portable code.  Assembly language routines are
+	incorporated in Small-C programs by combining them with the
+	assembler source generated by the compiler, during assembly of
+	the program.  This allows machine dependencies to be hidden from
+	an applications program.  The preprocessor implements a subset
+	of the Unix 'C' preprocessor "cpp":
+
+	File inclusion:
+
+		#include <file>		file in 'standard' directory
+		#include "file"		file in current directory
+
+	Macro replacement:
+
+		#define name
+		#define name(args)
+
+	Conditional text inclusion:
+
+		#if constant		test for non-zero constant
+			...
+		#else
+			...
+		#endif
+
+		#ifdef name		test for defined macro name
+			...
+		#else
+			...
+		#endif
+
+		#ifndef name		test for undefined macro name
+			...
+		#else
+			...
+		#endif
+
+	Options:
+		-Dname			#define name on command line
+
+BUGS
+	Constant expressions cannot be used (as in #if expression), and
+	the newline escape '\' is not implemented in macro definitions
+	which must, therefore, be confined to a single line of text. 
+
+FILES
+	tcpp.c
+	:0.$		'standard' directory for #include <file>
+	:0.$.stdio.h	'standard' i/o #include file
+	:0.$.ctype.h	dummy character classification #include file
+
+
+--------------------------------------------------------------------------------
+NAME
+	unpack
+
+SYNOPSIS
+	exec unpack
+
+DESCRIPTION
+	The BBC Micro version of tcc is distributed over e-mail or BBS's
+	as a collection of Unix 'shell' archives.  This is a convenient
+	format for packaging up several files, and protecting them from
+	e-mail systems that occasionally interpret parts of unprotected
+	files as message headers.  This may cause the file to be
+	corrupted, or it may fail to arrive.  The archive files should
+	be downloaded onto a BBC Micro as indicated in the FILES section
+	below.  An example kermit take file is provided, or the files
+	can be downloaded individually.  The unpack utility assumes that
+	you have a two-drive system.
+	
+	The 6502 binaries of the Small-C Language ROM and "shar" program
+	must first be de-hexed and the "sh" file loaded into sideways
+	RAM.  The unpack script uses the "shar" program to extract the
+	other hexfiles from tcc1 and tcc2.  These are dehexed, and the
+	remaining source files are extracted.  The resulting disk
+	contains the complete tcc source distribution.  Make a copy of
+	the disk before attempting to use the compiler, and delete some
+	of the source files to make room for temporary files created by
+	the compiler.
+
+BUGS
+	It takes a  l o n g  time to extract the files.
+
+FILES
+	:0.getshar	kermit take file to download shell archives
+	:0.mkboot	*exec file to dehex Small-C boot files
+	:0.sh_x		6502 hex file of Small-C Language ROM/RAM image
+	:0.dehex_x	6502 hex file of Intel hex decoder
+	:0.shar_x	6502 hex file of shell archive program
+	:1.unpack	*exec file to unpack archives
+	:1.tcc1		shell archive #1
+	:1.tcc2		shell archive #2
+	:3.tcc3		shell archive #3
+	:3.tcc4		shell archive #4
+	:2.READ_ME	tcc documentation
+
+
+--------------------------------------------------------------------------------
+
+

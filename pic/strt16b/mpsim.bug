@@ -1,0 +1,711 @@
+Bug list for:
+		PICSIM 16c5x simulator Version 4.00
+
+This file contains all known bugs for PICSIM versions 3.00 the released
+version and 3.00.xx, the patched versions.
+
+Last file update:  Thursday March 25, 1993
+-------------------------------------------------------------------------
+
+Key Words:      bug, RTCC, F1
+
+DESCRIPTION:    Even though the stimulus file causes RTCC to toggle, F1
+		does not increment.
+
+Work around:    None
+Related Prob:   None
+
+SSR#:           1012
+Version:        PICSIM 3.00.13A
+Date:           22 Jan 92
+Reported by:    Vance Zook
+Test File:      Not assigned
+Status:         Fixed in BETA version 3.00.20
+Severity:       Show Stopper
+-------------------------------------------------------------------------
+
+Key Words:      bug, input file path, path
+
+DESCRIPTION:    When specifying a fully qualified path to an INPUT file,
+		the disk mnemonic (ie. A:) is not properly parsed and
+		appears as a garbage string during file load functions.
+
+Work around:    Place all files on current DOS default disk.
+Related Prob:   None
+
+SSR#:           1013
+Version:        3.00.13A
+Date:           18 Jan 92
+Reported by:    Derek Carlson, Microchip Technology
+Test File:      Not assigned
+Status:         Fixed in BETA version 3.00.20
+Severity:       Nuisance
+-------------------------------------------------------------------------
+
+Key Words:      bug, trace, register trace
+
+
+DESCRIPTION:    When specifying a trace on any register, all
+		registers are traced.
+
+Work around:    None
+Related Prob:   None
+
+SSR#:           1014
+Version:        3.00.13A
+Date:           18 Jan 92
+Reported by:    Frank Fortino, Ectel
+Test File:      Not assigned
+Status:         Fixed in BETA version 3.00.20
+Severity:       Nuisance
+-------------------------------------------------------------------------
+
+Key Words:      bug, TC count, trace
+
+DESCRIPTION:    TC count is "OFF BY ONE."
+
+Work around:    None
+Related Prob:   None
+
+SSR#:           1015
+Version:        3.00.13A
+Date:           18 Jan 92
+Reported by:    Derek Carlson, Microchip Technology
+Test File:      Not assigned
+Status:         Fixed in BETA version 3.00.20
+Severity:       Affected operation
+-------------------------------------------------------------------------
+
+Key Words:      bug, 8088, system locked
+
+Description:    "Picsim V3.00 locks 8088 based PC AT compatibles."
+		PicSim is tested on PC AT (80286) systems and above.  It
+		is not compatible with 8088 based systems.  However, the
+		program should notify the user of this limitation, and
+		not simply hang the system.
+
+Work around:    Use PC AT or above system.
+Related Prob:   None
+
+SSR#:           1016
+Version:        3.00.13A
+Date:           9 Mar 92
+Reported by:    Bob Ward, Microchip Technology FAE
+Test File:      Not assigned
+Status:         Fixed in v. 4.0
+Severity:       Nuisance
+-------------------------------------------------------------------------
+
+Key Words:      bug, 8088, system locked, hung system
+
+Description:    Software distributed a seminars will not simulate a pro-
+		grams assembled with output file format INHX8M. This is
+		the format specified by the PICSIM Version E manual.
+		Alpha versions of the program work fine with this format.
+
+		Further testing reviles that the code is being loaded into
+		simulator memory with the byte haves swapped.  ie. an opcode
+		0x0123 loads as 0x2301.
+
+Work around:    Use INHX16 file format.
+Related Prob:   1041
+
+SSR#:           1017
+Version:        3.00
+Date:           11 Mar 92
+Reported by:    Mike Morse, Microchip Technology FAE
+Test File:      Not assigned
+Status:         Fixed in BETA version 3.00.20
+Severity:       Affected operation
+-------------------------------------------------------------------------
+
+Key Words:      bug, dec f, status reg
+
+Description:    The instruction dec f, does not update the status register
+		zero flag.
+
+Work around:    None.
+Related Prob:   None
+
+SSR#:           1018
+Version:        3.00.11
+Date:           9 Mar 92
+Reported by:    H Burghardt, Microchip Technology FAE
+Test File:      T_DECF.asm
+Status:         Problem has not yet been duplicated for released version 3.00.
+Severity:       Affected operation
+-------------------------------------------------------------------------
+
+Key Words:      bug, break point, B, BC, break on data address
+
+Description:    A break point can be set on data area "F..", but the break
+		point can not be removed.  The B command does not properly
+		check the address range for data break points.  However,
+		the BC command does check address ranges, recognized that
+		0xFxx is an illegal address and aborts the command after
+		notifying the user.
+
+Work around:    Use BC (Break Clear) with no parameters to clear all break
+		points.
+Related Prob:   None
+
+SSR#:           1019
+Version:        3.00.11
+Date:           9 Mar 92
+Reported by:    H Burghardt, Microchip Technology FAE
+Test File:      Not assigned
+Status:         Fixed in BETA version 3.00.20
+Severity:       Affected operation
+-------------------------------------------------------------------------
+
+Key Words:      enhancement, symbol value
+
+Description:    When a hex address which has a label is displayed, then
+		both the hex value and the label name should be displayed,
+		not just the hex value.
+
+Work around:    None.
+Related Prob:   None
+
+SSR#:           1040
+Version:        3.00.11
+Date:           9 Mar 92
+Reported by:    H Burghardt, Microchip Technology FAE
+Test File:      Not assigned
+Status:         Fixed in BETA version 3.00.20
+Severity:       Affected operation
+-------------------------------------------------------------------------
+
+Key Words:      bug, INHX8M, hung system
+
+Description:    Simulator hangs system when INHX8M file format is loaded.
+
+Work around:    Use INHX16 file format.
+Related Prob:   1017
+
+SSR#:           1041
+Version:        3.00.11
+Date:           9 Mar 92
+Reported by:    H Burghardt, Microchip Technology FAE
+Test File:      Not assigned
+Status:         Fixed in BETA version 3.00.20
+Severity:       Affected operation
+-------------------------------------------------------------------------
+
+Key Words:      enhancement, step count
+
+Description:    Step count is inconsistent with older versions.
+
+		Actually, the current implementation is consistent with
+		an even older release.  Version 3.00 ties the step
+		count to the number of instructions executed.  Manual
+		version E, attempts to clarify this point.  The previous
+		version tied the step count to the number of cycles
+		executed.
+
+		In a future release, a command switch will be added to allow
+		either approach, and the manual will be clarified.
+
+Work around:    None.
+Related Prob:   None
+
+SSR#:           1042
+Version:        3.00.11
+Date:           9 Mar 92
+Reported by:    H Burghardt, Microchip Technology FAE
+Test File:      Not assigned
+Status:         Fixed
+		Added new command (IP) in v. 4.1 to inject stimulus either
+		according to time or step count.
+Severity:       Affected operation
+-------------------------------------------------------------------------
+
+Key Words:      format,load,manual
+
+Description:    When loading a file into PICSIM in INHX8S format, the manual
+		instructs the user to specificy both the .obh and
+		the .obl files when using the "lo" command.
+		However, if the user follows the manual's instructions,
+		PICSIM will issue an error message.
+		   
+
+Work around:    Simply use "lo MyProg INHX8S"
+
+Related Prob:   None
+SSR#:           1043
+Version:        3.00.11
+Date:           6 May 92
+Reported by:    Feranak Nelson
+Test File:      Not assigned
+Status:         Fixed in future release of manual.
+Severity:       Nuisance
+-------------------------------------------------------------------------
+
+Key Words:      SF,bug
+Description:    The SF command does not display instructions that access
+		the specified register.
+ 
+Work around:    None
+Related Prob:   None
+SSR#:           1044
+Version:        3.00.11
+Date:           1 June 92
+Reported by:    Feranak Nelson
+Test File:      Sample.asm
+Status:         Fixed in v. 4.0
+Severity:       Affected Operation
+-------------------------------------------------------------------------
+
+Key Words:      SI,bug
+Description:    The SI command is supposed to search a specified range of
+		program memory and print all occurrences of a certain
+		instruction.  Instead, it displays all of the code between
+		the first and last occurrence of the instruction within
+		the designated range.
+ 
+Work around:    None
+Related Prob:   None
+SSR#:           1045
+Version:        3.00.11
+Date:           1 June 92
+Reported by:    Feranak Nelson
+Test File:      Sample.asm
+Status:         Fixed in v. 4.0
+Severity:       Nuisance
+-------------------------------------------------------------------------
+
+Key Words:      Stimulus, Bug
+Description:    When using the trace feature, Stimulus is not output
+		to the file.
+	       
+Work around:    None
+Related Prob:   None
+SSR#:           1046
+Version:        3.00.11
+Date:           1 June 92
+Reported by:    Mike Jedzejewski
+Test File:      Not assigned
+Status:         Fixed in v. 4.0
+Severity:       Affected Operation
+
+-------------------------------------------------------------------------
+
+Key Words:      PC,Bug
+Description:    The program counter cannot be set to 0x1FF
+ 
+Work around:    None
+Related Prob:   None
+SSR#:           1047
+Version:        3.00.11
+Date:           1 June 92
+Reported by:    Mike Jedzejewski
+Test File:      Not assigned
+Status:         Fixed in v. 4.0
+Severity:       Affected Operation
+
+-------------------------------------------------------------------------
+
+Key Words:      SI,bug
+Description:    Cannot go to an address if the symbol type is K (constant)
+ 
+Work around:    None
+Related Prob:   None
+SSR#:           1048
+Version:        3.00.11
+Date:           1 June 92
+Reported by:    Mike Jedzejewski
+Test File:      Not assigned
+Status:         Fixed in future release.
+Severity:       Affected Operation
+
+-------------------------------------------------------------------------
+
+Key Words:      AD, Bug
+Description:    Cannot add an item to the view screen if the symbol
+		type is L (label)
+ 
+Work around:    None
+Related Prob:   None
+SSR#:           1049
+Version:        3.00.11
+Date:           1 June 92
+Reported by:    Mike Jedzejewski
+Test File:      Not assigned
+Status:         Could not reproduce error
+Severity:       Affected Operation
+-------------------------------------------------------------------------
+
+Key Words:      Video Mode, Bug
+Description:    Seems to occasionally corrupt video mode on exit if
+		other than standard modes are in effect when PICSIM 
+		is initiated.
+
+Work around:    None
+Related Prob:   None
+SSR#:           1090
+Version:        3.00.11
+Date:           1 June 92
+Reported by:    Mike Jedzejewski
+Test File:      Not assigned
+Status:         Fixed in future release.
+Severity:       Nuisance
+-------------------------------------------------------------------------
+
+Key Words:      PC, RTCC, Watchdog Timer, Bug
+Description:    PC modify causes Cycle Count to be "off by one"
+
+ 
+Work around:    None
+Related Prob:   None
+SSR#:           1091
+Version:        3.00.11
+Date:           1 June 92
+Reported by:    Mike Jedzejewski
+Test File:      Not assigned
+Status:         Fixed in v. 4.0
+Severity:       Nuisance
+-------------------------------------------------------------------------
+
+Key Words:      TC,Trace,Bug
+Description:    When printing trace to a file, GOTO and NOP instructions
+		are not printed although they are executed.
+
+ 
+Work around:    None
+Related Prob:   None
+SSR#:           1092
+Version:        3.00.11
+Date:           21 July 92
+Reported by:    H. Burghardt
+Test File:      Not assigned
+Status:         Fixed in v. 4.0
+Severity:       Nuisance
+-------------------------------------------------------------------------
+
+Key Words:      O, Bug,File Format
+Description:    When executing this command, an output file is written, 
+		but containing errors.  When PIC16C54 was selected,
+		a "Divide Error" was reported.  For the PIC16C57, however,
+		the computer hangs up and a warm boot is required.  This
+		happens with INHX16 format as well as INHX8M.
+
+ 
+Work around:    None
+Related Prob:   None
+SSR#:           1093
+Version:        3.00.11
+Date:           21 July 92
+Reported by:    H. Burghardt
+Test File:      Not assigned
+Status:         Fixed in 4.00.03A
+Severity:       Affected Operation
+-------------------------------------------------------------------------
+
+Key Words:      F0, Indirect Address, Bug
+Description:    A warning message is printed (although code is executed
+		correctly) when a label is used to symbolically represent
+		F0 in a file register operation. This occurs when P=16C57,
+		and any of page bits are set in the FSR.  
+		
+
+ 
+Work around:    None
+Related Prob:   None
+SSR#:           1094
+Version:        3.00.11
+Date:           29 July 92
+Reported by:    Frank W. Rebeka
+Test File:      Not assigned
+Status:         Fixed in v. 4.0
+Severity:       Nuisance
+-------------------------------------------------------------------------
+
+Key Words:      TC,Trace
+Description:    In Trace mode, the actual file register address should
+		be displayed when executing an instruction that uses 
+		indirect addressing.  
+	
+Work around:    None
+Related Prob:   None
+SSR#:           1095
+Version:        3.00.11
+Date:           21 July 92
+Reported by:    H. Burghardt
+Test File:      Not assigned
+Status:         Fixed in Future Release
+Severity:       Nuisance
+-------------------------------------------------------------------------
+
+Key Words:      Step Count,Trace File
+Description:    When using the trace feature, the step count in the
+		trace file was sometimes "off by one"
+
+	
+Work around:    None
+Related Prob:   None
+SSR#:           1096
+Version:        3.00.11
+Date:           21 July 92
+Reported by:    H. Burghardt
+Test File:      Not assigned
+Status:         Fixed v. 4.0
+Severity:       Nuisance
+-------------------------------------------------------------------------
+Key Words:      Break point, bug
+Description:    If a break point is set at the reset vector
+		and the Watchdog Timer times out, the break point
+		will be ignored.
+				
+
+	
+Work around:    None
+Related Prob:   None
+SSR#:           1097
+Version:        3.00.11
+Date:           21 July 92
+Reported by:    H. Burghardt
+Test File:      Not assigned
+Status:         Fixed in v 4.00.03A
+Severity:       Affected Operation
+-------------------------------------------------------------------------
+Key Words:      WDT, PO,TD,STATUS,bug
+Description:    Status bits PO and TD are not adjusted correctly when the
+		processor is reset because of WDT timeout.
+		
+       
+Work around:    None
+Related Prob:   None
+SSR#:           1098
+Version:        3.00.11
+Date:           8 August 92
+Reported by:    John Taverna
+Test File:      Not assigned
+Status:         Fixed in 4.00.03A
+Severity:       Affected Operation
+-------------------------------------------------------------------------
+Key Words:      RTCC,bug
+Description:    RTCC increments immediately after a write has been
+		made to it.  RTCC should not increment for 2 cycles
+		following the write to F1.
+					    
+Work around:    None
+Related Prob:   None
+SSR#:           1099
+Version:        3.00.11
+Date:           24 August 92
+Reported by:    Mike Jedzejewski
+Test File:      Not assigned
+Status:         Fixed in future release
+Severity:       Affected Operation
+-------------------------------------------------------------------------
+Key Words:      RTCC,bug
+Description:    Incrementing the RTCC externally from a stimulus file
+		does not work correctly.
+					    
+Work around:    None
+Related Prob:   None
+SSR#:           1100
+Version:        3.00.21
+Date:           30 October 92
+Reported by:    Bob Ward
+Test File:      Not assigned
+Status:         Fixed in 4.00.03A
+Severity:       Affected Operation
+-------------------------------------------------------------------------
+Key Words:      F, 16C57
+Description:    When using the F command to modify a file register on
+		the 57, occasionally a register in another page is                
+		modified instead.
+				      
+Work around:    None
+Related Prob:   None
+SSR#:           1101
+Version:        3.00.21
+Date:           18 November 92
+Reported by:    Ralph Heising, Beta Technology
+Test File:      Not assigned
+Status:         Fixed in 4.00.01A
+Severity:       Affected Operation
+-------------------------------------------------------------------------
+Key Words:      Symbol File, Synch Error, bug
+Description:    Occasionally when loading a very large symbol file, a
+		"Symbol File Synch Error" is displayed when there are
+		no errors in the symbol file.
+					    
+Work around:    None
+Related Prob:   None
+SSR#:           1102
+Version:        3.00.21
+Date:           18 November 92
+Reported by:    Ralph Heising, Beta Technology
+Test File:      Not assigned
+Status:         Fixed in 4.00.01A
+Severity:       Affected Operation
+-------------------------------------------------------------------------
+Key Words:      status register, clrf
+Description:    The instruction "clrf status" clears the c and dc bits
+		in the status register.  They should be unaffected.
+					 
+Work around:    None    
+Related Prob:   None
+SSR#:           1103
+Version:        4.01 Alpha
+Date:           4 January 93
+Reported by:    Russ Cooper
+Test File:      Not Assigned
+Status:         Fixed in 4.00.03A
+Severity:       Affected Operation
+-------------------------------------------------------------------------
+Key Words:      RA2, AddToView
+Description:    When adding the RA2 pin to the viewscreen, the 
+		the value of the PC is displayed instead.
+					 
+Work around:    Add port A to the viewscreen in binary radix instead    
+		of the single pin
+Related Prob:   None
+SSR#:           1104
+Version:        4.0 
+Date:           6 January 93
+Reported by:    Matt McFadden
+Test File:      Not Assigned
+Status:         Fixed in v. 4.00.03A
+Severity:       Nuisance
+-------------------------------------------------------------------------
+Key Words:      WDT, reset, PC
+Description:    When the WDT times out it occasionally branches to 0
+		instead of to the destination indicated by the 
+		instruction located at the reset vector.
+					 
+Work around:    None
+Related Prob:   None
+SSR#:           1105
+Version:        4.0 
+Date:           26 January 1993
+Reported by:    Pepe
+Test File:      None
+Status:         Fixed in 4.00.03A
+Severity:       Affected Operation
+-------------------------------------------------------------------------
+Key Words:      sublw, carry      
+Description:    The sublw instruction does not set the carry bit in
+		the status register
+					 
+Work around:    None
+Related Prob:   None
+SSR#:           1106
+Version:        4.00.01 Alpha 
+Date:           27 January 1993
+Reported by:    Bob ?
+Test File:      None
+Status:         Fixed in 4.00.03A
+Severity:       Affected Operation 
+-------------------------------------------------------------------------
+Key Words:      step counter
+Description:    When the ZT (zero timer) command is used, only the
+		timer is reset.  The step counter is not reset.
+					 
+Work around:    None
+Related Prob:   None
+SSR#:           1106
+Version:        4.00 
+Date:           7 Feb 93
+Reported by:    Mike Morse
+Test File:      None
+Status:         NOT A BUG - RE command clears both the timer and the
+		step counter
+Severity:       N/A
+-------------------------------------------------------------------------
+Key Words:      help
+Description:    When the help command is used, text is not formatted 
+		correctly.                         
+		
+Work around:    Refer to the manual
+Related Prob:   None
+SSR#:           1107
+Version:        4.00.01A 
+Date:           10 Feb 93
+Reported by:    Roy Sasaki
+Test File:      None
+Status:         Fixed in v. 4.00.05B
+Severity:       Nuisance
+-------------------------------------------------------------------------
+Key Words:      view screen, format
+Description:    Under certain circumstances, file registers being
+		displayed on the viewscreen will appear truncated on the
+		right of the screen, but will wrap around to the next line.
+		When the value in the register changes, it will overwrite
+		the information on the line following the displayed
+		variable.
+
+
+Work around:    None
+Related Prob:   None
+SSR#:           1108
+Version:        3.00 
+Date:           25 March 1993
+Reported by:    Alan D. Blomeyer, GE Medical Systems
+Test File:      None
+Status:         Fixed in Future Release
+Severity:       Nuisance
+-------------------------------------------------------------------------
+Key Words:      Symbol Table, case-sensitivity     
+Description:    PICSIM does not recognize labels unless entered in the
+		case found in the symbol table.  There should be a 
+		/I option that exists with PICALC v. 3.XX and later. 
+		to be compared without regard to case. 
+				
+		
+Work around:    None
+Related Prob:   None
+SSR#:           1109
+Version:        4.00 
+Date:           25 March 1993
+Reported by:    C.B. Parker
+Test File:      None
+Status:         Undecided
+Severity:       Enhancement Request
+-------------------------------------------------------------------------
+Key Words:      Subroutines, skip
+Description:    There should be a way to skip over a subroutine
+		
+Work around:    Put a break point after the call to the subroutine
+		and execute.
+Related Prob:   None
+SSR#:           1110
+Version:        4.00 
+Date:           25 March, 1993
+Reported by:    C.B. Parker
+Test File:      None
+Status:         Undecided
+Severity:       Enhancement Request
+-------------------------------------------------------------------------
+Key Words:      Strings, Data Memory
+Description:    Provide a way to display a group of ram bytes as a 
+		string.
+			      
+Work around:    None
+Related Prob:   None
+SSR#:           1111
+Version:        4.00 
+Date:           25 March 1993
+Reported by:    CB Parker
+Test File:      None
+Status:         Undecided
+Severity:       Enhancement Request
+-------------------------------------------------------------------------
+Key Words:      trace file
+Description:    Cannot limit trace by address or register.  
+		Every instruction executed is printed in the
+		trace file.
+
+Work around:    None
+Related Prob:   None
+SSR#:           1112
+Version:        4.00 
+Date:           25 March 1993
+Reported by:    Roger Degler, Telonics
+Test File:      None
+Status:         Fixed in Future Release
+Severity:       Affected Operation
+-------------------------------------------------------------------------
+END OF FILE

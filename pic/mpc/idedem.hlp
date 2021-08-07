@@ -1,0 +1,169 @@
+                      BCL Help: IDE Demonstration
+
+                               IDE DEMO HELP
+
+                       Page 1   Main Menu
+                       Page 3   Option Selection Screen
+                       Page 5   Adding an Editor
+                       Page 6   Adding Other Programs
+                       Page 7   Demo Restrictions
+
+
+
+
+
+
+
+
+
+
+
+
+@
+IDE                                                              Page 1 of 7
+                                  Main Menu
+
+  The IDE has everything you need to create and compile your program:
+
+    þ Assemble / Compile  Run the assembler or compiler you have chosen.
+
+    þ Edit Source File    Edit the selected file.
+
+    þ Save Current File   Save the selected file.
+
+    þ Load New File       Select a new file to edit, assemble or compile.
+
+    þ Option Selection    Pick the assembler or compiler you want to run,
+                          the source file, the assembler or compiler options
+                          and add other programs to the IDE menu.
+
+    þ All options that are selected in the IDE are saved to disk when you
+      exit to DOS.  They are re-loaded the next time you run IDE.
+
+@
+IDE                                                              Page 2 of 7
+                            Main Menu (continued)
+
+  To select from the Main Menu, move the cursor bar with the arrow keys, or
+  press the first letter of the menu line.
+
+  To exit to DOS from the IDE, press ESC.
+
+  Your own programs can be added to the IDE Main Menu through the <Menu ID>
+  entries on the Option Selection screen.  For instructions on adding your
+  own programs, see Adding Other Programs.
+
+
+
+
+
+
+
+
+
+@
+IDE                                                              Page 3 of 7
+                            Option Selection Screen
+
+  The IDE Option Selection allows you to select an assembler or compiler,
+  a source file and the options for running it.  These options are saved
+  for you, and are reloaded the next time you run the IDE.
+
+    þ Assembler / Compiler  The assembler or compiler to be used.  Add other
+                            Byte Craft programs to the "User Programs" area.
+                            CANNOT BE CHANGED WITH THE DEMO VERSION OF IDE!
+
+    þ Source File           The name of your source file.
+
+    þ Source Extension     Automatically added to your source file name.
+
+    þ Press <Enter> to select whether to generate the following files:
+      ù Error file   ù Listing file   ù Cross-reference file   ù Object file
+
+
+continued on next page...
+@
+IDE                                                              Page 4 of 7
+                      Option Selection Screen (continued)
+
+    þ Press <Enter> to select type of hex dump file:
+        ù None              ù ASCII             ù Intel             ù S1
+
+    þ Command Line Options  Enter additional command line options for the
+                            Assembler/Compiler.
+
+    þ Editor                Press <Enter> to select and enter information
+                            about the editor (see following pages).
+
+    þ <Menu ID 1>, etc.     Press <Enter> to select and enter information
+                            about additional programs you would like to run
+                            from IDE (see following pages).
+                            CANNOT BE CHANGED WITH THE DEMO VERSION OF IDE!
+
+
+
+
+@
+IDE                                                              Page 5 of 7
+                               Adding an Editor
+
+  The IDE comes with Byte Craft Limited's BCLEDIT already installed. This
+  editor is designed to work with the Byte Craft Limited assemblers and
+  compilers to help you find any errors quickly and easily.
+
+  You can also change this to an editor of your choice, although other
+  editors cannot help you find compile errors.  To use another editor, move
+  the cursor to Editor, press <Enter> and enter the following information:
+
+    þ Editor Name           The complete path and filename of your editor.
+
+    þ Command Line          Any command line options that your editor
+                            requires including the file to be edited.  To
+                            automatically edit the current source file,
+                            type @source.ext.  This special name is replaced
+                            with the current source file.
+
+
+@
+IDE                                                              Page 6 of 7
+                             Adding Other Programs
+
+  The IDE allows you to add up to ten other programs to its IDE menu.
+  Select Option Selection from the IDE main menu, move the cursor to an
+  unused <Menu ID> and press <Enter>.  Enter the following information:
+
+    þ Menu ID               Name or description you want on the IDE menu.
+
+    þ Program Name          Full name of the program including the file
+                            extension and its path.
+
+    þ Command Line          Filename or other information that is required
+                            on the command line.  The current sourcefile
+                            name can be used by typing @source.ext (full
+                            name) or @source (name minus extension).  Any
+                            other required arguments or switches can be
+                            entered here.
+
+
+@
+IDE                                                              Page 7 of 7
+                               Demo Restrictions
+
+  The version of the IDE released with demonstration versions of the Byte
+  Craft Limited assemblers and compilers has some restrictions on its use.
+  These are:
+
+    þ You cannot change the assembler or compiler name.
+
+    þ You cannot add your own programs to the main menu.
+
+    þ You CAN change the editor from BCLEDIT to one of your own.
+
+
+
+
+
+
+
+
+@

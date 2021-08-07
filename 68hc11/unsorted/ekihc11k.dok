@@ -1,0 +1,8 @@
+Pl„ni HC11K4	"KOI" kortille:
+
+MC147805	Regu	prosessorille max 40ma
+MC34164D-3	LVI	3V minimijannitevahti
+MC145407	EIA232D	valikoidaan 3Vlla toimiva yksil”
+MC68HC711K4CFS	MCU	ohjelmoidaan Buffalo, Basic11 ja FigForth
+MC68HC25	PRU	porttienpalautus, jos HC27 ei saatavissa
+

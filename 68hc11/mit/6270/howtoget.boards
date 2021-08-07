@@ -1,0 +1,93 @@
+FILE:  cherupakha.media.mit.edu:pub/6270/howtoget.boards
+DATE:  Fri Jul 29 14:54:18 1994
+
+Original document by Fred Martin
+Updated by Randy Sargent Fri Jul 29 14:54:12 1994
+--------
+
+P.K. Oberoi (spedhead@media.mit.edu) sells 6.270 board kits and
+completed/tested boards.  I (Randy Sargent) strongly recommend buying
+pre-built and tested boards, as we find that around 50% of those
+people build from scratch don't work and must be fixed.
+
+See "catalog" in this directory.
+
+--------
+
+CIRCUIT BOARD FABRICATION CO. (CFC) announces unit and small quantity
+availability of the Revision 2.21 MIT 6.270 Robot Controller Board
+system.
+
+CFC is a large, commercial circuit board manufacturing facility
+located in Waltham, Massachusetts.  They have manufactured boards for
+MIT's 6.270 project for the past four years, and are pleased to be
+able to offer copies of the current revision 2.21 board to the general
+public, under the terms of MIT's free licensing policy.
+
+The Rev 2.21 board set includes five discrete boards (which must be
+ordered as a set):
+
+1. 6811 MICROPROCESSOR BOARD, with 32K battery-backed static RAM, four
+   1600 mA DC motor outputs, 40 KHz modulated high-current output for
+   infrared transmission, 8 digital inputs, 4 analog inputs, 4 motor
+   current monitoring channels, plug and play 14-wire LCD interface,
+   LCD contrast knob, 2 user pushbuttons, and expansion bus. 
+
+2. EXPANSION BOARD, providing two additional 600 mA DC motor outputs,
+   20 multiplexed analog inputs, 4 DIP switch inputs, two 100mA LED
+   driver outputs, one user input "frob knob," and a general-purpose
+   DIP prototyping area. 
+
+3. BATTERY CHARGER BOARD, suitable for charging lead acid or nickel
+   cadmium batteries, with input voltage rectifier, LED charge
+   indicators, and two charge output ports, each with dual charge rate
+   capability. 
+
+4. INFRARED BEACON BOARD, holding eight infrared LEDs in a circular
+   pattern, each with a visible LED (for visual operation indication)
+   and current-limiting resistor in series. 
+
+5. MOTOR SWITCH BOARD, for manual control of four DC motors (using
+   same connector style as main boards), with optional
+   current-limiting circuit to simulate operation of electronic motor
+   drivers. 
+
+Introductory pricing for the board set is as follows:
+
+	no. of sets ordered	price per set
+	-------------------	-------------
+	     	1		   $95.-
+		5		    45.-
+	       10		    27.-
+
+plus $5 shipping and handling per order.  Note that these prices are
+for -blank boards only-.  Further discounts are available for larger
+quantities.  [Note: The unit pricing is obviously kind of steep, but
+if a steady stream of orders trickles in, CFC plans to print up stock
+in advance of actual orders, and thus be able to offer a lower price
+for unit quantities.]
+
+For ordering information, contact Perette Sweeney at (617) 890-1878.
+CFC is located at 179 Bear Hill Road, Waltham MA 02154, and may be
+reached via fax at (617) 890-7098.
+
+				-----
+
+The 6.270 Robot Controller Board system was designed by Fred Martin
+and Randy Sargent and has been subsequently maintained by Karsten
+Ulland, Matt Domsch, and Anne Wright.  The 6811-based Robot Controller
+Board runs Interactive C, a multi-tasking language system developed
+for MIT's 6.270 LEGO Robot Design Competition project.  Documentation
+for the board set and distributable copies of Interactive C may be
+obtained via anonymous FTP to cherupakha.media.mit.edu (18.85.0.47),
+in directory pub/6270.
+
+ADDITIONAL NOTE:  CFC IS A SUPPLIER OF THE _RUG_WARRIOR_ 6811 ROBOT
+BOARD DESCRIBED IN THE FLYNN/JONES "MOBILE ROBOTICS" BOOK.  Contact
+them for pricing/availability.
+
+
+
+
+
+

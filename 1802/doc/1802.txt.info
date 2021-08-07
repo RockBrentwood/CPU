@@ -1,0 +1,17 @@
+
+One-Line-Description-Of-The-Packet:
+	Text file with description of 1802 microprocessor
+
+Uploaded-by-The-Author:
+	yes
+ 
+Bug-Report-Email-Address:
+	hengevel@dutiws.twi.tudelft.nl
+
+Related-Packages:
+	I have also written a disassembler for the 1802, 
+	I still need to add a few features and then I'll upload it too.
+
+Upload-Date: 
+	Wed Sep 21 1993
+

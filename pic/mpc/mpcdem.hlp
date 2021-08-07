@@ -1,0 +1,273 @@
+                   BCL Help: MPC Code Development System Demo
+
+                                  MPC HELP
+
+                       Page 1   Features of MPC
+                       Page 2   Demo Restrictions
+                       Page 3   Running MPC From IDE
+                       Page 4   Running MPC From DOS
+                       Page 5   MPC Command Line Options
+                       Page 6   MPC C Extensions
+                       Page 8   MPC C Restrictions
+                       Page 9   Preprocessor Directives
+
+
+
+
+
+
+
+
+
+@
+MPC                                                              Page 1  of 12
+                                 MPC FEATURES
+
+  The MPC Code Development System has the following features:
+
+    þ Complete C compiler.
+
+    þ Built in macro cross-assembler.
+
+    þ Expert system optimizations.
+
+    þ Consistency checks between target processor and source code.
+
+    þ Listing files include C source, assembler and generated object code.
+
+    þ Separately compiled objects and libraries.
+
+    þ Linker.
+
+
+@
+MPC                                                              Page 2  of 12
+                   RESTRICTIONS ON THE DEMO VERSION OF MPC
+
+  The demonstration version of the MPC Code Development System has some
+  limitations:
+
+    þ The MPC compiler is restricted to generating up to 0x100 bytes of
+      object code.
+
+    þ The MPC compiler can not produce a code file or a hex dump file.
+
+    þ The Assemble / Compile menu option of the IDE will only run MPC.EXE.
+
+    þ The full IDE allows you to add other programs to its menu.  New
+      programs cannot be added to the demonstration version of the IDE.
+
+    þ The demo MPC compiler can only produce code for the 17C42 processor.
+      A header file for this processor is included on the demo disk.
+
+
+@
+MPC                                                              Page 3  of 12
+                          RUNNING MPC FROM THE IDE
+
+  To run the MPC compiler from the IDE main menu, choose Option Selection
+  and check these options:
+
+    þ Assembler/Compiler    Should be MPC.EXE (may include the path).
+
+    þ Source File           The name of the source file you want to compile.
+
+    þ Error File, Cross-    Select Yes for each of these files you want to
+      Reference File, List  generate.  Move the cursor opposite the file name
+      File, Object File     and press <Enter> until the word "Yes" appears.
+
+    þ Hex Dump File         Press <Enter> to select: None, ASCII, Intel, S1.
+
+    þ Command Line Options  Other MPC command line options.
+
+
+@
+MPC                                                              Page 4  of 12
+                            RUNNING MPC FROM DOS
+
+  The MPC compiler can be run from the DOS command line by typing
+
+    MPC [sourcefile [options]]
+
+  If you omit the sourcefile, the MPC compiler will prompt you for:
+
+    þ Source File:          Name of the file to be compiled.
+    þ Error File:           Select Yes for sourcefile.ERR or type new name.
+    þ Cross Reference File: Select Yes for sourcefile.XRF or type new name.
+    þ Listing File:         Select Yes for sourcefile.LST or type new name.
+    þ Hex Dump Type:        Select one of ASCII, Intel, S1 or None.
+    þ Object File:          Select Yes for sourcefile.OBJ or type new name.
+    þ Call Macro Assembler: Select Yes to run macro assembler on source file.
+
+  The DOS command line options are described on the next page.
+
+
+@
+MPC                                                              Page 5  of 12
+                            MPC COMMAND LINE OPTIONS
+
+    +da  ASCII format hex dump              +di  Intel standard 16bit hex dump
+    +ds  Motorola S19 hex dump              -d   No hex dump         (default)
+    +dinhx8m  Intel merged 8bit hex dump    +dinhx8s Intel split 8bit hex dump
+    +dinhx32  Intel extended 32bit hex dump +dinhx8s Intel std. 16bit hex dump
+    +e   Turn error file on                 -e Turn error file off   (default)
+    +l   Turn listing file on               -l Turn listing file off (default)
+    +m   Run as macro assembler             -m Run as C compiler     (default)
+    +o   Generate object file               -o No object file        (default)
+    +x   Turn cross-reference file on       -x No cross-ref file     (default)
+    c=<codename>    Renames the code file to <codename>.
+    d=<dumpname>    Renames the hex dump file to <dumpname>.
+    e=<errname>     Renames the error file to <errname>.
+    l=<listname>    Renames the list file to <listname>.
+    o=<objectname>  Renames the object file to <objectname>.
+    x=<xrefname>    Renames the cross reference file <xrefname>.
+    v=<video>       Change video mode to <video> (CGA, EGA, VGA or MONO).
+
+@
+MPC                                                              Page 6  of 12
+                             MPC C EXTENSIONS
+
+  The MPC implementation has the following extensions to ANSI C:
+
+    þ Binary constants (eg: 0b01101010 or 0B01101010).
+
+    þ bits predefined struct allows single bit manipulations.
+
+    þ Superset of the case statement, including
+        ù case 4,5          multiple cases separated by commas
+        ù case '0'..'9'     range of cases
+        ù case var          variable case -- Use with caution!
+
+    þ Processor-specific functions:
+        ù CLRWDT();       ù NOP();          ù RLCF();        ù RLNCF();
+        ù RRCF();         ù RRNCF();        ù SLEEP();       ù SWAPF();
+
+continued on next page...
+
+@
+MPC                                                              Page 7  of 12
+                       MPC C EXTENSIONS (continued)
+
+    þ Address fixing.  A variable or function can be fixed to a specific
+      location in memory with the @ operator.  (eg: int i @ 0x50;)
+
+    þ #pragma preprocessor directives are used to describe the target
+      processor to the compiler.
+
+    þ __STARTUP() function to perform initialization on reset.
+
+    þ Assemble single instruction with one of
+      ù #asm (instruction);
+      ù #asm <instruction>;
+      ù #asm "instruction";
+
+    þ defined(name) function which returns TRUE if name appears in the symbol
+      table.
+
+
+@
+MPC                                                              Page 8  of 12
+                             MPC C RESTRICTIONS
+
+  MPC has the following restrictions because of the PIC16/17Cxx architecture:
+
+    þ Expression evaluation is limited to using Accumulator and Index
+      Register.  Temporary locations are used by the compiler only for
+      16-bit operations.
+
+    þ Arguments to functions are limited to 2 bytes (using W and X registers).
+
+    þ Arrays are limited to a total of 256 bytes.  Multidimensional arrays
+      and arrays of structs or unions are not allowed.
+
+    þ Local variables have local scope (the same name may be used in
+      different functions) but are stored globally (RAM space is not reused).
+
+
+
+
+@
+MPC                                                              Page 9  of 12
+                           PREPROCESSOR DIRECTIVES
+
+  The MPC compiler supports the following C directives:
+    þ #asm              þ #if               þ #elif             þ #include
+    þ #endasm           þ #ifdef            þ #else             þ #pragma
+    þ #define           þ #ifndef           þ #endif            þ #error
+    þ #undef
+
+  #pragma directives:
+
+    þ #pragma has <hardware>;
+        Tells MPC which hardware platform you are using.  <hardware> is one
+        of PIC12, PIC14 or PIC16.
+
+    þ #pragma memory <special> [<size>] @ <location>;
+        Defines the memory resources of the system.  <special> is RAM or ROM.
+
+continued on next page...
+
+@
+MPC                                                              Page 10 of 12
+                     PREPROCESSOR DIRECTIVES (continued)
+
+    þ #pragma option <compiler_directive>;   <compiler_directive> is one of:
+        +c or -c    Assembler C compatibility.                      default +c
+        +d or -d    Show disassembled code in listing file.         default +d
+        e nnn       Maximum number of error messages before abort.  default 20
+        f nnn       Form (page) length for listing file.            default 66
+        +i or -i    Initialize variables to 0 on reset.             default -i
+        +l or -l    Turn listing on or off.                         default +l
+        +m or -m    Assembler: assign RAM at #pragma memory         default +m
+                    locations or at program counter.
+        n notice    Set notice string in binary code file (.COD).
+        +o          Generate modified listing file.
+        p           Skip to next page in listing file.
+        ra          RAM switch: switch to next area of RAM.
+        rs          ROM switch: switch to next area of ROM.
+
+continued on next page...
+
+@
+MPC                                                             Page 11  of 12
+                     PREPROCESSOR DIRECTIVES (continued)
+
+    #pragma option continued
+        t title     Set title line for listing file pages.
+        +u or -u    Use unsigned or signed chars.                   default -u
+        v           Generate verbose symbol table information in
+                    binary code file.  Must be FIRST line in file.
+        +x or -x    Expand assembler macros.                        default -x
+
+    þ #pragma portxx <name> @ <location>;
+        Declares a variable as a port at the specified location.  "xx" is one
+        of "r" (read-only), "w" (write-only) or "rw" (read-write).
+
+    þ #pragma regxx <name>;
+        Declares a variable as a register.  "xx" is one of "w" (W register),
+        "cc" (condition codes which are read-only) or "ix" (X Register).
+
+continued on next page...
+
+@
+MPC                                                             Page 12  of 12
+                     PREPROCESSOR DIRECTIVES (continued)
+
+    þ #pragma vector <vector-name> @ <location>;
+       Names and sets the location of an interrupt vector.  A function with
+       the same name as the vector is the interrupt handler for that vector.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@

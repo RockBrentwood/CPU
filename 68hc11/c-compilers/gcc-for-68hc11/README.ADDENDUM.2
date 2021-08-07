@@ -1,0 +1,30 @@
+
+Included at the end is an rcs diff for the machine description file for the
+6811 port of the gnu gcc compiler. This diff represents a patch to fix a
+serious bug in the assembler output of the compiler.
+
+The bug is the omission of a XGDX instruction when doing addition on
+the stack pointer, causing garbage values to be loaded after a function call.
+This bug manifests itself when more than 9 bytes is passed on the stack when
+invoking a function.
+
+To apply this patch, you can either run Larry Wall's patch program, or edit
+the file by hand.
+
+Good luck,
+
+Otto
+
+--
+Otto Lind                  Coactive Aesthetics
+otto@coactive.com          P.O. Box 425967, San Francisco, CA 94142
+netcom!coactive!otto       voice:(415)626-5152    fax:(415)626-6320
+
+----------------------------- cut here -----------------------------------
+===================================================================
+RCS file: RCS/m6811-local.md,v
+retrieving revision 1.8
+diff -r1.8 m6811-local.md
+593a594
+>           output_asm_insn(\"XGDX\", operands);
+----------------------------- cut here -----------------------------------

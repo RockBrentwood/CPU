@@ -1,0 +1,36 @@
+Return-Path: robot-board@oberon.com
+Received: by media.mit.edu (5.57/DA1.0.4.amt)
+	id AA25796; Tue, 26 Oct 93 15:15:31 -0400
+Received: from  ([127.0.0.1]) by oberon.com (4.1/SMI-4.1_Armado.MX)
+	id AA16781; Tue, 26 Oct 93 15:09:56 EDT
+Date: Tue, 26 Oct 93 15:09:56 EDT
+Message-Id: <9310261908.AA09211@netcom5.netcom.com>
+Errors-To: gkulosa@oberon.com
+Reply-To: daniels@netcom.com
+Originator: robot-board@oberon.com
+Sender: gkulosa@oberon.com
+Precedence: bulk
+From: daniels@netcom.com (Daniel A. Segel)
+To: Multiple recipients of list <robot-board@oberon.com>
+Subject: 6.270 LCD placement question
+X-Listprocessor-Version: 6.0b -- ListProcessor by Anastasios Kotsikonas
+Status: O
+
+I just wanted to make sure I'm not doing something really stupid, since
+I seem to be having a few problems getting my 6.270 board set working
+properly.
+
+Anyway, which way does the LCD plug into the expansion board? If it's
+covering the board, with the connector in the upper-left, then the
+capacitor at C15 gets in the way and the female headers on the right
+side (analog input port) are partly covered.
+
+And if it's stuck on the other way, it sticks out into the world...
+
+Any tips?
+
+Thanks,
+
+Daniel S.
+daniels@netcom.com
+

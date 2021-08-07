@@ -1,0 +1,51 @@
+
+Greetings,
+
+We are happy to announce an alpha release of the 68HC11 port of the gnu gcc
+compiler version 2.3.3 done by Coactive Aesthetics.  In keeping with the
+spirit (and law ;-) of the FSF philosophy we are distributing this software
+free of charge.
+
+As indicated by the fact that this is an alpha release, it is not
+functionally complete.  The current version of gcc for the 68HC11 has the
+following caveats:
+
+    (1) There is no floating point support.  Using floating point in your
+	program will cause the compiler to crash.  If you get an internal
+	compiler error when compiling your program the first thing to check
+	is if you are using floating point.
+
+    (2) Currently all longs are TWO bytes.  This will likely change with
+	future versions.
+
+    (3) Since we are currently using the free Motorola assembler there is no
+	linker with this version of the compiler.  This will change when GAS
+	is ported to the 68HC11.
+
+Even with the above, you can use the compiler and the Motorola assembler to
+compile C and C++ source modules, and generate S19 records that can be down
+loaded and executed on a microcontroller board.
+
+The port was written using the GCB11 Network Microcontroller board that is
+manufactured by Coactive Aesthetics.  However, there is no assumptions and/or
+hardcode values within the compiler which would prevent the compiler from
+working on any 68HC11 board. More details on the can be found in the README
+file that is part of the distribution.
+
+The source for the 68HC11 specific files (for both a Unix and a PC port) can
+be found at /pub/coactive/gcc-6811-alpha.tar.Z on netcom.com.  You should
+also get the original distribution for gcc-2.3.3 from your favorite archive
+site.
+
+Please send any porting comments/questions to otto@coactive.com.  Bug
+reports and questions relating to using the compiler should be sent to
+gcc@coactive.com (if sent to me, they will go to /dev/null!).
+
+Thanks,
+
+Otto
+
+--
+Otto Lind                  Coactive Aesthetics
+otto@coactive.com          P.O. Box 425967, San Francisco, CA 94142
+netcom!coactive!otto       voice:(415)626-5152    fax:(415)626-6320

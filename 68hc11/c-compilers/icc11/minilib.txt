@@ -1,0 +1,51 @@
+	    Information on Using icc11 with the Mini Board
+	    ----------------------------------------------
+
+		last updated: Wed Jan 19 21:44:08 1994
+
+
+icc11, a new 6811 C-language cross compiler, has recently become
+available.  Developed by Richard Man of ImageCraft (P.O. Box 64225,
+Sunnyvale, CA 94086; E-mail: imagecft@netcom.com), the icc11 compiler
+runs on MS-DOS systems.  As of this writing, it is in pre-general
+release version 0.42.
+
+icc11 is important because it the first freely available high-quality
+6811 C compiler.  While ImageCraft will sell the general release
+version, it plans to continue distributing a prior version for free.
+
+The compiler is available from the Mini Board FTP site
+(cherupakha.media.mit.edu) in directory pub/miniboard/icc11.  Also
+available is a version of the Mini Board libraries customized to work
+with icc11, named "minilib.s."
+
+This document explains how to install and use the minilib.s library
+with the icc11 compiler.
+
+
+Installing and using minilib.s--------------------------
+
+The Mini Board library file is in pub/miniboard/icc11/minilib.s on the
+FTP server.  To install, you replace icc11's default run-time library
+file (crt.s) with minilib.s; i.e., you rename minilib.s to be crt.s.
+That's it for installation.  You may wish to keep a copy of the
+original crt.s around in the interest of future use.
+
+The icc11 compiler is easy to use and quite functional.  To compile a
+C file, you say "icc11 myfile.c" at the MS-DOS command line, and it
+compiles your file and links it with the run-time library file.
+
+The following Mini Board functions described in the Mini Board Technical
+Reference are available with the icc11 minilib.s file:  analog(),
+digital(), motor(), off(), button(), msleep(), tone(), printdec(), and
+getchar().  In addition, the functions putchar(), peek(), peekword(),
+poke(), and pokeword() are available.  The "time" counter variable may
+be accessed.  For documentation on using these functions, please see
+the comment block at the start of the minilib.s file.  The functions
+should work just as described in the Mini Board Technical Reference.
+
+I encourage any Mini Board user who (a) has a PC or SoftPC setup and
+(b) hasn't bought Dunfield's Micro-C to download icc11 and start
+playing with it.  It's a big win.
+
+	-Fred

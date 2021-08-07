@@ -1,0 +1,134 @@
+                     T h e   8 0 5 2   D e b u g g e r
+
+(0) OVERVIEW
+   This is a rudimentary debugger that can be used with your 8052
+microprocessor.  It can probably also be used with the other members of the
+MCS-51 family, but you should probably make appropriate changes in the software
+instead.  It has the following requirements:
+
+         (1) Addresses 4000 to 4680 (hex) in the 8052's code space
+             must be available for use.
+         (2) To start the interpreter, you must "call" 4000 hex.
+         (3) You must set up the external interrupt 0 handler so that
+             it pushes PSW on the stack and then jumps to address 4003 hex.
+
+Many 8052's come packaged with an internal BASIC interpreter, already
+compatible with the requirements listed above, so that you may not need to
+do anything at all.  The routines needed to allow you to run this debugger from
+reset are included at the top of the assembly program inside comments. If you
+are going to be using this in a stand-alone environment (without a BASIC
+interpreter) then uncomment these routines.
+
+   An even better idea: you may want to try your hand at integrating the
+multitasking library with the debugger in order to produce something that will
+run in a stand-alone environment.
+
+   The description below serves 2 purposes:
+
+        (1) To provide you with the information needed to write your own
+            client for this debugger
+        (2) To allow you to use the debugger directly, without an elaborate
+            client.  This will be awkward to do, though.
+
+If you have a PC-compatible with VGA, you will be able to use the client I
+have provided.  Otherwlse, you will still be able to take a large portion of
+it and port it to whatever machine you are using, if you are willing to write
+your own.
+
+(1) COMMANDS and CODES
+   Every command sent to the debugger has the following format:
+
+                Letter  [Hex Number [Hex Number]]
+
+The hex numbers, may be 2 or 4 digits long.  A hex digit is any of the digits
+0-9, or letters a-f, or A-F.  The commands are listed below with their codes.
+
+                     C o m m a n d   S u m m a r y
+
+                     M, N ..... 2 digit hexadecimal numbers
+                     MM, NN ... 4 digit hexadecimal numbers
+
+                     a         Display REGS R0-R7
+                     b         Display SFR's
+                     c M  N    Display M bytes of DBY from N.
+                     d MM NN   Display MM bytes of CBY from NN.
+                     e MM NN   Display MM bytes of XBY from NN.
+                     f MM NN   Hex Dump MM bytes of CBY from NN.  Rounds up
+                               MM to multiple of 16.
+                     g         Hex Load to XBY.
+                     h NN      Call NN
+                     i NN      Jump NN
+                     j         Disassemble
+                     k         Single Step
+                     l         Exit
+
+(a) Display REGS R0-R7
+   The registers R0, R1, R2, R3, R4, R5, R6, and R7 are listed with their
+current values.
+
+(b) Display SFR's
+   All the Special Function Registers for the 8052, which include the following:
+
+           Ports:           P0, P1, P2, P3
+           General Purpose: A, B, DPTR, SP, PSW
+           Peripheral:      TIMER0, TIMER1, TIMER2, RCAP2
+           Control:         TCON, TMOD, T2CON, SCON, PCON, IE, IP
+
+(c) Display M bytes of DBY starting at N.
+   DBY, here, refers to the internal data address space of the 8052.  The lower
+128 bytes are accessible directly by address or indirectly through the register
+pointers @R0, @R1, or the stack pointer.  The upper 128 bytes are only
+indirectly accessible, and tend to be used by programmers as stack space.
+   The debugger accepts 2 digit hexadecimal numbers for N and M.  If N + M is
+100 hex, or over, the display wraps around to address 0.
+
+(d) Display MM bytes of CBY starting at NN.
+   CBY refers to the code address space of the 8052.  What this address space
+is actually used for depends on the circuit board holding the 8052.  It is
+usually mapped by circuitry to read-only memory containing stand-alone 8052
+software, or tables.  Generally, though it can be mapped to anything with the
+appropriate circuitry, including to the XBY address space (described below).
+   The debugger accepts 4 digit hexadecimal numbers for NN and MM.  Like above
+if this sum exceeds the limit (this time: 10000 hex), the display wraps around
+to address 0.
+
+(e) Display MM bytes of XBY starting at NN.
+   XBY refers to the external data address space of the 8052.  Unlike CBY, the
+8052 language has instructions that allow you to do both input and output at
+addresses in the XBY space.
+   This space can also be configured for anything with the appropriate
+circuitry.  It is typically mapped to RAM chips where variables and other
+changeable data is held for 8052 software.  Peripherals can also be mapped
+into this address space with the right circuitry: for instance keypads,
+keyboards, liquid crystal display registers, CRT controller registers, etc.
+   The format for NN and MM as the same as with the CBY display.  Addresses
+will wrap around to as as above.
+
+(f) Hex Dump MM bytes starting at NN.
+   Transfers MM bytes of CBY memory starting at address NN to the Client in
+Intel Hex Format.  The format for the numbers NN and MM are the same as in the
+previous command.  The number of MM is rounded up to the nearest multiple of
+16 -- it was far easier to program it that way and it does no harm.
+
+(g) Hex Load
+   Transfers data from the Client to XBY memory in Intel Hex format.  Since
+the addresses are part of the format, they do not need to be explicitly
+specified in the command itself.  So the command only consists of one letter.
+
+(h) Call NN
+   Executes a single call instruction on address NN.  The number NN has the same
+format as in the previous command.
+
+(i) Jump NN
+   Executes a single jump instruction to address NN.
+
+(j) Disassemble
+   Prints out 1, 2, or 3 bytes representing the binary for the next instruction
+about to be executed.
+
+(k) Single Step
+   Executes the next pending instruction
+
+(l) Exit
+   Exits the debugger and resumes control starting at the next pending
+instruction.

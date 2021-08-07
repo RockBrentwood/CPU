@@ -1,0 +1,116 @@
+FILE---cherupakha.media.mit.edu:pub/6270/docs/DS1233-instructions.txt---
+
+Several people have asked me for instructions to install the new reset
+circuitry (needed for using the 'A1 processor) onto the older boards.
+
+A few notes:
+
+1.  The DS1233 chip is required when using Motorola 'A1 version
+processors.  The older 'A0 processors (which are now discontinued)
+don't require this circuit (though they will work fine with it).
+
+2.  The most important difference between the revision 2.1x and 2.21
+boards is that the 2.21 board includes the circuit presented here.
+For more information on differences between these board revisions, see
+the file pub/6270/rev2.21-assembly/v211-vs-221-differences.txt.
+
+3.  The 'A0 processor will work fine in the latest board (rev 2.21),
+but the 'A1 processor won't work in the older board (rev 2.1x), unless
+the circuit presented here is installed.
+
+
+       INSTALLING THE DALLAS DS1233 ONTO REV 2.1X 6.270 BOARDS
+
+These instructions describe how to modify a Revision 2.1x 6.270 board
+to accept the Dallas 1233 reset circuitry now present on the Revision
+2.21 boards.  This modification allows the 6.270 board design to be
+used with newer Motorola 'A1 suffix processors, which incorporate a
+slightly different reset circuit that is incompatible with the older
+6.270 board design.
+
+Parts needed:  Dallas 1233 ``Econoreset'' chip, 0.01 uF capacitor,
+1N914 signal diode, three 1K resistors.
+
+Note:  prior instructions may refer to "1N4148" diodes.  These are
+functionally equivalent to 1N914's in the 6.270 circuit and either
+type (or both) may be used.
+
+
+		      STEP-BY-STEP INSTRUCTIONS
+
+The instructions assume the board is held such that the "top edge"
+contains the labelling "6.270 Version 2.1x ROBOT CONTROLLER BOARD."
+
+1.  Remove the following components:  C11 (4.7 uF), R9 (47K), C6 (2.2
+uF), R8 (10K), R7 (47K), D4 (1N914), D5 (1N914), D6 (1N914), R5
+(3.3K), RP3 (1K x 3).
+
+2.  Install the new 0.01 uF capacitor in the position of R7.
+
+3.  Install the DS1233 chip in the holes vacated by C6 and the upper
+hole of R8.  Install so that the flat face of the DS1233 faces the
+upper edge of the circuit board:
+
+       ----------------------------------------------+
+   "...ROBOT CONTROLLER BOARD"  	+-----+      |
+	                                |o o o|  <-- | -- DS1233
+					 \---/       |
+                           vacant ---->  o o-o   <-- | -- 0.01 uF cap
+
+4.  Install two 1K resistors in the place of the upper two resistors
+of RP3 (i.e., to the left of LED11 and LED12).  
+
+5.  Install the third 1K resistor in the remaining RP3 positions in
+the following manner: insert (and solder) one lead of the resistor in
+the bottom-most hole, and leave the remaining lead pointed upward
+unconnected (for now).
+
+6.  Install a 1N914 diode into the position of the C11 capacitor in
+the following manner: insert (and solder) the anode (un-banded end)
+into the left hole of the C11 position.  Leave cathode lead pointed
+upward.
+
+7.  Using thin wire (wire-wrap wire is ideal), jumper between the
+cathode (banded end which is pointing up from the board) of the
+``C11'' diode and the right-hand side of R12 (beneath the "CHOOSE"
+button).  Clip the cathode short, just above the jumper.
+
+Note:  steps 8 and 9 involve two jumpers that connect three points
+together.  Do not clip leads until you have wired both segments of the
+jumper. 
+
+8.  Install a jumper from the lower hole of the R8 position (near the
+DS1233 chip) to the un-connected end of the 1K resistor in the lowest
+RP3 position.  
+
+9.  Install a jumper from the un-connected end of the same 1K resistor
+to the right-hand terminal of the main reset switch (SW2).  You will
+need to run the jumper underneath the board; it is convenient to route
+the jumper through a vacant hole such as either of the R9 holes.  The
+right-hand terminal of the main reset switch is the one which -does
+not- immediately connect to the large thick trace (system ground).
+				   
+		 ----END OF ASSEMBLY INSTRUCTIONS----
+
+
+When the circuit is installed, the board should behave as follows.
+When the board is powered on, the red "LOW BATT" LED should light for
+about 1/3 second.  The LED will then turn off, and the board will
+reset into run mode.  Note that previously, the board would power-on
+into download mode.
+
+To place the board in download mode, hold down the "CHOOSE" button and
+press and release the reset button.  Continue holding the CHOOSE
+button through the 1/3 second reset delay (during which time the LOW
+BATT LED should be lit).  When the board comes out of reset, it will
+be in download mode (evidenced by the SER XMIT LED being completely
+off).
+
+To reset the board normally, press and release the reset button.
+After a 1/3 second delay, the board will reset.
+
+When the alkaline cells which power the microprocessor circuit weaken,
+you may notice a mode in which the board continually resets itself.
+At this point the alkaline cells should be replaced.
+
+	- Fred

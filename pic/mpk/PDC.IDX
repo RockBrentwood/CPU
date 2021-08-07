@@ -1,0 +1,21 @@
+
+PKZIP (R)   FAST!   Create/Update Utility   Version 2.04g   02-01-93
+Copr. 1989-1993 PKWARE Inc.  All Rights Reserved.  Shareware Version
+PKZIP Reg. U.S. Pat. and Tm. Off.   Patent No. 5,051,745
+
+þ 80486 CPU detected.
+þ XMS version 3.00 detected.
+
+Searching ZIP: PDC.ZIP
+
+ Length  Size  Ratio   Date    Time    CRC-32  Attr  Name
+ ------  ----- -----   ----    ----   -------- ----  ----
+   2904   1419  52%  24-02-94  10:13  8ef3bf65 --w-  BOXER.CFG  editors configuration
+   3849   1363  65%  09-08-94  17:52  892fcbaf --w-  PDC.BAT    Batch-shell
+     96     85  12%  24-06-94  17:11  abbdfe0e --w-  PDC.SEL    Menu for shell
+   4942   2129  57%  25-11-93  13:56  95943372 --w-  PIC.CFG    tm config file (V4.0)
+    451    195  57%  24-02-94  09:43  7b29f46c --w-  PIC71.MAC  Macro for Pic71 (for MpK)
+   4060   1316  68%  09-02-94  15:14  0c6e1717 --w-  PICREG.EQU New enhenced PIC settings
+   4942   2129  57%  25-11-93  13:56  95943372 --w-  TM.CFG     Original telemate settings (V4.0)
+ ------  ------  ---                                  -------
+  2124    8636  60%                                        7

@@ -1,0 +1,7 @@
+One-Line-Description-Of-The-Packet:
+	A portable 6502 assembler, including source in C.
+
+Longer-Description:
+	As6502	Contains a portable 6502 assembler, including source
+		in C.
+		Author:  J. Van Ornum; Amiga port by Joel Swank

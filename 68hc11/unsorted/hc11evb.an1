@@ -1,0 +1,367 @@
+ALUATION BOARD APPLICATION NOTE      MOTOROLA   1            M68HC11EVB/AN1
+
+EVB APPLICATION NOTE
+
+
+(Special Test Mode Operation)
+
+
+
+INTRODUCTION
+
+This application note provides information on how to operate
+the M68HC11EVB Evaluation Board (EVB) in the special test mode.  The
+EVB is designed to operate the resident MC68HC11xx MCU in the expanded
+multiplexed mode of operation.  A variation of the exp anded 
+multiplexed mode is the special test mode, which allows the user 
+special privileges (i.e., no time-out on protected registers, CONFIG 
+register programming, etc.).  The special test mode can be used if, 
+for some reason, the configuration (CONFIG) reg ister gets corrupted
+and the user needs to change the register contents. 
+
+
+ENTERING THE SPECIAL TEST MODE
+
+Entering the special test mode is accomplished by grounding the
+EVB resident MC68HC11xx MCU MODB pin (jumper connector P1 pins 1 and 2)
+and initiate a reset condition by pressing the RESET switch S1.  The
+special test reset vector resides at locations $B FFE and $BFFF versus
+$FFFE and $FFFF for normal modes of operation.  The RAM/EPROM socket
+(U4) is remapped by removing the jumper on jumper header J3 and
+reinstalling the jumper on jumper header J7.  Socket U4 is now remapped
+from $A000 through $BFFF for user application program. 
+
+
+CONFIGURATION REGISTER
+
+	The configuration (CONFIG) register is an EEPROM byte located
+initially at $103F in the MC68HC11xx MCU memory map.  Upon a reset
+condition the CPU loads the CONFIG register contents into a set of MCU
+latches.  These latches contain the data which is displ ayed on the
+terminal when performing a memory display (MD) operation of the CONFIG
+register ($103F). 
+
+
+Special test mode operations are described as follows:
+
+	a.	Enabling COP Watchdog System via CONFIG Register NOCOP Bit
+	b.	MC68HC811A2 Resident MCU Operation
+	c.	Programming an MC68HC811A2 for Single-Chip Applications
+	d.	Clearing CONFIG Register ROMON Bit
+
+
+
+Enabling COP Watchdog System via CONFIG Register NOCOP Bit
+
+
+
+
+	Suppose the user is finished with initial debugging and wants
+to enable the computer operating properly (COP) watchdog system by
+programming the NOCOP bit in the CONFIG register to a logic zero.  
+For MC68HC11xx mask sets B96D and higher, this operation can only 
+be accomplished using either the special test or bootstrap mode of
+operation. 
+
+
+Steps required:
+
+
+	a.   Install 6264 RAM (8Kx8) or equivalent device in socket location U4.
+
+	b.   Memory modify (MM) locations $BFFE and $BFFF to contain $E00A.
+
+		($E00A enables reset vector to jump to BUFFALO.)
+
+	c.   Remove jumper J3 and reinstall on J7.
+
+	d.   Jumper connector P1 pins 1 and 2.
+
+	e.   Press RESET switch S1.
+
+
+
+	At this point the user should be in the BUFFALO monitor program
+and operating in the special test mode.  By entering MD 103F on the
+terminal keyboard, the user can display the contents of the CONFIG
+register latches.  For example, if the ROMON bit is a lo gic zero and
+the EEON bit is a logic one for an MC68HC11A1 MCU device, the terminal
+will display $0D. 
+
+
+	To turn on the COP, the user enters MM 103F and changes the
+memory contents to $09.  BUFFALO treats EEPROM as a RAM location.  The
+MM command programs the location if found to be EEPROM.  If a memory
+display (MD) of location $103F was again performed, a $ 0D would be
+displayed since the CONFIG register latches are not updated until the
+next reset operation. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+MC68HC811A2 Resident MCU Operation
+
+
+
+
+	Many users want to operate the MC68HC811A2 device in the EVB as
+the resident MCU.  Using the MC68HC811A2 device will normally cause EVB
+problems because the erased CONFIG register places the 2K of EEPROM at
+locations $F800-FFFF.  Locations $F800-FFFF will be in conflict with the
+BUFFALO monitor program in EPROM.  However, by operating in the special
+test mode, the CONFIG register EEON bit is forced to a logic zero.  At
+this point, the user must move the EEPROM to a location other than
+$E800-EFFF or $F800- FFFF and then turn the EEPROM back on. 
+
+
+Steps required:
+
+
+a. 	Install 2764 EPROM (8Kx8) or equivalent device in socket location 
+	U4 with EPROM locations $1FFE and $1FFF programmed to contain $E00A.
+	($E00A enables reset vector to jump to BUFFALO.)
+
+	b.	Remove jumper J3 and reinstall on J7.
+
+	c.	 Jumper connector P1 pins 1 and 2.
+
+	d.	Press RESET switch S1.
+
+
+
+	At this point the user should be in the BUFFALO monitor program
+and operating in the special test mode.  By entering MD 103F on the
+terminal keyboard, the user can display the contents of the CONFIG
+register latches.  For example, if the MCU device was pr eviously
+erased, the CONFIG register latches would contain $FE (not $FF since in
+EEON bit is initially forced to a logic zero).  To move the EEPROM to
+another location, the user enters MM 103F and changes the CONFIG
+register latch contents to $xF (where x
+ is the high-order byte of the address desired; again x cannot be $E or $F).
+
+
+NOTE
+
+	When using the MC68HC811A2 device, the user writes directly to
+the CONFIG register latches; therefore, memory display (MD) of $103F
+will result in the changed value to be displayed without resetting the
+MCU. 
+
+
+
+
+Programming an MC68HC811A2 for Single-Chip Applications
+
+
+
+
+If the user requires a target system MC68HC811A2 device to operate in a single chip mode, the user must have 2K of EEPROM turned-on via the CONFIG register EEON bit , and the 2k of EEPROM must be remapped to $F800-FFFF.  To accomplish this on the EVB, the
+
+ user must first move the 2K EEPROM to another location other than $E800-EFFF or $F800-FFFF and then turn the EEPROM back on.  The user must then inform the BUFFALO monitor program that the EEPROM does not reside at the starting location $B600 via the mod
+
+ify EEPROM range (EEMOD) command.  (The reassigned starting location will also indicate that the device is not an MC68HC11A1 MCU.)
+
+
+Another problem exists in that the EVB RAM is located at $C000 through $DFFF, and a user program originated at $F800 through $FFFF cannot be downloaded into the EVB RAM.  This problem is now corrected via the addition of the OFFSET command.  The OFFSET co
+
+mmand will either add or subtract a hexadecimal value from the S-record address locations.
+
+
+The EEMOD and OFFSET commands were added to the BUFFALO monitor program (Rev 3.4).  Rev 3.4 of the BUFFALO monitor program is available on the Motorola's freeware line, (512)-440-FREE.
+
+
+As shown on the following page, the user programs the 2K of EEPROM via the MOVE command, and then reprograms the CONFIG register to place the EEPROM back to locations $F800-FFFF.  The example also assumes that a 2K program was downloaded into socket locat
+
+ion U5 (at location $C800).  This can be accomplished by downloading a user program originally originated at $F800 through $FFFF as follows:
+
+
+
+	Enter:
+
+
+		>OFFSET -3000			Subtract 3000 from S-record address.
+
+		D000					Positive offset  added to S-record address.
+		>
+
+
+		>LOAD cat filename.S19		Address locations $F800-FFFF become 
+							$C800-CFFF.
+		DONE
+		>
+
+
+
+
+
+Programming an MC68HC811A2 for Single-Chip Applications (cont'd)
+
+
+
+
+Steps required:
+
+
+	a.	Install 2764 EPROM (8Kx8) or equivalent device in socket location U4 with 
+		locations $1FFE and $1FFF programmed to contain $E00A.
+
+			($E00A enables reset vector to jump to BUFFALO.)
+
+	b.	Remove jumper J3 and reinstall on J7.
+
+	c.	Jumper connector P1 pins 1 and 2.
+
+	d.	Press RESET switch S1.
+
+	e.	Enter:
+
+
+			>MM 103F				Examine location $103F.
+
+			103F FE 8F(RETURN)		Move EEPROM to $8800-8FFF.
+			>
+
+
+			>EEMOD 8800			Inform BUFFALO of EEPROM location.
+			>
+
+
+			>MOVE C800 CFFF 8800		Program 2K EEPROM (approx. 30 sec.)
+			>
+
+
+			>MM 103F				Examine location $103F.
+
+			103F 8F FF(RETURN)		Move EEPROM back to $F800-FFFF.
+			>					Terminate MM operation.
+
+
+
+At this point, power down the EVB, remove the MC68HC811A2 device and reinstall  
+in target system.  BUFFALO will not operate at this time.
+
+
+Clearing CONFIG Register ROMON Bit
+
+
+
+
+If the CONFIG register ROMON bit in the MC68HC11 MCU device is accidently turned on, the EVB will not operate because ROM is residing at locations $E000-FFFF.  BUFFALO also resides at locations $E000-FFFF.  In this example, simply activating the special t
+
+est mode and vectoring to BUFFALO will not  work.  Therefore the user must not only replace RAM with EPROM, but must also write a small routine that will turn off the CONFIG register ROMON bit.
+
+
+Steps required:
+
+
+	a.	Program 2764 EPROM (8Kx8) or equivalent device with the program supplied 
+		on the following page of this application note.
+
+	b.	Install programmed 2764 EPROM (8Kx8) or equivalent device in socket  
+		location U4.
+
+	c.	Remove jumper J3 and reinstall on J7.
+
+	d.	Jumper connector P1 pins 1 and 2.
+
+	e.	Press RESET switch S1.
+
+	f.	 Remove jumper previously installed on connector P1 pins 1 and 2.
+
+	g.	Press RESET switch S1.
+
+
+
+			BUFFALO monitor program should now be operating.
+
+
+
+
+
+
+
+
+
+Clearing CONFIG Register ROMON Bit (cont'd)
+
+
+2764 EPROM PROGRAM
+
+************************************************************************************
+
+
+		*Program to turn off CONF register ROMON bit
+
+
+1FFE               ORG   $1FFE
+1FFE A000          FDB   $A000	force reset to jump to $A000 (U4)
+
+0000               ORG   $0
+0000 8E 00 FF      LDS   #$00FF
+0003 8D 24         BSR   DLY10	allow charge pump to stabilize
+
+
+		*
+		*Erase CONFIG register
+		*
+
+
+0005 C6 16         LDAB  #$16		byte erase and EELAT on
+0007 F7 10 3B      STAB  $103B	write to PROG register
+000A B7 10 3F      STAA  $103F	dummy write to CONFIG register
+000D 5C            INCB			to $17 - turn on EEPGM bit
+000E F7 10 3B      STAB  $103B	write to PROG register
+0011 8D 16         BSR   DLY10	delay 10 ms for erase to be complete
+0013 7F 10 3B      CLR   $103B	turn off charge pump (EEPGM to 0)
+
+
+		*
+		*Reprogram CONFIG register with desired data
+		*
+
+
+0016 C6 02         LDAB  #$02		turn on EELAT
+0018 F7 10 3B      STAB  $103B	write to PROG register
+001B 86 0D         LDAA  #$0D		choose NOSEC, NOCOP, ROMON=0, EEON
+001D B7 10 3F      STAA  $103F	write to CONFIG register
+0020 5C            INCB			to $03 - turn on EEPGM bit
+0021 F7 10 3B      STAB  $103B	write to PROG register
+0024 8D 03         BSR   DLY10	delay 10 ms for program to complete
+0026 7F 10 3B      CLR   $103B	turn off charge pump (EEPGM to 0)
+0029 20 FE    SELF BRA   SELF
+
+
+		*
+		*Programming complete, results not implemented until next reset
+		*
+
+
+002B CE 0D06 DLY10 LDX   #$0D06	3334 * 6 cycles * 500nS (2MHz)  =10mS
+002E 09      DLOOP DEX
+002F 26 FD         BNE   DLOOP
+0031 39            RTS
+
+
+************************************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+

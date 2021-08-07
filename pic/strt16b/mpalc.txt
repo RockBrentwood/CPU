@@ -1,0 +1,1686 @@
+
+PIC 16Cxx Assembler
+This document describes the technical aspects of the
+PIC16Cxx Assembler/Linker (MPALC) developed by Microchip
+Technology Incorporated. Included in this manual is a list
+of main features, program structure, directives, macro
+capabilities, I/O files, and a detailed description of the
+instruction sets for the PIC16C5X and PIC16CXX.  Based on
+the instruction width, 16C5X family processors are sometimes
+referred to as 12 bit core machines, and 16CXX processors
+are referred to as 14 bit core machines.
+The file "MPALC.DOC" on the software tools diskette provides
+any updates or additional information which was not
+available at the time this User's Guide was printed.
+
+1.1  CONCEPTS
+An assembler is a software development tool used to
+translate a set of assembler instructions (called source
+code) into instructions that are understood by the computer
+(called machine code).  Assembler instructions are provided
+as an easy means by which a programmer can effectively
+execute machine instructions.
+The complete PIC Assembly language is comprised of the
+following three components:
+. Instruction mnemonics
+. Directives
+. Macros
+Mnemonics are instructions that are translated directly into
+machine code.  They are used to perform arithmetic and
+logical operations on data residing in either memory or
+registers.  They also have the ability to move data in and
+out of registers and memory as well as conditional branching
+to specified program addresses.
+Directives provide control of the assembler's operation by
+telling the assembler how to treat mnemonics, reference
+data, and format the listing and output files.  Directives
+make coding easier and provide custom output tailored to the
+project's needs.
+A macro consists of a sequence of assembler commands.
+Passing arguments to a macro allows for flexible
+functionality of the macro.  They provide the following
+advantages:
+.    Higher level of abstraction which in turn improves
+ readability, simplicity of implementation and greater
+ reliability.
+.    Consistent solution to a frequently performed function.
+.    Simplify changes because changing a macro body is
+ easier than modifying all locations where a given function
+ is performed.
+
+1.2  MAIN FEATURES OF MPALC -             OVERVIEW
+.    Translates programs (source code) written in PIC
+ Assembly language to machine executable code (object code)
+ on IBM PC or compatibles running MS-DOS V3.31.
+.    Generates object code in 4 different formats to
+ accommodate third party EPROM programmers and Microchip's
+ PIC development tools.
+.    Accepts source code and generates object code for
+ Microchip's proprietary PIC microcontroller families
+ including the PIC16C54, PIC16C55, PIC16C56, PIC16C57,
+ PIC16C71 and PIC16C84.
+.    Provides full featured MACRO capability.
+.    Supports Hex (default), Decimal and Octal source and
+ listing formats.
+.    Provides conditional assembly capability.
+
+1.3  ADDITIONAL INFORMATION
+Occasionally it may be necessary to distribute additional
+information about MPALC after the documentation has been
+published.  This might include corrections and additions to
+the document, examples and applications, or bug reports.  If
+this information is included, it will be found in the file
+"MPALC.DOC" on the software tools diskette.
+The appendix to this document entitled "Keeping Current"
+contains information about the Microchip Technology systems
+bulletin board service.  This is another way that you can
+maintain the most up-to-date software support tools.
+The following is a list of related documents;
+.    PIC16C5X Data Sheet (DS30015)
+.    PIC16C71 Data Sheet (DS30150)
+.    PIC16C84 Data Sheet (DS30081)
+This chapter provides instructions on how to install and run
+MPALC on your PC.  We strongly suggest that this chapter be
+read in its entirety before using MPALC.  It is a guide to
+the initial setup and running of the assembler, and
+discusses system dependent features.
+
+2.1  SYSTEM REQUIREMENTS
+MPALC will run on any IBM PC/AT or compatible computer,
+running MS-DOS v3.31 or greater.  The distribution medium is
+5 1/4" low density (360k) floppies.
+No special display or ancillary devices are required.
+
+2.2  INSTALLATION
+MPALC is distributed on a 5 1/4" floppy disk and is at the
+root directory level.  It may be executed directly from the
+floppy by typing:
+  a:MPALC
+for example.
+You may want to copy MPALC to your hard disk for
+convenience.  This can be done by using the DOS "COPY"
+command to place it in the desired directory.  For example,
+you might execute the following at the DOS prompt:
+  mkdir c:\MPALC
+  copy a:*.* c:\MPALC\.
+You may then include MPALC in your search path by updating
+the "PATH" variable in your "AUTOEXEC.BAT" to include this
+directory.  This allows the programs to be accessed from any
+directory on your system.
+Please refer to your DOS manual for more information
+regarding DOS commands, the "PATH" environment variable and
+the "AUTOEXEC.BAT" file.  Remember that changes that you
+make to this batch file will not take effect until the next
+time you boot your machine or execute autoexec.bat.
+
+2.3  INVOKING MPALC
+The assembler is invoked with the following command:
+MPALC <source_code> [options]
+where <source_code> is the file to be assembled and
+[options] may be:
+  [/?]
+  [/p <processor>]
+  [/f <object_format>]
+  [/w <warning level>]
+  [/w-<error code>
+  [/r <radix>]
+  [/t <tab width>]
+  [/i]
+  [/d label_name=label.value]
+ù     Commands in brackets [ ]  are optional.
+ù     Spaces are required between each option.
+ù     All source files are assumed to have the '.ASM'
+extension.  Any other extension must be explicitly given.
+/?        displays a brief help screen describing the
+          command line options.  The assembler exits
+          immediately after printing the help screen.
+/p <processor>        specifies the processor type to use
+          during assembly.  <processor> may be 16C54, 16C55,
+          16C56, 16C57, 16C71 or 16C84.  The default is
+          16C54.
+/f <object format>    specifies the output format for the
+          object file.  <object format> may be INHX16,
+          INHX8S, INHX8M or PICICE.  The default is INHX16.
+/w <warning level>    specifies level of warnings to be
+          reported in the listing.  There are four
+          increasing levels of messages defined in MPALC:
+          comments, warnings, fatal and criticals.  <warning
+          level> may be 0 (Comments), 1 (Warnings), 2
+          (Fatals) or 3 (Criticals).  If the user sets the
+          level of message reporting, all messages above and
+          including the level desired will be reported, i.e.
+          if 'w 2' is specified, then only 'FATAL" and
+          "CRITICAL" messages will be reported.  If this
+          switch is not used, the warning level will default
+          to 1.
+/w-<error code>       specifies error message to delete from
+          listing.  Note that there is no space between the
+          '-' and the error code.  <error code> may be any
+          number between 0 and 64.  You may list as many of
+          this option on the command line as space will
+          allow, 1 error code/w- option.  See Appendix B for
+          error messages and thier corresponding codes.
+/r <radix>            specifies the default radix for
+          constants during assembly.  <radix> may be DEC,
+          OCT or HEX.  The default is HEX.
+/t <tabwidth>         specifies tabs in the source file
+          should be replaced by spaces.  <tabwidth> is the
+          number of spaces used to replace a tab.
+/i        specifies all symbols will be case insensitive.
+          By default symbols are case sensitive.
+/d<label_name=label_value>
+          defines a label and its value.  When generating
+          programs for a family of products, command line
+          labels can be used to control conditional assembly
+          directives or to set critical constants without
+          having to edit the original source code.
+
+PIC-ICE                   Produces files to be compatible
+     with PIC-ICE Emulator.  In this format, no assembler
+     messages will be present in the listing file including
+     TITLEs and SUBTITLEs.  However, all warning messages
+     will be seen on the display device.
+INHX8S                    Produces two 8-bit Hex files, one
+     for the high order 8 bits and the other for the low
+     order 8 bits.  File extensions for object code will be
+     '.obl' and '.obh' for low and high order files
+     respectively.  This format is particularly useful for
+     generating EPROMs.
+INHX8M                    Produces one merged Intellec Hex
+     file with a low-byte high-byte combination.  This
+     format is particularly useful for downloading PIC16C5X
+     code to third party EPROM programmers (Unisite DATA
+     I/O, ALLPRO Logical Devices).
+INHX16                    Produces one 16-bit Intellec Hex
+     file.  This format is used by Microchip's "PICPRO"
+     programmer.
+
+
+The Assembler produces various output files with the
+following extensions:
+.    OBJ    -  Object file
+.    OBH    -  Address/Data pairs for high-order 8 bits
+       (only when INHX8S format selected)
+.    OBL    -  Address/Data pairs for low-order 8 bits (only
+       when INHX8S format selected)
+.    LST    -  Listing file
+.    ERL    -  Error and warning message file
+.    SYM    -  Symbol file (produced with INHX16 and INHX8M
+       formats
+.    REF    -  Symbol reference file (only produced with PIC-
+       ICE output format)
+.    MAP    -  PIC-ICE binary debug file (only produced with
+       PIC-ICE output format)
+
+
+2.5       ASSEMBLER SOURCE LINE  FORMAT
+Assembler source code statements are divided into four basic
+fields:
+.    the label field
+.    command field
+.    operand field
+.    comments field.
+
+The general  format for a program source line is:
+[<label>] <command> [<operand>] [;<comment>]
+
+For example:
+DataEQU 0x03    ; Establish Temp Data
+            ;
+Start           ; Beginning of program
+
+    movlw   Data   ; Sample Instruction
+    goto    Start  ; Continue forever
+            ;
+    END     ; End Program
+
+MPALC is column-insensitive: the label field can begin in
+any column of a source line (throughout this manual, a
+source line  refers to a single line or statement from the
+program file.)  The label is typically used to refer to the
+current address or source line.
+Directives and operands are case insensitive.  Labels and
+macronanes are case sensitive unless overridden by the /i
+option on the command line.
+<label> - is an optional name of 1 to 32 characters.  It
+must begin with a letter or underscore `_', and may contain
+any combination of letters, digits, or underscores.  Labels
+are generally used as a symbolic reference to locations in
+the source code.  The following are valid and unique labels.
+  _Start
+  START
+  Start
+<command> - may be a machine opcode mnemonic, an assembler
+directive, or a macro.
+<operand> - any information required for use by a particular
+opcode, assembler directive, or macro.  If more than one
+operand is needed, they are separated from each other by a
+single comma, and optionally one or more blanks or tabs.
+Operands may or may not be optional depending on the
+invocation in question.
+<comment> - an optional field containing any printable
+characters.  Anything to the right of a semicolon is treated
+as a comment and ignored by the assembler.
+Fields must be separated from the preceding field by at
+least one space (or tab character).  Blank lines are valid,
+as are lines with a semicolon `;'.  Both are treated as
+comments by the assembler.
+
+2.5.1     Comment Field
+The comment field is defined as those characters from a
+semicolon to the end of the source line.  A comment must
+begin with a semicolon or else the assembler will try to
+assemble the comment as valid mnemonics/directives.
+
+2.6  CONSTANTS
+MPALC supports radix forms hexadecimal, decimal, octal,
+binary, and character. The default radix is hexadecimal; the
+default radix determines what value will be assigned to
+constants in the object file when they are not explicitly
+specified by a base descriptor.
+Constants can be optionally preceded by a plus or minus
+sign.  If unsigned, the value is assumed to be positive.
+Intermediate values in constant expressions are treated as
+32-bit unsigned integers.
+Whenever an attempt is made to place a constant in a field
+for which it is too large, a truncation warning will be
+given by MPALC.
+Hex numbers must begin with a number 0-9, or they will be
+misinterpreted as a symbol.  For absolute clarity use the
+hex format Ox<hex digits>.
+The formats for declaring a constant are detailed below.
+Note that the base descriptor is case insensitive.  Please
+refer to Appendix C for a comparison of default radix versus
+constant format.
+ Type    Syntax     Example   Decimal   <digits>  100
+         .digits    .100
+ Hexadecimal        H'<hex digits>`H'9F'
+         <hex digits>H   900h
+         0x<hex digits>  0x9FF*    Octal     O'<octal
+ digits>`O'777'     Q'<octal digits>`   Q'777'
+ <octal digits>O    777O
+         <octal digits>Q 777Q
+         \<octal digits> \777
+ Binary  B'<binary digits>`   b'00111001'         <binary
+ digits>B00111001B  Character `<character>'  `C'
+         A'<character>'  A'C'
+
+2.7  SYMBOLS
+Symbols are represented by a string of 1 or more
+alphanumeric characters with the first character being  A  -
+Z ,  a  -  z ,  ?   _.  Symbols are used in both the label
+and operand fields in the source line.  Symbols are defined
+in the label field as either the current program address or
+as the resulting value of an EQU or SET expression.  These
+values can then be used symbolically in operand fields.
+2.7.1     Predefined Symbols
+The assembler has internally defined three symbols for
+register and destination designators.  With the exception of
+"Local", these symbols may be redefined by the user.  They
+are as follows:
+ W  and w have the value of zero.
+ F  and f have the value of one.
+ Local  is reserved for use in Macro definitions.
+
+2.8  EXPRESSIONS
+Expressions are used in the operand field of the source line
+and may contain constants, symbols, or any combination of
+constants and symbols separated by arithmetic operators.
+Each constant or symbol may be preceded by one of the
+following:
+'+' represents a positive value (default).
+'-'   represents a unary minus operation (2's compliment).
+
+
+Arithmetic Operators
+The arithmetic operators available in expressions are as
+follows:
+
+
+    Operator       Example
+ +   Addition       3+4
+ +   Unary Plus     +x
+ -   Subtraction    3-4
+ -   Unary Minus    -x
+ %   Modulus        3%5
+ *   Multiplication 3*4
+ /   Division       3/4
+ <<  Left Shift     3<<4
+ >>  Right Shift    3>>4
+ ()  Parentheses    ((3+4)/5)
+ ==  Logical Equal  x==y
+ !=  Logical Not Equal   x!=y
+ <=  Less than or equal  3>=5
+ >=  Greater than or equal    3>=5
+ !   Not            !(x==y)
+ ~    Complement     ~x
+ |    Inclusive OR   x|y
+ &   Inclusive AND  x&y
+ | |  Logical OR     x||y
+ &&  Logical AND    x&&y
+ ^   Exclusive OR   x^y
+ $   Current Program Counter
+
+Associativity is left to right.  Nesting of parentheses may
+be used up to any level.
+All operations use 32-bit unsigned integer values,
+therefore, all fractions resulting from division will be
+truncated.  Also, if the expression results in an overflow
+condition, a warning will be given.
+Expressions evaluation supports forward level references.
+
+CHAPTER 3
+This chapter describes the MPALC directive language.  There
+are four classes of directives:
+.    Data Directives
+.    Listing Directives
+.    Control Directive
+.    Macro Directives
+
+3.1  CONCEPTS
+Directives are assembler commands that appear in the source
+code but are not translated directly into opcodes.  They are
+used to control the assembler;  its input, output, and data
+allocations.
+MPALC supplies four basic classes of directives:
+.    Data Directives are those that control the allocation
+ of memory and provide a way to refer to data items
+ symbolically, by meaningful names.
+
+.    Listing Directives control the MPALC listing file
+ format.  They allow the specification of titles and
+ subtitles, page ejects and other listing control.
+
+.    Control Directives permit sections of conditionally
+ assembled code.
+
+.    Macro Directives control the execution and data
+ allocation within macro body definitions.
+
+Data Directives
+data         <expr>             Create a 12 or 14 bit data
+value or character string
+zero         <mem units>        Initialize with zero <mem
+units> of program space
+set          <label>...<expr>   Define assembler variable
+res          <mem units>        Reserve words of program
+space
+equ          <label>...<expr>   Define an assembler
+constant
+include      "<file_name>"      Include a file into the
+assembly source flow
+Listing Directives
+list         <options>          Set various list control
+options
+page                            Force a page eject
+title        "title text"       Define a new title for the
+listing header
+subtitl      "subtitle text"    Define a new subtitle for
+the listing header
+Control Directives
+if           <expr>             Start of a conditional
+assembly block
+else                            Start an alternate
+conditional assembly block
+endif                           Terminate a conditional
+assembly block
+org          <label>...<addr>   Set absolute address for
+following code block
+end                             Terminate assembly code
+block
+Macro Directives
+macro        <label>...[<arg>[,<arg>]...]   Begin a macro
+body definition
+endm                            Terminate macro body
+definition
+local        <label>[,<label>]... Define assembler labels
+as local to a macro
+exitm                           Exit macro
+
+
+3.3  MPALC ASSEMBLER DIRECTIVES
+3.3.1     DATA - Create Numeric and Text Data
+     SYNTAX:
+     [<label>]   DATA    <operand>, [<operand>]
+     DATA        "TEXT STRING"
+     DESCRIPTION:
+     Initialize one or more words of program memory with
+     data.  The data may be in the form of constants, re-
+     locatable labels, or expressions of any of the above.
+     The data may also consist of ASCII character strings,
+     enclosed in quotation marks, or single ASCII characters
+     enclosed in single quotes (apostrophes.)  Each operand
+     can either be an expression or a string of up to 70
+     characters.  The assembler will allocate one memory
+     location for each expression or each character in a
+     string.
+     EXAMPLE(S):
+     DATA Reloc_Label + 10    ; Constants
+     DATA 1,2            ; Constants
+     DATA "Text"           ; Text String
+     DATA Char - `0'       ; Char Expression
+     SEE ALSO:
+     res
+     
+
+3.3.2    ELSE - Alternative Conditional Assembly for IF
+     SYNTAX:
+     else
+     DESCRIPTION:
+     Used in conjunction with the IF directive to provide
+     alternative conditional assembly.  If IF tests false,
+     the alternative code noted by the ELSE directive is
+     assembled.
+     SEE ALSO:
+     if
+     endif
+
+
+3.3.3     END - END of the Program or Structure
+     SYNTAX:
+       END
+     DESCRIPTION:
+     Indicates the end of the program.  The END directive
+     informs the assembler that the last source line has
+     been read.  Additional statements following END are
+     ignored.
+     EXAMPLE(S):
+     Start
+       .    ;Executable program
+       .    ;Instructions
+       .    ;
+       END     ;End of instructions
+     Additional statements ignored by assembler
+     SEE ALSO:
+     n/a
+
+3.3.4    ENDIF - Terminate a Conditional Assembly Block
+     SYNTAX:
+       endif
+     DESCRIPTION:
+     ENDIF terminates a conditional assembly block begun by
+     the IF directive.
+     EXAMPLE(S):
+     IF win == TRUE
+       movlw   0xF
+       movwf   0xA
+     ENDIF
+     SEE ALSO:
+     else
+     if
+
+
+3.3.5     ENDM - Terminate a Macro Definition
+     SYNTAX:
+       ENDM
+     DESCRIPTION:
+     ENDM terminates a macro definition.
+     EXAMPLE(S):
+     Make_Table     MACRO arg1, arg2
+               Data arg1", 0  ;Null-terminated table name.
+               RES  arg2      ;Reserve storage
+               ENDM
+     SEE ALSO:
+     macro, exitm
+
+
+3.3.6     EQU - Define an Assembler Constant
+     SYNTAX:
+     <LABEL>      EQU   <EXPR>   [;<COMMENTS>]
+     DESCRIPTION:
+     <EXPR> is a valid MPALC expression.  The value of the
+     expression is assigned to <LABEL>.  Any value defined
+     with an EQU directive is fixed in value and may not be
+     redefined.  If the value of label is to be altered, use
+     the SET directive instead.
+     EXAMPLE(S):
+     FOUR   EQU  4  ; Assign the numeric value of four
+     SEE ALSO:
+     set
+
+3.3.7     IF - Begin Conditional Assembly
+     SYNTAX:
+       if <EXPR>
+     DESCRIPTION:
+     <EXPR> is a valid MPALC expression.  If the expression
+     resolves to be TRUE, the code following is assembled.
+     If the expression returns FALSE and an ELSE directive
+     exists, the code following the ELSE directive is
+     assembled.  Assembly of the conditional block is
+     terminated by the ENDIF directive.
+     EXAMPLE(S):
+     if     VERSION == 100 ; CHECK CURRENT VERSION
+          movlw  0x0A
+          movwf  IO_1
+     else           ; FALSE BLOCK
+          movlw  0x1A
+          movwf  IO_2
+     endif
+     SEE ALSO:
+     else
+     endif
+
+
+3.3.8     INCLUDE - Include File
+     SYNTAX:
+     include   "<FILE>"
+     DESCRIPTION:
+     The specified file is read in as source code.  Upon end-
+     of-file, source code will resume from the original
+     source file.  Up to ten levels of nesting is permitted.
+     <FILE> must be enclosed in quotes, single or double.
+     EXAMPLE(S):
+     include   "C:\sys\sysdefs.INC"          ;System Defs
+     include   "C:\sys\regs.def"        ;Register Defs
+     SEE ALSO:
+     n/a
+
+
+3.3.9     LIST - Listing Options
+     SYNTAX:
+     LIST    <OPTION>[,   <OPTION>,...,   <OPTION>]
+     DESCRIPTION:
+     Where option may be one of the following: see figure
+     3.11
+     EXAMPLE(S):
+     LIST   C=80,F=INHX8S,X=ON
+     LIST   P=16C71
+     SEE ALSO:
+     Command line options in section 2.3.
+Option              Description                             Default
+C=<columns>         Defines the number of columns per page
+      for listing printout.  "columns" must be defined as
+      a constant    C=80
+      expression.
+D    Produce symbol table file in PICESII format (for
+      compatibility reasons only).                      PICICE
+E=<level>           Specifies the level of error/warning
+      messages to be reported.                            1
+      0 = Report all;                  1 = Report warnings, fatals, criticals;
+      2 = Report fatals and criticals;           3 = Report criticals
+F=<type>            Specify the object code format as
+      either PICICE, INHX8S, INHX8M or INHX16 (see Chapter
+      6 for format  INHX16
+      description).
+N=<lines>           Defines the number of lines per page
+      for listing printout.  "lines" must be defined as a
+      constant expression.                              N=51
+T=(ON I OFF)        Truncate the listing line to the value
+      specified in the "C" option.               OFF (ON for PICICE)
+P=<part>            Specifies the part for which object
+      code is produced.  <part> can be one of the
+      following: 16C54, 16C55,                          16C54
+      16C56, 16C57, 16C71 or 16C84.
+R=<radix>           Specifies the default radix for
+      constatns in the source file.  HEX, DEC, OCT.      HEX
+X=<ON I OFF>        Specifies that macro expansion is to
+      be turned on or off.                                ON
+Notes:               1.Object code module and symbol table file are always produced in hexadecima
+   l format, independent of the LIST options.
+     E, F, P and R options will overwrite any selection
+   given during MPALC (See Chapter V.2)
+   2.                Source code options will override
+   command line switches E, F, P and R.
+
+3.3.10    LOCAL - Declare Local Macro Variables
+     SYNTAX:
+     LOCAL     <LABEL>[,   <LABEL, ...,  <LABEL>]
+     DESCRIPTION:
+     <LABEL> is a valid MPALC label.  It may be a label that
+     exists outside the context of the macro definition.
+     The directive declares that the specified data elements
+     are to be considered in local  context to the macro.
+     If the macro is called recursively, each invocation
+     will have its own local copy.
+     EXAMPLE(S):
+     <main code segment>
+       .
+       .
+       .
+     Length EQU  10        ;Global version
+     Size   EQU  20        ;Note that a local variable
+     length may now be created and
+                      ;modified.
+     Test   Macro   Size      ;
+       Local   Length,Label        ;Local length
+       Length set Size        ;Modify local length
+     Label  RES  Length       ;Reserve buffer
+       Length set Length - 20
+       ENDM              ;End macro
+     SEE ALSO:
+     macro
+     endm
+
+
+3.3.11    MACRO - Begin Macro Definition
+     SYNTAX:
+     <LABEL>      MACRO   [<ARG>, ...,   <ARG>]
+     DESCRIPTION:
+     A macro is a sequence of instructions that can be
+     inserted in the assembly source code by using a single
+     macro call.  The macro must first be defined, then it
+     can be referred to in subsequent source code.
+     A macro can call another macro, or may call itself
+     recursively.
+     Please reference the chapter "The Macro System" for
+     more details.
+     EXAMPLE(S):
+     Read   MACRO     device, buffer, count
+          MOVLW     device
+          MOVWF     RAM 20
+          MOVLW     buffer ;Buffer Address
+          MOVWF     RAM 21
+          MOVLW     count  ;Byte Count
+          CALL SYS_21      ;Read file call
+          ENDM
+     SEE ALSO:
+     endm
+     local
+     if
+     else
+     endif
+     exitm
+
+3.3.12    ORG - Set Program Origin
+     SYNTAX:
+     [<LABEL>]    ORG   <EXPR>
+     DESCRIPTION:
+     Set the program origin for subsequent code at the
+     address defined in <EXPR>.  If <LABEL> is specified, it
+     will be given the value of the <EXPR>.  The default
+     origin is zero.
+     EXAMPLE(S):
+          List P = 16C56
+     Sub1   org     0x200
+          <subroutine code goes here>
+          retlw 0
+     SEE ALSO:
+     res
+
+
+3.3.13    PAGE - Force a New Page in Listing
+     SYNTAX:
+     PAGE
+     DESCRIPTION:
+     Forces the program listing to continue at the top of
+     the next page.  The listing title currently in effect
+     will be printed.
+     The directive itself is non-printing.
+     EXAMPLE(S):
+     PAGE
+     SEE ALSO:
+     subtitl
+     title
+
+
+3.3.14    RES - Reserve Memory
+     SYNTAX:
+     RES    <MEM UNITS>
+     DESCRIPTION:
+     The RES directive is a relative ORG command.  The
+     command causes the program counter to be advanced from
+     its current location by the value specified in <MEM
+     UNITS>.
+     EXAMPLE(S):
+     Buffer    RES 64   ;Reserve 64 words of storage
+     SEE ALSO:
+     org
+
+3.3.15    EXITM - Return from a Macro
+     SYNTAX:
+     EXITM
+     DESCRIPTION:
+     Forces immediate termination of the macro.  Macro code
+     beyond EXITM is not expanded.  The effect is the same
+     as if an ENDM directive had been encountered.
+     EXAMPLE(S):
+     Test   MACRO Size
+          IF     size==0
+          EXITM
+          ELSE
+            x set x + 1
+            y set y + 1
+          ENDIF
+          ENDM
+     
+     SEE ALSO:
+     macro
+     endm
+
+
+3.3.16    SET - Define an Assembler Variable
+     SYNTAX:
+     <LABEL>     SET     <EXPR>
+     DESCRIPTION:
+     <LABEL> assumes the value of the valid MPALC expression
+     specified in <EXPR>.  The SET directive is functionally
+     equivalent to the EQU directive except that SET values
+     may be altered by set directives.
+     EXAMPLE(S):
+     Area   SET     0
+     Width  EQU     0x12
+     Length SET     0x14
+     Area      SET    Length * Width
+     Length SET     Length + 1
+     
+     SEE ALSO:
+     equ
+
+
+3.3.17    SUBTITL - Specify Program Subtitle
+     SYNTAX:
+     SUBTITL    "<SUBTITLE TEXT>"
+     DESCRIPTION:
+     <SUBTITLE TEXT> is an ASCII text string enclosed in
+     double or single quotes, sixty characters or less in
+     length.  The directive establishes a second program
+     header line for use as a subtitle in the listing
+     output.
+     It is not necessary to specify a TITLE before
+     specifying an STITLE; the text portion of the first
+     line will be blank in the listing file, but the file
+     name and page count will be printed.  STITLE still
+     appears on the second line.
+     EXAMPLE(S):
+     SUBTITL   "Diagnostic Section"
+     
+     SEE ALSO:
+     title
+
+
+3.3.18    TITLE - Specify Program Title
+     SYNTAX:
+     TITLE  "<TITLE TEXT>"
+     DESCRIPTION:
+     <TITLE TEXT> is a printable ASCII string enclosed in
+     double or single quotes.  It must be 60 characters or
+     less in length.
+     Establishes  the text to be used in the top line of the
+     listing page.  The directive may be used as often as
+     desired throughout the program.  The normal title line
+     is made up of the main file name, the title text and
+     the page number.
+     Use of the TITLE directive causes a page eject if the
+     next line does not contain as SUBTITL directive,
+     otherwise the eject comes after processing SUBTITL.
+     EXAMPLE(S):
+     TITLE "Operational Code, Rev 5.0"
+     SEE ALSO:
+     subtitl
+
+
+PSEUDO-OPERATIONS
+Frequently used operations such as conditional skips and
+branches on status bit test, two's complement register
+contents, carry and digit carry addition can all be
+performed using file, bit, literal and control instructions
+in combination with the specific operands required.
+These operations can be performed using pseudo-operations
+that are recognized by the PIC Assembler.  These mnemonics
+do not imply that there are additional instructions.  Each
+of these pseudo-operations calls up one or more or the PIC
+instructions.  The Assembler inserts the proper operands
+required for specific locations and destinations.
+Special instruction mnemonics are provided for the following
+operations
+.Move file to W register
+.Test file
+.Two's complement file register contents
+.Unconditional branch
+.Six status bit manipulations
+.Six conditional skips on status bit test
+.Six conditional branches on status bit test
+.Four Carry and Digit Carry arithmetic operations
+In addition to the pseudo-operations, the MPALC assembler
+now comes with a file, Pseudoin.mac which contains all of
+the pseudo-operations implemented as true macros.  If the
+line
+  include "Pseudoin.mac"
+is placed at the top of a source code file, before any of
+the operations have been called, all of the pseudo-
+operations will be implemented as regular macros.  Their
+expansion can now be turned on or off by using the "List"
+directive.
+Note also if the destination register is not specified, the
+default value used for Pseudo-instructions is opposite that
+used for intrinsic instructions.  For pseudo-instructions,
+the default destination is register W, for intrinsic
+instructions the default is f.
+
+
+
+       Name           Mnemonic          Equivalent       Status
+                                       Operation(s)
+Clear Carry        CLRC           BCF           3,0       -Set Carry SETC BSF
+3.0                -              Clear Digit Carry     CLRDC   BCF  3,1  -
+Set Digit Carry    SETDC          BSF           3,1       -Clear Zero     CLRZ
+BCF                3,2            -             Set Zero SETZ   BSF  3,2  -
+Skip on Carry      SKPC           BTFSS         3,0       -Skip on No Carry
+SKPNC              BTFSC          3,0           -Skip on Digit Carry SKPDC
+BTFSS              3,1            -             Skip on No Digit Carry
+SKPNDC             BTFSC          3,1           -    Skip on Zero    SKPZ
+BTFSS              3,2            -             Skip on Non ZeroSKPNZ
+BTFSC              3,2            -             Test FileTSTF f MOVF f,1  Z
+Move File to W     MOVFW f        MOVF          f,0       ZNegate File    NEGF
+f,d                COMF           f,1
+                                  INCF          f,d       Z
+Add Carry to File  ADDCF f,d      BTFSC         3,0
+                                  INCF          f,d       ZSubtract Carry from
+File               SUBCF f,d      BTFSC         3,0
+                                  DECF          f,d       ZAdd Digit Carry to
+File               ADDDCF f,d     BTFSC         3,1
+                                  INCF          f,d       ZSubtract Digit
+Carry from File    SUBDCF f,d     BTFSC         3,1
+                                  DECF          f,d       ZBranch    B k  GOTO
+k                  -              Branch on Carry        BC k   BTFSC     3,0
+                                  GOTO          k         -Branch on No Carry
+BNC k              BTFSS          3,0
+                                  GOTO          k         -Branch on Digit
+Carry              BDC k          BTFSC         3,1
+                                  GOTO          k         -Branch on No Digit
+Carry              BNDC k         BTFSS         3,1
+                                  GOTO          k         -Branch on Zero BZ k
+BTFSC              3,2
+                                  GOTO          k         -Branch on Non Zero
+BNZ k              BTFSS          3,2
+                                  GOTO          k         -Call across page
+boundary           LCALL k        BCF 3,5 or BSF 3,5
+                                  BCF 3,6 or BSF 3,6
+                                  CALL          k
+
+
+7.1.1       ADDCF   Add Carry  to f
+    Syntax:ADDWFf,d
+    Words: 2
+    Cycles:2
+    Operation:BTFSC  3,0
+            INCF f,d
+    Status bits:Z
+    Description:The Carry status bit is tested.  If it is a
+            zero, the increment instruction is skipped.  If
+            it is a one, the file register is incremented.
+    
+    
+    
+7.1.2       ADDDCF  Add Digit Carry to f
+    Syntax:ADDDCFf,d
+    Words: 2
+    Cycles:2
+    Operation:BTFSC 3,1
+            INCF f,d
+    Status bits:Z
+    Description:The Digit Carry status bit is tested.  If
+            it is a zero, the increment instruction is
+            skipped.  If it is a one, the file register is
+            incremented.
+
+7.1.3       BC Branch on Carry  to Address k
+    Syntax:BC    k
+    Words: 2
+    Cycles:2 or 3
+    Operation:BTFSC  3,0
+            GOTO  k
+    Status bits:None
+    Description:The Carry bit is tested.  If it is a zero,
+            the GOTO instruction is skipped.  If it is a
+            one, the program jumps to location k.
+    
+    
+
+7.1.4       BDC     Branch on  Digit Carry to k
+    Syntax:BCF k
+    Words: 2
+    Cycles:2 or 3
+    Operation:BTFSC 3,1
+            GOTO  k
+    Status bits:None
+    Description:The Digit Carry status bit is tested.  If
+            it is a zero, the GOTO instruction is skipped.
+            If it is a one, the program jumps to location
+            k.
+7.1.5       B  Branch to k (9 Bit Address)
+    Syntax:B     k
+    Words: 1
+    Cycles:2
+    Operation:GOTO  k
+    Status bits:None
+    Description:Jump to location k.
+    
+
+
+7.1.6       BNC     Branch on No Carry to k
+    Syntax:BNC k
+    Words: 2
+    Cycles:2 or 3
+    Operation:BTFSS 3,0
+           GOTO  k
+    Status bits:None
+    Description:The Carry status bit is tested.  If it is a
+            one, the GOTO instruction is skipped.  If it is
+            a zero, the program jumps to location k.
+7.1.7       BNDC    Branch on No Digit Carry to k
+    Syntax:BNDCk
+    Words: 2
+    Cycles:2 or 3
+    Operation:BTFSS 3,1
+           GOTO  k
+    Status bits:None
+    Description:The Digit Carry status bit is tested.  If
+            it is a one, the GOTO instruction is skipped.
+            If it is a zero, the program jumps to location
+            k.
+7.1.8       BNZ     Branch on No Zero to Address
+    Syntax:BNZ k
+    Words: 2
+    Cycles:2 or 3
+    Operation:BTFSS 3,2
+           GOTO  k
+    Status bits:None
+    Description:The Zero status bit is tested.  If it is a
+            one, the GOTO instruction is skipped.  If it is
+            to zero, the program jumps to location k.
+
+7.1.9       BZ Branch on No Zero to Address k
+    Syntax:BZ    k
+    Words: 2
+    Cycles:2 or 3
+    Operation:BTFSC  3,2
+           GOTO  k
+    Status bits:None
+    Description:The Zero status bit is tested.  If it is a
+            zero, the GOTO instruction is skipped.  If it
+            is to one, the program jumps to location k.
+    
+    
+
+7.1.10      CLRC    Clear Carry
+    Syntax:CLRC
+    Words: 1
+    Cycles:1
+    Operation:BCF  3,0
+    Status bits:None
+    Description:Bit 0 (Carry bit) of status register F3 is
+            cleared to a zero.
+    
+    
+
+7.1.11      CLRDC   Clear Digit Carry
+    Syntax:CLRDC
+    Words: 1
+    Cycles:1
+    Operation:BCF  3,1
+    Status bits:None
+    Description:Bit 1 (Digit Carry bit) of status register
+            F3 is cleared to a zero.
+    
+    
+
+7.1.12      CLRZ    Clear Zero
+    Syntax:CLRZ
+    Words: 1
+    Cycles:1
+    Operation:BCF  3,2
+    Status bits:None
+    Description:Bit 2 (Zero bit) of status register F3 is
+            cleared to a zero.
+
+7.1.13      LCALL*  Call Across Page Boundary
+    Syntax:LCALL k
+    Words: 3
+    Cycles:4
+    Operation:BCF 3,5 or BSF 3,5
+                 BCF 3,6 or BSF 3,6
+                 CALL  k
+    Status Bits:PA0, PA1
+    Description:This pseudo-operation actually expands into
+            three instructions: two bit manipulation
+            instructions to set/clear the page bits in the
+            STATUS register and the CALL to the destination
+            address.
+           This instruction is provided to facilitate a
+            CALL across a page boundary.  This mnemonic
+            unconditionally sets or resets the page bits in
+            the STATUS register as appropriate for the
+            destination address.  The desstination address
+            must be in the lower half of the page since
+            during a CALL, bit 8 of the address is always
+            forced to '0'.
+    * Note:This pseudo-instruction only applies to PIC16C56
+            and PIC16C57 processors.
+    
+    
+
+7.1.14      MOVFW   Move Contents of f to W
+    Syntax:MOVFW f
+    Words: 1
+    Cycles:1
+    Operation:MOVF f,0
+    Status Bits:None
+    Description:Move the contents of file register to the W
+            register.
+7.1.15      NEGF    Negate File Register Contents
+    Syntax:NEGFf,d
+    Words: 2
+    Cycles:2
+    Operation:COMF f,1
+           INCF f,d
+    Status Bits:None
+    Description:Obtains the two's complement of the
+            contents of a file register.  This  mnemonic
+            calls up two instructions.  The first
+            instruction complements the contents of the
+            addressed file register.  The second
+            instruction adds one to f.
+
+7.1.16      SETC    Set Carry
+    Syntax:SETC
+    Words: 1
+    Cycles:1
+    Operation:BSF  3,0
+    Status Bits: None
+    Description:Bit 0 (Carry bit) of status register F3 is
+            set to a one.
+    
+    
+
+7.1.17      SETDC   Set Digit Carry
+    Syntax:SETDC
+    Words: 1
+    Cycles:1
+    Operation:BSF 3,1
+    Status Bits:None
+    Description:Bit 1 (Digit Carry bit) of status register
+            F3 is set to a one.
+    
+    
+
+7.1.18      SETZ    Set Zero
+    Syntax:SETZ
+    Words: 1
+    Cycles:1
+    Operation:BSF 3,2
+    Status Bits:None
+    Description:Bit 2 (Zero bit) of status register F3 is
+            set to a one.
+    
+    
+
+7.1.19      SKPC    Skip on Carry
+    Syntax:SKPC
+    Words: 1
+    Cycles:1
+    Operation:BTFSS 3,0
+    Status Bits:None
+    Description:Bit 0 (Carry bit) of the status register F3
+            is tested.  If it is a one, the next
+            instruction is skipped.
+7.1.20      SKPDC   Skip on Digit Carry
+    Syntax:SKPDC
+    Words: 1
+    Cycles:1 or 2
+    Operation:BTFSS  3,1
+    Status Bits:None
+    Description:Bit 1 (Digit Carry bit) of the status
+            register F3 is tested.  If it is a one, the
+            next instruction is skipped.
+    
+    
+
+7.1.21      SKPNC   Skip on No Carry
+    Syntax:SKPNC
+    Words: 1
+    Cycles:1 or 2
+    Operation:BTFSC  3,0
+    Status Bits:None
+    Description:Bit 0 (Carry bit) of status register F3 is
+            tested.  If it is a zero, the next instruction
+            is skipped.
+    
+    
+7.1.22      SKPNDC  Skip on No Digit Carry
+    Syntax:SKPNDC
+    Words: 1
+    Cycles:1 or 2
+    Operation:BTFSC  3,1
+    Status Bits:None
+    Description:Bit 1 (Digit Carry bit) of status register
+            F3 is tested.  If it is a zero, the next
+            instruction is skipped.
+    
+    
+
+7.1.23      SKPNZ   Skip on No Zero
+    Syntax:SKPNZ
+    Words: 1
+    Cycles:1 or 2
+    Operation:BTFSC  3,2
+    Status Bits:None
+    Description:Bit 2 (Zero bit) of status register F3 is
+            tested.  If it is a zero, the next instruction
+            is skipped.
+7.1.24      SKPZ    Skip on Zero
+    Syntax:SKPZ
+    Words: 1
+    Cycles:1 or 2
+    Operation:BTFSS  3,2
+    Status Bits:None
+    Description:Bit 2 (Zero bit) of status register F3 is
+            tested.  If it is a one, the next instruction
+            is skipped.
+    
+    
+
+7.1.25      SUBCF   Subtract Carry from File Register
+    Syntax:SUBCFf,d
+    Words: 2
+    Cycles:2
+    Operation:BTFSC  3,0
+           DECF  f,d
+    Status Bits:None
+    Description:The Carry status bit is tested.  If it is a
+            zero, the decrement instruction is skipped.  If
+            it is a one, the file register is idecremented.
+7.1.26      SUBDCF  Subtract Digit Carry from F
+    Syntax:SUBDCFf,d
+    Words: 2
+    Cycles:2
+    Operation:BTFSC  3,1
+           DECF  f,d
+    Status Bits:Zero
+    Description:The Digit Carry status bit is tested.  If
+            it is a zero, the decrement instruction is
+            skipped.  If it is a one, the file register is
+            decremented.
+    
+
+
+7.1.27      TSTF    Test Contents of F
+    Syntax:TSTFf
+    Words: 1
+    Cycles:1 or 2
+    Operation:MOVF f,1
+    Status Bits:Zero
+    Description:Tests the contents of a file register for
+            zero.  This instruction moves the contents back
+            into itself In the process, the Zero status bit
+            is set to a one if the contents of the file are
+            zero.
+
+
+8.1  I/O PROGRAMMING CAUTION
+The use of the bidirectional I/O ports and the dedicated
+input or output ports are subject to certain rules of
+operation.  These rules must be carefully followed in the
+instruction sequences written for I/O operation.
+8.1.1     Bidirectional I/O Ports
+The bidirectional ports may be used for both input and
+output operations.  For input operations these ports are non-
+latching.  Any input must be present until read by an input
+instruction.  The outputs are latched and remain unchanged
+until the output latch is rewritten.
+Some instructions operate internally as input followed by
+output operations.  The BCF and BSF instructions, for
+example, read the entire port into the CPU, execute the bit
+operation, and re-output the result.  Caution must be used
+when using these instructions.
+8.1.2     Successive Operations on
+Bidirectional I/O Ports
+Care must be exercised if successive instructions operate on
+the same I/O port.  The sequence of instructions should be
+such to allow the pin voltage to stabilize (load dependent)
+before the next instruction which causes that file to be
+read into the CPU (MOVF, BIT SET, BIT CLEAR, and BIT TEST)
+is executed.  Otherwise, the previous state of that pin may
+be read into the CPU rather than the new state.  Refer to
+Data Sheet DS30015 (EPROM-Based 8-Bit CMOS Microcontroller
+Series) for more information.
+
+8.2  SAMPLE PROGRAM
+EXAMPLE 1:     GENERATE A 3MS PULSE ON I/O LINE C5 (F7, BIT
+        5).
+      Program  Steps  Description
+  MOVLW   .250 ;LOAD decimal 250 into W.
+  MOVWF   11   ;Transfer 250 to F11.
+  BSF     7,5  ;Set output file 7, bit 5 high.
+A DECFSZ  11,1 ;Decrement F11, skip if zero.
+  GOTO    A    ;This GOTO instruction will cause F11 to be
+               decremented 250 times.  The decrement
+               executes in 4  æs while the GOTO takes 8  æs.
+               Therefore the loop executes in (4 + 8)  æs x
+               250 = 3ms.
+  BCF     7,5  ;Reset output file 7, bit 5 low.
+Note:  For precise timing generation, an external crystal
+    oscillator must be used.  Otherwise the actual timing
+    is dependent on the tolerances of the external RC
+    components.
+
+
+EXAMPLE 2:     CONDITIONAL TEST AND BRANCH
+Compare contents of F11 to a constant, if equal GOTO OK; if
+not equal GOTO NO.
+      Program  Steps  Description
+  MOV     11,W ;Move the contents of F11 to the working
+               register W.
+  XORLW   CONST       ;Exclusive OR the contents of W and
+               the literal CONST.  If they are equal, all
+               zero bits will result in W and bit 2 in the
+               status register (F3) will be set to a one.
+               Although the SUBWF instruction could be used,
+               it would also alter the Carry status bit.
+  BTFSS   3,2  ;If bit 2 in F3 is a one, skip the next step.
+               (Bit 2 is the Zero status bit).
+  GOTO    NO   ;They are not equal.
+  GOTO    OK   ;They are equal.
+
+EXAMPLE 3:     SERIALLY OUTPUT THE 8 BITS IN A FILE
+        REGISTER.
+In this example, file register F0A contents are output via
+I/O B0 (F6, bit 0).  I/O line B1 (F6, bit 1) is used to
+synchronize the output using the rising edge.
+  Program      Steps       Description
+   MOVLW  8    ;LOAD the decimal 8 into working register W.
+   MOVWF  11   ;Put decimal 8 into F11 (General Purpose
+               register).
+LOOP:     BCF  6,1    ;Clear the sync output.
+   RRF    0A,f ;Rotate F10 one bit right.  Bit 0 to Carry.
+   BTFSS  3,0  ;Test Carry (F3, bit 0), skip if set to a
+               one.
+   GOTO   A    ;Carry clear, go to A.
+   BSF    6,0  ;Carry set, set C0, i.e., output positive
+               signal.
+   GOTO   B    ;Go to B.
+A  BCF    6,0  ;Carry clear, clear C0; i.e., output negative
+               signal
+B  BSF    6,1  ;Raise sync line.
+   DECFSZ 11   ;Have output all eight bits?
+   GOTO   LOOP ;No, output next bit.
+   BCF    6,1  ;Yes, clear sync output to a zero.
+   END
+If File Register F10 contains 153 (octal), then the output
+will be as follows:
+
+
+EXAMPLE 4:     CONVERT A BCD HELD IN A 4 LSBS OF F0A*.
+The 4 MSBs are assumed zero to a 7-segment code.  The 7-
+segment code is output via I/O port F7.  This program
+illustrates the use of a computed GOTO instruction.  This
+code example assumes a typical 7-segment display.  The LED
+bar positions are thus B'0abcdefg'.
+     Program    Steps Description
+     MOVF  0A,W       ;Starting address of table.  Move BCD
+                number as offset into the W register.
+     CALL  CONVRT     ;Call the conversion subroutine.  The
+                program counter executes the next
+                instruction at CONVRT.
+     MOVWF 7    ;Output the 7-segment code via I/O port F7.
+                The 7- segment display will now show the
+                BCD number and this output will remain
+                stable until F7 is set to a new value.
+     .
+     .
+     .
+CONVRT          ADDWF 2  ;Add the BCD offset to the PC.
+                This is a computed GOTO.  Because the ninth
+                bit of PC is set to zero by a ADDWF 2 the
+                CONVRT routine must be located within 00 to
+                0FF.
+RETLW           B'00000001'    ;complement of 0 in 7-
+                segment code
+RETLW           B'01001111'    ;complement of 1 in 7-
+                segment code
+RETLW           B'00010010'    ;complement of 2 in 7-
+                segment code
+RETLW           B'00000110'    ;complement of 3 in 7-
+                segment code
+RETLW           B'01001100'    ;complement of 4 in 7-
+                segment code
+RETLW           B'00100100'    ;complement of 5 in 7-
+                segment code
+RETLW           B'01100000'    ;complement of 6 in 7-
+                segment code
+RETLW           B'00001111'    ;complement of 7 in 7-
+                segment code
+RETLW           B'00000000'    ;complement of 8 in 7-
+                segment code
+RETLW           B'00001100'    ;complement of 9 in 7-
+                segment code
+NOTE:     The RETLW instruction loads the W register with
+     the specified literal value and returns to the
+     instruction following the CALL instruction (MOVWF 7).
+     The complement of the 7-segment code is used when the
+     LED display unit is common anode (a bar is activated
+     when the output is set low).
+
+
+EXAMPLE 5:     MOVE ONE OF TWO LITERALS TO W DEPENDING ON
+        THE CONDITION OF A FLAG BIT.
+This example illustrates a more efficient way (Method 2) of
+implementing the code.
+  Method 1
+  BTFSC   FLAG, BIT ;TEST FLAG
+  GOTO    A
+  MOVLW   LITERAL_1 ;FLAG = 0
+  GOTO    CONTINUE
+A MOVLW   LITERAL_2 ;FLAG = 1
+  Method 2
+  MOVLW   LITERAL_2
+  BTFSS   FLAG, BIT ;TEST FLAG
+  MOVLW   LITERAL_1 ;FLAG = 0
+
+
+EXAMPLE 6:     OUTPUT THE FILE POINTED TO BY F09 VIA I/O
+        REGISTER C (F7)*.
+Assume 0A in F09 and 5A in F24.  Therefore, the following
+program will output 5A via F7.
+  Program      Steps  Description
+   MOVF   9,W  ;Move the contents of F09 to W.  After
+               execution, W contains 0A.
+   MOVWF  4    ;Move the contents of W to FSR (F4).  After
+               execution, F4 contains 0A.
+   MOVF   0,W  ;Move the contents of the file pointed to by
+               the FSR (the contents of F0A) to W.  Thus, W
+               contains 5A after execution.
+   MOVWF  7    ;Move the contents of W to F7 where 5A will
+               be latched.
+  
+  
+EXAMPLE 7:     CLEAR  FILES F5 TO F1F*.
+This program illustrates the use of the File Select Register
+(F4) and the indirect addressing mode using F0.
+  Program      Steps       Description
+   MOVLW  5    ;Move the literal 5 to the working register
+               W.
+   MOVWF  4    ;Move the literal 5 to the File Select
+               Register (F4).  These two steps initialize
+               the FSR to 5.
+LOOP:     CLRF 0      ;Clear the contents of the file
+               pointed to by the FSR.
+   INCFSZ 4,1* ;Increment the FSR.  The PC counter will skip
+               after File F1F is cleared.
+   GOTO   LOOP ;Repeat the steps beginning at loop to clear
+               the next file.
+   END         ;Files F5 to F1F are cleared.
+
+*    The upper three bits of the FSR are always read as ones
+ on the PIC16C54/55/56.  When the FSR points to F1F all
+ bits of the FSR are ones.  The INCFSZ instruction reads
+ this value into the ALU and increments it.  The result of
+ this increment equalling zero causes a skip.  If the FSR
+ is read after this operation, however, the result will be
+ 0E0.
+
+MACROS
+
+By definition, the term "macro" describes something that is
+made of smaller or more detailed parts; the same definition
+applies to assembler macros.  They are user defined sets of
+instructions and directives that will be included, in-line,
+with the assembler source code whenever the macro is
+invoked.
+
+9.1  OVERVIEW OF MACROS
+Macros consist of sequences of assembler instructions and
+directives.  They can be written to accept arguments, making
+them flexible.  Their advantages, already enumerated,
+include:
+.    Higher levels of abstraction, improving readability and
+ reliability
+.    Consistent solutions to frequently performed functions
+.    Simplified changes
+.    Improved testability
+
+Applications might include:
+.    Creating complex tables
+.    Frequently used code
+.    Complex operations
+
+9.2  MACRO DEFINITION
+A macro definition can be divided into three areas:
+.    macro heading
+.    macro body
+.    macro terminator
+9.2.1     Macro Heading
+The format of the macro heading is as follows:
+<name> MACRO [<arg>[,<arg>]]..[<;comment>]
+where,
+<label> - is the name of the macro
+<arg>   - is a parameter passed from the macro    call
+Note:  The comment field is permitted in the heading whether
+    or not there are parameters.
+
+The name of the macro must comply with MPALC label rules.
+If a macro name is identical to a mnemonic or an assembler
+directive, the assembler generates an error.
+9.2.2     Macro Body
+The macro body begins immediately after the macro definition
+and continues until the macro terminator. The macro body
+consists of a sequence of source lines that may contain a
+formal parameter in any field. When the macro is
+instantiated, all parameters will be replaced by the
+corresponding arguments provided by the macro call.
+Parameters will not be recognized within comment statements
+or strings.
+9.2.3     Macro Terminator
+The ENDM directive terminates the macro definition. ENDM
+must exist before another MACRO statement is found. The
+format of the macro terminator is as follows:
+[<label>] ENDM [<comment>]
+
+9.3  MACRO CALL
+Once the macro has been defined, it can be instantiated at
+any point within the source module by using a macro call as
+described below:
+[<label>] <name>[<arg>[,<arg>]]..[<;comment>]
+where,
+<label>             - is assigned the current value of the
+     location counter.
+<name>              - is the name of the macro to be
+     instantiated.
+<arg>               - is any symbol or constant passed as a
+     parameter to the macro.
+The macro call itself will not occupy any locations in
+memory.  However, the macro instantiation will begin at the
+current memory location. Commas may be used to reserve an
+argument position. In this case the argument will be null.
+The argument list is terminated by  whitespace or a semi-
+colon.
+
+9.4  PARAMETERS
+All arguments are passed as character strings into the macro
+instantiation. Thus symbols are passed by name and not by
+value. In other words the parameters are not evaluated until
+the macro is expanded. Thus SET directives within a macro
+may alter the value of arguments passed to the macro.
+9.4.1     Macro Example
+This example uses a macro to compare the value of a file
+register with a constant and causes a jump if file_con.
+9.4.1.1   MACRO DEFINITION:
+Include PICREG.REG
+
+ ;  Compare file to constant
+ ;  and jump if file => constant.
+ 
+ CFL_JGE    MACRO  File, Con, JMPTO
+       MOVLW  CON & OXFF
+       SUbWF  fNEW
+       BTFSC  STATUS, CARRY
+       GOTO JMPTO
+       ENDM
+9.4.1.2 MACRO INVOCATION:
+ CFL_JGE    SWITCH_VAL, MAX_SWITCH, Switch_On
+9.4.1.3 MACRO CODE:
+The following shows source code generated from the macro
+invocation.  PC is the program counter value at the
+invocation.
+ PC    MOVLW  MAX_SWITCH & OXFF
+       SUbWF  SWITCH_VAL, W
+       BTFSC  STATUS, CARRY
+       GOTO Switch_On
+
+
+
+9.5  Local Symbols
+Since all labels are global to the entire program, a macro
+which contains a label and which is called more than once
+will cause a duplicate label error. To avoid this problem,
+the user may declare labels within macros to be local to the
+macro. Each time the macro is called the assembler assigns
+each local symbol a system generated symbol of the form
+??nnnn. Thus the first local symbol will be ??0001, the
+second ??0002, etc. All Local definitions must occur
+immediately after the MACRO directive and before the first
+line of the macro body and have the following syntax:
+             LOCAL <label>[,<label>]...
+The LOCAL command must appear in the command field.  LOCAL
+directives that appear outside a macron definition will
+generate an assembly error.
+               Example:
+Definition:         WAIT         MACRO    T
+                    LOCAL        LAB1
+                    MOVLW        T
+                    MOVWF        TIME
+       LAB1         DECFSZ       TIME, F
+                    GOTO         LAB1
+                    ENDM
+
+First call          + MOVLW      D'250'
+with T= D'250'      + MOVWF      TIME
+       +??0001      DECFSZ       TIME,F
+       +            GOTO         ??0001
+Second call         + MOVLW      0x250
+with T = 0x250      + MOVWF      TIME
+       +??0002      DECFSZ       TIME,F
+       +            GOTO         ??0002
+
+
+
+5.6  Alternate Macro Exit
+The EXITM directive provides an alternate method for
+terminating a macro expansion. During a macro expansion, an
+EXITM directive causes expansion of the current macro to
+stop and all code between the EXITM and the ENDM for this
+macro to be ignored. If macros are nested, EXITM causes code
+generation to return to the previous level of macro
+expansion.
+             [<label>] EXITM [<comment>]
+
+
+
+
+C.1  ERRORS IN THE LISTING FILE
+Number                      Message      Level
+ 0   "Undefined error"    Comment
+ 1   "Duplicate label"    Fatal
+ 2   "Missing FileReg"    Fatal
+ 3   "Error in FileReg"   Fatal
+ 4   "Left shift greater than 16 bits"  Warning
+ 5   "Missing destination"    Fatal
+ 6   "Bad destination"    Fatal
+ 7   "Missing comma"      Warning
+ 8   "Assuming destination of 1"   Comment
+ 9   "Bad expression"     Fatal
+ 10  "Missing label"      Fatal
+ 11  "Unknown character - ignored" Warning
+ 12  "Unexpected EOF"     Critical
+ 13  "Unmatched quote"    Fatal
+ 14  "Filename truncated" Warning
+ 15  "Extension truncated"    Warning
+ 16  "Unrecognized argument"  Warning
+ 17  "File nesting error - too deep"    Fatal
+ 18  "File nesting error - no more files"    Critical
+19   "Cannot open file"   Fatal
+ 20  "Missing address expression"  Fatal
+ 21  "Address expression greater than 9 bits"     Fatal
+ 22  "Unmatched endif"    Fatal
+ 23  "Unmatched else"     Fatal
+ 24  "Unmatched If"       Fatal
+ 25  "Redefinition of a static label"   Fatal
+ 26  "Bad string syntax"  Fatal
+ 27  "Bad local argument" Fatal
+ 28  "Bad or misplaced instruction"     Fatal
+ 29  "Macro definitions cannot be nested"    Fatal
+ 30  "Bit number out of range"     Fatal
+ 31  "Extra statements ignored"    Warning
+ 32  "Filereg truncated to 5 bits" Warning
+ 33  "Missing right paren"    Fatal
+ 34  "Right shift greater than 16 bits" Warning
+ 35  "Null object record" Fatal
+ 36  "Unknown instruction type"    Fatal
+ 37  "Unknown Intel8MDS command"   Fatal
+ 38  "Unknown Intel8SDS command"   Fatal
+ 39  "Unknown Intel16DS command"   Fatal
+ 40  "Unknown PICICE command" Fatal
+ 41  "Unknown PICES command"  Fatal
+ 42  "Unknown PIC type"   Fatal
+ 43  "Unknown OUTPUT format"  Fatal
+ 44  "TRIS must use Filereg 5 6 or 7"   Fatal
+ 45  "Address exceeds PIC 54/55 memory  Fatal
+     limit"
+ 46  "Address exceeds PIC 56 memory limit"   Fatal
+ 47  "Address exceeds PIC 57 memory limit"   Fatal
+ 48  "Address is not within lower half page" Fatal
+ 49  "PICES format not supported setting     Warning
+format to INHX8M"
+ 50  "Bad macro argument type"     Fatal
+ 51  "Value truncated to 8 bits"   Warning
+ 52  "Illegal constant format"     Fatal
+ 53  "Address change across page   Comment
+     boundary ensure page bits are set"
+ 54  "Illegal error level"    Fatal
+ 55  "Missing bit number" Fatal
+ 56  "Address greater than 9 bits truncated" Comment
+ 57  "Destination from reset vector not in   Warning
+     Page 0"
+ 58  "Unknown radix"      Fatal
+ 59  "Bad decimal format" Fatal
+ 60  "Bad hex format"     Fatal
+ 61  "Bad octal format"   Fatal
+ 62  "Bad binary format"  Fatal
+ 63  "Unknown symbol"     Fatal
+ 64  "RTCC may miss at least 1 count"   Warning
+
+
+
+DEFAULT RADIX VERSUS CONSTANT FORMAT
+The default radix selected will have an impact on the
+expected results of different constant formats.  For
+instance, in the example below the same constant format
+yields two different results because of the default radix.
+
+
+HEX 001b 001B Interpreted as a hexadecimal
+              constant
+DEC 001b 0001 Interpreted as a binary constant
+Clearly the effect may be elusive and confusing. The problem
+arises only between the HEX and DEC default radixes.  Below
+is a table detailing the HEX and DEC expected values of the
+constant formats that will cause problems.
+
+Default Radix     Example     Interpreted Value (In Hex)
+Decimal  100D        64
+         .100        64
+         100         64
+         100o        40
+         100q        40
+        q'100'       40
+         100b        4
+        b'100'       4
+        0x100       100
+         100H       100
+        H'100'      100
+Hexadecimal         100D 100D
+         .100        64
+         100        100
+         100o        40
+         100q        40
+        q'100'       40
+         100b       100B
+        B'100'       4
+        0x100       100
+         100H       100
+        H'100'
+
+Constants formatted as <base>'number' will never be
+misrecognized.  Those formats which have the base trailing
+the digits can cause problems.
+

@@ -1,0 +1,149 @@
+I got most of this info from a book called
+'Programmers guide to the 1802', by Tom Swan
+
+This processor is what causes the spaceshuttle not to fly I think.
+Also the one that doesn't return your quarter you put in the 
+phonebooth.
+
+willem   Email hengevel@dutiws.twi.tudelft.nl
+
+
+CDP1802 COSMAC processor of RCA    40 pin DIL
+pin 1      clock
+    2      -wait
+    3      -clear
+    4      q
+    5      sc1
+    6      sc0
+    7      -mrd        memory read
+    8-15   bus7..bus0
+    16     Vcc
+    17-19  N2..N0      I/O select
+    20     Vss
+    21-24  -EF4..-EF1  external flags
+    25-32  Ma0..Ma7    memory address
+    33     tpA
+    34     tpB
+    35     -mwr        memory write
+    36     -irq
+    37     -dma out
+    38     -dma in
+    39     -xtal
+    40     Vdd
+
+
+16 16 bit registers : Rn,  n=0-f
+T 8bit register     : contains X,P after irq
+Q 1bit register     : controls signal at pin 4 of processor
+IE 1bit             : interrupt enable flag
+DF 1bit             : data flag, used as carry and overflow bit
+X  4bits            : indicates which 16bit register is the X register
+P  4bits            : indicates which 16bit register is the program counter
+data 8bits          : accumulator register
+
+
+On reset : P=0,    
+I don't know what else is initialized on reset.
+
+I/O is performed through I/O address lines N0-N2,  000 means no-i/o
+this is why 6n, n&7==0  -> not an IO instruction
+
+DMA requests use R0 as address pointer
+
+On interrupt :  T:=X,P  P=1, X=2
+RET  (70) X,P=[Rx], Rx++, IE=1  interrupt return
+DIS  (71) X,P=[Rx], Rx++, IE=0  return inside irq
+SAV  (78) [Rx]:=T               T contains X,P after irq
+MARK (79) T:=X,P [R2--]:=T  X:=P
+
+Standard Call & Return Technique :
+  R2 must point to a free byte on top of the stack
+  R3 is the Program counter controlled by the SCRT
+  R4 is the Program counter a subroutine runs in
+  R5 is the return address
+  R6 points to the parameters of a call routine
+
+Standard synomyms:
+  D4xxxx  CALL xxxx
+  D5      RETN
+
+00      IDL             ; idle until irq/dma, [r0] on bus
+0n      LDN     Rn      ; data:=[Rn]  n!=0      load data indirect
+1n      INC     Rn      ; Rn:=Rn+1              increment
+2n      DEC     Rn      ; Rn:=Rn-1              decrement
+30xx    BR      xx      ; RP.0:=xx              jmp to address xx in page
+31xx    BQ      xx      ; RP.0:=xx (if qf=1)    jmp if qflag=1
+32xx    BZ      xx      ; RP.0:=xx (if D=0)     jmp if data reg zero
+33xx    BDF     xx      ; RP.0:=xx (if df=1)    jmp if carry / >=   ; BPZ BGE
+34xx    B1      xx      ; RP.0:=xx (if ef1=1)   jmp if external flag1=1
+35xx    B2      xx      ; RP.0:=xx (if ef2=1)   jmp if external flag2=1
+36xx    B3      xx      ; RP.0:=xx (if ef3=1)   jmp if external flag3=1
+37xx    B4      xx      ; RP.0:=xx (if ef4=1)   jmp if external flag4=1
+38      SKP             ; skips 1 byte          no branch
+39xx    BNQ     xx      ; RP.0:=xx (if qf=0)    jmp if qflag=0
+3Axx    BNZ     xx      ; IPlo:=xx (if d!=0)    jump if datareg not zero
+3Bxx    BNF     xx      ; IPlo:=xx (if c=0)     jump if no carry
+3Cxx    BN1     xx      ; RP.0:=xx (if ef1=0)   jmp if external flag1=0
+3Dxx    BN2     xx      ; RP.0:=xx (if ef2=0)   jmp if external flag2=0
+3Exx    BN3     xx      ; RP.0:=xx (if ef3=0)   jmp if external flag3=0
+3Fxx    BN4     xx      ; RP.0:=xx (if ef4=0)   jmp if external flag4=0
+4n      LDA     Rn      ; data:=[Rn++]          load, advance
+5n      STR     Rn      ; [Rn]:=data            store data
+60      IRX             ; Rx:=Rx+1              increment x
+68      ???             ; invalid instruction
+6n      OUT     Dn      ; Bus:=[Rx++], outaddr=n&7   n=1-7
+6n      INP     Dn      ; data=[Rx]:=Bus, inaddr=n&7 n=9-f
+70      RET             ; X,P=[Rx], Rx++, IE=1  interrupt return
+71      DIS             ; X,P=[Rx], Rx++, IE=0  return inside irq
+72      LDXA            ; data:=[Rx++]          load x, advance
+73      STXD            ; [Rx--]:=data          store & decrement
+74      ADC             ; df, data:=data+[Rx]+df
+75      SDB             ; df, data:=[Rx]-data-(^df)
+76      SHRC            ; data:=df>>data>>df    rotate right through carry
+77      SMB             ; df, data:=data-[Rx]-(^df)
+78      SAV             ; [Rx]:=T               T contains X,P after irq
+79      MARK            ; T:=X,P [R2--]:=T  X:=P
+7A      REQ             ; qf:=0         reset qflag
+7B      SEQ             ; qf:=1         set qflag
+7Cxx    ADCI    #xx     ; df,data:=xx+data+df   add immediate with carry
+7Dxx    SDBI    #xx     ; df,data:=xx-d-(^df)   substract immediate with borrow
+7E      SHLC            ; data:=df<<data<<df    rotate left
+7Fxx    SMBI    #xx     ; df,data:=data-xx-(^df)
+8n      GLO     Rn      ; data:=Rn.0            get low byte
+9n      GHI     Rn      ; data:=Rn.1            get high byte
+An      PLO     Rn      ; Rn.0:=data            put low byte
+Bn      PHI     Rn      ; Rn.1:=data            put high byte
+C0xxxx  LBR     xxxx    ; RP:=xxxx              long jmp to address xxxx
+C1xxxx  LBQ     xxxx    ; RP:=xxxx (if qf=1)    long jmp if qflag=1
+C2xxxx  LBZ     xxxx    ; RP:=xxxx (if D=0)     long jmp if data reg zero
+C3xxxx  LBDF    xxxx    ; RP:=xxxx (if df=1)    long jmp if carry
+C4      NOP
+C5      LSNQ            ; RP:=BP+2 (if qf=0)    long skip if qflag=0
+C6      LSNZ            ; RP:=BP+2 (if D!=0)    long skip if data reg not zero
+C7      LSNF            ; RP:=BP+2 (if df=0)    long skip if no carry
+C8      LSKP            ; BP:=BP+2              long skip
+C9xxxx  LBNQ    xxxx    ; BP:=xxxx (if qf=0)    jmp if qflag=0
+CAxxxx  LBNZ    xxxx    ; BP:=xxxx (if d!=0)    jmp if datareg not zero
+CBxxxx  LBNF    xxxx    ; BP:=xxxx (if c=0)     jmp if no carry
+CC      LSIE            ; BP:=BP+2 (if ie=1)    skip interrupt enabled
+CD      LSQ             ; RP:=BP+2 (if qf=1)    long skip if qflag=1
+CE      LSZ             ; RP:=BP+2 (if D=0)     long skip if data reg zero
+CF      LSDF            ; RP:=BP+2 (if df=1)    long skip if carry
+Dn      SEP     Rn      ; P=n                   set program counter
+En      SEX     Rn      ; X=n                   set x-register
+F0      LDX             ; data:=[Rx]            load via x
+F1      OR              ; data:=data | [Rx]     bitwise OR
+F2      AND             ; data:=data & [Rx]     bitwise AND
+F3      XOR             ; data:=data ^ [Rx]     bitwise XOR
+F4      ADD             ; df, data:=data + [Rx]
+F5      SD              ; df, data:=[Rx] - data
+F6      SHR             ; data:=0>>data>>df     shift right
+F7      SM              ; df, data:=data - [Rx]
+F8xx    LDI     #xx     ; data:=xx              load immediate in data
+F9xx    ORI     #xx     ; data:=data | xx       OR with immediate
+FAxx    ANI     #xx     ; data:=data & xx       AND with immediate
+FBxx    XRI     #xx     ; data:=data ^ xx       XOR with immediate
+FCxx    ADI     #xx     ; data:=data + xx       ADD immediate
+FDxx    SDI     #xx     ; data:=xx - data       SD immediate
+FE      SHL             ; data:=df<<data<<0     shift left
+FFxx    SMI     #xx     ; data:=data - xx       substract immediate

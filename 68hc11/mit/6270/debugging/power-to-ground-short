@@ -1,0 +1,58 @@
+Return-Path: robot-board@oberon.com
+Received: by media.mit.edu (5.57/DA1.0.4.amt)
+	id AA23966; Mon, 10 Jan 94 15:15:47 -0500
+Received: from  ([127.0.0.1]) by oberon.com (4.1/SMI-4.1_Armado.MX)
+	id AA22393; Mon, 10 Jan 94 15:02:43 EST
+Date: Mon, 10 Jan 94 15:02:43 EST
+Message-Id: <199401102001.PAA01469@glendower>
+Errors-To: gkulosa@oberon.com
+Reply-To: gkulosa@oberon.com
+Originator: robot-board@oberon.com
+Sender: gkulosa@oberon.com
+Precedence: bulk
+From: Greg Kulosa <gkulosa@oberon.com>
+To: Multiple recipients of list <robot-board@oberon.com>
+Subject: Re: Power-to-Ground Short
+X-Listprocessor-Version: 6.0b -- ListProcessor by Anastasios Kotsikonas
+
+> 
+> 
+> 
+> 	OK, this is embarrassing, but I appear to have an elusive 
+> power-to-ground short on my microprocessor board.  I am assembling the
+> 6.270 version 2.11 board and it failed the continuity check between
+> ground and the cathode of D1.  Neither I nor anyone else who has looked
+> at it can find a visible soldering error.  I have lately been reduced to 
+> tracing the circuit layout in appendix C and removing components that
+> bridge the power and ground areas of the board in order to find the
+> offending component.  So far I have removed:
+> 
+> 	D1, VR1, C4,7,12,&13, and R8.
+> 
+> 	Does anyone have any ideas or suggestions I might try before I
+> end up desoldering my entire board?  Please email me!
+
+Yes, there was a message sent out right after I sent out the Rev 2.11
+boards.  Paul Malenfant discovered that there was a mistake made when
+they made the boards.  There is a hole that is plated through on the
+main board that is not supposed to be.  It touches both the ground plane
+and the 5V plane.
+
+If you hold the component side up with the power switch in the lower
+left corner, then the hole is on the right side of the board, halfway
+up, near Capacitor C4.  You need to use either a small drill bit to
+remove the plating, or an x-acto knife.  Be careful, because there are
+some small traces nearby.
+
+If you need more info/help, send me personal E-mail.
+
+
+> Dennis Burke
+> dburke@farad.elee.calpoly.edu  
+
+
+-- 
+Greg A. Kulosa          |  "If we are to be damned, let's be damned for what
+Systems Administrator   |   we really are"    - Jean-Luc Picard
+Oberon Software         |___________________________________________________
+gkulosa@oberon.com      One Cambridge Center, Cambridge, MA 02142

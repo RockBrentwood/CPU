@@ -1,0 +1,38 @@
+CC=qcl
+DASOBJS=das.obj
+DSOBJS=ds.obj
+CASOBJS=cas.obj link.obj st.obj res.obj op.obj ex.obj io.obj
+RELOCOBJS=reloc.obj
+SEMIOBJS=semi.obj
+NLOBJS=nl.obj
+all:	ds cas das reloc semi nl
+das:	das.exe
+ds:	ds.exe
+cas:	cas.exe
+reloc:	reloc.exe
+semi:	semi.exe
+nl:	nl.exe
+das.exe:	$(DASOBJS)
+		$(CC) -o das $(DASOBJS)
+ds.exe:		$(DSOBJS)
+		$(CC) -o ds $(DSOBJS)
+cas.exe:	$(CASOBJS)
+		$(CC) -o cas $(CASOBJS)
+reloc.exe:	$(RELOCOBJS)
+		$(CC) -o reloc $(RELOCOBJS)
+semi.exe:	$(SEMIOBJS)
+		$(CC) -o semi $(SEMIOBJS)
+nl.exe:		$(NLOBJS)
+		$(CC) -o nl $(NLOBJS)
+cas.obj:	cas.c io.h op.h st.h link.h
+link.obj:	link.c io.h ex.h res.h st.h
+st.obj:		st.c io.h ex.h op.h res.h
+res.obj:	res.c io.h ex.h st.h res.h
+op.obj:		op.c io.h ex.h st.h res.h op.h
+ex.obj:		ex.c io.h ex.h st.h res.h
+io.obj:		io.c io.h op.h
+ds.obj:		ds.c
+das.obj:	das.c
+reloc.obj:	reloc.c
+semi.obj:	semi.c
+nl.obj:		nl.c

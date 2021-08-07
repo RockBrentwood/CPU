@@ -1,0 +1,28 @@
+Virrankulutusmittauksia 25.6.1989 E.A.Sarlin/ Field Oy
+tyyppi:		XC68HC11F1FN
+maski:		B77M 
+tehdas:		QELQ 
+valmviikko:	8912
+testausjannite	5.4V DC
+lampotila (Ta)	26 C
+ISCLuuppi =>KUN koneessa pyorii 5 byten luuppi EEPROMmista
+Iboostrap =>kun kone on Special Bootstrap modessa odottamassa breikkia
+kide	Bussi	ISCLuuppi	Iboostrap
+2MHz    0.5MHz   3.24mA         3.06mA	
+4MHz    1MHz     6.29mA         4.45mA	
+8MHz    2MHz    11.52mA	        7.74mA	
+*16MHz  4MHz    18.46mA	        13.90mA	
+* XC-tyyppien Spesifikaatio ei salli tata nopeutta koko -40/+85C 
+lampotilaalueella, mutta hyvin se kuitenkin tuntuu pelaavan huoneenlammossa.
+Testit tehty kirjoittamalla PCBUG11'lla koodia EEPROMmiin osoitteisiin
+$FE00..FFFF Seuraavasti:
+RAMLOPPU	EQU $3ff
+EEALKU		EQU	$FE00
+RESETVEKTORI	EQU	$FFFE 
+TESTI		LDS #RAMLOPPU	RAMMIN LOPPU PINOLLE
+LUUPPI		LDAA #64	KERTOLASKULLE ARVOT			
+		LDAB #48	mitka, ei vaikuta asiaan
+		MUL		kertolasku rassannee kunnolla
+		BRA LUUPPI	tehdaan ikuisesti
+		ORG RESETVEKTORI 
+		FDB TESTI

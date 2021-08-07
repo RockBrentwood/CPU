@@ -1,0 +1,245 @@
+this document has been revised and Checked by Eero A. Sarlin of Field Oy
+in 25.2.1993
+Suomessa jaetut PCbug11 versiot ovat:
+2.30	2.71	3.20	3.24	3.24a (vika on dokumentin mukana) 
+version 2.71 jalkeen tulleissa ei ole mahdollista tallettaa
+disassembloinnin tulosta tiedostoon
+versiot 2.30 ja 2.71 toimivat myos omituisemmissa koneissa, kuten
+PC/XT-286 ja cachella varustetut 286 koneet, ongelmia tulee
+uudemilla versioilla ennen kaikkea sarjakorttien kanssa, toimivia
+ovat muunmuassa IOSA ja IOSB kortit, seka useat multi-IO kortit.
+
+muutam,ia kummajaisia:	Tyyppinumero MC68HC11E2 viittaa 
+C16J maskilla tehtyihin vanhempiin XC68HC811E2 piireihin (esim era 9045)
+piirista ei ole dataa erikseen saatavissa
+
+koneet, joissa mina olen PCBUG2.30..3.20 kaytanyt:
+Alpha	V20	8MHz Nec V20 lukuisia I&O kokoonpanoja,OK
+Osborne 5	8MHz Am8088 multi-IO kortti, EGA, OK
+Osborne	6	8MHZ 286 IOSA, paljon roinaa toimi vain IOSA kortilla
+Osborne 286V	12MHz Am286/287 IOSA, ParagonEGA eri winsuja,  OK
+koneet, joissa mina olen PCBUG2.71 .. 3.24 kaytanyt:
+Wang	PC240	10MHz 286 kaikki kortit Wangin, Wang MV VGA, OK
+Wang	PC280-2	12MHz 286 IOSA, Trident VGA,Exelan Cheapernet, OK
+Osborne 386S	16MHz 386/387 IOSB,Video7 VEGA 105m rll winsu, OK
+koneet, joissa mina olen PCBUG3.20 .. 3.24a kaytanyt:
+EkiLaB	386	40MHz Am386DX,Cyrix,Multi-I/O 20M ram 2*150M SCSI, OK
+EkiLaB	386S	33MHz Am386DXL,Cyrix Multi-I/O, 120M IDE,3C503,CDROM,SVGA,OK
+Dell	320LT	25MHz 386DX,120M IDE, toiminta epaluotettavaa
+Dell	425P	25MHz 486SX,200M IDE,3C503 toiminta epaluotettavaa
+
+PCbug11 V3.20 Information
+
+
+This document notes information for PCbug11 revision 3.20.
+
+
+Command Line Ateration
+----------------------
+PCbug11's DOS command line has been significantly changed for
+this version as compared to earlier issues.
+
+Full details are contained in the text, however, the key
+features are:
+
+. Explicit declaration of macro names, baud rate and com port
+. Simplification of boot type talker selection
+. Simplification of directory structure by creation of new .XOO
+files
+. Feature to allow parameters to be passed to the AUTOSTART
+macro
+. New single file for help
+
+
+Placing of .MAP files
+---------------------
+
+The PCbug11 documentation indicates that any .MAP files should
+be placed in the user's working directory. In V3.20 PCbug11 will
+not find the user's .MAP file unless it is in the same directory
+as PCBUG11 itself.
+
+
+PCbug11 V3.21 Information
+
+This document notes the changes made to PCbug11 for revision
+3.21. The changes are noted with respect to V3.20. See also
+PCbug11 V3.20 Information.
+
+
+S-Records of more than 8KB
+--------------------------
+
+A problem existed in earlier versions when loading or verifying
+S-records of more than 8Kbytes. This occurred when an S-record
+exceeded the PC internal 8Kbyte boundary. This could cause the
+PC to crash or cause strange graphic effects. This has now been
+remedied.
+
+
+Programming 711 parts
+---------------------
+
+68HC711 parts may be programmed more quickly using PCbug11 if an
+alternative crystal is used. If a crystal of 4.9152MHz is used
+then the HC11 is capable of communicating at 38400 Baud. This in
+turn reduces the programming time required by internal EPROM to
+one quarter of the normal time.
+
+The method requires a talker which initialises the SCI properly,
+the option baud=4800 to start PCbug11, and the digit 7 as a
+prefix to the bootloader type. A talker called TALK7E.BOO is
+supplied to program the 711E9 part. To use this talker the
+command line should be:
+
+	PCBUG11 -7E baud=4800
+
+On detecting the presence of the 7 and the baud=4800 options
+together, PCbug11 will use a default baud rate of 38400. If
+either of these options are missing then PCbug11 will default to
+its standard baud rate.
+
+
+PCbug11 V3.22 Information
+
+This document notes the changes made to PCbug11 for revision
+3.22. The changes are noted with respect to V3.21. See also
+PCbug11 V3.21 Information.
+
+
+EEPROM and EPROM bugs
+---------------------
+
+A possibility existed that the EPROM and EEPROM functions would
+not work with certain options. This concerns mainly options -
+A/D/K. Option D would allow all the normally disallowed commands
+and would not program properly. K would not program EEPROM or
+EPROM properly and A would not program EEPROM correctly.
+
+This bug has been fixed on the current version.
+
+
+PCbug11 V3.23 Information
+
+This document notes the changes made to PCbug11 for revision
+3.23. The changes are noted with respect to V3.22. See also
+PCbug11 V3.22 Information.
+
+CONTROL command options
+-----------------------
+
+Two options have been added to allow the location of the PPROG
+(EEPROM) and EPROG (EPROM) programming registers to be moved by
+the user. This may be necessary in the future as the HC11 family
+develops. The address of these registers may be the same - i.e.
+one register performing both tasks. The current values are
+displayed using the CONTROL command on its own. The values may
+be changed using the format
+
+CONTROL PPROG addr        (addr is the address to be used)
+
+CONTROL EPROG addr        (addr is the address to be used)
+
+Note that PCbug11 assumes that the relevant bits in each
+register maintains the same position as in the 711E9.
+
+
+User Map files
+--------------
+This must now be placed in the user’s working directory as
+described in the manual
+
+
+Command Line Compiler
+---------------------
+
+The crystal value used parameter entered to the command line
+compiler is now given in KHz. This will allow the use of an
+extended range of values.
+
+
+EPROM Command
+-------------
+
+An EPROM memory range error now reads 'Invalid EPROM address
+range'.
+
+
+EPROM/EEPROM Programming Error
+------------------------------
+
+The error displayed is now 'Programming t/out' or 'Programming
+cmd' depending on the failure.
+
+
+Loading and Verifying S-records
+-------------------------------
+
+An upgrade here allows users to load and verify S-record files
+which contain backward discontinuous S-records. The code was
+already able to handle forward jumps in the S-record but not
+backward jumps. This is now allowed.
+
+
+Automatic Recognition
+---------------------
+
+PCbug11 now has the capability of recognising which HC11 is in
+use from the contents of the boot ROM. The boot ROM contains
+information in two bytes which help to describe the part in use.
+PCbug11 reads these and displays the version in use by the MCU :
+label. Note that some MCUs may not be recognised correctly by
+this feature.
+
+
+PCbug11 V3.24(a) Information
+
+This document notes the changes made to PCbug11 for revision
+3.24 and V3.24a. The changes are noted with respect to V3.23.
+See also PCbug11 V3.23 Information.
+
+
+Memory Operation Buffer
+-----------------------
+
+The memory buffer for reads and writes has been increased to
+12Kbytes. This allows an increased size of block to be handled
+by PCbug11 before it carries out the operation. This should
+increase the operating speed of the code for this kind of
+operation. The change will transparent to users who move read or
+write blocks of less than 8Kbytes.
+
+
+Default Number Base
+-------------------
+
+PCbug11 now allows the default number base used to be altered.
+Up till now this has always been decimal. To use hex numbers the
+prefix character $ had to be used. Now the default base can be
+changed between hex, decimal and binary. The default can be
+overridden at any point by placing the appropriate prefix in
+front of the number. The prefixes are $ -hex, & - decimal, % -
+binary.
+
+The default base is handled by the CONTROL command. A new option
+BASE has been added. To change the default base the command
+
+	CONTROL BASE HEX|DEC|BIN
+
+should be used. To display the default base use the CONTROL
+command on its own.
+
+V3.24a - CONTROL TIMEOUT Upgrade
+--------------------------------
+
+For users of very fast PCs the default timeout has been changed
+from 1000 to 2000. The value may be changed back to 1000 or
+another value by the command
+
+         CONTROL TIMEOUT value
+
+See User's Manual page 3-11.
+
+In addition the value is not now re-initialised by the RESTART command.
+Therefore any change made by the user will remain until the program
+is terminated.

@@ -1,0 +1,84 @@
+LIST L=OFF
+;**************************     PIC16C5X Header *************************
+;
+;
+PIC54   equ     1FFH            ; Define Reset Vectors
+PIC55   equ     1FFH
+PIC56   equ     3FFH
+PIC57   equ     7FFH
+PIC71   equ     0H
+;
+RTCC    equ     1h
+PC      equ     2h
+STATUS  equ     3h              ; F3 Reg is STATUS Reg.
+FSR     equ     4h
+;
+PORT_A  equ     5h
+PORT_B  equ     6h              ; I/O Port Assignments
+PORT_C  equ     7h
+;
+;
+ADRES   equ     9h      ;16C71 Special-purpose registers
+ADCON0  equ     8h      ;16C71 Special-purpose registers
+ADCON1  equ     88h     ;16C71 Special-purpose registers
+PCLATH  equ     0AH     ;16C71 Special-purpose registers
+INTCON  equ     0BH     ;16C71 Special-purpose registers
+TRISA   equ     85H     ;16C71 Special-purpose registers
+TRISB   equ     86H     ;16C71 Special-purpose registers
+;
+;
+;
+;*************************************************************************
+;
+;                               ; STATUS REG. Bits
+CARRY   equ     0h              ; Carry Bit is Bit.0 of F3
+C       equ     0h
+DCARRY  equ     1h
+DC      equ     1h
+Z_bit   equ     2h              ; Bit 2 of F3 is Zero Bit
+Z       equ     2h
+P_DOWN  equ     3h
+PD      equ     3h
+T_OUT   equ     4h
+TO      equ     4h
+PA0     equ     5h      ;16C5X Status bits
+PA1     equ     6h      ;16C5X Status bits
+PA2     equ     7h      ;16C5X Status bits
+;
+;
+RP0     equ     5h      ;16C71 Status bits
+RP1     equ     6h      ;16C71 Status bits
+IRP     equ     7h      ;16C71 Status bits
+GIE     equ     7h      ;16C71 INTCON register bits
+ADIE    equ     6h      ;16C71 INTCON register bits
+RTIE    equ     5h      ;16C71 INTCON register bits
+INTE    equ     4h      ;16C71 INTCON register bits
+RBIE    equ     3h      ;16C71 INTCON register bits
+RTIF    equ     2h      ;16C71 INTCON register bits
+INTF    equ     1h      ;16C71 INTCON register bits
+RBIF    equ     0       ;16C71 INTCON register bits
+ADCS1   equ     7h      ;16C71 ADCN0 register bits
+ADCS0   equ     6h      ;16C71 ADCN0 register bits
+CHS1    equ     4h      ;16C71 ADCN0 register bits
+CHS0    equ     3h      ;16C71 ADCN0 register bits
+GO      equ     2h      ;16C71 ADCN0 register bits
+ADIF    equ     1h      ;16C71 ADCN0 register bits
+ADON    equ     0       ;16C71 ADCN0 register bits
+PCFG1   equ     1h      ;16C71 ADCN1 register bits
+PCFG0   equ     0       ;16C71 ADCN1 register bits
+;
+;
+Same    equ     1h
+;
+LSB     equ     0h
+MSB     equ     7h
+;
+TRUE    equ     1h
+YES     equ     1h
+FALSE   equ     0h
+NO      equ     0h
+;
+;*************************************************************************
+LIST L=ON
+
+

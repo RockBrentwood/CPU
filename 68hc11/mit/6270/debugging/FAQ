@@ -1,0 +1,255 @@
+Return-Path: robot-board@oberon.com
+Received: by media.mit.edu (5.57/DA1.0.4.amt)
+	id AA05831; Wed, 19 Jan 94 17:15:45 -0500
+Received: from  ([127.0.0.1]) by oberon.com (4.1/SMI-4.1_Armado.MX)
+	id AA11059; Wed, 19 Jan 94 17:12:45 EST
+Date: Wed, 19 Jan 94 17:12:45 EST
+Message-Id: <9401192205.AA07002@ipf690a.erim.org>
+Errors-To: gkulosa@oberon.com
+Reply-To: beyer@erim.org
+Originator: robot-board@oberon.com
+Sender: gkulosa@oberon.com
+Precedence: bulk
+From: beyer@erim.org (James Beyer)
+To: Multiple recipients of list <robot-board@oberon.com>
+Subject: faq on building boards, finally.
+X-Listprocessor-Version: 6.0b -- ListProcessor by Anastasios Kotsikonas
+
+At long last, I finally got something together.  It needs to be expanded
+(and updated) to reflect more software issues (i.e. the right files, using GCC,
+etc.)  Here's what I got so far:
+
+
+
+PROBLEMS:
+
+        BUILDING BOARDS
+
+        Q1.     Where are my L293D chips?
+        Q2.     Which RED LEDs are the low power ones?
+        Q3.     Which side is which on the IR LEDs?
+        Q4.     Resistance test fails on expansion board
+        Q5.     How do I attach the LCD to the expansion board?
+        Q6.     Why doesn't the resistor pack fit on the IR trans. board?
+        Q7.     How do I solder the resistor pack to the board?
+	Q8.	How do I fit C10 onto this board?
+
+        DOWNLOADING IC
+
+        Q9.     The yellow light won't go off for download
+
+        RUNNING IC
+
+        Q10.    These port addresses don't seem to work.
+
+        RUNNING APPLICATIONS
+
+        Q100.   My Robot can't pass the Turing Test....
+
+
+
+
+	ANSWERS
+
+        Q1.     Where are my L293D chips?
+
+	A1.	Many of the kits had TI SN754410 chips substituted for the
+L293Ds.  These are compatible upgrades to the L293Ds.  Here's a chart which
+shows how the different chips relate:
+
+								  MAX Standby
+Chip Model	Current Sourced/Channel		Clamping Diodes?  current drain
+
+L293D		600  mA				Yes		  60 mA
+L293B		1000 mA				No		  ???
+SN754410	1000 mA				Yes		  70 mA
+
+For more info, see the Texas Instruments Data Book "Interface Circuits".  
+The SN754410 is on page 4-103 of my 1991 edition.  
+
+        Q2.     Which RED LEDs are the low power ones?
+
+	A2.	The low power LEDs (the red, green, and yellow) all look
+very similar, except for their color.  The RED lo-power LEDs are thus the
+ones which most resemble the green and yellow LEDs (small tops, long leads).
+The remaining LEDs (larger tops, shorter leads) are the normal power LEDs.
+The IR LEDs have little square silvery tops.
+
+        Q3.     Which side is which on the IR LEDs?
+
+	A3.	Some of the IR leads have absolutely nothing on one face. For
+those, its obvious that the transmitting side is the other side with the little
+triangle and central dot visible.  Some of them have a larger circle on the 
+back, which could resemble a transmitting region.  If you look at several of 
+them, however, it becomes clear what the transmitting side looks like. 
+
+        Q4.     Resistance test fails on expansion board
+
+	A4.
+	paraphrased from Fred Martin:	The documentation is a bit too strict.
+Anything other than a dead short is probably OK at this stage.  Dave Goodwin
+stated his board stabilized at 93K ohms
+	
+        Q5.     How do I attach the LCD to the expansion board?
+
+	A5.
+
+   |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+   | /~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\ |
+   | |                                             | |
+   | |                                             | |
+   | |                                             | |
+   | |_____________________________________________| |
+   |                  o o o o o o o o o o o o o o o  |
+   |_________________________________________________|
+                     (1)                         (14)
+
+        Q6.     Why doesn't the resistor pack fit on the IR trans. board?
+
+	A6.	Because it has too many pins!  A pin needs to be cut off the
+47 ohm resistor packs in order for it to fit on the board.  Be sure that you
+don't cut off the common leg.  Verify with an ohmeter if you are unsure which
+leg to cut.
+
+        Q7.     How do I solder the resistor pack to the board?
+Dave Goodwin wrote:
+
+Well, a few questions have come up during assembly of the main 6270 board.
+The revised 2.21 docs say that RP1 and RP2 are not to be soldered on the
+solder side of the board.  Say what??!  Am I correct in assuming that this
+is simply a typo?  I see no advantage in mounting them on the solder side
+and then soldering on the component side; I did pre-read the whole assembly
+guide and didn't notice any other steps that are likely to cause a problem
+around those resistor packs.
+
+	A7.
+
+	Fred Martin replied:
+
+This is an error in the documentation.  Mount them normally.
+
+	Q8.	How do I fit C10 onto this board?
+Dave Goodwin wrote:
+
+Also, anyone have any suggestions on mounting the C10 capacitor?  My PLCC
+socket nearly blocks access to the location for that piece.  I dropped it in
+place and then tried putting the socket into position but it didn't seem to
+want to fit.  If I put the socket in first, I can squeeze the capacitor in
+next to it.  I might have to insulate the legs of the cap from the socket
+though as they're mighty close.
+
+	A8.
+	Fred Martin wrote:
+
+Some electrolytics are bigger than others for the same value and
+voltage rating.  You probably have one of the bigger types.  Do your
+best.  
+
+It's a good idea to see how everything will fit. (Don't forget the expansion
+board)  <We good use further clarification for this answer>.
+
+        DOWNLOADING IC
+
+        Q9.     The yellow light won't go off for download
+
+	A9.
+
+Several people have already had problems with the 6.270 board.  The
+common one seems to be the problem of the SER XMIT yellow LED not
+turning off like the Docs indicate it will.
+
+THE SOLUTION:
+The docs aren't right.  Fred Martin has pointed out to several of us
+that if you hold down the CHOOSE button while pressing the large red
+reset button, the board will go into the proper bootstrap mode.
+
+This solved the problem for me.
+
+
+(from : James Fraser.)
+
+
+
+        RUNNING IC
+
+        Q10.    These port addresses don't seem to work.
+
+
+	A10.	The problem is that the older code made for the older
+board, has different port addresses.  People who have played with the board
+note that the ports are mis-addressed. A newer library is needed to access 
+these ports (i.e. DIP switches, etc.) correctly.
+
+
+Fred wrote:
+
+I've put libraries for the Rev 2.21 board onto cherupakha, in
+pub/6270/interactive-c/lib_r22.tar.  These -may- fix the mis-mapping
+problem everyone is having with the Expansion Board analog ports.
+Consider these libraries an "alpha" release as I haven't tested them.
+
+There is nothing terribly mysterious about how the mapping function
+works.  Look at the following code for the analog() function from the
+file "lib_r22.c":
+
+int analog(int port)
+{
+    if (port<8) /* accessing a hardware digital port */
+      if (digital(port)) return 0;
+      else return 255;
+    if (port<12) /* accessing direct 6811 analog port */
+      return analog_header_port(port);
+    if (port<36) /* accessing analog port on an analog mux */
+      return(read_analog(port));
+    else {/* out of range */
+        printf("Analog port out of range\n");
+        beep();
+        return -1;}
+}
+
+You can see that depending on the value requested a call to
+digital()), analog_header_port(), or read_analog() is used.
+The last of these two functions is defined in analog.asm.
+
+Hmm.  It is looking to me like no special translation is done here.
+
+Well, anyway, you people can try it and let us know if this code works
+any better.
+
+        -Fred
+
+(response on library R22 from Dave Goodwin)
+
+Initial results with the R22 library failed with a syntax error around line
+390.  Looking at that area, the problem was the attempted initialization of
+a persistent variable.  According to the docs, that's not allowed.  As a quick
+test, I simply duplicated the line, commented the original, and removed the
+initializations.  It loaded successfully then.
+
+I ran the testboard program and unfortunately breezed past the other tests to
+get to the previously-bad analog port testing, so I can't comment on how the
+new library or the code change affects that section of the board.  I'll do
+that tomorrow unless someone else reports on it.  Within the analog tests,
+however, the new library seems to do the trick.  The frob knob is now active,
+the ports I tested all worked (all but those covered by the Exp. board) and
+the DIP switches worked.  One question; should the DIP switches return 1
+when on?  Is there a convention for this?  In either case, they now respond
+and the results could be easily inverted if necessary.
+
+What I don't know at this point is the effect of the persistent variable.
+>From the context I assume it to be setting the threshhold for the digital
+ports, and as such it will probably need to be somehow initialized in order
+to work since persistents have an arbitrary content upon allocation.  That's
+why I'm sorry I skipped over the digital port tests now :^(  Oh well...
+
+I am now confident that the board is working correctly.  That's a big relief.
+
+---Dave Goodwin                                   
+
+P.S.
+
+I forgot to mention in the last note that the R22 library file has the older
+servo motor routines apparently.  It won't handle the dummy parameter that
+the newer ones need to have.  Just something to look out for...
+
+- Dave

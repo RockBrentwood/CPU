@@ -1,0 +1,83 @@
+From:
+	ftp://sunshine.informatik.uni-wuerzburg.de:/pub/private/danny/picprog.zip
+	ftp://ftp.ee.ualberta.ca:/pub/cookbook/comp/ibm/pic84pgm.zip
+
+WHAT IS THIS?							wiml@netcom.com
+-------------							v0.9  26Dec1994
+
+A PIC programmer. Specifically, I wrote this to program
+  a PIC 16C84
+  through the parallel printer port
+  of a Linux box
+  using the PIC's serial programming mode
+  and a homebuilt programmer loosely based on David Tait's.
+
+However, it uses a configuration file which should allow it to use almost
+any parallel-port based programmer; and the low-level I/O is in a
+separate file which could easily be replaced for operating systems
+other than Linux.
+
+This is *not* a "production" programmer; it doesn't do supply margining,
+or probably a bunch of other things. However, you have the source,
+so you can make it do whatever you want.
+
+This release is stable enough that I'm using it for my own tinkering
+with PICs and am doing development basically only when I discover
+it won't do something I want it to do. It should work out of the
+box on a Linux system, but it's not for the technically faint of heart
+(but then, if you're not comfortable mucking about with the
+system when it misbehaves, why are you running Linux?) 
+
+If you make modifications or improvements, PLEASE send them to me so
+that I can maintain a coherent master copy and hopefully integrate
+everything into a portable, versatile, bulletproof driver.
+
+INSTALLATION
+------------
+
+Just type 'make'. The executables must be setgid kmem to run from a
+normal account; the Makfile will prompt you for the root password
+so it can do this. If you don't like that, enter a garbage password
+and setgid them yourself.
+
+On non-Linux machines, you will probably have to replace io_ports.c
+with whatever is appropriate to your system. This file contains
+routines to implement basic byte I/O by reading and writing
+/dev/port. On operating systems with no hardware protection (DOS,
+Windows, ...), you can just use inb() and outb().  Please send let me
+know about any changes you have to make to get this to work with your
+setup.
+
+You will need to create an lp_cfg file to tell these programs how
+to work with your hardware. See either the man page (prog84.man)
+or the old README file for details.
+
+MANIFEST
+--------
+
+README			This file.
+prog84.man		A man page for prog84.
+old-README		A README file from a previous revision of these
+			programs. Contains some useful information.
+Makefile		The makefile, of course.
+
+progmain.c		Top-level routines for prog84.
+prog84.[hc]		High-level routines for programming a 16C84.
+lp_io.c			Buffered parallel-IO routines.
+io_ports.[hc]		Low-level I/O routines.
+
+lp_cfg			A sample configuration file.
+schematic.ps		Schematic diagram for the simple programmer with
+			which the sample configuration file works.
+
+jig.c			A tool to allow you to interactively clock
+			bits through the '84.
+lpttool.c		A tool to allow you to write values to the parallel
+			port and read the status register.
+dump.c			Simple program to read out part of the '84's
+			code and data.
+
+
+--------
+
+Written by Wim Lewis: wiml@netcom.com or wiml@hhhh.org. 

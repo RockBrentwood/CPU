@@ -1,0 +1,146 @@
+PAK-68	MC68020 Turboruuvikortti:
+Adapterikortti, jolla 68010 tilalle laitetaan 68020 (ja 68881/68882 FPU)
+vaatii koneen, jossa on ennestaan:
+-MC68000/MC68HC000/HD63000/MC68010  DIP/DIL kannassa. (tyyppeja muitakin)
+-Tuki 68010 prosessorille (loop mode, 8byte Exeption Stack)
+
+EI kay seuraaviin koneisiin ilman lisamuutostoita:
+Atari ST260/520/Mega-ST* 			-kannan asennus,Rom vaihto
+Atari ST520+/1040				-lisaksi mekaaninen muutos
+Atari 1040STE					-hyvin hankalaa (PLCC-cpu)
+Apple Macintosh 128K/512K ('vanha Macci')	-vaatii hw-muutoksia
+MVME101/MVME110 pohjaiset VME-laitteet		-pitaa tehda 64pin-valikaapeli
+
+Testattu seuraavissa koneissa:
+Apple MacSE			c't 12/88 modi	-Toimii vain 7.83MHz
+Apple MacSE			c't 1/90 modi	-Toimii 15.66 MHz
+Amiga 500	vanhat rommit			-MC68020RC20E ei toimi
+Amiga 500	1.3 rommit	Degicel ohjelma	-toimii ,(muutoksin <14.2 Mhz)
+Amiga 1000			Degicel ohjelma	-<21MHz yksilosta riippuen
+Corvus CC512	UCSD-Pascal	-toimii 8MHz
+DSSECPUA1/B1 ja DSSDEBUG	EI muutoksia	-toimii 8-21MHz
+Atari ST520	TOS 1.4/020	kannan vaihto	-toimii 
+Atari ST520+	Minix-ST 1.1 c't3/88 softamodI	-toimii TOS68020'lla (8MHz)
+Atari ST520	RTOS/UH  2.0 c't8/87 softamodi	-toimii
+EXORMACS	MACSBUG		EI muutoksia	-toimii (8MHz)
+Hinnat LVV0 ellei toisin mainittu
+Osat	Vsto	TYYPPI		KPL	A	YHT  19.12.90	26.3.91
+	Z	PAK68			200	200	200
+	Z	PUK68			100	100	100
+IC1	M	MC68020RC12	*1	790	790	760/16E 450/RP20E 
+IC2	M	MC68881RC12	(*1)	540	540	510/16B	488/16B
+ICPUK	M	MC68HC000P8	 1	-	-		60
+IC3	M	SN74LS90N	*1	6.15	12.3
+IC4,5	M	MC74F74		*2	6.25	12.5
+IC6,7	M	MC74F08N	*2	4.75	9.50
+IC8	M	MC74F10N		4.75	4.75
+IC13	M	MC74F04N		4.75	4.75
+IC9,10	M	MC74F32N	*2	4.75	9.50
+IC11	M	SN74LS125AN		5.75	5.75
+KANTA14 D	113-93-314	*11 	1.40	15.4
+	D	510-93-114-13-061	30.0	30.0
+	D	510-93-068-10-031	25.0	25.0
+X1	D	350-10-164 	*2	21	42 PIIKKIRIMA
+(X2,X3	D	803-93-050-10-001 *2)	21	42
+	D	110-92-964	*3	6.40	19.20	
+j1,j2-5	D	310-91-132	1	5.20	5.20
+CB	S	1C20Z5U104M050B	*9	0.65	5.85
+CB	S	499D105		*3	1.10	3.30
+Q1	K	KVE1100-12.50	*1	49.50	49.50	
+	K	KVE1100-16.00	(*1)	49.5
+	K	KVE1100-20.00	(*1)	49.5
+	K	KVE1100-24.00	(*1)	49.5
+PUK osia	MC14052BP	2	2.80	5.60
+RN1,2	7*4k7 sip	*2	DALE		7 kpl 4.7K vastusverkko
+______________________________________________________________
+yhteensa ilman vastusverkkoja			1932.1/2327.83 -570 1362
+yhteensa ilman vastusverkkoa ja liittimia X2,X3	1890.1/2277.22
+mista voi tinkia: IC2 flotari(520) pois		1458.5/1757.22
+IC2 kanta ei valttamaton jos  IC2'a		1433.5/1727.11
+Q1  pois,korotellaan koneen vauhdilla		1384.0/1667.47
+(esim 7.14 tai 8MHz), J2 seka j4 jumpperoidaan. 1368.6/1649.16
+14PIN kannat pois(vain ammattilaiset)		
+(X2,X3 tarpeen vain MEM-68 liittamiseksi korttiin osta kun ostat MEM68)
+IC5 ja IC4 voivat olla SN74LS74 tyyppisia jos yli 16MHz ei ole tarpeen.
+
+mem-68 lisays: 0.5M muistilla
+zmem68		1		150
+zpak-mem68	1		 50
+msn74ls20	1		  5
+310-91-632	4	6.40 	 25.60
+YCXk581000p-10l	4	140	560
+110-91-164	2	6.40	 12.80
+-------------------------------------
+				 803.40 980/
+
+muutamia lisaohjeita:
+kayta ehdottomasti CMOS-piirien kasittelyssa maadoitettua tyoalustaa,ja
+kasittele piireja koteloista, ala johtimista seuraavat tyokalut on syyta
+yhdistaa tyo-alustaan taipuisilla johdoilla:
+juottimen karki, IC-asennustyokalut , tinarulla , sivuleikkurit, laatikko,
+josta komponentit otetaan (voi vuorata esim pahvirasian alumiinifoliolla).
+
+
+
+X2 ja X3 leikataan liitinrimoista ns. Stanley l. mattoveitsella 
+esim leikkuulaudalla tai muulla kovalla pinnalla (juotospiikit ylospain)
+
+lado ja juota (halvimmat) matalat komponentit ensin:
+kannat, vastusverkot, kerkot , 
+X1 'sta juotetaan paksummat piikit, rimat tulevat juotospuolelle, jolloin ne
+pitaa juottaa komponenttipuolelta kasin aseta 1kpl 64pin kanta suojaamaan
+ohuempia piikkeja ,silla ne eivat kesta kovakouraista kasittelya.
+
+
+IC1 kanta on paras tapa varmistua komponenttipuolesta 
+(komponenttien asettelu piirrokset komponenttipuolella)
+
+IC1: Ei mene kantaansa nurinpain (vasaraa ei saa kayttaa)
+IC2: katso tarkkaan pinnan 1 merkki piirilevyssa, ja aseta kanta oikeinpain
+IC1,IC2 tulee asettaa paikalleen aivan viimeiseksi kun kaikki muut 
+komponentit on asennettu ja juotettu paikoilleen.
+
+Huom! 
+MC68020RCxx on PGA versio kullatuin piikein ja keraamisin rungoin
+MC68020RPxx on PGA versio tinatuin piiekin ja muovisin rungoin
+MC68020RC/RP	on saatavissa eri nopeusversioina:
+PAK-68 kortti on testattu versioilla 12,16ja 20. 
+MEM-68 (saatavilla 1990Q1) testattu 21MHz vauhdilla (35ns Rammeilla)
+MC68020RC12E	8.00-12.5|MC68020RC16E	8.00-16.6|MC68020RC20E	12.5-20.0
+MC68020RC25E	12.5-25.0|XC68020RC33E	16.0-33.3|
+MC68881RC	on saatavissa seuraavina nopeusversioina:
+XC68881RC12A	4.00-12.5|MC68881RC16A	4.00-16.6|MC68881RC20A	8.0-20.0
+MC68881RC12B	8.00-12.5|MC68881RC12B	8.00-16.6|MC68881RC20B	12.5-20.0
+XC68881RC25E	8.00-25.0|MC68881RC33E	8.00-33.3
+MC68882RC 	on saatavissa seuraavina nopeusversioina:
+MC68882RC16	8.00-16.6|MC68882RC20	12.5-20.0|MC68882RC25A	12.5-25.0
+XC68882RC33	16.0-33.3|XC68882RC40	16.0-40.0
+
+JOS komponentteja ajetaan ALI-tai YLInopeudella, voivat ne tuhoutua, ja
+vastuu on "kuljettajan", ei valmistajan, maksaja on kuljettaja.
+
+Hinnoittelusta:
+		EDICTA	ESD	FIELD
+PAK68		-	-	200	PELKKA KORTTI
+PAK68		150DEM	-	602.1	rakennussarja ilman prosessoreita
+PAK68		750DEM	-	1932	12/16MHz rakennussarja taydellinen
+PAK68		-	1100DEM	3300	12/16MHz VALMIS
+PUK68		-	-	100	PELKKA KORTTI
+PUK68		-	69DEM	-	VALMIS
+PAKMEM			39DEM	150	RAM-Kortti 512K muistilaajennus 32bit
+PAKMEMPAL		10DEM	50	RAM-kortin PAL piiri
+TOS020		-	197DEM	500	6 EPROM 27C256
+TOS020		-	30DEM	150	Diskette (prommien sisalto tietueina)
+MC68000P8	-	20DEM	35.50
+                             
+Hinnat koskevat yhden kappaleen ostoeria, yhteisostoilla saadaan hinnat
+putoamaan siten, etta 6kpl erissa hinnat ovat noin 15% halvempia
+FIELD OY toimittamissa sarjoissa on kaytetty ehdottoman ensiluokkaisia
+komponentteja, samoja, joita suomen teollisuus kayttaa, ja se nostaa hintoja
+hieman.
+
+valmiiksikootun hinnanmuodostus:	
+osat 			1932/2327.71
+kokoonpano		906.60/1091.57
+testaus ja koeajo	462/556.63
+YHTEENSA		3300/3975.90

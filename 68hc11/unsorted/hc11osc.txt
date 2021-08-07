@@ -1,0 +1,241 @@
+File hc11osc.txt Motorola MCU Freeware- boxista
+downloadannut Eero A. Sarlin/ Field Oy
+
+Kasittelee MC68HC11 oskillaattoria, mutta koskee myos
+MC68HC04
+MC68HC05
+MC74HCXX
+MC74ACXX
+ja muita CMOS- ja HCMOS- prosessoreita ja invertterioskillaattoreita
+
+
+In the MC68HC11 the operating current (Idd) is the sum of the component currents
+
+                       Idd = Osc + CPU + Analog + STOP
+
+If we hold all variables (except frequency) constant, then for a given part.....
+
+     A.  The STOP (leakage) current is constant.
+     B.  The Analog current (A/D etc.) is constant if disabled or running on
+         the internal RC oscillator.
+     C.  The CPU current is a linear function of frequency.
+     D.  The crystal oscillator current is a function of many variables
+         including the external components, PC board layout, etc.  and it is
+         therefore impossible to state a general rule.  If the external network
+         is designed improperly, then it is quite possible for a low frequency
+         circuit to use more current than a good high frequency design.
+
+
+The external network can (and should) be optimized.  This is particularly
+important at low frequencies where the relitively high loss in the external
+network is high.  If the amplitude of the signal at the input to the oscillator
+(EXTAL) is small, then the oscillator Idd goes up.
+
+The oscillator current has two components, the load current and the 'short' 
+current.  The load current is simply the current that is dissipated in the 
+devices connected to the output of the oscillator (XTAL).  The 'short' current
+is the Vdd to Vss current which is the result of both the P- and N-channel
+being turned on.  This happens whenever the input signal is between a solid
+logic '1' and a solid logic '0'.  This is roughly Vdd-0.6 and Vss+0.6 Volts.
+The lowest possible oscillator current occurs with no load with a clean Vdd to
+Vss square wave at the input.  The current is a function of frequency because
+the load is simply the pin capacitance.  This current is very repeatable.  In
+fact, this is the way that the 'HC11 is tested (see the fine print at the bottom
+of the page in the data book).
+
+If the input signal spends a majority of each cycle in the high 'short' current
+mode, then the Idd can be very high.  This is what happens in some low frequency
+designs.  The feedback resistor provides the DC bias so that the quiesent point
+of the input signal is in the center of the linear operating range (approx. mid
+supply).  If the loss in the network is high, the amplitude of the sinusodial
+signal will be small.  The oscillator may always be in the high current range
+because it never reaches the point where one of the transistors is off.
+
+Beleive it or not, it is possible to put a resistor in series with the external
+network and actually improve the amplitude of the input signal.  The theory for
+this takes is too long to include here.
+
+The following is a simple 'tune-up' proceedure for determining the optimal value
+for Rx through a very simple experiment.
+
+
+
+
+The 'Tune-Up' Procedure
+
+There is a very simple 'tune-up' procedure which can be used to optimize
+a Pierce oscillator design using any type of crystal, at any frequency,
+supply voltage, and temperature.  The result is an 'optimal' circuit
+design which is stable, reliable, and low power.
+
+
+ A.  Construct an oscillator using the components (crystal, capacitors,
+     inverter, resistors) that you intend to use.  If possible, the final
+     PC board should be used because the physical layout of the board,
+     the type of sockets, etc. can affect the oscillator operation.
+
+ B.  Substitute a variable resistor for Rx.
+
+ C.  Insert a micro-ammeter in the supply line to monitor Idd.
+
+ D.  Tie all unused inputs to supply (Vdd) or ground (Vss).  This prevents
+     'floating' inputs which can use relatively large currents that will
+     affect the Idd measurement.
+
+     In large chips, such as micro-processors, the chip should be held in
+     reset.  This prevents any internal clocking which would raise the
+     Idd and affect the measurement.  In Motorola MCU's, Reset will force
+     all I/O ports into inputs.  All of these should be tied off to avoid
+     'floating' inputs.
+
+ E.  Monitor Idd while varying Rx.  There should be a very slight dip in
+     Idd.  This dip is very broad (low Q) and very shallow (only a few
+     percent).  The dip is the optimal point of operation.
+
+ F.  Remove the variable resistor and substitute the nearest fixed value.
+     As the shape of the Idd curve suggests, the exact resistor value is
+     not critical.  Tolerances of up to 20% can generally be used.
+
+
+Note that the value of Rx also affects the operating frequency.  Usually
+this is only a few ppm.  If a precise frequency is needed, then it will
+be necessary to use the following sub-procedure...
+
+     AA.  Adjust Rx for 'optimal' Idd.
+     BB.  Adjust Cy to set the correct frequency.
+     CC.  Go back to AA and repeat until no changes are necessary.
+
+
+
+
+
+
+
+
+These are the definitions of the parameters..........
+
+
+
+Crystal Parameter Definitions: 
+
+
+                               R1       C1      L                
+                                        ||                       
+                    O-----*--/\/\/\/----||----XXXXX---*-----O    
+                          |             ||            |          
+                          |                           |          
+                          |                           |          
+                          |             ||            |          
+                          +-------------||------------+          
+                                        ||                       
+                                        C0                       
+
+
+
+
+
+
+
+External Component Definitions:
+                                    |\                                
+                                    | \                               
+                                    |  \                              
+                                    |   \                             
+                               -----|    O----*------>                
+                               |    |   /     |                       
+                               |    |  /      \                       
+                               |    | /       / Rx                    
+                               |    |/        \                       
+                               |              /                       
+                               |      Rb      |                       
+                               *----/\/\/\----*                       
+                               |              |                       
+                               |       _      |                       
+                               |      | |     |                       
+                               *----| | | |---*                       
+                               |      |_|     |                       
+                               |              |                       
+                          Cx =====          ===== Cy                  
+                               |              |                       
+                               |              |                       
+                              ===            ===                      
+                               -              -                       
+
+
+Amplifier Parameter Definitions:  
+
+                |                                    \                  
+                |                     || Cio          \                 
+                |          -----------||-----------    \                
+                |         |           ||           |    \               
+                |         |                        |     \              
+                |         |     |\                 |      \             
+                |         |     | \                |       \            
+                |         |     |  \               |        \           
+                |         |     |   \      Ro      |         \  --        
+          >-----+---------*-----+ Av O---/\/\/\----*----------+|  |------>  
+                |         |     |   /              |         /  --        
+                |         |     |  /               |        /           
+                |   Cin =====   | /         Cout =====     /            
+                |         |     |/                 |      /             
+                |         |                        |     /              
+                |        ===                      ===   /               
+                |         -                        -   /                
+                |                                     /                 
+                |                                    /                  
+                |                                   /                   
+
+
+
+
+
+Some Practical Design Tips
+
+The following is a summary of some guidelines which may help in design.
+
+ Rb:
+    This resistor sets the bias point.  It also affects the amplifier
+ gain by introducing DC negative feedback.  Therefore, it should be as
+ large as practical.  Usually the limiting factors are the input leakage
+ current and the printed circuit board contamination (solder resin,
+ finger prints, moisture, etc.).
+
+ Rx:
+    This resistor isolates the crystal network from the amplifier output
+ and provides a needed phase shift.  The R/C lowpass filter, formed by
+ Rx and Cy, decrease the probability of spurious oscillation at high
+ frequencies.  The value of Rx should be approximately equal to the
+ effective series resistance of the crystal at the operation frequency
+ (if both Cx+Cin and Cy are equal).  An increase in the value of Rx will
+ decrease the amount of feedback and improve stability.
+
+ Cx and Cy:
+    These capacitors are part of the crystal load network.  Typically,
+
+                             Cx = Cy = (2 x CL)
+
+
+
+
+
+
+
+
+I have simulated a couple of cases in the 1 to 2 MHz range that you mentioned
+in your bulliten board message.  They are both for an 'HC11 in a plastic DIP
+with Vdd = 5.0 Volts at 25 deg C.
+
+1.000 MHz     R1 = 341 Ohms     Rb = 10 MOhms     CL = 10 pF     Rx = 10 kOhms
+2.000 MHz     R1 = 154 Ohms     Rb = 10 MOhms     CL = 30 pF     Rx =  1 kOhms
+
+This was done using an experimental crystal oscillator simulation program that
+I am working on.  I would be interested in hearing the results of your work so
+that I can verify the accuracy of my program's results.
+
+
+
+
+Ken Burch
+11309 April Drive
+Austin  TX  78753
+$ 

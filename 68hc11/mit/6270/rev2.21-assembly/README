@@ -1,0 +1,24 @@
+---------------------------------------------------------------------------
+Anonymous FTP server:	cherupakha.media.mit.edu (18.85.0.47)
+This file:		~ftp/pub/6270/rev2.21-assembly/README
+Last updated:		Tue Oct 12 18:27:31 1993
+---------------------------------------------------------------------------
+
+This directory contains the file "assembly221-fixed.ps.Z", which is
+assembly directions for the 1993 Revision 2.21 of the 6.270 Robot
+Controller Board system.
+
+This file is a modified version of the documentation created by the
+current organizers of the 6.270 project (who can be reached by sending
+e-mail to "6.270-organizers@athena.mit.edu").  The original file can
+be found on FTP server aeneas.mit.edu in directory pub/ACS/6.270.
+
+I fixed several PostScript bugs that were contained in the original
+file, so the file may now be printed on normal PostScript devices (not
+just Apple LaserWriters).
+
+The file will print out approximately 85 pages long.
+
+	-Fred Martin
+	 fredm@media.mit.edu
+	 Tue Oct 12 18:30:03 1993

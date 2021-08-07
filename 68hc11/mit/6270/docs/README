@@ -1,0 +1,198 @@
+---------------------------------------------------------------------------
+Anonymous FTP server:	cherupakha.media.mit.edu (18.85.0.47)
+This file:		~ftp/pub/6270/docs/README
+Last updated:		Fri Oct 22 11:12:21 1993
+---------------------------------------------------------------------------
+
+This directory contains ``The 6.270 Robot Builder's Guide,'' the
+course notes to the 1992 MIT LEGO Robot Design Competition.
+
+The rest of this file explains how to retrieve and print a copy on a
+PostScript printer.  Alternatively, you may wish to order a printed
+and spiral-bound copy for $15 postpaid.
+
+To order a copy, send a check (payable in U.S. funds only) made out to
+"MIT Epistemology and Learning" to:
+
+	Epistemology and Learning Publications
+	MIT Media Laboratory
+	20 Ames Street Room E15-309
+	Cambridge, MA 02139
+
+Request the ``Robot Builder's Guide.''  
+
+[If you would like to receive a copy of Interactive C for MS-DOS on
+diskette, please include a FORMATTED 3.5" HD diskette with your
+publication order and include a note indicating that you want IC
+copied onto the disk.  Please, only order the software if you do not
+have any electronic access.]
+
+[If you would like a copy of the software, but you are -not- ordering
+a copy of the documentation, please include a self-addressed stamped
+envelope for return, along with your formatted HD diskette.]
+
+
+PRINTING NOTES
+
+Individual chapters, appendices, and the preface may be printed on any
+PostScript printer.  Please don't try to print on a non-PostScript
+printer; you will waste lots of paper and get system adminstrators mad
+at you.
+
+All PostScript files have been compressed using the Unix "compress"
+utility.  When you retrieve the files with FTP, make sure to first
+enter binary mode by typing "binary" at the FTP prompt.
+
+To print a chapter, use the following command:
+
+	zcat <chaptername.PS> | lpr -P<printername>
+
+For example, to print the preface use the following:
+
+	zcat preface.PS | lpr -P<printername>
+
+(For those of you with MS-DOS PCs, the utility "COMP430D" is a public
+domain Unix-format compress/uncompress for MS-DOS available from many
+archive sites.)
+
+Please contact Fred Martin at fredm@media.mit.edu if you have any
+questions or problems in printing out the document.  Comments are also
+welcome.
+
+The most common printing problem will occur when you are printing the
+doc's to a printer on a Macintosh network.  If the printer has been
+used by a Mac running Mac OS System 6, it will have had installed in
+its RAM a LaserPrep dictionary that will conflict with the PostScript
+files, causing printing to stop on particular pages.  The solution to
+this is to reboot the printer and then re-print the file, submitting
+the print job *before* any other Mac print job is allowed to run.
+
+
+This document was updated Mon Nov 30 15:02:05 1992 to reflect a new
+version of the board set, Version 2.11, which fixes some bugs in the
+old version (2.10).  The bug-fixes for the old board set are now gone;
+contact me if you need them for some reason.
+
+As of Fri Oct 22 11:09:16 1993, the current revision of the 6.270
+board set is 2.21.  This manual covers the older 2.11 board set;
+however, the differences between the two versions are small.  See the
+file DS1233-instructions.txt in this directory for instructions on how
+to upgrade a 2.11 board, and the file
+pub/6270/rev2.21-assembly/v211-vs-221-differences.txt for an
+explanation of the differences between the boards.  Also, the file
+pub/6270/rev2.21-assembly/assembly221-fixed.ps.Z contains assembly
+directions for the current board revision. 
+
+
+A brief table of contents:
+
+
+FILE		DESCRIPTION
+----------------------------------------------------------------------
+coverart.PS.Z	Cover to the Robot Builder's Guide.
+
+
+preface.PS.Z	Introduction to the Robot Builder's Guide.
+		Includes table of contents, list of figures,
+		    copyright notice.
+
+		Pages i to xxiv.
+
+
+chapter1.PS.Z	Assembly manual for all of the 6.270 hardware,
+		including the Microprocessor Board, sensors,
+		motors, and batteries.
+
+		Pages 1 to 58.
+
+chapter2.PS.Z	Motors.  DC motors, servo motors, stepper motors.
+
+		Pages 59 to 66.
+
+
+chapter3.PS.Z	Batteries.  Ratings, specifications, types.  The
+		6.270 battery charger.
+
+		Pages 67 to 72.
+
+
+chapter4.PS.Z	LEGO Design.  How to build with the LEGO Technics (R)
+		building system.
+
+		Pages 73 to 80.
+
+
+chapter5.PS.Z	Sensor Design.  Information about analog, digital sensors;
+		photocell, touch, bend, infrared, shaft encoder, and
+		other sensors.
+
+		Pages 81 to 96.
+
+
+chapter6.PS.Z	Robot Control methods.  How to program mobile robots
+		for robust performance in dynamic environments.
+
+		Pages 97 to 114.
+
+
+chapter7.PS.Z	The Interactive C language User's Guide.  Introduction
+		and reference manual to the IC language system
+		developed by Randy Sargent and Fred Martin.
+
+		Pages 115 to 156.
+
+
+appendxa.PS.Z	Introduction to the 6.270 Course.  Includes
+		1992 class schedule and contest rules.
+
+		Pages 157 to 182.
+
+
+appendxb.PS.Z	6.270 Hardware.  Tutorial and technical reference 
+		document on the 6.270 hardware, including the
+		Microprocessor Board, Expansion Board, and infrared
+		transmission system.
+
+		Pages 183 to 214.
+
+
+appendxc.PS.Z	Printed Circuit Layouts.  Full size reproductions of
+		the printed circuit artwork for the 1992 6.270
+		board set.
+
+		Pages 215 to 220.
+
+
+appendxd.PS.Z	Electronic Suppliers listing.  A list of over 20
+		top suppliers for robotic scientists and hobbyists.
+
+		Pages 221 to 230.
+
+
+The following files are updates to the first release of the course
+notes: 
+
+6811intr.PS.Z	Introduction to programming the 6811 microprocessor.
+		Some information is out of date with the '92 hardware,
+		but the overall content is relevant to those
+		interested in writing any 6811 assembly code.
+
+sencdr.txt	Explanation, CPU load for use of shaft encoder
+		routines.  There are some changes from the original
+		printed notes.
+	
+benchmrk.txt	Explanation of benchmark() function defined in
+		library file "benchmrk.c".
+
+spkrhack.PS.Z	Instructions describing how to use Motor port 5
+		as a speaker driver.
+
+----------------------------------------------------------------------
+
+		
+This entire document is Copyright (C) 1992 by Fred Martin.
+
+Distribution information and permission is contained in the preface.
+The copyright notice printed in the preface must accompany any
+distribution of this document other than non-commercial personal use,
+as per the terms specified therein.

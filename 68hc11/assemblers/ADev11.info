@@ -1,0 +1,9 @@
+One-Line-Description-Of-The-Packet:
+	A complete Amiga development system for 68HC11, with disassembler
+
+Longer-Description:
+	ADev11	A complete development system for Motorola's 68HC11 processor,
+		including a macro assembler, linker, librarian, downloader and
+		disassembler.  Supports multiple source file and multiple
+		relocatable segments per file.  Amiga binary only.
+		Author:  Stan Burton

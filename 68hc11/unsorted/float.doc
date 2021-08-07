@@ -1,0 +1,741 @@
+12     RFRV20     08/29/89 12:45:45     WACCVM2 MAIL
+
+ _______________(Message From PROFS on 08/29/89 at 12:45:38)___________
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MC68HC11
+
+Floating Point Package
+
+
+
+Written By
+
+Gordon Doughman
+
+
+
+ 1986 Gordon Doughman
+
+1.0 Introduction:
+
+
+
+        The MC68HC11 is a very powerful and capable single chip microcomputer.  Its concise instruction set
+combined with 6 powerful addressing modes, true bit manipulation, 16-bit arithmetic operations and a second 16-bit
+index register make it ideal for control applications requiring  both high speed I/O and high speed calculations.
+
+
+
+        While most applications can be implemented by using the 16-bit integer precision of the MC68HC11,
+certain applications or algorithms may be difficult or impossible to implement without floating point math.  The goal in
+writing the MC68HC11 floating point package was to provide a fast, flexible way to do floating point math for just such
+applications.
+
+
+
+        The HC11 floating point package (HC11FP) implements more than just the four basic math functions (add,
+subtract, multiply, and divide) it also provides routines to convert from ASCII to floating point and from floating point
+to ASCII.  For those applications that require it, the three basic trig functions SINe, COSine, and TANgent are
+provided along with some trig utility functions for converting to and from both radians and degrees.  The square root
+function is also included.
+
+
+
+        For those applications that can benefit by using both integer and floating point operations, there are
+routines to convert to and from integer and floating point format.
+
+
+
+        The entire floating point package requires just a little over 2k bytes of memory and only requires ten
+bytes of page zero RAM in addition to stack RAM.  All temporary variables needed by the floating point routines,
+reside on the stack.  This feature makes the routines completely reentrant as long as the ten bytes of page zero RAM
+are saved before using any of the routines.  This will allow both interrupt routines and main line programs to use the
+floating point package with out interfering with one another.
+
+2.0 Floating Point Format:
+
+
+
+2.1 Floating Point Accumulator Format:
+
+
+
+        The ten bytes of page zero RAM are used for two software floating point accumulators FPACC1 and
+FPACC2.  Each 5 byte accumulator consists of a one byte exponent, a three byte mantissa, and one byte that is used
+to indicate the mantissa sign.
+
+
+
+        The exponent byte is used to indicate the position of the binary point  and is biased by decimal 128 (œ80)
+to make floating point comparisons easier. This one byte exponent gives a dynamic range of about 1  1038.
+
+
+
+        The mantissa consists of three bytes (24 bits) and is used to hold both the integer and fractional portion
+of the floating point number.  The mantissa is always assumed to be "normalized" (i.e. most significant bit of the most
+significant byte a 1).  A twenty-four bit mantissa will provide slightly more than seven decimal digits of precision.
+
+
+
+        A separate byte is used to indicate the sign of the mantissa rather than keeping it in two's complement
+form so that unsigned arithmetic operations may be used when manipulating the mantissa.  A positive mantissa is
+indicated by this byte being equal to zero (œ00).  A negative mantissa is indicated by this byte being equal to -1 (œFF).
+
+
+
+        FPACC1  82 C90FDB 00    +3.1415927
+
+        FPACC2  82 C90FDB FF    -3.1415927
+
+
+
+2.2 "Memory Format":
+
+
+
+        The way that floating point numbers are stored in memory or the "memory format" of a floating point
+number is slightly different than its floating point accumulator format.  In order to save memory, floating point numbers
+are stored in memory in a format called "hidden bit normalized form".
+
+
+
+        In this format, the number is stored into four consecutive bytes with the exponent residing at the lowest
+address.  The mantissa is stored in the next three consecutive bytes with the most significant byte stored in the
+lowest address.  Since the most significant bit of the mantissa in a normalized floating point number is always "1", this
+bit can be used to store the sign of the mantissa.  This results in positive numbers having the most significant bit of
+the mantissa cleared (0) and negative numbers having their most significant bit set (1).  An example follows:
+
+
+
+                82 490FDB       +3.1415927
+
+                82 C90FDB       -3.1415927
+
+
+
+        There are four routines that can be used to save and load the floating point accumulators and at the same
+time convert between the floating point accumulator and memory format.  These routines are discussed in detail in
+another section.
+
+
+
+3.0 Errors:
+
+
+
+        There are 7 error conditions that may be returned by the HC11 floating point package.  When an error
+occurs, the condition is indicated to the calling program by setting the carry bit in the condition code register and
+returning an error code in the A-accumulator.  The error codes and their meanings are explained below.
+
+
+
+        Error # Meaning
+
+        1       Format error in ASCII to floating point conversion.
+
+        2       Floating point overflow.
+
+        3       Floating point underflow.
+
+        4       Division by zero (0).
+
+        5       Floating point number too large or small to convert
+
+                to integer.
+
+        6       Square root of a negative number.
+
+        7       TAN of /2 (90¦)
+
+
+
+
+
+Note: None of the routines check for valid floating point numbers in either FPACC1 or FPACC2.  Having illegal
+floating point values in the floating point accumulators will produce unpredictable results.
+
+4.0 Floating Point Routines:
+
+
+
+        The following sections provides a description of each routine in the floating point package.  The
+information provided includes the subroutine name, operation performed, subroutine size, stack space required,
+other subroutines that are called, input, output, and possible error conditions.
+
+
+
+        The Stack Space required by the subroutine includes not only that required for the particular routines
+local variables, but also stack space that is used by any other subroutines that are called including return addresses.
+Note that the trig functions require a good deal of stack space.
+
+
+
+        Since some applications may not require all the routines provided in the floating point package, the
+description of each routine includes a section giving the names of other subroutines that it calls.  This makes it easy
+to determine exactly which subroutines are required for a particular function.
+
+
+
+4.1 ASCII-to-Floating Point Conversion:
+
+
+
+Subroutine Name:        ASCFLT
+
+Operation:      ASCII (X) † FPACC1
+
+Size:   352 Bytes (includes NUMERIC subroutine)
+
+Stack Space:    14 Bytes
+
+Calls:  NUMERIC, FPNORM, FLTMUL, PSHFPAC2, PULFPAC2
+
+Input:  X-register points to ASCII string to convert.
+
+Output: FPACC1 contains the floating point number.
+
+Error conditions:       Floating point format error may be returned.
+
+
+
+Notes:  This routine converts an ASCII floating point number to the format required by all of
+the floating point routines.  Conversion stops either when a non-decimal character is
+encountered before the exponent or after one or two exponent digits have been
+converted.  The input format is very flexible.  Some examples are shown below.
+
+
+
+                20.095
+
+                0.125
+
+                7.2984E+10
+
+                167.824E5
+
+                005.9357E-7
+
+                500
+
+
+
+4.2 Floating Point Multiply:
+
+
+
+Subroutine Name:        FLTMUL
+
+Operation:      FPACC1  FPACC2 † FPACC1
+
+Size:   169 Bytes
+
+Stack Space:    10 Bytes
+
+Calls:  PSHFPAC2, PULFPAC2, CHCK0
+
+Input:  FPACC1 and FPACC2 contain the numbers to be multiplied.
+
+Output: FPACC1 contains the product of the two floating point accumulators.  FPACC2
+remains unchanged.
+
+Error conditions:       Overflow, Underflow.
+
+
+
+4.3 Floating Point Add:
+
+
+
+Subroutine Name:        FLTADD
+
+Operation:      FPACC1 + FPACC2 † FPACC1
+
+Size:   194 Bytes
+
+Stack Space:    6 Bytes
+
+Calls:  PSHFPAC2, PULFPAC2, CHCK0
+
+Input:  FPACC1 and FPACC2 contain the numbers to be added.
+
+Output: FPACC1 contains the sum of the two numbers.  FPACC2 remains unchanged.
+
+Error conditions:       Overflow, Underflow.
+
+
+
+Notes:  The floating point add routine performs full signed addition.  Both floating point
+accumulators may have mantissas  with the same or different sign.
+
+
+
+4.4 Floating Point Subtract:
+
+
+
+Subroutine Name:        FLTSUB
+
+Operation:      FPACC1 - FPACC2 † FPACC1
+
+Size:   12 Bytes
+
+Stack Space:    8 Bytes
+
+Calls:  FLTADD
+
+Input:  FPACC1 and FPACC2 contain the numbers to be subtracted.
+
+Output: FPACC1 contains the difference of the two numbers (FPACC1-FPACC2).  FPACC2
+remains unchanged.
+
+Error conditions:       Overflow, Underflow.
+
+
+
+Notes:  Since FLTADD performs full signed addition, the floating point subtract routine
+inverts the sign byte of FPACC2, calls FLTADD and then changes the sign of
+FPACC2 back to what it was originally.
+
+
+
+4.5 Floating Point Divide:
+
+
+
+Subroutine Name:        FLTDIV
+
+Operation:      FPACC1  FPACC2 † FPACC1
+
+Size:   209 Bytes
+
+Stack Space:    11 Bytes
+
+Calls:  PSHFPAC2, PULFPAC2
+
+Input:  FPACC1 and FPACC2 contain the divisor and dividend respectively.
+
+Output: FPACC1 contains the quotient. FPACC2 remains unchanged.
+
+Error Conditions:       Divide by zero, Overflow, Underflow
+
+
+
+4.6 Floating Point to ASCII Conversion:
+
+
+
+Subroutine Name:        FLTASC
+
+Operation:      FPACC1 † (X)
+
+Size:   370 Bytes
+
+Stack Space:    28 Bytes
+
+Calls:  FLTMUL, FLTCMP, PSHFPAC2, PULFPAC2
+
+Input:  FPACC1 contains the number to be converted to an ASCII string. The index register
+X points to a 14 byte string buffer.
+
+Output: The buffer pointed to by the X index register contains an ASCII string that represents
+the number in FPACC1.  The string is terminated with a zero (0) byte and the X
+register points to the start of the string.
+
+Error Conditions:       None.
+
+
+
+4.7 Floating Point Compare:
+
+
+
+Subroutine Name:        FLTCMP
+
+Operation:      FPACC1 - FPACC2
+
+Size:   42 Bytes
+
+Stack Space:    None
+
+Calls:  None
+
+Input:  FPACC1 and FPACC2 contain the numbers to be compared.
+
+Output: Condition codes are properly set so that all branch instructions may be used to alter
+program flow.  FPACC1 and FPACC2 remain unchanged.
+
+Error Conditions:       None.
+
+
+
+4.8 Unsigned Integer to Floating Point:
+
+
+
+Subroutine Name:        UINT2FLT
+
+Operation:      (16-bit unsigned integer) † FPACC1
+
+Size:   18 Bytes
+
+Stack Space:    6 Bytes
+
+Calls:  FPNORM, CHCK0
+
+Input:  The lower 16-bits of the FPACC1 mantissa contain an unsigned 16-bit integer.
+
+Output: FPACC1 contains the floating point representation of the 16-bit unsigned integer.
+
+Error Conditions:       None.
+
+
+
+4.9 Signed Integer to Floating Point:
+
+
+
+Subroutine Name:        SINT2FLT
+
+Operation:      (16-bit signed integer) † FPACC1
+
+Size:   24 Bytes
+
+Stack Space:    7 Bytes
+
+Calls:  UINT2FLT
+
+Input:  The lower 16-bits of the FPACC1 mantissa contain a signed 16-bit integer.
+
+Output: FPACC1 contains the floating point representation of the 16-bit signed integer.
+
+Error Conditions:       None.
+
+
+
+4.10 Floating Point to Integer:
+
+
+
+Subroutine Name:        FLT2INT
+
+Operation:      FPACC1 † (16-bit signed or unsigned integer)
+
+Size:   74 Bytes
+
+Stack Space:    2 Bytes
+
+Calls:  CHCK0
+
+Input:  FPACC1 may contain a floating point number in the range 65535  FPACC1  -32767.
+
+Output: The lower 16-bits of the FPACC1 mantissa will contain a 16-bit signed or unsigned
+number.
+
+Error Conditions:       None.
+
+
+
+Notes:  If the floating point number  in FPACC1 is positive, it will be converted to an unsigned
+integer.  If the number is negative it will be converted to a signed twos complement
+integer. This type of conversion will allow 16-bit addresses to be represented as
+positive numbers in floating point format.  Any fractional part of the floating point
+number is discarded.
+
+
+
+4.11 Transfer FPACC1 to FPACC2:
+
+
+
+Subroutine Name:        TFR1TO2
+
+Operation:      FPACC1 † FPACC2
+
+Size:   13 Bytes
+
+Stack Space:    0 Bytes
+
+Calls:  None
+
+Input:  FPACC1 contains a floating point number.
+
+Output: FPACC2 contains the same number as FPACC1.
+
+Error Conditions:       None.
+
+5.0 Floating Point Functions:
+
+
+
+        The following section describes the supplied floating point functions, returned results, and possible error
+conditions.  Note that even though the Taylor series which is used to calculate the trig functions requires that the
+input angle be expressed in radians, less precision is lost through angle reduction if the angle being reduced is
+expressed in degrees. Once the angle is reduced, the DEG2RAD subroutine is called to convert the angle to radians.
+
+
+
+        To reduce the number of factors in the Taylor expansion series all angles are reduced to fall between 0¦
+and 45¦ by the ANGRED subroutine. This subroutine returns the reduced angle in FPACC1 along with the quad number
+that the original angle was in and a flag that tells the calling routine whether it actually needs to calculate the sine or
+the cosine of the reduced angle to obtain the proper answer.
+
+
+
+5.1 Square Root:
+
+
+
+Subroutine Name:        FLTSQR
+
+Operation:      FPACC1 † FPACC1
+
+Size:   104 Bytes
+
+Stack Space:    21 Bytes
+
+Calls:  TFR1TO2, FLTDIV, FLTADD, PSHFPAC2, PULFPAC2
+
+Input:  FPACC1 contains a valid floating point number.
+
+Output: FPACC1 contains the square root of the original number.  FPACC2 is unchanged.
+
+Error Conditions:       NSQRTERR is returned if the number in FPACC1 is negative and FPACC1 remains
+unchanged.
+
+
+
+5.2 Sine:
+
+
+
+Subroutine Name:        FLTSIN
+
+Operation:      SIN(FPACC1) † FPACC1
+
+Size:   380 Bytes ( Includes SINCOS subroutine )
+
+Stack Space:    50 Bytes
+
+Calls:  ANGRED, SINCOS, DEG2RAD, PSHFPAC2, PULFPAC2
+
+Input:  FPACC1 contains an angle in radians in the range -2  FPACC1  +2.
+
+Output: FPACC1 contains the sine of FPACC1 and FPACC2 remains unchanged.
+
+Error Conditions:       None.
+
+
+
+Notes:  The Taylor Expansion Series is used to calculate the sine of the angle between 0 and
+45¦ (4).  The subroutine ANGRED is called to reduce the input angle to within this
+range.  Spot checks show a maximum error of +1.510-7 throughout the input range.
+
+
+
+5.3 Cosine:
+
+
+
+Subroutine Name:        FLTCOS
+
+Operation:      COS(FPACC1) † FPACC1
+
+Size:   384 Bytes ( Includes SINCOS subroutine )
+
+Stack Space:    50 Bytes
+
+Calls:  ANGRED, FLTSIN, DEG2RAD, PSHFPAC2
+
+Input:  FPACC1 contains an angle in radians in the range -2  FPACC1  +2.
+
+Output: FPACC1 contains the cosine of FPACC1 and FPACC2 remains unchanged.
+
+Error Conditions:       None.
+
+
+
+Notes:  The Taylor Expansion Series is used to calculate the cosine of the angle between 0
+and 45¦ (4).  The subroutine ANGRED is called to reduce the input angle to within
+this range.  Spot checks show a maximum error of +1.510-7 throughout the input
+range.
+
+
+
+5.4 Tangent:
+
+
+
+Subroutine Name:        FLTTAN
+
+Operation:      TAN(FPACC1) † FPACC1
+
+Size:   35 Bytes ( Also requires FLTSIN and FLTCOS )
+
+Stack Space:    56 Bytes
+
+Calls:  TFR1TO2, EXG1AND2, FLTSIN, FLTCOS, FLTDIV, PSHFPAC2, PULFPAC2
+
+Input:  FPACC1 contains an angle in radians in the range -2  FPACC1  +2.
+
+Output: FPACC1 contains the tangent of the input angle and FPACC2 remains unchanged.
+
+Error Conditions:       Returns largest legal number if tangent of 2 is attempted.
+
+
+
+Notes:  The tangent of the input angle is calculated by first obtaining the sine and cosine of
+the input angle and  then using the following formula: TAN=SINCOS.  At 89.9¦ the
+tangent function is only accurate to 5 decimal digits.  For angles greater than 89.9¦
+accuracy decreases rapidly.
+
+
+
+5.5 Degrees to Radians Conversion:
+
+
+
+Subroutine Name:        DEG2RAD
+
+Operation:      FPACC1    180 † FPACC1
+
+Size:   15 Bytes
+
+Stack Space:    16 Bytes
+
+Calls:  GETFPAC2,FLTMUL
+
+Input:  Any valid floating point number representing an angle in degrees.
+
+Output: Input angles equivalent in radians.
+
+Error Conditions:       None.
+
+
+
+5.6 Radians to Degrees Conversion:
+
+
+
+Subroutine Name:        RAD2DEG
+
+Operation:      FPACC1  180   † FPACC1
+
+Size:   8 Bytes ( Also requires DEG2RAD subroutine )
+
+Stack Space:    16 Bytes
+
+Calls:  DEG2RAD
+
+Input:  Any valid floating point number representing an angle in radians.
+
+Output: Input angles equivalent in degrees.
+
+Error Conditions:       Overflow, Underflow.
+
+
+
+5.7 PI:
+
+
+
+Subroutine Name:        GETPI
+
+Operation:       † FPACC1
+
+Size:   6 Bytes
+
+Stack space:    None
+
+Input:  None
+
+Output: The value of  is returned in FPACC1.
+
+Error Conditions:       None
+
+
+
+Notes:  This routine should be used to obtain the value of  if it is required in calculations
+since it is accurate to the full 24 bits of the mantissa.
+
+6.0 Format Conversion Routines:
+
+
+
+        As discussed in section 2.1 and 2.2 the format for floating point numbers as they appear in the floating
+point accumulators is different than the way numbers are stored in memory.  This was done primarily to save memory
+when a large number of floating point variables are used in a program.  Four routines are provided to convert to and
+from the different formats while at the same time moving a number into or out of the floating point accumulators.  By
+always using these routines to move numbers into and out of the floating point accumulators it would be extremely
+easy to adapt this floating point package to work with any other floating point format.
+
+
+
+        One example might be to interface this package with code produced by Motorola's 68HC11 'C' compiler.
+The Motorola 'C' compiler generates code for single precision floating point numbers whose internal format is that
+defined by the IEEE Standard for Binary Floating Point Arithmetic.  By rewriting the four routines described below the
+IEEE format could be easily converted to the format required by this floating point package.
+
+
+
+6.1 Get FPACC(x):
+
+
+
+Subroutine Name:        GETFPAC1 & GETFPAC2
+
+Operation:      (X) † FPACC1; (X) † FPACC2
+
+Size:   22 Bytes each.
+
+Stack Space:    None
+
+Input:  The X index register points to the 'memory formated' number to be moved into the
+floating point accumulator.
+
+Output: The number pointed to by X is in the specifyed floating point accumulator.
+
+Error Conditions:       None
+
+
+
+6.1 Put FPACC(x):
+
+
+
+Subroutine Name:        PUTFPAC1 & PUTFPAC2
+
+Operation:      FPACC1 † (X); FPACC2 † (X)
+
+Size:   22 Bytes each.
+
+Stack Space:    None
+
+Input:  The X index register points to four consecutive memory locations where the number
+will be stored.
+
+Output: The floating point accumulator is moved into consecutive memory locations pointed
+to by the X index register.
+
+Error Conditions:       None
+
+
+
+
+
+

@@ -1,0 +1,117 @@
+
+Included below are some additional notes and a sample makefile for running
+the 6811 port of the gnu gcc compiler:
+
+	o The Motorola assembler does not accept the usual "unix" like
+	  arguments when processing a .s file. Instead, you should use
+	  gcc with the -S option, then run the assembler on the generated
+	  assembler file using the following syntax:
+
+	  	as11 <file>.s -l > <file>.lst
+
+	  where <file> is the file created by gcc.  The assembler will create
+	  an output file called <file>.s19, which can then be downloaded to
+	  the target machine.  The '-l' option tells the assembler to create
+	  a list file, which you can look through to find any errors, etc.
+
+	o The Motorola assembler does not accept preceding tabs in label
+	  statements. Originally, I wanted to modify the Motorola assembler
+	  to handle  this (since it seems that all other assemblers on the
+	  planet can deal with it),  but the parsing code was just a little
+	  too ugly.
+	  
+	  Because of the, the asm() directive used by gcc will not work. To
+	  correct it, the gcc source file "varasm.c" needs to be modified to
+	  remove the printing of the tab. The following is an rcsdiff of the
+	  file in question:
+
+RCS file: RCS/varasm.c,v
+retrieving revision 1.1
+diff -r1.1 varasm.c
+431c431
+<   fprintf (asm_out_file, "\t%s\n", TREE_STRING_POINTER (string));
+---
+>   fprintf (asm_out_file, "%s\n", TREE_STRING_POINTER (string));
+
+
+	o Even though the alpha release does not include a linker, you can
+	  still manage projects with multiple files.  To do this, create a
+	  temporary target which is a concatenation of the input source
+	  files.
+
+	  In order for the user to be able to concatenate their files
+	  together all include files created by the user should have the
+	  following construct inside their header file:
+
+	    #ifndef _FILENAME_
+	    #define _FILENAME_
+
+	    /* contents of header file */
+
+	    #endif
+
+	  This is usually good programming practice anyway and prevents the 
+	  header file from being included more than once.
+
+	  Because multiple source files can be concatenated into a single
+	  source file some ANSI compatible conventions may not work.  These
+	  include the following:
+
+		(1) Including files within the body or declaration of a
+		    function.
+
+		(2) Doing function declarations within the body of another
+		    function.
+
+	  The user must also be aware that since multiple source files will
+	  be concatenated together there may be name conflicts of static
+	  definitions if the same name is used in more than one source file.
+
+------- cut here ----------
+#
+# Sample makefile to manage multiple files.
+#
+NAME = all_tst
+
+#
+#  Tools definition
+#
+CC = gcc
+AS = as11
+CAT = cat
+
+#
+# Target name definitions
+#
+LIBPATH = ..\..\lib
+TARGET = $(NAME).s19
+ALL_ASM = $(NAME).s
+ALL_SRC = foo.c
+
+#
+# Tool flags
+#
+DEFS = -I..\include -I..\..\..\..\gen\gcb11\include -DHC11 -DHC11F1
+CFLAGS = -v -S
+AFLAGS = -l
+
+#
+# Source code
+#
+C_SRCS = src_file1.c src_file2.c src_file3.c src_file4.c
+
+#
+# Dependencies
+#
+$(TARGET):	$(ALL_ASM)
+	$(AS) $(ALL_ASM) -l > $*.lst
+
+$(ALL_ASM):	$(ALL_SRC)
+	$(CC) $(DEFS) $(CFLAGS) $(ALL_SRC) -o $(ALL_ASM)
+
+$(ALL_SRC):	$(C_SRCS)
+	$(CAT) $(C_SRCS) > $(ALL_SRC)
+
+	
+------- cut here ----------
+

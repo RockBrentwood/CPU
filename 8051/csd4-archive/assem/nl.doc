@@ -1,0 +1,8 @@
+                       NL.C, notes on use.
+
+(0) COMMAND LINE, INPUT FORMAT
+   This utility will convert UNIX-style newlines into DOS-style newlines by
+appending every carriage return (CR) with a newline (NL).
+   The typical conmmand line for this utility is as follows:
+
+                          nl Input >Output

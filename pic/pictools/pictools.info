@@ -1,0 +1,101 @@
+# This file is a form to be filled by uploaders.
+# Filled forms will be installed to the archive with a suffix ".info"
+# 
+# You don't *have to* fill this; material can be installed to our archive
+# without ".info"-files as well. But we think that a short description,
+# which is available separately from the package, is a very useful thing:
+# Too many ftp-archives in the world have only packed files,
+# without any information of contents of those files. Those archives
+# are too often considered useless.
+#
+# By filling this form, and posting it to us after your upload, you
+# help to keep this archive useful. Other archive users and we (archive 
+# maintainers) will appreciate your efforts.
+# (note that /pub/microprocs is maintained totally by voluntary work !)
+#
+# Instructions for uploaders:
+#	If you have something to upload, put it to the "incoming"
+#	directory, and please write short answers to the following 
+#	questions; then send the filled form to
+#		microprocs-adm@nic.funet.fi
+#	or put it to the incoming directory with suffix .info
+#	(Example: if package name is comp.tar.Z, use comp.info
+#	for info-form filename)
+#	Please note that file protections used for the incoming
+#	directory will not let you see what is in the directory.
+#
+# All lines beginning with "#" will be removed from the installed version
+# of this file.
+#
+# NOTE! If you do not know the answer to some question(s), leave the
+# field(s) empty. Don't guess. Even a minimal amount of information
+# helps !
+
+One-Line-Description-Of-The-Packet:
+  Microchip PIC Assembler + tools for Unix
+
+# Example:
+#   One-Line-Description-Of-The-Packet:
+#     The ultimate compiler, any lang -> any processor
+#
+Longer-Description:
+
+Built under Linux, but should be very portable if using ANSI C compiler.
+This is Version 0.1 and should not be completely trusted yet to produce
+good code and descriptive errors.
+
+Called: pictools.tgz
+
+The file has been gzip'ed and tar'ed to decompress use
+gzip -d -c pictools.tgz | tar xvf -
+
+Apologies for my e-mail address (longest in world?) but iek@uk.ac.salf.arrc
+may work as an abbreviation
+
+# You can fill this by cutting a piece of README-file or manual page of 
+# the package, and inserting it here, or by writing a longer description.
+# Some 10 or 20 lines should usually be enough.
+# If you think that the uploaded package is described well enough by
+# the one-line description, leave this field empty.
+
+
+Uploaded-by-The-Author:
+yes
+# Write "yes" here, if you are the author. 
+
+
+Bug-Report-Email-Address:
+iek@uk.ac.salford.advanced-robotics-research-centre
+
+Original-Distribution-Site=Uploaded-From:
+ftp.funet.fi
+# if the uploaded material has an "official" distribution point (an ftp
+# server, BBS or equiv.) somewhere else in the world, tell it here.
+# Otherwise, if ftp.funet.fi (alias nic.funet.fi) is the official
+# distribution site, write "ftp.funet.fi"
+
+
+Copyright-Notices:
+GNU Licence, Copyright retained by author Ian King
+
+# Please make a short notice if there are something special in it,
+# or mark "PD", if you know it is in public domain.
+# If there is a copyright statement, copying (limited or unlimited) *must*
+# be permitted (otherwise we are not allowed to add it to the archive !)
+
+
+Related-Packages:
+
+# If there are something else that is designed to work with this,
+# or this is a derivation of another package, tell it here.
+
+# Upload-Date: will be filled by archive maintainers.
+
+
+Other-Notes:
+Version 0.1
+
+# ...if any.
+
+
+

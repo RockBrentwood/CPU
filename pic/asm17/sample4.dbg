@@ -1,0 +1,162 @@
+
+# Of Modules.......:    1
+
+ Module #      Name   
+
+     1     sample4.obj 
+
+ Module Number .........:      1
+
+	Sorce Line #		Absolute Address
+ 
+ 	        16		              0
+
+ 	        19		              1
+
+ 	        23		              2
+
+ 	        25		              3
+
+ 	        31		              4
+
+ 	        34		              5
+
+ 	        41		              6
+
+ 	        42		              7
+
+ 	        43		              8
+
+ 	        44		              9
+
+ 	        45		             10
+
+ 	        46		             11
+
+ 	        47		             12
+
+ 	        48		             13
+
+ 	        49		             14
+
+ 	        50		             15
+
+# Of Modules.......:    1
+
+ Module #      Name      #Local     #Global 
+
+     1     sample4.obj    53          0
+
+ Module Number.......:      1
+ Symbol Count.........:    53
+
+
+ Local Definitions
+ 	Symbol Name	Line Number	Value         Type
+ 	------------  --------------  ---------       --------
+        CONVERT	           33	          5              LABEL
+
+          Start	           15	          0              LABEL
+
+         alusta	           11	          4           CONSTANT
+
+            bsr	           22	         15           CONSTANT
+
+           ca1h	           60	         23           CONSTANT
+
+           ca1l	           59	         22           CONSTANT
+
+           ca2h	           69	         21           CONSTANT
+
+           ca2l	           68	         20           CONSTANT
+
+         cpusta	           13	          6           CONSTANT
+
+           ddrb	           27	         17           CONSTANT
+
+           ddrc	           37	         16           CONSTANT
+
+           ddrd	           39	         18           CONSTANT
+
+           ddre	           41	         20           CONSTANT
+
+           exit	           52	         16              LABEL
+
+           fsr0	            8	          1           CONSTANT
+
+           fsr1	           16	          9           CONSTANT
+
+          indf0	            7	          0           CONSTANT
+
+          indf1	           15	          8           CONSTANT
+
+         intsta	           14	          7           CONSTANT
+
+           pchi	           10	          3           CONSTANT
+
+           pclo	            9	          2           CONSTANT
+
+            pie	           44	         23           CONSTANT
+
+            pir	           43	         22           CONSTANT
+
+          porta	           26	         16           CONSTANT
+
+          portb	           28	         18           CONSTANT
+
+          portc	           38	         17           CONSTANT
+
+          portd	           40	         19           CONSTANT
+
+          porte	           42	         21           CONSTANT
+
+            pr1	           52	         20           CONSTANT
+
+            pr2	           53	         21           CONSTANT
+
+           pr3h	           55	         23           CONSTANT
+
+           pr3l	           54	         22           CONSTANT
+
+         pw1dch	           66	         18           CONSTANT
+
+         pw1dcl	           64	         16           CONSTANT
+
+         pw2dch	           67	         19           CONSTANT
+
+         pw2dcl	           65	         17           CONSTANT
+
+          rcreg	           30	         20           CONSTANT
+
+          rcsta	           29	         19           CONSTANT
+
+          rtcch	           19	         12           CONSTANT
+
+          rtccl	           18	         11           CONSTANT
+
+         rtcsta	           12	          5           CONSTANT
+
+          spbrg	           33	         23           CONSTANT
+
+        tblptrh	           21	         14           CONSTANT
+
+        tblptrl	           20	         13           CONSTANT
+
+          tcon1	           70	         22           CONSTANT
+
+          tcon2	           71	         23           CONSTANT
+
+           tmr1	           48	         16           CONSTANT
+
+           tmr2	           49	         17           CONSTANT
+
+          tmr3h	           51	         19           CONSTANT
+
+          tmr3l	           50	         18           CONSTANT
+
+          txreg	           32	         22           CONSTANT
+
+          txsta	           31	         21           CONSTANT
+
+           wreg	           17	         10           CONSTANT
+

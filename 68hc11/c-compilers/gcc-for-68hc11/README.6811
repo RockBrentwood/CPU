@@ -1,0 +1,356 @@
+------------------------------------------------------------------------------
+| INTRODUCTION |
+----------------
+
+    The following are some comments and instructions on the 6811 port of the
+    gnu gcc compiler done by Coactive Aesthetics.
+
+    First off, we want to emphasize that this is an alpha release, and as
+    such, is not functionally complete.  In particular, no linker or
+    librarian currently exists.  It is our plan to work on porting the gnu
+    assembler and linker to fully support these features during this year
+    (and maybe port gdb to work across a serial line with debug info). 
+
+    Even with the above, you can use the compiler and the motorola assembler
+    to compile C and C++ source modules, and generate S19 records that can be
+    down loaded and executed on a microcontroller board.
+
+    The port was written using the GCB11 Network Microcontroller board that is
+    manufactured by Coactive Aesthetics.  However, there is no assumptions
+    and/or hardcode values within the compiler which would prevent the
+    compiler from working on any 6811 board.  A port to another board would
+    require an updated startup.h file which defines where the "pseudo"
+    registers live in the memory map.  A sample startup.h file has been
+    included as part of this release.
+
+    We would like to mention that the compiler is fully integrated into our
+    development product, with access to the standard C Library and our
+    Application modules via the GROM functional interface.  If you wish to
+    get more information on the GCB11 Network Microcontroller board and our
+    distributed control development tools, please send mail to
+    coactive@coactive.com.
+
+    The rest of this readme file has some technical notes relating to the
+    port, and installation procedures that can be used in installing the
+    compiler.
+
+    Please send any porting comments/questions to otto@coactive.com.  Bug
+    reports and questions relating to using the compiler should be sent to
+    gcc@coactive.com (if sent to me, they will go to /dev/null!).
+
+    Thanks,
+
+    Otto
+
+    --
+    Otto Lind                  Coactive Aesthetics
+    otto@coactive.com          P.O. Box 425967, San Francisco, CA 94142
+    netcom!coactive!otto       voice:(415)626-5152    fax:(415)626-6320
+
+------------------------------------------------------------------------------
+| 6811 TECHNICAL NOTES |
+------------------------
+
+    The following are some notes relating to the Coactive Aesthetics port of
+    the gnu gcc compiler to the Motorola M68HC11 microcontroller unit.
+
+    Limitations:
+
+	o Currently, there is no support for floating point arithmetic, and
+	  the machine description file does not contain any instruction
+	  definitions for floats. The compiler does not deal with missing
+	  instructions and will crash at various locations within its code
+	  when it encounters floating point numbers.
+
+	  If the compiler crashes, the first thing to look for are floating
+	  point numbers or use of "float" or "double" variable within your
+	  program. Something as innocuous as "printf("%d", 0.0)" will
+	  cause a crash.
+
+	  We plan on adding support for floating point instructions as a high
+	  priority, at least to prevent the compiler crashes. Actually doing
+	  the right thing with floating point values may take longer.
+
+	o The current version of the port does not support 4 byte longs. The
+	  following are the datatype sizes that the compiler supports:
+
+	  	char	8 bits
+		short	16 bits
+		int	16 bits
+		long	16 bits
+
+	  In order to do this, the machmode.def file was modified to define
+	  SImode to have an object size of 2 bytes.
+
+	  If you absolutely have to have 4 byte longs, you can do the
+	  following: 
+
+	    1) Restore the original machmode.def file from the gnu
+	       distribution.
+
+	    2) Update the tm.h file (m6811-local.h) to implement some form of
+	       4 byte register.  You may want to take the "pseudo" register
+	       approach that was used for the 2 and 1 byte instructions.
+
+	    3) Update the m6811-local.md file to implement four byte
+	       operations on all si mode instructions.  As an example, the
+	       instruction "tstsi" would need to be updated to look at a 4 byte
+	       operand, and set the condition code register appropriately. 
+
+	       When updating the machine description file, you may want to
+	       tighten up what is allowed for operands and constraints for
+	       these instruction (to make life a bit easier).
+
+	  If someone does put the effort into doing this, please send us the
+	  modifications, we'll incorporate them in subsequent releases. For
+	  now, 4 byte support has a lower priority than getting a gnu
+	  assembler/linker ported.
+
+    So, how did we port gcc?
+
+    	Two things are very apparent when using gcc, There is a basic 32 bit
+	assumption of the code, and that the underling machine architecture
+	provides a bunch of registers for use by the compiler.  Getting
+	around the 32 bit assumptions was fairly easy.  Most of the machine
+	layout was driven by the target machine definition file (tm.h), only
+	the machmode.def file needed changes.
+
+	The register allocation issue was much more difficult to address. 
+	Initially, I tried to have gcc "do the right thing" by just defining
+	the native registers that are available on a M68HC11 MCU.  After
+	staring at some of the code that was crashing in reload1.c
+	(particularly the if statement that spans lines 1578 to 1598), I
+	decided that the choice for the port was to either re-write the
+	entire reload pass, or fake out gcc in some fashion so that it thinks
+	that more registers are available than there really are.
+
+	I decided to take the second approach.  For the D register, 4
+	"pseudo" registers would be used by gcc, and the machine description
+	file would swap the gcc reference into the real D register as
+	appropriate.  The same thing was done for the index registers, but
+	special processing was added to insure the offset references using
+	the registers would "swap" in the correct real index register.
+
+	The machine description file tries to use the general_operand
+	predicate and 'g' as the constraint, since using a memory (or
+	constant) reference is as cheap as a "pseudo register" reference. 
+	However, I was experiencing problems with allocate_reload_reg()
+	crashing on me.  If anyone can shed some light on this, please
+	contact me using the mail address above.
+
+    Some "stupid" things that we are doing.
+
+	Several thing that can be considered dumb code generation are
+	currently in this release:
+
+	    o The Y register (which is much more expensive) is used as the
+	      stack frame pointer, and the X register is used "swap" register
+	      for memory references.
+
+	    o Additional LDD and STD instructions are being generated for
+	      each JSR call.
+
+	Both of these are a result of some of our code still interfacing to
+	library routines which were originally compiled using another
+	compiler. These will be removed once optimization of the compiler is
+	done, and we switch all our routines either to assembler or gcc
+	compiled modules.
+
+	We are currently generating multiply instructions in-line. Given the
+	size of this, it should be changed into a function call.
+	
+    Known bugs.
+
+	The one serious bug that I know about relates to referencing stack
+	parameters when using the -O flag.  For some reason, the offset
+	calculation is off by two bytes when accessing variables that have
+	been passed into a subroutine on the stack.
+
+	Static variables are not initialized when code is executed.  In a
+	sense, this is related more to the startup code and the machine
+	operating environment than gcc itself.  If you want, additional
+	startup code can be written to handle this.
+
+	Otherwise, we have run the compiler through a C test suite, which hits
+	most of the possible code generation that is defined in machine
+	description files. If you do find a bug, please send mail to the bug
+	mailing address above.
+
+    Future directions.
+
+	Some of the things that we are thinks of doing in the future:
+
+	    o Optimize the code generation.
+
+	    o Port the gnu assembler and linker, create a complete
+	      development envorinment.
+
+	    o Port our internal tools to all use the gcc compiler. 
+
+	    o Continue development of our distributed control products, and
+	      possibly incorporate additional GNU ports of other boards into
+	      a transparent and seamless distributed control system.
+		
+	    o Port the Objective C runtime library to the 6811 (just to see
+	      if it's possible, we're a NeXT house at coactive).
+
+------------------------------------------------------------------------------
+| INSTALLATION PROCEDURES FOR UNIX SYSTEMS |
+--------------------------------------------
+
+    Get the gnu release of gcc-2.3.3:
+
+	The entire source file distribution is not included here. Instead you
+	should go to your favorite ftp site to download the source
+	distribution of gcc-2.3.3 and untar it onto disk. 
+
+    Install the 6811 source files:
+
+	The following files are the 6811 specific files used in creating the
+	cross compiler:
+
+		config/m6811-local.c
+		config/m6811-local.h
+		config/m6811-local.md
+		config/xm-m6811-local.h
+
+	This should be copied into the source tree containing gcc-2.3.3
+
+	The only file in the gnu gcc distribution that needs to be modified
+	is the machine mode definition file "machmode.def". This
+	modification involves forcing all integer type sizes to be 2 bytes. 
+	When a 4 byte long implementation is done, the modifications to this
+	file will no longer be needed. Make a backup of the distributed
+	file, and copy the revised version into the source tree.
+
+    Configure the compiler:
+
+	Run configure to set up a makefile for cross compilation. On our
+	systems, we used the following:
+
+		./configure --host=next --target=m6811-local
+
+    Make the C compiler:
+
+	As mentioned above, not all of the development tools for the 6811
+	platform have been finished.  The normal step for making the compiler
+	should be followed, but some of the components in the make will fail. 
+	To make the compiler with the C language, the following make target
+	should be specified:
+
+		make "LANGUAGES=c"
+
+	The compile should continue until you see the following:
+
+		mv: libgcc1.a: Cannot access: No such file or directory
+		You must find a way to make libgcc1.a
+		*** Exit 1
+
+	This error message can be ignored, since support for libgcc.a does
+	not currently exist.  You can also compile the C++ and Object C
+	compilers by changing the LANGUAGES list.  See the INSTALL file for
+	more details on this.
+
+    Installing the compiler:
+
+	To install the front end and the driver, type in:
+
+		make "LANGUAGES=c" install-cross
+
+	The make will fail when trying to compile ./libgcc2.c. This is
+	expected, and can be ignore.
+
+	At this stage, you should have lib, bin, and man subdirectories
+	installed in the install directory (specified by the --prefix option,
+	/usr/local is the default).  The bin directory should contain the
+	executable "gcc-m6811-local".  This is the driver module which will
+	execute the pre-processor, C compiler, etc.  You can rename this to
+	whatever name you would like to refer to in you makefiles.
+
+	Now, set up gcc to point to the correct executables for the
+	assembler, etc.
+
+		make install-cross-tools
+
+	This creates symbolic links to the "tools" directory, which in this
+	case is <install>/m6811-local
+
+    Installing the assembler:
+
+	Go to the source directory which has the motorola freeware assemble,
+	and compile the source into an executable:
+	
+		cd tools/as-1.2
+		cc -g as11.c -o as
+
+	Install the executable into the gcc tools directory:
+
+		mkdir <install>/m6811-local/bin
+		cp as <install>/m6811-local/bin
+
+    Installing tool stubs:
+
+	The executables for ld, ar, nm and ranlib do not exist. In order to
+	prevent the gcc driver from erroneously picking up the native ld,
+	etc., stubs files should be installed in the tools directory:
+
+		cp tools/stubs/* <install>/m6811-local/bin
+
+	The compiler is now installed, and should be ready for testing.
+
+------------------------------------------------------------------------------
+| INSTALLATION PROCEDURES FOR PC SYSTEMS |
+------------------------------------------
+
+    Get the djgpp release:
+
+    	djgpp is a GCC port to DOS, and is used to compile the source files
+	into a 6811 cross-compiler.  See the file readme.djg for more details.
+
+    Install the source files:
+
+	To install the source modules, copy a virgin release of gcc-2.3.3
+	into a PC filesystem. Be sure to truncate longer names to conform
+	to the 8.3 file name convention used by DOS. To do this, you have two
+	choices:
+
+	    - Grab a copy of djtarx and untar gcc-2.3.3 onto a dos
+	      filesystem.  djtarx knows how to handle unix file names that
+	      aren't valid DOS file names.
+
+	    - If you have access to a unix system, the script COPYDOS has
+	      been included which truncates the names, and create a sed input
+	      file which then can be run on the source and header files to
+	      insure that they reference the correct file names.
+
+	Once the files have been copied, the source and header files need to
+	be updated to reflect the truncated names that are used. The script
+	DOSED and the sed input files SED.* can be used on a uniz system to
+	do this. Otherwise, you could hand edit them.
+
+    Make the compiler(s):
+
+    	In order to build the compiler, you can use the provided dmake
+	makefile to compile cpp, cc1, cc1plus, and cc1obj.  The link response
+	files link.cc1, link.ccp, and link.cob are used by dmake when linking
+	the executables.
+
+	Otherwise, you could use ndmake as detailed in the djgpp 'faq' file. 
+
+    Installing the compiler:
+
+    	No automated support for configuring or installing the compiler on a
+	PC currently exists. You should hand copy the executables to the
+	correct location.
+
+    Installing the assembler:
+
+	Go to the source directory which has the motorola freeware assemble,
+	and compile the source into an executable:
+	
+		cd tools/as-1.2
+		cl as11.c
+
+	Copy the executable into the gcc tools directory.
+
+------------------------------------------------------------------------------

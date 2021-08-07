@@ -1,0 +1,83 @@
+
+This README file describes Topic release 0.1, an assembler for the PIC
+microcontroller series.  The PIC is manufactured by Microchip Technlogy
+Inc.
+
+This assembler is published under the GNU General Public License in
+the hope that others will use and benefit from this program as well as
+contribute their own improvements and extensions for all of us to
+share.
+
+What it doesn't do (yet):
+
+While I believe Topic does things the right way, it currently lacks
+features that will hopefully be available in later versions.  Such as
+pseudo instructions (easily added), macros (the code to insert macros
+already exist and works), optional ",0" or ",1" as a second argument
+(easiliy added), real expressions and operators (this is the biggest
+drawback in this first release), conditional assembly (we need to see
+if GASP, the Gnu ASsembler Preprocessor, suits our needs) etc.
+
+What it does:
+
+It does support symbols (any length symbol name), file inclusion, good
+warning and error message capability (some of the messages in this
+release are on the lighter side -- see the source in case you don't
+understand a message).  It also supports a variety of ways to write
+constants.  It writes a simple symbol table, reporting which symbols
+were really used and which were not.  It writes an object file in the
+same format as Microchip's MPALC assembler if the assembly was
+successful, or none if not.  Topic doesn't crash your machine when it
+doesn't see what it expected (unlike MPALC).
+
+This software is pretty much experimental so far (it's less than a
+week old, what do you expect?), but it is cleanly written.  There are
+even a few comments.
+
+Currently, it only supports the 12 bit variants of the PIC, but I've
+designed the assembler so that it is very easy to extend it to the 14
+bit core as well and make the choice while the assembler is running
+(ie. using an assembler directive).  Some constants in the source now
+make the assembler believe the memory size is 2048 instruction words
+as for the PIC 16C57, which I work with, hmmm ;-), but all this is
+very easily changed.
+
+OK, how do I improve it and recompile it?
+
+First get a standard C compiler.  I used the GNU C compiler GCC which
+is available for free on the net and is a very good compiler and has
+everything you need.
+  For MSDOS systems, get the variant of GCC called DJGPP:
+
+	File location:
+	    host:      omnigate.clarkson.edu
+	    login:     ftp
+	    password:  send your e-mail address
+	    directory: ~ftp/pub/msdos/djgpp
+
+If you have a make utility, just CD into the Topic subdirectory and
+type MAKE.  To compile by hand, give the command "gcc -o topic
+topic.c".  Easy!  (If you're using DJGPP, you can now run the file
+topic, which is still in unix format, with the command "go32 topic
+source.asm" to assemble source.asm and produce source.obj.  You can
+also create a normal executable with DJGPP, after that the command
+would be "topic source.asm", as on a unix system.)
+  Spots that could use some improvement are marked by the word fixme.
+
+Are you improving the assembler?
+
+Any improvements and/or bug fixes that are clean and well thought out
+are welcome by e-mail at the address below.  Please use the DIFF
+command "diff -c2 topic.c newtopic.c >diffs" to produce the diffs
+file, and e-mail me that along with a description of the diff in
+question.  Make separate diffs for changes/improvements that aren't
+related and send them in separate e-mails.  All changes should follow
+the GNU coding standards to reasonable extent to maintain readability.
+
+Enjoy!	E-Mail:	vinsci@nic.funet.fi
+	Mail:	Leonard Norrgard
+		Skolhusgatan 32 A 14
+		FIN-65100 VASA
+	Phone:	+358-49-434808
+
+-- vinsci

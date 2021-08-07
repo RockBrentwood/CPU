@@ -1,0 +1,80 @@
+Return-Path: robot-board@oberon.com
+Received: by media.mit.edu (5.57/DA1.0.4.amt)
+	id AA18531; Mon, 31 Jan 94 15:29:38 -0500
+Received: from  ([127.0.0.1]) by oberon.com (4.1/SMI-4.1_Armado.MX)
+	id AA28404; Mon, 31 Jan 94 15:25:31 EST
+Date: Mon, 31 Jan 94 15:25:31 EST
+Message-Id: <9401312022.AA11720@tortuga.media.mit.edu>
+Errors-To: gkulosa@oberon.com
+Reply-To: fredm@media.mit.edu
+Originator: robot-board@oberon.com
+Sender: gkulosa@oberon.com
+Precedence: bulk
+From: "Fred G. Martin" <fredm@media.mit.edu>
+To: Multiple recipients of list <robot-board@oberon.com>
+Subject: Re: Battery charger 
+X-Listprocessor-Version: 6.0b -- ListProcessor by Anastasios Kotsikonas
+
+> What kind of DC power adapter do I need to buy to power the 
+> battery charger board (6.270 kit)?  It has to be a 6-Volt
+> supply, right?  Thanks.
+
+No it has to be greater than 6 volts in order to charge the battery.
+If you used a 6 volt supply, your batteries would be charging the
+adapter (well not really, but you get the idea).
+
+Figure a couple of volts above the desired battery voltage, and add a
+couple volts for the diode drops in the bridge rectifier.  We use 12
+volts supplies for 6 volts batteries.
+
+Also, get the strongest (i.e., greatest ampere capacity) adapter you
+can get your hands on.  We use a 2 amp adapter, which is pretty hefty.
+If you go below an amp, your charge rate will be limited by your
+adapter, and your adapter will be pushed to its limits.
+
+	-Fred
+
+Return-Path: robot-board@oberon.com
+Received: by media.mit.edu (5.57/DA1.0.4.amt)
+	id AA00927; Mon, 31 Jan 94 17:05:29 -0500
+Received: from  ([127.0.0.1]) by oberon.com (4.1/SMI-4.1_Armado.MX)
+	id AA00281; Mon, 31 Jan 94 17:00:19 EST
+Date: Mon, 31 Jan 94 17:00:19 EST
+Message-Id: <9400317600.AA760064042@usnus05.usnus.abb.com>
+Errors-To: gkulosa@oberon.com
+Reply-To: John_Cook_at_USNUS08@usnus05.usnus.abb.com
+Originator: robot-board@oberon.com
+Sender: gkulosa@oberon.com
+Precedence: bulk
+From: John_Cook_at_USNUS08@usnus05.usnus.abb.com
+To: Multiple recipients of list <robot-board@oberon.com>
+Subject: Re[2]: Battery charger 
+X-Listprocessor-Version: 6.0b -- ListProcessor by Anastasios Kotsikonas
+
+
+
+>> What kind of DC power adapter do I need to buy to power 
+>>the  battery charger board (6.270 kit)?  It has to be a 6-Volt
+>> supply, right?  Thanks.
+     
+>No it has to be greater than 6 volts in order to charge the battery. 
+>If you used a 6 volt supply, your batteries would be charging the 
+>adapter (well not really, but you get the idea).
+     
+>Figure a couple of volts above the desired battery voltage, and add a 
+>couple volts for the diode drops in the bridge rectifier.  We use 12 
+>volts supplies for 6 volts batteries.
+     
+ >Also, get the strongest (i.e., greatest ampere capacity) adapter you >can get 
+ your hands on.  We use a 2 amp adapter, which is pretty hefty. >If you go below 
+ an amp, your charge rate will be limited by your >adapter, and your adapter 
+ will be pushed to its limits.
+ 
+ >-Fred
+
+
+I use a spare PC power supply with a 10 ohm 20 watt load on it to preload it
+and maintain good regulation.  They're typically rated at around 5 to 10 amps
+on the 12 V output and work well.  Plus they're VERY common.
+
+-John C.

@@ -1,0 +1,53 @@
+Return-Path: fredm@media.mit.edu
+Received: by media.mit.edu (5.57/DA1.0.4.amt)
+	id AA22429; Mon, 22 Nov 93 14:52:54 -0500
+Received: from localhost.media.mit.edu by tortuga.media.mit.edu (5.65/DA.WS.1.0.5)
+	id AA14178; Mon, 22 Nov 1993 14:52:52 -0500
+Message-Id: <9311221952.AA14178@tortuga.media.mit.edu>
+To: beyer@erim.org (James Beyer)
+Cc: fredm@media.mit.edu
+Subject: Re: another try at explaining a 2.11 issue 
+In-Reply-To: Your message of "Mon, 22 Nov 93 12:03:26 EST."
+             <9311221703.AA11705@ipf690a.erim.org> 
+Date: Mon, 22 Nov 93 14:52:51 -0500
+From: "Fred G. Martin" <fredm@media.mit.edu>
+X-Mts: smtp
+
+> 	The 2.11 board had a LM386 (dual lo power op-amp) chip on it.
+> One half of this chip is you to amplify the signal to the IR transmitting
+> board.  I don't know if the other half is used or not.
+
+No, the LM386 is a single, -high power- op-amp.
+
+> 	The 2.21 board has no LM386 on it.  The manuals (appendix B) has
+> not been updated to reflect this change, so I don't know what the new IR
+> transmitting circuit is.   Was the amplifier simply removed?  
+
+The TIP120 power darlington performs a similar power-driver function
+as did the LM386.
+ 
+> 	Some of the 2.11 board builders have been querying me.  I'm thinking
+> now the best approach would be for them to simply assemble the circuit in
+> the original fashion.  But for the 2.21 crowd, it would be nice if that
+> circuit was available.  I presume that someone figured out the amplifier 
+> was not needed, and left it out.  I'm still not sure what role the TIP120
+> (the larger transistor) plays in all this, but its nearby, so it might have
+> something to do with all of this.
+
+----
+>From the file
+cherupakha.media.mit.edu:pub/6270/debugging/v211-vs-221-differences.txt:
+
+4.  The rev 2.21 uses a simplified infrared transmission circuit on
+the main board, replacing an amplitude-controllable LM386 power op-amp
+circuit with an on/off TIP120 darlington transistor.
+----
+
+There's the difference.  The LM386 allowed modulating the -strength-
+of the IR output.  The TIP120 does not.
+
+The two circuits require different software drivers.  Other than this,
+either is functional and you should install the parts for whichever
+one your board was made for.
+
+	-Fred

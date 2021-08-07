@@ -1,0 +1,67 @@
+Newsgroups: comp.robotics
+Subject: Re: Schematics for 6.270 board set
+Summary: 
+Expires: 
+References: <29n69aINN8lh@cactus.sps.mot.com> <2a1e8hINN9l0@cactus.sps.mot.com>
+Sender: 
+Followup-To: 
+Distribution: 
+Organization: MIT Media Laboratory
+Keywords: 
+
+tomd@risc.sps.mot.com (Tom Davidson) writes:
+
+>Does anyone know if there are any schematics available for the COMPLETE
+>6.270 board set?? Any printable format will do, Postscript is preferred.
+>If they are in a schematic capture format, that would be OK, I could 
+>probably get someone here at Motorola to print or translate them.
+
+May I please refer people to the "6.270 Robot Builder's Guide," the
+1992 version of the documentation which I wrote.  It contains complete
+schematics to the version 2.11 board set.  This manual is available
+via anon FTP to cherupakha.media.mit.edu in directory pub/6270.  It
+-does not- have any of the PostScript printing bugs endemic to the
+documentation on aeneas.mit.edu.
+
+The schematic itself is split up over several pages, organized by
+conceptual chunks of the circuit rather than arbitrary page breaks.
+This was done because if I tried to put the entire schematic on one
+8.5x11 inch page, the pin labels would probably print in 4 point high
+numerals, rather unreadable.  So I compromised and split up the
+schematic into multiple diagrams.  This may have been the wrong
+choice, but I promise the whole schematic is there.
+
+
+Many are wondering what the differences are between the rev 2.11
+(1992) and rev 2.21 (1993) board sets.  They are nearly identical;
+here are the differences:
+
+1.  The rev 2.21 board uses a Dallas DS1233 reset controller chip to
+provide battery backing of the static RAM.  This chip was deployed to
+fix an incompatibility with newer versions of the 6811 processor.  It
+replaces a hodge-podge collection of RC delays that was used in the
+rev 2.11 and prior designs (i.e., it simplies the circuit rather than
+complexifying it).
+
+See file cher.media.mit.edu:pub/6270/docs/DS1233-instructions.txt for
+an explanation of this circuit and the slight change it has on the
+procedure to put the 6.270 board into bootstrap download mode.
+
+2.  The rev 2.21 expansion board is laid out slightly better than the
+rev 2.11:  the LCD connector no longer gets in the way of some of the
+sensor input connectors.  The features and schematic of the expansion
+board are unchanged.
+
+3.  The rev 2.21 uses a 74hc273 chip for U5 in place of a 74hc374.  I
+don't know why this substitution was made.  As far as I know, either
+chip will work.
+
+4.  The rev 2.21 uses a simplified infrared transmission circuit on
+the main board, replacing an amplitude-controllable LM386 power op-amp
+circuit with an on/off TIP120 darlington transistor.
+
+
+I hope this information is helpful.  Let me know if there are any
+problems retrieving or printing the files on the cherupakha machine.
+
+	-Fred

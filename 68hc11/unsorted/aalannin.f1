@@ -1,0 +1,32 @@
+Ahvenanmaalla on kehitetty yhteistyossa Field Oy n kanssa MC68HC11F1
+perustuva mikrotietokonekortti, jossa seuraavat ominaisuudet:
+	-Multiplexoimaton osoite/datavayla
+	-2kpl RAM/EPROM kantoja 
+	-kaikki vapaa I/O saatavissa ulos
+	-jannitevahtipiiri MC33064P-5 / MC34064P-5 ja 100ms reset aikavakio
+	-LM317/LM317L regulaattori (MC147805ACP5 mahdollinen pienin muutoksin)
+	-vain 6 mikropiiria (7. eli MC145407 tarvitaan jos EIA-232D kaytossa)
+	-voimakas pintaliitostekniikan hyvaksikaytto, luotettava rakenne
+	-mahdollisuus ajaa 2MHz-16MHz kidetaajuuksilla (0.5..4MHz E-kello)
+	-toimii PCBUG11 ilmaisohjelman kanssa (versiot 2.30/2.71/3.20/3.24)
+	-toimii BUFFALO debuggerin kanssa  Versioit 1.X/2.5/3.2/3.4
+	-toimii MBUGF1 ilmaisohjelman kanssa
+	
+	Osaluettelo:
+IC1	1*	XC68HC11F1FN	(jos 8.1MHz riittaa)
+(IC1	1*	XC68HC11F1FN4	(jopa 16.2MHz kiteelle) )
+IC2	1*	DS1235YWL-150	kehityskalustus 32K nonvolamoduli
+IC3	1*	MCM60L256AP10	(kehityskalustus 32K ram)
+IC4	1*	MC74HC132AN	osoitedekooderi(hatatilassa kay MC74HC00N
+IC5	1*	MC34064P-5	jannitevahtipiiri (low voltage interrupter)
+IC6	1*	LM317T
+6	1*	KKVE8.0000	8MHz rinnakkaisresonanssi kide
+7a	4*	10nF Chip
+7b	9*	100nF Chip
+7c	4*	10uF/6v3 SM tantal
+7d	2	10uF/25V tippatantaali 5mm jaolla
+8a	10*	chippivastus 10K 
+8b	1*	chipvastus	4.7M .. 10M
+8c	1*	chippivastus 4K7
+9	2*	9X104G(TAHINIK)	resnet 8*100k SIP
+

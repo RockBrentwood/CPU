@@ -1,0 +1,115 @@
+FILE: cherupakha.media.mit.edu:pub/6270/debugging/download-mode-info.txt
+DATE CREATED: Oct 17, 1993
+--------------------
+
+Return-Path: fredm@media.mit.edu
+Received: by media.mit.edu (5.57/DA1.0.4.amt)
+	id AA03841; Sun, 17 Oct 93 09:32:51 -0400
+Message-Id: <9310171332.AA03841@media.mit.edu>
+To: kwh@cs.brown.edu (Kwun Han)
+Cc: fredm@media.mit.edu, rv@cs.brown.edu, dulimart@cps.msu.edu,
+        jbf1@midway.uchicago.edu
+Subject: Re: 6.270 problem 
+In-Reply-To: Your message of "Sun, 17 Oct 93 06:05:36 EDT."
+             <9310171005.AA15386@vegas.cs.brown.edu> 
+Date: Sun, 17 Oct 93 09:32:50 -0400
+From: "Fred G. Martin" <fredm@media.mit.edu>
+X-Mts: smtp
+
+> 	I am one of the people who have problem with our 6.270 board.
+> When I turn on the board, the yellow LED (Tx) glows constantly. I
+> spent a night debugging it and I think I found the problem.
+
+I believe the debugging instructions that claim that the yellow light
+should flicker are incorrect.  
+
+(As you may know, I didn't write the latest revisions to the doc's.)
+
+> 	I was looking at the timing between the reset pin and then
+> MODEA and MODEB pin, seems that when the reset pin goes high, MODEA is
+> HIGH and MODEB is LOW.  From my 68HC11 manual, that sets the board to
+> a "Special Test" mode, and I think that is wrong. I think it should be
+> in "Special Bootstrap" mode (please tell me if I am wrong). My
+> observation is, the MODEA pin goes from LOW to HIGH about 300ms before
+> the RESET pin goes high. 
+
+The way it should work as you observed.  The board should reset into
+Special Test mode: this is the normal running mode (see the discussion
+about how the LCD works for an explanation).
+
+To get the board into Special Bootstrap (that is, "download mode"),
+you must hold down either the Choose or Escape button (I don't know
+which it is, sorry) and press reset.  When the board comes out of
+reset, it will be in Bootstrap (with the yellow LED completely off.)
+
+> Therefore I predict that the delay circuitry
+> for MODEA is wrong (probably the capacitor is too small).  I was
+> reading the 6.270 docs and it mentioned something about that.
+
+The 300 ms delay is caused by the Dallas DS1233 reset monitor chip and
+-not- an RC delay line as described in the board docs.  This is the
+significant change from the 2.1x-2.20 boards to the 2.21 board.  It
+seems that the new organizers have not taken the time to revise the
+technical discussion of how the board works.
+
+> However, it is an old doc and the circuit is a bit different from the
+> board I have (rev 2.21). I wonder if you can tell me where I can find
+> the latest doc so that I can fix the board?? Or do you have any
+> suggestions what I can do??
+
+As I indicated, I believe your board is working.  Try resetting with
+the Choose or Escape button held down, and see if the yellow lamp goes
+off.  If so, you're in business.
+
+	-Fred
+
+Return-Path: fredm@media.mit.edu
+Received: by media.mit.edu (5.57/DA1.0.4.amt)
+	id AA07419; Sun, 17 Oct 93 12:03:36 -0400
+Message-Id: <9310171603.AA07419@media.mit.edu>
+To: kwh@cs.brown.edu (Kwun Han)
+Cc: "Fred G. Martin" <fredm@media.mit.edu>, jbf1@midway.uchicago.edu,
+        dulimart@cps.msu.edu, rv@cs.brown.edu
+Subject: Re: 6.270 problem 
+In-Reply-To: Your message of "Sun, 17 Oct 93 09:35:06 EDT."
+             <9310171335.AA10370@tahoe.cs.brown.edu> 
+Date: Sun, 17 Oct 93 12:03:35 -0400
+From: "Fred G. Martin" <fredm@media.mit.edu>
+X-Mts: smtp
+
+> "Fred G. Martin" writes:
+> >As I indicated, I believe your board is working.  Try resetting with
+> >the Choose or Escape button held down, and see if the yellow lamp goes
+> >off.  If so, you're in business.
+> 
+> Fred,
+> 
+> 	Yeah... I tried doing that, the yellow light did go off after
+> I hold down choose and reset, however, when I plugged in the serial
+> line, the yellow light goes back to lit. And the downloader complains
+> that it is not in download mode. any ideas??
+
+OK, we're making progress.
+
+First, your board is probably OK.  The fact that the yellow light goes
+out means (with very high certainty) that the 6811 is properly
+resetting into its bootstrap mode.
+
+Second.  The most frequent cause of problems w/download is an
+improperly wired serial connection.
+
+When you plug your board into your computer, the green LED (serial
+receive) should turn on.  If it does not, then it's almost guaranteed
+that your cable is wired improperly.  (The only exception I know to
+this is when using Macs:  the Mac serial output driver doesn't turn on
+until the software tells it to.)
+
+Try swapping the TxD and RxD wires on your cable.  This is probably
+the problem.  Then try again.  You might want to have your board
+plugged in, with the green LED on, and then reset the board to
+download (yellow LED off).  At this point, your board should be ready
+to perform the download sequence.
+
+Good luck.  Let us know the results.
+
+	-Fred

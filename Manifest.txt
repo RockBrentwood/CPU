@@ -1,0 +1,761 @@
+Archive Changes and Manifest
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+This archive is derived from the original at
+	ftp://ftp.funet.fi/pub/microprocs
+and is being slated for future expansion.
+It contains the Frankenstein cross-assembler, as well as the CAS 8051 assember,
+and other tools and utilities for microcontroller CPUs.
+
+The following is the manifest for the first edition of this archive,
+along with the list of changes, relative to the original FTP site, that were made to obtain this.
+
+Files and directories were converted to links, if their contents, and the dates of any files and subdirectories, are duplicates.
+The access permissions are listed at the head of each entry with:
+	(Owner, Group, User) permissions
+	Each permission being 4 = read/scan, 2 = write/change, 1 = execute/traverse
+Most files are 664, some are 644; and a few were 464, 440, 640 and 600; the {440,640,600} ones being inaccessible.
+Most directories were 775; a few were 755, 771, 770 or 700; the {770,700} ones being inaccessible.
+All links are 777.
+
+Changes
+───────
+The following are the changes from the original archive at ftp://ftp.funet.fi/pub/microprocs:
+∙	Files and directories removed, that were inaccessible in the original
+		770       0 1999-08-11 01:00:00 -0500 incoming.old/
+		700       0 1995-02-15 00:00:00 -0600 pic/c-compilers/
+		771       0 1995-02-01 00:00:00 -0600 pic/foggy/
+		700       0 1994-08-22 01:00:00 -0500 pic/mpk/MpK/
+		700       0 1994-12-05 00:00:00 -0600 pic/pictools/tmp/
+∙	Stale links not resolved, and removed:
+		777      40 2010-02-25 00:00:00 -0600 Cygnus-Embedded → /pub/mirrors/ftp.cygnus.com/pub/embedded
+		777      20 2010-02-25 00:00:00 -0600 incoming → /incoming/microprocs
+∙	Stale links resolved and replaced:
+		assemblers/asl-1.41r6.info
+		assemblers/asl-1.41r6.tar.gz
+	respectively from:
+		http://john.ccac.rwth-aachen.de:8000/ftp/as/source/c_version/assemblers/asl-1.41r6.lsm
+		http://john.ccac.rwth-aachen.de:8000/ftp/as/source/c_version/assemblers/asl-1.41r6.tar.gz
+∙	Empty files and directories removed (the simulators/ directory has been retained, since it will later be used):
+		755       0 1995-03-22 00:00:00 -0600 .admin/
+		664       0 1994-01-30 00:00:00 -0600  microprocs-adm@ftp.funet.fi
+		644       0 1993-11-22 00:00:00 -0600 .Yes.tar
+		644       0 1993-11-22 00:00:00 -0600 .Yes.tar.Z
+∙	Cross-references converted to links (and, in the case of 6801/see.also.6800, moved from 6800):
+		6301/see.also.6800 → 6800/
+		6301/see.also.6801 → 6801/
+		6309/see.also.6809 → 6809/
+		6800/see.also.6801 → 6801/
+		6801/see.also.6800 → 6800/
+		68hc11/see.also.6801 → 6801/
+∙	Duplicate CPU directories converted to links (or, in the case of PIC, originally already a link):
+		8080 → Z80/
+		MCS-48 → 8048/
+		MCS-51 → 8051/
+		MCS-80 → Z80/
+		PIC → pic/
+∙	Duplicates of the Frankenstein cross-assembler, converted to links:
+		1805/assemblers/Frankasm → assemblers/Frankasm
+		2650/assemblers/Frankasm → assemblers/Frankasm
+		6301/assemblers/Frankasm → assemblers/Frankasm
+		6502/assemblers/Frankasm → assemblers/Frankasm
+		6805/assemblers/Frankasm → assemblers/Frankasm
+		6809/assemblers/Frankasm → assemblers/Frankasm
+		68hc11/assemblers/Frankasm → assemblers/Frankasm
+		8048/assemblers/Frankasm → assemblers/Frankasm
+		8051/assemblers/Frankasm → assemblers/Frankasm
+		8096/assemblers/Frankasm → assemblers/Frankasm
+		TMS7000/assemblers/Frankasm → assemblers/Frankasm
+		Z8/assemblers/Frankasm → assemblers/Frankasm
+		Z80/assemblers/Frankasm → assemblers/Frankasm
+		1805/assemblers/Frankasm.info → assemblers/Frankasm.info
+		2650/assemblers/Frankasm.info → assemblers/Frankasm.info
+		6301/assemblers/Frankasm.info → assemblers/Frankasm.info
+		6502/assemblers/Frankasm.info → assemblers/Frankasm.info
+		6805/assemblers/Frankasm.info → assemblers/Frankasm.info
+		6809/assemblers/Frankasm.info → assemblers/Frankasm.info
+		68hc11/assemblers/Frankasm.info → assemblers/Frankasm.info
+		8048/assemblers/Frankasm.info → assemblers/Frankasm.info
+		8051/assemblers/Frankasm.info → assemblers/Frankasm.info
+		8096/assemblers/Frankasm.info → assemblers/Frankasm.info
+		TMS7000/assemblers/Frankasm.info → assemblers/Frankasm.info
+		Z8/assemblers/Frankasm.info → assemblers/Frankasm.info
+		Z80/assemblers/Frankasm.info → assemblers/Frankasm.info
+∙	Missing alt.sources file for the Frankenstein cross-assembler restored as
+		664   11427 1993-11-16 00:00:00 -0600 assemblers/Frankasm/As630102.gz
+	from:
+        	http://cd.textfiles.com/sourcecode/usenet/altsrcs/2/2231
+∙	Duplicate of 8051/csd4-archive/assem replaced by archived file; with the archived file removed:
+		644  117044 1993-10-15 01:00:00 -0500 assemblers/cas51.tar.gz
+∙	Duplicates of assemblers converted to links:
+		8051/CAS → 8051/csd4-archive/assem
+		assemblers/ADev11.info → 68hc11/assemblers/ADev11.info
+		assemblers/ADev11.lha → 68hc11/assemblers/ADev11.lha
+		assemblers/As6502.info → 6502/assemblers/As6502.info
+		assemblers/As6502.lha → 6502/assemblers/As6502.lha
+		assemblers/DAsm.info → 68hc11/assemblers/DAsm.info
+		assemblers/DAsm.lha → 68hc11/assemblers/DAsm.lha
+∙	Duplicate compilers converted to links:
+		68hc11/c-compilers/gcc-for-68hc11.info → 68hc11/c-compilers/gcc-for-68hc11/gcc-for-68hc11.info
+		c-compilers/6502-Small-C → 6502/c-compilers/Small-C
+		c-compilers/68hc11-gcc → 68hc11/c-compilers/gcc-for-68hc11
+		c-compilers/icc11 → 68hc11/c-compilers/icc11
+∙	Duplicate archives converted to links:
+		8051/signetics-bbs → other-archives/signetics-bbs
+		8051/signetics-bbs.info → other-archives/signetics-bbs.info
+∙	Duplicate files converted to links:
+		00README → README
+		68hc11/unsorted/mcx11v15.arc → 68hc11/operating.sys/mcx11v15.arc
+		8051/csd4-archive/data/8051fa.h → 8051/csd4-archive/kernel/8051fa.h
+		8051/csd4-archive/debug/8052.h → 8051-csd4-archive/kernel/8052.h
+		pic/Microchip-by-ftp → pic/Microchip-on-WWW
+		pic/asm17/sample8.era → pic/asm17/sample8.lst
+		pic/mpc/demo.h → pic/mpc/17c42.h
+
+Manifest
+────────
+777       6 1994-02-01 00:00:00 -0600 00README → README
+775       6 1999-08-11 01:00:00 -0500 1802/
+775      20 1999-08-11 01:00:00 -0500 1805/
+775      20 1999-08-11 01:00:00 -0500 2650/
+775      72 1999-08-11 01:00:00 -0500 6301/
+775      26 1999-08-11 01:00:00 -0500 6309/
+775      42 1999-08-11 01:00:00 -0500 6502/
+775      26 1999-08-11 01:00:00 -0500 6800/
+775      26 1999-08-11 01:00:00 -0500 6801/
+775      20 1999-08-11 01:00:00 -0500 6805/
+775      42 1999-08-11 01:00:00 -0500 6809/
+775     116 1999-08-11 01:00:00 -0500 68hc11/
+755     492 1999-08-11 01:00:00 -0500 68k/
+775      20 1999-08-11 01:00:00 -0500 8048/
+775     146 1999-08-11 01:00:00 -0500 8051/
+777       3 1999-08-11 01:00:00 -0500 8080 → Z80
+775      20 1999-08-11 01:00:00 -0500 8096/
+775     248 1999-08-11 01:00:00 -0500 assemblers/
+775      54 1999-08-11 01:00:00 -0500 c-compilers/
+775      22 1999-08-11 01:00:00 -0500 H8/
+775      24 1999-08-11 01:00:00 -0500 mailinglists/
+664   50513 2021-08-07 20:52:00 -0500 Manifest.txt
+777       4 1999-08-11 01:00:00 -0500 MCS-48 → 8048
+777       4 1999-08-11 01:00:00 -0500 MCS-51 → 8051
+777       3 1999-08-11 01:00:00 -0500 MCS-80 → Z80
+775      62 1999-08-11 01:00:00 -0500 other-archives/
+775     260 1999-08-11 01:00:00 -0500 pic/
+777       3 1999-08-11 01:00:00 -0500 PIC → pic
+664    2720 1994-02-01 00:00:00 -0600 README
+644       9 1995-06-21 01:00:00 -0500 .recursion.ignored.names
+775       0 1999-08-11 01:00:00 -0500 simulators/
+775      20 1999-08-11 01:00:00 -0500 TMS7000/
+664    2889 1993-03-18 00:00:00 -0600 UPLOAD-INFO.FORM
+775      50 1999-08-11 01:00:00 -0500 Z8/
+775      20 1999-08-11 01:00:00 -0500 Z80/
+775      42 1999-08-11 01:00:00 -0500 1802/doc/
+464    7047 1993-09-21 01:00:00 -0500 1802/doc/1802.txt
+464     346 1993-09-22 01:00:00 -0500 1802/doc/1802.txt.info
+775      42 1999-08-11 01:00:00 -0500 1805/assemblers/
+777      25 1999-08-11 01:00:00 -0500 1805/assemblers/Frankasm → ../../assemblers/Frankasm
+777      30 1993-11-16 00:00:00 -0600 1805/assemblers/Frankasm.info → ../../assemblers/Frankasm.info
+775      42 1999-08-11 01:00:00 -0500 2650/assemblers/
+777      25 1999-08-11 01:00:00 -0500 2650/assemblers/Frankasm → ../../assemblers/Frankasm
+777      30 1993-11-16 00:00:00 -0600 2650/assemblers/Frankasm.info → ../../assemblers/Frankasm.info
+775      42 1999-08-11 01:00:00 -0500 6301/assemblers/
+777       7 1999-08-11 01:00:00 -0500 6301/see.also.6800 → ../6800
+777       7 1999-08-11 01:00:00 -0500 6301/see.also.6801 → ../6801
+777      25 1999-08-11 01:00:00 -0500 6301/assemblers/Frankasm → ../../assemblers/Frankasm
+777      30 1993-11-16 00:00:00 -0600 6301/assemblers/Frankasm.info → ../../assemblers/Frankasm.info
+777       7 1999-08-11 01:00:00 -0500 6309/see.also.6809 → ../6809
+775      84 1999-08-11 01:00:00 -0500 6502/assemblers/
+775      14 1999-08-11 01:00:00 -0500 6502/c-compilers/
+664     227 1994-01-30 00:00:00 -0600 6502/assemblers/As6502.info
+664   38146 1992-06-27 01:00:00 -0500 6502/assemblers/As6502.lha
+777      25 1999-08-11 01:00:00 -0500 6502/assemblers/Frankasm → ../../assemblers/Frankasm
+777      30 1993-11-16 00:00:00 -0600 6502/assemblers/Frankasm.info → ../../assemblers/Frankasm.info
+775      68 1999-08-11 01:00:00 -0500 6502/c-compilers/Small-C/
+664     312 1994-02-01 00:00:00 -0600 6502/c-compilers/Small-C/COPYRIGHT
+664      44 1994-02-01 00:00:00 -0600 6502/c-compilers/Small-C/FROM
+664  235306 1994-02-01 00:00:00 -0600 6502/c-compilers/Small-C/tcc.arc
+664   38091 1994-02-01 00:00:00 -0600 6502/c-compilers/Small-C/tcc.doc
+664    2344 1994-02-01 00:00:00 -0600 6502/c-compilers/Small-C/tcc.msg
+777       7 1999-08-11 00:00:00 -0500 6800/see.also.6801 → ../6801
+777       7 1999-08-11 01:00:00 -0500 6801/see.also.6800 → ../6800
+775      42 1999-08-11 01:00:00 -0500 6805/assemblers/
+777      25 1999-08-11 01:00:00 -0500 6805/assemblers/Frankasm → ../../assemblers/Frankasm
+777      30 1993-11-16 00:00:00 -0600 6805/assemblers/Frankasm.info → ../../assemblers/Frankasm.info
+775      42 1999-08-11 01:00:00 -0500 6809/assemblers/
+775      28 1999-08-11 01:00:00 -0500 6809/c-compilers/
+777      25 1999-08-11 01:00:00 -0500 6809/assemblers/Frankasm → ../../assemblers/Frankasm
+777      30 1993-11-16 00:00:00 -0600 6809/assemblers/Frankasm.info → ../../assemblers/Frankasm.info
+664  668349 1994-01-27 00:00:00 -0600 6809/c-compilers/gcc-6809.tar.Z
+775     118 1999-08-11 01:00:00 -0500 68hc11/assemblers/
+775      76 1999-08-11 01:00:00 -0500 68hc11/c-compilers/
+755       8 1999-08-11 01:00:00 -0500 68hc11/mit/
+775      48 1999-08-11 01:00:00 -0500 68hc11/operating.sys/
+777       7 2010-02-25 00:00:00 -0600 68hc11/see.also.6801 → ../6801
+755    1382 1999-08-11 01:00:00 -0500 68hc11/unsorted/
+664     396 1994-01-27 00:00:00 -0600 68hc11/assemblers/ADev11.info
+664  118108 1992-09-15 01:00:00 -0500 68hc11/assemblers/ADev11.lha
+664     441 1994-01-27 00:00:00 -0600 68hc11/assemblers/DAsm.info
+664   79627 1992-07-01 01:00:00 -0500 68hc11/assemblers/DAsm.lha
+777      25 1999-08-11 01:00:00 -0500 68hc11/assemblers/Frankasm → ../../assemblers/Frankasm
+777      30 1993-11-16 00:00:00 -0600 68hc11/assemblers/Frankasm.info → ../../assemblers/Frankasm.info
+775     254 1999-08-11 01:00:00 -0500 68hc11/c-compilers/gcc-for-68hc11/
+777      34 1993-03-05 00:00:00 -0600 68hc11/c-compilers/gcc-for-68hc11.info → gcc-for-68hc11/gcc-for-68hc11.info
+775     212 1999-08-11 01:00:00 -0500 68hc11/c-compilers/icc11/
+664    2112 1993-03-05 00:00:00 -0600 68hc11/c-compilers/gcc-for-68hc11/ANNOUNCE
+664  152414 1993-03-05 00:00:00 -0600 68hc11/c-compilers/gcc-for-68hc11/gcc-6811-alpha.tar.Z
+664     252 1993-03-05 00:00:00 -0600 68hc11/c-compilers/gcc-for-68hc11/gcc-for-68hc11.info
+664   14150 1993-03-05 00:00:00 -0600 68hc11/c-compilers/gcc-for-68hc11/README.6811
+664    3216 1993-03-05 00:00:00 -0600 68hc11/c-compilers/gcc-for-68hc11/README.ADDENDUM
+664    1106 1993-09-30 01:00:00 -0500 68hc11/c-compilers/gcc-for-68hc11/README.ADDENDUM.2
+664 1384543 1995-11-02 00:00:00 -0600 68hc11/c-compilers/gcc-for-68hc11/xgcchc11.zip
+664     144 1995-11-02 00:00:00 -0600 68hc11/c-compilers/gcc-for-68hc11/xgcchc11.zip.uploaderinfo
+644   18211 1994-10-07 01:00:00 -0500 68hc11/c-compilers/icc11/freeware.txt
+644  175228 1994-10-07 01:00:00 -0500 68hc11/c-compilers/icc11/icc11fre.zip
+644     338 1994-12-14 00:00:00 -0600 68hc11/c-compilers/icc11/icc11.info
+644    4855 1994-01-19 00:00:00 -0600 68hc11/c-compilers/icc11/minilib.readme
+644   18551 1994-03-07 00:00:00 -0600 68hc11/c-compilers/icc11/minilib.s
+644    2288 1994-03-07 00:00:00 -0600 68hc11/c-compilers/icc11/minilib.txt
+644    7947 1994-11-25 00:00:00 -0600 68hc11/c-compilers/icc11/readme
+644    9963 1994-03-07 00:00:00 -0600 68hc11/c-compilers/icc11/testsuite.zip
+644   40062 1994-03-07 00:00:00 -0600 68hc11/c-compilers/icc11/unz50p1.exe
+644   17106 1994-03-07 00:00:00 -0600 68hc11/c-compilers/icc11/user.asc
+755     212 1999-08-11 01:00:00 -0500 68hc11/mit/6270/
+755     340 1999-08-11 01:00:00 -0500 68hc11/mit/6270/1994docs/
+644    2583 1995-01-20 00:00:00 -0600 68hc11/mit/6270/6270-vs-miniboard.txt
+755     204 1999-08-11 01:00:00 -0500 68hc11/mit/6270/boards/
+644  123977 1995-01-20 00:00:00 -0600 68hc11/mit/6270/cat943.ps.Z
+644   17779 1995-01-20 00:00:00 -0600 68hc11/mit/6270/cat943.txt
+755     250 1999-08-11 01:00:00 -0500 68hc11/mit/6270/debugging/
+755     640 1999-08-11 01:00:00 -0500 68hc11/mit/6270/docs/
+644    3639 1995-01-20 00:00:00 -0600 68hc11/mit/6270/howtoget.boards
+644    1343 1995-01-20 00:00:00 -0600 68hc11/mit/6270/README
+755      56 1999-08-11 01:00:00 -0500 68hc11/mit/6270/rev2.21-assembly/
+644 4228114 1995-01-20 00:00:00 -0600 68hc11/mit/6270/1994docs/appendxa.PS.Z
+644  220671 1995-01-20 00:00:00 -0600 68hc11/mit/6270/1994docs/appendxb.PS.Z
+644  108333 1995-01-20 00:00:00 -0600 68hc11/mit/6270/1994docs/appendxc.PS.Z
+644  115331 1995-01-20 00:00:00 -0600 68hc11/mit/6270/1994docs/appendxd.PS.Z
+644  168399 1995-01-20 00:00:00 -0600 68hc11/mit/6270/1994docs/chapter1.PS.Z
+644  128428 1995-01-20 00:00:00 -0600 68hc11/mit/6270/1994docs/chapter2.PS.Z
+644  332831 1995-01-20 00:00:00 -0600 68hc11/mit/6270/1994docs/chapter3.PS.Z
+644  380151 1995-01-20 00:00:00 -0600 68hc11/mit/6270/1994docs/chapter4.PS.Z
+644  192539 1995-01-20 00:00:00 -0600 68hc11/mit/6270/1994docs/chapter5.PS.Z
+644  194519 1995-01-20 00:00:00 -0600 68hc11/mit/6270/1994docs/chapter6.PS.Z
+644  147166 1995-01-20 00:00:00 -0600 68hc11/mit/6270/1994docs/chapter7.PS.Z
+644  151063 1995-01-20 00:00:00 -0600 68hc11/mit/6270/1994docs/chapter8.PS.Z
+644     529 1995-01-20 00:00:00 -0600 68hc11/mit/6270/1994docs/README
+644  129133 1995-01-20 00:00:00 -0600 68hc11/mit/6270/1994docs/toc.PS.Z
+644  179816 1995-01-20 00:00:00 -0600 68hc11/mit/6270/boards/6270v211.sit.hqx
+644    2615 1995-01-20 00:00:00 -0600 68hc11/mit/6270/boards/README
+644    2598 1995-01-20 00:00:00 -0600 68hc11/mit/6270/boards/README~
+644  155584 1995-01-20 00:00:00 -0600 68hc11/mit/6270/boards/rev2.1-schematics.sea.hqx
+644   84416 1995-01-20 00:00:00 -0600 68hc11/mit/6270/boards/V211comp.gbr
+644   35608 1995-01-20 00:00:00 -0600 68hc11/mit/6270/boards/V211hole.gbr
+644  185002 1995-01-20 00:00:00 -0600 68hc11/mit/6270/boards/V211silk.gbr
+644   95159 1995-01-20 00:00:00 -0600 68hc11/mit/6270/boards/V211sold.gbr
+644    3204 1995-01-20 00:00:00 -0600 68hc11/mit/6270/debugging/battery-charging
+644    4837 1995-01-20 00:00:00 -0600 68hc11/mit/6270/debugging/download-mode-info
+644    9419 1995-01-20 00:00:00 -0600 68hc11/mit/6270/debugging/FAQ
+644    1203 1995-01-20 00:00:00 -0600 68hc11/mit/6270/debugging/lcd-placement
+644    2234 1995-01-20 00:00:00 -0600 68hc11/mit/6270/debugging/LM386-vs-TIP120
+644    1097 1995-01-20 00:00:00 -0600 68hc11/mit/6270/debugging/lone-LED-tip
+644    2371 1995-01-20 00:00:00 -0600 68hc11/mit/6270/debugging/power-to-ground-short
+644    2869 1995-01-20 00:00:00 -0600 68hc11/mit/6270/debugging/v211-vs-221-differences.txt
+644  102317 1995-01-20 00:00:00 -0600 68hc11/mit/6270/docs/6811intr.PS.Z
+644  108959 1995-01-20 00:00:00 -0600 68hc11/mit/6270/docs/appendxa.PS.Z
+644  227635 1995-01-20 00:00:00 -0600 68hc11/mit/6270/docs/appendxb.PS.Z
+644  136950 1995-01-20 00:00:00 -0600 68hc11/mit/6270/docs/appendxc.PS.Z
+644   58061 1995-01-20 00:00:00 -0600 68hc11/mit/6270/docs/appendxd.PS.Z
+644    1738 1995-01-20 00:00:00 -0600 68hc11/mit/6270/docs/benchmrk.txt
+644  381829 1995-01-20 00:00:00 -0600 68hc11/mit/6270/docs/chapter1.PS.Z
+644   52237 1995-01-20 00:00:00 -0600 68hc11/mit/6270/docs/chapter2.PS.Z
+644   49440 1995-01-20 00:00:00 -0600 68hc11/mit/6270/docs/chapter3.PS.Z
+644   79533 1995-01-20 00:00:00 -0600 68hc11/mit/6270/docs/chapter4.PS.Z
+644   91323 1995-01-20 00:00:00 -0600 68hc11/mit/6270/docs/chapter5.PS.Z
+644   89583 1995-01-20 00:00:00 -0600 68hc11/mit/6270/docs/chapter6.PS.Z
+644  130924 1995-01-20 00:00:00 -0600 68hc11/mit/6270/docs/chapter7.PS.Z
+644   26715 1995-01-20 00:00:00 -0600 68hc11/mit/6270/docs/coverart.PS.Z
+644    4907 1995-01-20 00:00:00 -0600 68hc11/mit/6270/docs/DS1233-instructions.txt
+644    4939 1995-01-20 00:00:00 -0600 68hc11/mit/6270/docs/DS1233-instructions.txt~
+644   74649 1995-01-20 00:00:00 -0600 68hc11/mit/6270/docs/preface.PS.Z
+644    2427 1995-01-20 00:00:00 -0600 68hc11/mit/6270/docs/printing-from-MSDOS
+644    2322 1995-01-20 00:00:00 -0600 68hc11/mit/6270/docs/printing-from-MSDOS~
+644    6431 1995-01-20 00:00:00 -0600 68hc11/mit/6270/docs/README
+644    1498 1995-01-20 00:00:00 -0600 68hc11/mit/6270/docs/sencdr.txt
+644    1359 1995-01-20 00:00:00 -0600 68hc11/mit/6270/docs/servodoc.txt
+644   38822 1995-01-20 00:00:00 -0600 68hc11/mit/6270/docs/spkrhack.PS.Z
+644  427413 1995-01-20 00:00:00 -0600 68hc11/mit/6270/rev2.21-assembly/assembly221-fixed.ps.Z
+644    1021 1995-01-20 00:00:00 -0600 68hc11/mit/6270/rev2.21-assembly/README
+664   94524 1994-06-25 01:00:00 -0500 68hc11/operating.sys/mcx11v14.arc
+664   94638 1994-06-25 01:00:00 -0500 68hc11/operating.sys/mcx11v15.arc
+644    4956 1994-07-13 01:00:00 -0500 68hc11/unsorted/68hc11k4.ord
+644    1898 1994-07-13 01:00:00 -0500 68hc11/unsorted/811a8.doc
+644    1379 1994-07-13 01:00:00 -0500 68hc11/unsorted/aalannin.f1
+644   17408 1994-07-13 01:00:00 -0500 68hc11/unsorted/amotor.asm
+644   12142 1994-07-13 01:00:00 -0500 68hc11/unsorted/an1010.arc
+644    4735 1994-07-13 01:00:00 -0500 68hc11/unsorted/an1060.lzh
+644   18870 1994-07-13 01:00:00 -0500 68hc11/unsorted/as11.exe
+644   43131 1994-07-13 01:00:00 -0500 68hc11/unsorted/basdoc.lzh
+644   61182 1994-07-13 01:00:00 -0500 68hc11/unsorted/basic11.lzh
+644   17308 1994-07-13 01:00:00 -0500 68hc11/unsorted/bootasm.lzh
+644   22002 1994-07-13 01:00:00 -0500 68hc11/unsorted/bootlst.lzh
+644   93692 1994-07-13 01:00:00 -0500 68hc11/unsorted/boot.lzh
+644    6144 1994-07-13 01:00:00 -0500 68hc11/unsorted/div48.arc
+644   17242 1994-07-13 01:00:00 -0500 68hc11/unsorted/docuja.lzh
+644    2012 1994-07-13 01:00:00 -0500 68hc11/unsorted/eeload.bas
+644     257 1994-07-13 01:00:00 -0500 68hc11/unsorted/eeprog.boo
+644     278 1994-07-13 01:00:00 -0500 68hc11/unsorted/ekihc11k.dok
+644  239234 1994-07-13 01:00:00 -0500 68hc11/unsorted/eki_ida.zip
+644   22666 1994-07-13 01:00:00 -0500 68hc11/unsorted/examples.arc
+644    6252 1994-07-13 01:00:00 -0500 68hc11/unsorted/f1boo.asc
+644    1033 1994-07-13 01:00:00 -0500 68hc11/unsorted/f1.doc
+644   12672 1994-07-13 01:00:00 -0500 68hc11/unsorted/ffthc11.asm
+644    9052 1994-07-13 01:00:00 -0500 68hc11/unsorted/fft.lzh
+644   76099 1994-07-13 01:00:00 -0500 68hc11/unsorted/float.asm
+644   19468 1994-07-13 01:00:00 -0500 68hc11/unsorted/float.doc
+644   37987 1994-07-13 01:00:00 -0500 68hc11/unsorted/forth.lzh
+644   12026 1994-07-13 01:00:00 -0500 68hc11/unsorted/fpp.asc
+644   81024 1994-07-13 01:00:00 -0500 68hc11/unsorted/gloadd3b.arc
+644   62496 1994-07-13 01:00:00 -0500 68hc11/unsorted/gloade9a.lzh
+644   10161 1994-07-13 01:00:00 -0500 68hc11/unsorted/gmath.asm
+644   11039 1994-07-13 01:00:00 -0500 68hc11/unsorted/hc11evb.an1
+644   75983 1994-07-13 01:00:00 -0500 68hc11/unsorted/hc11fp.asm
+644   10851 1994-07-13 01:00:00 -0500 68hc11/unsorted/hc11osc.txt
+644    9868 1994-07-13 01:00:00 -0500 68hc11/unsorted/headerit.arc
+644  164549 1994-07-13 01:00:00 -0500 68hc11/unsorted/ideal103.arc
+644   29200 1994-07-13 01:00:00 -0500 68hc11/unsorted/libsrc11.lzh
+644    2277 1994-07-13 01:00:00 -0500 68hc11/unsorted/mask.doc
+644   29163 1994-07-13 01:00:00 -0500 68hc11/unsorted/math11.asc
+644   98192 1994-07-13 01:00:00 -0500 68hc11/unsorted/math11.asm
+644   23307 1994-07-13 01:00:00 -0500 68hc11/unsorted/math11b.lzh
+644   60548 1994-07-13 01:00:00 -0500 68hc11/unsorted/math11c.lzh
+644    9036 1994-07-13 01:00:00 -0500 68hc11/unsorted/mbuga2.asc
+644    9088 1994-07-13 01:00:00 -0500 68hc11/unsorted/mbugf1.asc
+644    2273 1994-07-13 01:00:00 -0500 68hc11/unsorted/mcu11dir
+777      29 1994-07-13 01:00:00 -0500 68hc11/unsorted/mcx11v15.arc → ../operating.sys/mcx11v15.arc
+644      83 1994-07-13 01:00:00 -0500 68hc11/unsorted/minibug.bat
+644     257 1994-07-13 01:00:00 -0500 68hc11/unsorted/minibug.boo
+644    8950 1994-07-13 01:00:00 -0500 68hc11/unsorted/minibugf.asc
+644   20480 1994-07-13 01:00:00 -0500 68hc11/unsorted/motrctl.asm
+644    1654 1994-07-13 01:00:00 -0500 68hc11/unsorted/mul16b01.asm
+644    1685 1994-07-13 01:00:00 -0500 68hc11/unsorted/mul16c11.asm
+644    1743 1994-07-13 01:00:00 -0500 68hc11/unsorted/mul.asc
+644   13305 1994-07-13 01:00:00 -0500 68hc11/unsorted/optsourc.lzh
+644  125031 1994-07-13 01:00:00 -0500 68hc11/unsorted/pcbu324a.lzh
+644    8325 1994-07-13 01:00:00 -0500 68hc11/unsorted/pcbug11.dok
+644  135427 1994-07-13 01:00:00 -0500 68hc11/unsorted/pcbug324.lzh
+644    9735 1994-07-13 01:00:00 -0500 68hc11/unsorted/pll44802.asc
+644   16316 1994-07-13 01:00:00 -0500 68hc11/unsorted/regshc11.asc
+644    5164 1994-07-13 01:00:00 -0500 68hc11/unsorted/regshc11.lzh
+644  115446 1994-07-13 01:00:00 -0500 68hc11/unsorted/sc_11.lzh
+644   32911 1994-07-13 01:00:00 -0500 68hc11/unsorted/scixirq.lzh
+644  283984 1994-07-13 01:00:00 -0500 68hc11/unsorted/sim6822h.zip
+644    1574 1994-07-13 01:00:00 -0500 68hc11/unsorted/sini.asc
+644    1420 1994-07-13 01:00:00 -0500 68hc11/unsorted/sini.hex
+644   49347 1994-07-13 01:00:00 -0500 68hc11/unsorted/smallc11.lzh
+644    3530 1994-07-13 01:00:00 -0500 68hc11/unsorted/soundfx.lzh
+644   28195 1994-07-13 01:00:00 -0500 68hc11/unsorted/wipe.lzh
+644   61081 1994-09-30 01:00:00 -0500 68k/68343ffp.lzh
+644   91125 1994-09-30 01:00:00 -0500 68k/68kexet.lzh
+644   45566 1994-09-30 01:00:00 -0500 68k/as68k.lzh
+644   71384 1994-09-30 01:00:00 -0500 68k/as68ks.arc
+644   36739 1994-09-30 01:00:00 -0500 68k/ctest020.lzh
+644   99858 1994-09-30 01:00:00 -0500 68k/dlibs.lzh
+644     268 1994-09-30 01:00:00 -0500 68k/graf.doc
+644    1529 1994-09-30 01:00:00 -0500 68k/link68.doc
+644     433 1994-09-30 01:00:00 -0500 68k/link68.lzh
+644    8750 1994-09-30 01:00:00 -0500 68k/macro881.lzh
+644    6186 1994-09-30 01:00:00 -0500 68k/pak68.doc
+644   54424 1994-09-30 01:00:00 -0500 68k/pd68kcc.lzh
+644   49079 1994-09-30 01:00:00 -0500 68k/tutorbug.lzh
+644   53093 1994-09-30 01:00:00 -0500 68k/vubug.arc
+644   31036 1994-09-30 01:00:00 -0500 68k/x68000.lzh
+644 4974987 1998-08-25 01:00:00 -0500 68k/xcc-272-linuxElf-i386-to-m68k-aout.bin.tar.gz
+644   11651 1994-09-30 01:00:00 -0500 68k/xlat6502.lzh
+644   10727 1994-09-30 01:00:00 -0500 68k/xlat6800.lzh
+644    8474 1994-09-30 01:00:00 -0500 68k/xlat8085.lzh
+644   65983 1994-09-30 01:00:00 -0500 68k/xlate09.arc
+775      42 1999-08-11 01:00:00 -0500 8048/assemblers/
+777      25 1999-08-11 01:00:00 -0500 8048/assemblers/Frankasm → ../../assemblers/Frankasm
+777      30 1993-11-16 00:00:00 -0600 8048/assemblers/Frankasm.info → ../../assemblers/Frankasm.info
+775      42 1999-08-11 01:00:00 -0500 8051/assemblers/
+777      18 1999-08-11 01:00:00 -0500 8051/CAS → csd4-archive/assem
+775     140 1999-08-11 01:00:00 -0500 8051/csd4-archive/
+664     414 1993-05-06 01:00:00 -0500 8051/csd4-archive.info
+777      31 1999-08-11 01:00:00 -0500 8051/signetics-bbs → ../other-archives/signetics-bbs
+777      36 1993-08-31 01:00:00 -0500 8051/signetics-bbs.info → ../other-archives/signetics-bbs.info
+777      25 1999-08-11 01:00:00 -0500 8051/assemblers/Frankasm → ../../assemblers/Frankasm
+777      30 1993-11-16 00:00:00 -0600 8051/assemblers/Frankasm.info → ../../assemblers/Frankasm.info
+664     440 1993-05-06 01:00:00 -0500 8051/csd4-archive/a51grind
+755     456 1993-06-24 03:43:15 -0500 8051/csd4-archive/assem/
+775     288 1999-08-11 01:00:00 -0500 8051/csd4-archive/client/
+775      84 1999-08-11 01:00:00 -0500 8051/csd4-archive/crc/
+664     223 1993-05-06 01:00:00 -0500 8051/csd4-archive/creed
+775     118 1999-08-11 01:00:00 -0500 8051/csd4-archive/data/
+775      66 1999-08-11 01:00:00 -0500 8051/csd4-archive/debug/
+775     114 1999-08-11 01:00:00 -0500 8051/csd4-archive/drive/
+664    2410 1993-05-06 01:00:00 -0500 8051/csd4-archive/intro
+775     208 1999-08-11 01:00:00 -0500 8051/csd4-archive/kernel/
+664    8305 1993-05-06 01:00:00 -0500 8051/csd4-archive/manifest
+664    1892 1993-05-06 01:00:00 -0500 8051/csd4-archive/readme
+664    3188 1993-05-06 01:00:00 -0500 8051/csd4-archive/regs
+644    2318 1993-05-06 09:11:36 -0500 8051/csd4-archive/assem/cas.c
+644   25202 1993-05-06 09:11:36 -0500 8051/csd4-archive/assem/cas.doc
+644   53213 1993-05-06 09:11:36 -0500 8051/csd4-archive/assem/cas.exe
+644   13969 1993-05-06 09:11:36 -0500 8051/csd4-archive/assem/das.c
+644    6654 1993-05-06 09:11:36 -0500 8051/csd4-archive/assem/das.doc
+644   16579 1993-05-06 09:11:36 -0500 8051/csd4-archive/assem/das.exe
+755     180 1993-06-24 03:43:16 -0500 8051/csd4-archive/assem/data/
+644    5349 1993-05-06 09:11:36 -0500 8051/csd4-archive/assem/ds.c
+644   11195 1993-05-06 09:11:36 -0500 8051/csd4-archive/assem/ds.doc
+644   11865 1993-05-06 09:11:36 -0500 8051/csd4-archive/assem/ds.exe
+644   23134 1993-05-06 09:11:37 -0500 8051/csd4-archive/assem/err.doc
+644   13274 1993-05-06 09:11:37 -0500 8051/csd4-archive/assem/ex.c
+644     806 1993-05-06 09:11:37 -0500 8051/csd4-archive/assem/ex.h
+664    3222 1993-10-14 18:48:12 -0500 8051/csd4-archive/assem/.FTP_LS_DATA
+755      60 1993-06-24 03:43:17 -0500 8051/csd4-archive/assem/hexs/
+644    1885 1993-05-06 09:11:37 -0500 8051/csd4-archive/assem/intro
+644   20499 1993-05-06 09:11:37 -0500 8051/csd4-archive/assem/io.c
+644    2121 1993-05-06 09:11:37 -0500 8051/csd4-archive/assem/io.h
+644   14975 1993-05-06 09:11:37 -0500 8051/csd4-archive/assem/link.c
+644     234 1993-05-06 09:11:37 -0500 8051/csd4-archive/assem/link.h
+644     643 1993-05-06 09:11:37 -0500 8051/csd4-archive/assem/makefile
+644     866 1993-05-06 09:11:38 -0500 8051/csd4-archive/assem/makefile.dos
+644     283 1993-05-06 09:11:38 -0500 8051/csd4-archive/assem/nl.c
+644     314 1993-05-06 09:11:38 -0500 8051/csd4-archive/assem/nl.doc
+644    7271 1993-05-06 09:11:38 -0500 8051/csd4-archive/assem/nl.exe
+644    3170 1993-05-06 09:11:38 -0500 8051/csd4-archive/assem/notes
+644    8607 1993-05-06 09:11:38 -0500 8051/csd4-archive/assem/op.c
+644     196 1993-05-06 09:11:38 -0500 8051/csd4-archive/assem/op.h
+644    2906 1993-05-06 09:11:38 -0500 8051/csd4-archive/assem/reloc.c
+644     939 1993-05-06 09:11:38 -0500 8051/csd4-archive/assem/reloc.doc
+644    9661 1993-05-06 09:11:39 -0500 8051/csd4-archive/assem/reloc.exe
+644    3994 1993-05-06 09:11:39 -0500 8051/csd4-archive/assem/res.c
+644     248 1993-05-06 09:11:39 -0500 8051/csd4-archive/assem/res.h
+644     137 1993-05-06 09:11:39 -0500 8051/csd4-archive/assem/semi.c
+644     338 1993-05-06 09:11:39 -0500 8051/csd4-archive/assem/semi.doc
+644    4789 1993-05-06 09:11:39 -0500 8051/csd4-archive/assem/semi.exe
+644   12680 1993-05-06 09:11:39 -0500 8051/csd4-archive/assem/st.c
+644     210 1993-05-06 09:11:40 -0500 8051/csd4-archive/assem/st.h
+644    1581 1993-05-06 09:11:40 -0500 8051/csd4-archive/assem/data/8051fa.h
+644     230 1993-05-06 09:11:40 -0500 8051/csd4-archive/assem/data/data.h
+644    3750 1993-05-06 09:11:41 -0500 8051/csd4-archive/assem/data/data.hex
+644   12594 1993-05-06 09:11:41 -0500 8051/csd4-archive/assem/data/data.s
+664    1082 1993-10-14 18:48:13 -0500 8051/csd4-archive/assem/data/.FTP_LS_DATA
+644     384 1993-05-06 09:11:41 -0500 8051/csd4-archive/assem/data/kernel.h
+644    6171 1993-05-06 09:11:42 -0500 8051/csd4-archive/assem/data/kernel.s
+644     317 1993-05-06 09:11:42 -0500 8051/csd4-archive/assem/data/makefile
+644     117 1993-05-06 09:11:42 -0500 8051/csd4-archive/assem/data/math.h
+644    1377 1993-05-06 09:11:43 -0500 8051/csd4-archive/assem/data/math.s
+644      38 1993-05-06 09:11:43 -0500 8051/csd4-archive/assem/data/stdio.h
+644     975 1993-05-06 09:11:43 -0500 8051/csd4-archive/assem/data/stdio.s
+644      20 1993-05-06 09:11:43 -0500 8051/csd4-archive/assem/hexs/entries
+664     483 1993-10-14 18:48:13 -0500 8051/csd4-archive/assem/hexs/.FTP_LS_DATA
+644    4685 1993-05-06 09:11:43 -0500 8051/csd4-archive/assem/hexs/r.a
+644     854 1993-05-06 09:11:43 -0500 8051/csd4-archive/assem/hexs/r.hex
+644    2547 1993-05-06 09:11:43 -0500 8051/csd4-archive/assem/hexs/r.s
+664    1582 1993-05-06 01:00:00 -0500 8051/csd4-archive/client/client.c
+664    1070 1993-05-06 01:00:00 -0500 8051/csd4-archive/client/client.doc
+664    9949 1993-05-06 01:00:00 -0500 8051/csd4-archive/client/client.exe
+664    2779 1993-05-06 01:00:00 -0500 8051/csd4-archive/client/com.c
+664     373 1993-05-06 01:00:00 -0500 8051/csd4-archive/client/com.h
+664    1008 1993-05-06 01:00:00 -0500 8051/csd4-archive/client/console.c
+664     751 1993-05-06 01:00:00 -0500 8051/csd4-archive/client/console.h
+664    1630 1993-05-06 01:00:00 -0500 8051/csd4-archive/client/demo.c
+664    9981 1993-05-06 01:00:00 -0500 8051/csd4-archive/client/demo.exe
+664     640 1993-05-06 01:00:00 -0500 8051/csd4-archive/client/makefile
+664    2523 1993-05-06 01:00:00 -0500 8051/csd4-archive/client/micronet.c
+664    3276 1993-05-06 01:00:00 -0500 8051/csd4-archive/client/micronet.doc
+664     420 1993-05-06 01:00:00 -0500 8051/csd4-archive/client/micronet.h
+664    1936 1993-05-06 01:00:00 -0500 8051/csd4-archive/client/port.h
+664   12176 1993-05-06 01:00:00 -0500 8051/csd4-archive/client/serial.c
+664    2999 1993-05-06 01:00:00 -0500 8051/csd4-archive/client/serial.doc
+664   50666 1993-05-06 01:00:00 -0500 8051/csd4-archive/client/serial.exe
+664     404 1993-05-06 01:00:00 -0500 8051/csd4-archive/crc/8052.h
+664    6398 1993-05-06 01:00:00 -0500 8051/csd4-archive/crc/crc.asm
+664    2076 1993-05-06 01:00:00 -0500 8051/csd4-archive/crc/crc.c
+664    1510 1993-05-06 01:00:00 -0500 8051/csd4-archive/crc/crc.doc
+664    1600 1993-05-06 01:00:00 -0500 8051/csd4-archive/crc/crc.hex
+664   22540 1993-05-06 01:00:00 -0500 8051/csd4-archive/crc/sample.hex
+777      18 1993-05-06 01:00:00 -0500 8051/csd4-archive/data/8051fa.h → ../kernel/8051fa.h
+664   12740 1993-05-06 01:00:00 -0500 8051/csd4-archive/data/data.asm
+664   20562 1993-05-06 01:00:00 -0500 8051/csd4-archive/data/data.doc
+664    3750 1993-05-06 01:00:00 -0500 8051/csd4-archive/data/data.hex
+664    5999 1993-05-06 01:00:00 -0500 8051/csd4-archive/data/kernel.lib
+664    1463 1993-05-06 01:00:00 -0500 8051/csd4-archive/data/math.lib
+664     900 1993-05-06 01:00:00 -0500 8051/csd4-archive/data/stdio.lib
+777      16 1993-05-06 01:00:00 -0500 8051/csd4-archive/debug/8052.h → ../kernel/8052.h
+664   18490 1993-05-06 01:00:00 -0500 8051/csd4-archive/debug/debug.asm
+664    6190 1993-05-06 01:00:00 -0500 8051/csd4-archive/debug/debug.doc
+664    4274 1993-05-06 01:00:00 -0500 8051/csd4-archive/debug/debug.hex
+664    8245 1993-05-06 01:00:00 -0500 8051/csd4-archive/drive/drive.asm
+664   16956 1993-05-06 01:00:00 -0500 8051/csd4-archive/drive/drive.doc
+664    3244 1993-05-06 01:00:00 -0500 8051/csd4-archive/drive/drive.hex
+664    2179 1993-05-06 01:00:00 -0500 8051/csd4-archive/drive/kc.lib
+664    2487 1993-05-06 01:00:00 -0500 8051/csd4-archive/drive/math.lib
+664    1117 1993-05-06 01:00:00 -0500 8051/csd4-archive/drive/rx9.lib
+664     277 1993-05-06 01:00:00 -0500 8051/csd4-archive/drive/timer.lib
+664    1434 1993-05-06 01:00:00 -0500 8051/csd4-archive/kernel/8051fa.h
+664     404 1993-05-06 01:00:00 -0500 8051/csd4-archive/kernel/8052.h
+664    5679 1993-05-06 01:00:00 -0500 8051/csd4-archive/kernel/int.asm
+664    4062 1993-05-06 01:00:00 -0500 8051/csd4-archive/kernel/int.doc
+664    1766 1993-05-06 01:00:00 -0500 8051/csd4-archive/kernel/int.hex
+664    4233 1993-05-06 01:00:00 -0500 8051/csd4-archive/kernel/io.doc
+664    2280 1993-05-06 01:00:00 -0500 8051/csd4-archive/kernel/io.lib
+664    8790 1993-05-06 01:00:00 -0500 8051/csd4-archive/kernel/kernel.doc
+664    3586 1993-05-06 01:00:00 -0500 8051/csd4-archive/kernel/kernel.lib
+664    1094 1993-05-06 01:00:00 -0500 8051/csd4-archive/kernel/lcd.asm
+664    2026 1993-05-06 01:00:00 -0500 8051/csd4-archive/kernel/lcd.doc
+664    1368 1993-05-06 01:00:00 -0500 8051/csd4-archive/kernel/lcd.hex
+664    6965 1993-05-06 01:00:00 -0500 8051/csd4-archive/kernel/math.doc
+664    5477 1993-05-06 01:00:00 -0500 8051/csd4-archive/kernel/math.lib
+775      42 1999-08-11 01:00:00 -0500 8096/assemblers/
+777      25 1999-08-11 01:00:00 -0500 8096/assemblers/Frankasm → ../../assemblers/Frankasm
+777      30 1993-11-16 00:00:00 -0600 8096/assemblers/Frankasm.info → ../../assemblers/Frankasm.info
+777      32 1994-01-27 00:00:00 -0600 assemblers/ADev11.info → ../68hc11/assemblers/ADev11.info
+777      31 1992-09-15 01:00:00 -0500 assemblers/ADev11.lha → ../68hc11/assemblers/ADev11.lha
+777      30 1994-01-30 00:00:00 -0600 assemblers/As6502.info → ../6502/assemblers/As6502.info
+777      29 1992-06-27 01:00:00 -0500 assemblers/As6502.lha → ../6502/assemblers/As6502.lha
+664     642 1998-04-09 22:41:00 -0500 assemblers/asl-1.41r6.info
+664 1419280 1998-04-09 22:45:00 -0500 assemblers/asl-1.41r6.tar.gz
+777      30 1994-01-27 00:00:00 -0600 assemblers/DAsm.info → ../68hc11/assemblers/DAsm.info
+777      29 1992-07-01 01:00:00 -0500 assemblers/DAsm.lha → ../68hc11/assemblers/DAsm.lha
+775     486 1999-08-11 01:00:00 -0500 assemblers/Frankasm/
+664     745 1993-11-16 00:00:00 -0600 assemblers/Frankasm.info
+664   14708 1993-11-16 00:00:00 -0600 assemblers/Frankasm/As180501.gz
+664    9795 1993-11-16 00:00:00 -0600 assemblers/Frankasm/As265001.gz
+664    8130 1993-11-16 00:00:00 -0600 assemblers/Frankasm/As265002.gz
+664    7902 1993-11-16 00:00:00 -0600 assemblers/Frankasm/As630101.gz
+664   11427 1993-11-16 00:00:00 -0600 assemblers/Frankasm/As630102.gz
+664    6535 1993-11-16 00:00:00 -0600 assemblers/Frankasm/As650201.gz
+664    9281 1993-11-16 00:00:00 -0600 assemblers/Frankasm/As650202.gz
+664   14350 1993-11-16 00:00:00 -0600 assemblers/Frankasm/As680501.gz
+664    7848 1993-11-16 00:00:00 -0600 assemblers/Frankasm/As680901.gz
+664   11259 1993-11-16 00:00:00 -0600 assemblers/Frankasm/As680902.gz
+664    8943 1993-11-16 00:00:00 -0600 assemblers/Frankasm/As681101.gz
+664   12190 1993-11-16 00:00:00 -0600 assemblers/Frankasm/As681102.gz
+664   13850 1993-11-16 00:00:00 -0600 assemblers/Frankasm/As700001.gz
+664    7240 1993-11-16 00:00:00 -0600 assemblers/Frankasm/As804801.gz
+664    9005 1993-11-16 00:00:00 -0600 assemblers/Frankasm/As804802.gz
+664   13917 1993-11-16 00:00:00 -0600 assemblers/Frankasm/As805101.gz
+664    8986 1993-11-16 00:00:00 -0600 assemblers/Frankasm/As809601.gz
+664   11003 1993-11-16 00:00:00 -0600 assemblers/Frankasm/As809602.gz
+664   12532 1993-11-16 00:00:00 -0600 assemblers/Frankasm/Asz8001.gz
+664   11642 1993-11-16 00:00:00 -0600 assemblers/Frankasm/Asz8002.gz
+664   14790 1993-11-16 00:00:00 -0600 assemblers/Frankasm/Asz801.gz
+664   16857 1993-11-16 00:00:00 -0600 assemblers/Frankasm/Base01.gz
+664   13388 1993-11-16 00:00:00 -0600 assemblers/Frankasm/Base02.gz
+664    8676 1993-11-16 00:00:00 -0600 assemblers/Frankasm/Base03.gz
+777      27 1999-08-11 01:00:00 -0500 c-compilers/6502-Small-C → ../6502/c-compilers/Small-C
+777      36 1999-08-11 01:00:00 -0500 c-compilers/68hc11-gcc → ../68hc11/c-compilers/gcc-for-68hc11
+777      27 1999-08-11 01:00:00 -0500 c-compilers/icc11 → ../68hc11/c-compilers/icc11
+775       8 1999-08-11 01:00:00 -0500 H8/c-compilers/
+775     308 1999-08-11 01:00:00 -0500 H8/c-compilers/GNUC/
+664      40 1994-01-27 00:00:00 -0600 H8/c-compilers/GNUC/FROM
+664   82332 1994-01-27 00:00:00 -0600 H8/c-compilers/GNUC/h83g-asm.zip
+664  482333 1994-01-27 00:00:00 -0600 H8/c-compilers/GNUC/h83g-c.zip
+664  364799 1994-01-27 00:00:00 -0600 H8/c-compilers/GNUC/h83g-dbg.zip
+664    5247 1994-01-27 00:00:00 -0600 H8/c-compilers/GNUC/h83g-dem.zip
+664  377172 1994-01-27 00:00:00 -0600 H8/c-compilers/GNUC/h83g-inf.zip
+664  406589 1994-01-27 00:00:00 -0600 H8/c-compilers/GNUC/h83g-lib.zip
+664  338355 1994-01-27 00:00:00 -0600 H8/c-compilers/GNUC/h83g-lnk.zip
+664   23656 1994-01-27 00:00:00 -0600 H8/c-compilers/GNUC/h83g-msc.zip
+664    1217 1994-01-27 00:00:00 -0600 H8/c-compilers/GNUC/install.bat
+664   29378 1994-01-27 00:00:00 -0600 H8/c-compilers/GNUC/pkunzip.exe
+664    1118 1994-01-27 00:00:00 -0600 H8/c-compilers/GNUC/readme.txt
+664     713 1994-01-27 00:00:00 -0600 H8/c-compilers/GNUC/readthis.001
+664     557 1994-01-27 00:00:00 -0600 H8/c-compilers/GNUC/readthis.002
+664   12287 1994-09-09 01:00:00 -0500 mailinglists/mc6811
+664      72 1994-09-09 01:00:00 -0500 mailinglists/README
+775    1504 1999-08-11 01:00:00 -0500 other-archives/signetics-bbs/
+664     258 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs.info
+664    6248 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/00FILES
+664     194 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/00README
+664   16232 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/51FORTH.ZIP
+664    2304 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/80C451
+664    3072 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/80C552
+664   40960 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/A51.ZIP
+664   22016 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/ABMOUSE.ZIP
+664    1024 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/AD1.ASM
+664    5504 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/AN429.ZIP
+664   26624 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/AS31.ZIP
+664    4352 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/AUTOBAUD.ZIP
+664   32768 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/BAS051.ZIP
+664   14336 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/BASIC31.ZIP
+664   51200 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/BASIC-52.ZIP
+664    7296 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/BOOTSTRP.ZIP
+664    4864 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/CLOCK.ZIP
+664    3712 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/COFFEY.ASM
+664   19200 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/D51.ZIP
+664   30592 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/DB51KS.EXE
+664    5632 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/DEBUG51.ZIP
+664    8704 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/DEMO752.ASM
+664    7296 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/DIS_8048.ZIP
+664   27264 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/DIS8051F.ZIP
+664    9472 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/DUPUART.ZIP
+664   37504 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/EFORTH51.ZIP
+664  158720 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/FORTH51.ZIP
+664   13696 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/FRAME10.ASM
+664   16128 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/HEXBIN.ZIP
+664   23552 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/HEXUTILS.ZIP
+664   57472 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/I2C528.EXE
+664    7808 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/I2C552-C.ZIP
+664   10240 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/I2C751MM.ZIP
+664    8832 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/I2C8584.ZIP
+664    4352 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/I2CAPP.ZIP
+664    9998 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/I2CBITS.ASM
+664   15488 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/I2CDEMO.ZIP
+664    4096 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/I2CINIT.ZIP
+664    7680 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/I2CPCKB.ZIP
+664    3072 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/I2CSLV.ZIP
+664   24192 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/IIC_OS.ZIP
+664    4352 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/INTRUPTS.ASM
+664   60032 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/LCPX.ZIP
+664    6144 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/MATH51.ZIP
+664   15360 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/MIDI8751.ASM
+664  128000 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/ML-ASM51.ZIP
+664   10624 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/MM751.ZIP
+664   23168 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/MODELS2.ZIP
+664    9216 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/MON31-11.ZIP
+664    6656 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/MON.C
+664   23552 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/MONPLUS.ZIP
+664   14848 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/MTVFNTED.ZIP
+664    5760 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/MTV.ZIP
+664    2176 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/PCI2CBD.ZIP
+664  199936 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/PCI2C.ZIP
+664   64000 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/PPTA.ZIP
+664   71296 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/PPTB.ZIP
+664    4352 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/PRN256K.ZIP
+664   10624 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/REG552.INC
+664    9728 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/REGC552.H
+664    8576 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/RS751.ASM
+664    9600 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/SAMPLES.ZIP
+664    5120 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/SERIAL_1.ASM
+664    2304 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/SERIAL.ZIP
+664    3584 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/SLV751.ZIP
+664    8576 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/SPGMV14.ZIP
+664    8960 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/SPGMV26.ZIP
+664    9155 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/SUPTLIST.TXT
+664  165760 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/TASM28.ZIP
+664   77824 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/TB51ML23.ZIP
+664  100352 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/TB-51.ZIP
+664    2176 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/TIMERI.ZIP
+664    8192 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/TUTOR51.ZIP
+664    2816 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/WARMBOOT.ZIP
+664   36864 1993-08-31 01:00:00 -0500 other-archives/signetics-bbs/XD8051.ZIP
+775      16 1999-08-11 01:00:00 -0500 pic/applied/
+775     462 1999-08-11 01:00:00 -0500 pic/asm17/
+775      56 1999-08-11 01:00:00 -0500 pic/aspic/
+775      94 1999-08-11 01:00:00 -0500 pic/burners/
+775      92 1999-08-11 01:00:00 -0500 pic/c71app/
+664     316 1995-01-16 00:00:00 -0600 pic/Mailinglist.pic
+777      16 1995-01-17 00:00:00 -0600 pic/Microchip-by-ftp → Microchip-on-WWW
+664     264 1995-01-17 00:00:00 -0600 pic/Microchip-on-WWW
+775     264 1999-08-11 01:00:00 -0500 pic/mpc/
+775     214 1999-08-11 01:00:00 -0500 pic/mpk/
+775      72 1999-08-11 01:00:00 -0500 pic/picapp/
+775      30 1999-08-11 01:00:00 -0500 pic/pic_c/
+775     116 1999-08-11 01:00:00 -0500 pic/pictools/
+775     382 1999-08-11 01:00:00 -0500 pic/strt16b/
+775      38 1999-08-11 01:00:00 -0500 pic/topic/
+775      34 1999-08-11 01:00:00 -0500 pic/applied/analyzer/
+664   29845 1994-12-08 00:00:00 -0600 pic/applied/analyzer/demo.tar.gz
+664    7834 1993-09-26 01:00:00 -0500 pic/applied/analyzer/README
+664   94872 1994-02-01 00:00:00 -0600 pic/asm17/a7_108.zip
+664     391 1994-02-01 00:00:00 -0600 pic/asm17/asm17bld.bat
+664   18545 1994-02-01 00:00:00 -0600 pic/asm17/asm17.bug
+664  103498 1994-02-01 00:00:00 -0600 pic/asm17/asm17.exe
+664   65584 1994-02-01 00:00:00 -0600 pic/asm17/link17.exe
+664     261 1994-02-01 00:00:00 -0600 pic/asm17/rainbird
+664    2357 1994-02-01 00:00:00 -0600 pic/asm17/regs.def
+664     812 1994-02-01 00:00:00 -0600 pic/asm17/sample1.asm
+664    1072 1994-02-01 00:00:00 -0600 pic/asm17/sample2.asm
+664    1118 1994-02-01 00:00:00 -0600 pic/asm17/sample3.asm
+664    1805 1994-02-01 00:00:00 -0600 pic/asm17/sample4.asm
+664    4386 1994-02-01 00:00:00 -0600 pic/asm17/sample4.dbg
+664     120 1994-02-01 00:00:00 -0600 pic/asm17/sample4.hex
+664     169 1994-02-01 00:00:00 -0600 pic/asm17/sample4.lnk
+664    6984 1994-02-01 00:00:00 -0600 pic/asm17/sample4.lst
+664    1280 1994-02-01 00:00:00 -0600 pic/asm17/sample4.obj
+664    1356 1994-02-01 00:00:00 -0600 pic/asm17/sample4.sym
+664     761 1994-02-01 00:00:00 -0600 pic/asm17/sample5.asm
+664     628 1994-02-01 00:00:00 -0600 pic/asm17/sample6.asm
+664      88 1994-02-01 00:00:00 -0600 pic/asm17/sample7.asm
+777      11 1994-02-01 00:00:00 -0600 pic/asm17/sample8.era → sample8.lst
+664      85 1994-02-01 00:00:00 -0600 pic/asm17/sample8.lst
+664   38072 1994-06-04 01:00:00 -0500 pic/aspic/aspicdemo.zip
+664  138362 1994-06-04 01:00:00 -0500 pic/aspic/aspic.zip
+664    1600 1994-07-29 01:00:00 -0500 pic/aspic/README
+664   19391 1994-12-26 00:00:00 -0600 pic/burners/prog84-0.9.tar.gz
+664     706 1994-12-26 00:00:00 -0600 pic/burners/prog84-0.9.tar.gz.README
+664    3130 1994-09-15 01:00:00 -0500 pic/burners/README
+664   10519 1994-02-01 00:00:00 -0600 pic/c71app/intad.asm
+664   10248 1994-02-01 00:00:00 -0600 pic/c71app/multad.asm
+664    9031 1994-02-01 00:00:00 -0600 pic/c71app/sad.asm
+664    9269 1994-02-01 00:00:00 -0600 pic/c71app/sad_int.asm
+664   10300 1994-02-01 00:00:00 -0600 pic/c71app/slpad.asm
+664     187 1994-08-08 01:00:00 -0500 pic/mpc/$options.ide
+664    1830 1994-08-08 01:00:00 -0500 pic/mpc/17c42.h
+664   61920 1994-08-08 01:00:00 -0500 pic/mpc/bcledit.exe
+664    2716 1994-08-08 01:00:00 -0500 pic/mpc/bcledit.hlp
+777       7 1994-08-08 01:00:00 -0500 pic/mpc/demo.h → 17c42.h
+664   21808 1994-08-08 01:00:00 -0500 pic/mpc/help.exe
+664    5954 1994-08-08 01:00:00 -0500 pic/mpc/idedem.hlp
+664   60432 1994-08-08 01:00:00 -0500 pic/mpc/ide.exe
+664    3333 1994-08-08 01:00:00 -0500 pic/mpc/keypad.c
+664   10282 1994-08-08 01:00:00 -0500 pic/mpc/mpcdem.hlp
+664  334560 1994-08-08 01:00:00 -0500 pic/mpc/mpc.exe
+664    5693 1994-08-08 01:00:00 -0500 pic/mpc/mpc.lib
+664     268 1994-08-08 01:00:00 -0500 pic/mpc/optimize.c
+664    1217 1994-08-08 01:00:00 -0500 pic/mpc/products.bcl
+664    3406 1994-08-08 01:00:00 -0500 pic/mpc/README
+644    1725 1994-08-17 01:00:00 -0500 pic/mpk/00README.IDX
+644  253988 1994-08-17 01:00:00 -0500 pic/mpk/4DOS50A.ZIP
+644  246668 1994-08-17 01:00:00 -0500 pic/mpk/4DOS50B.ZIP
+644  331424 1994-08-17 01:00:00 -0500 pic/mpk/BOXER600.ZIP
+644   25070 1994-08-17 01:00:00 -0500 pic/mpk/PDC.EXE
+644    1138 1994-08-17 01:00:00 -0500 pic/mpk/PDC.IDX
+644  189678 1994-08-17 01:00:00 -0500 pic/mpk/tm412-1.zip
+644  198381 1994-08-17 01:00:00 -0500 pic/mpk/tm412-2.zip
+644  197490 1994-08-17 01:00:00 -0500 pic/mpk/tm412-3.zip
+644  250842 1994-08-17 01:00:00 -0500 pic/mpk/tm412-4.zip
+664   18501 1994-02-01 00:00:00 -0600 pic/picapp/apnset01.zip
+664   23390 1994-02-01 00:00:00 -0600 pic/picapp/apnset02.zip
+664   29538 1994-02-01 00:00:00 -0600 pic/picapp/apnset03.zip
+664   15112 1994-04-21 01:00:00 -0500 pic/pic_c/pic_c.zip
+664    4766 1994-04-21 01:00:00 -0500 pic/pic_c/README
+664   29534 1994-09-07 01:00:00 -0500 pic/pictools/pictools01.tgz
+664   30165 1994-09-12 01:00:00 -0500 pic/pictools/pictools02.tgz
+664   29180 1994-12-01 00:00:00 -0600 pic/pictools/pictools08.tgz
+664    3461 1994-09-07 01:00:00 -0500 pic/pictools/pictools.info
+664    1237 1994-02-01 00:00:00 -0600 pic/strt16b/mpalc.bug
+664  120802 1994-02-01 00:00:00 -0600 pic/strt16b/mpalc.exe
+664   61896 1994-02-01 00:00:00 -0600 pic/strt16b/mpalc.txt
+664    8425 1994-02-01 00:00:00 -0600 pic/strt16b/mpsfrm15.hex
+664   23261 1994-02-01 00:00:00 -0600 pic/strt16b/mpsim.bug
+664  138500 1994-02-01 00:00:00 -0600 pic/strt16b/mpsim.exe
+664     108 1994-02-01 00:00:00 -0600 pic/strt16b/mpsim.ini
+664      38 1994-02-01 00:00:00 -0600 pic/strt16b/mpsim.jrn
+664  176636 1994-02-01 00:00:00 -0600 pic/strt16b/mpsim.txt
+664  277724 1994-02-01 00:00:00 -0600 pic/strt16b/mpstart.exe
+664   21886 1994-02-01 00:00:00 -0600 pic/strt16b/mpstart.hlp
+664    2693 1994-02-01 00:00:00 -0600 pic/strt16b/picreg.equ
+664    1309 1994-02-01 00:00:00 -0600 pic/strt16b/read.me
+664    1798 1994-02-01 00:00:00 -0600 pic/strt16b/sample.asm
+664     235 1994-02-01 00:00:00 -0600 pic/strt16b/sample.ini
+664    7255 1994-02-01 00:00:00 -0600 pic/strt16b/sample.lst
+664     158 1994-02-01 00:00:00 -0600 pic/strt16b/sample.obj
+664     727 1994-02-01 00:00:00 -0600 pic/strt16b/sample.sti
+664    1436 1994-02-01 00:00:00 -0600 pic/strt16b/sample.sym
+664       3 1994-02-01 00:00:00 -0600 pic/strt16b/temp.jrn
+664    3734 1994-08-25 01:00:00 -0500 pic/topic/README
+664   18709 1994-08-25 01:00:00 -0500 pic/topic/topic-0.1.zip
+775      42 1999-08-11 01:00:00 -0500 TMS7000/assemblers/
+777      25 1999-08-11 01:00:00 -0500 TMS7000/assemblers/Frankasm → ../../assemblers/Frankasm
+777      30 1993-11-16 00:00:00 -0600 TMS7000/assemblers/Frankasm.info → ../../assemblers/Frankasm.info
+775      42 1999-08-11 01:00:00 -0500 Z8/assemblers/
+664     414 1993-03-24 00:00:00 -0600 Z8/z8.info
+664  327201 1993-03-24 00:00:00 -0600 Z8/z8.tar.Z
+777      25 1999-08-11 01:00:00 -0500 Z8/assemblers/Frankasm → ../../assemblers/Frankasm
+777      30 1993-11-16 00:00:00 -0600 Z8/assemblers/Frankasm.info → ../../assemblers/Frankasm.info
+775      42 1999-08-11 01:00:00 -0500 Z80/assemblers/
+777      25 1999-08-11 01:00:00 -0500 Z80/assemblers/Frankasm → ../../assemblers/Frankasm
+777      30 1993-11-16 00:00:00 -0600 Z80/assemblers/Frankasm.info → ../../assemblers/Frankasm.info

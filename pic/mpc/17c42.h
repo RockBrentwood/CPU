@@ -1,0 +1,61 @@
+/*  Header file for 17C42 */
+#pragma has PIC16;
+#pragma vector __RESET @ 0x0000;
+#pragma vector __INT   @ 0x0008;
+#pragma vector __RTCC  @ 0x0010;
+#pragma vector __RTpin @ 0x0018;
+#pragma vector __PIV   @ 0x0020;
+#pragma memory ROM [0x7FF] @ 0;
+#pragma memory RAM [256 - 0x18] @ 0x18;
+#pragma portrw FSR0    @ 0x01;
+#pragma portrw PCL     @ 0x02;
+#pragma portrw PCLATH  @ 0x03;
+#pragma portrw ALUSTA  @ 0x04;
+#pragma portrw RTCSTA  @ 0x05;
+#pragma portrw CPUSTA  @ 0x06;
+#pragma portrw INTSTA  @ 0x07;
+#pragma portrw FSR1    @ 0x09;
+#pragma portrw W       @ 0x0A;
+#pragma portrw RTCCL   @ 0x0B;
+#pragma portrw RTCCH   @ 0x0C;
+#pragma portrw TBLPTRL @ 0x0D;
+#pragma portrw TBLPTRH @ 0x0E;
+#pragma portrw BSR     @ 0x0F;
+
+#pragma portrw PORTA  @ 0x10;
+#pragma portrw DDRB   @ 0x11;
+#pragma portrw PORTB  @ 0x12;
+#pragma portrw RCSTA  @ 0x13;
+#pragma portrw RCREG  @ 0x14;
+#pragma portrw TXSTA  @ 0x15;
+#pragma portrw TXREG  @ 0x16;
+#pragma portrw SPBRG  @ 0x17;
+
+#pragma portrw DDRC   @ 0x110;
+#pragma portrw PORTC  @ 0x111;
+#pragma portrw DDRD   @ 0x112;
+#pragma portrw PORTD  @ 0x113;
+#pragma portrw DDRE   @ 0x114;
+#pragma portrw PORTE  @ 0x115;
+#pragma portrw PIR    @ 0x116;
+#pragma portrw PIE    @ 0x117;
+
+#pragma portrw TMR1   @ 0x120;
+#pragma portrw TMR2   @ 0x121;
+#pragma portrw TMR3L  @ 0x122;
+#pragma portrw TMR3H  @ 0x123;
+#pragma portrw PR1    @ 0x124;
+#pragma portrw PR2    @ 0x125;
+#pragma portrw PR3L   @ 0x126;
+#pragma portrw CA1L   @ 0x126;
+#pragma portrw PR3H   @ 0x127;
+#pragma portrw CA1H   @ 0x127;
+
+#pragma portrw PW1DCL @ 0x130;
+#pragma portrw PW2DCL @ 0x131;
+#pragma portrw PW1DCH @ 0x132;
+#pragma portrw PW2DCH @ 0x133;
+#pragma portrw CA2L   @ 0x134;
+#pragma portrw CA2H   @ 0x135;
+#pragma portrw TCON1  @ 0x136;
+#pragma portrw TCON2  @ 0x137;

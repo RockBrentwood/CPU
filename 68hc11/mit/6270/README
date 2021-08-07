@@ -1,0 +1,40 @@
+---------------------------------------------------------------------------
+Anonymous FTP server:	cherupakha.media.mit.edu (18.85.0.47)
+This file:		~ftp/pub/6270/README
+Last updated:		Mon Sep 26 10:53:36 1994
+---------------------------------------------------------------------------
+
+This directory contains information about the MIT LEGO Robot Design
+Competition.
+
+
+SUB-DIRECTORY		CONTENTS
+-------------		---------
+
+docs			contains the ``6.270 Robot Builder's Guide,''
+			a 250-page course manual.  Also contains notes
+			and bug-fixes for the 1992 hardware.
+
+boards			contains the PC board artwork used in the 1992
+			class.  Requires a Mac and the "StuffIt"
+			utility to decode.
+
+interactive-c		contains source code and executables for a number
+			of computer platforms for the Interactive C
+			software system used in the design competition.
+			User's documentation for Interactive C is contained
+			in the 6.270 Robot Builder's Guide (above).
+
+rev2.21-assembly	contains the file "assembly221-fixed.ps.Z", which
+			are assembly directions for the 1993 Revision
+			2.21 of the 6.270 Robot Controller Board system.
+
+
+FILE			CONTENTS
+----			--------
+
+cat943.ps.Z		catalog from 6.270 Technologies for obtaining 
+cat943.txt		6.270 boards and accessories.  The PostScript
+			version is worth downloading if you have
+			PS output capability.
+

@@ -1,0 +1,165 @@
+
+The  program  presented  here was  originally  prepared  for the  Microchip
+Picstart design contest.  It  is presented here as an example of a complete
+working 16C71 program written in ASPIC. It may be stripped down and used as
+the framework for any PIC program if you wish.
+
+This program, and all of the included support files are:
+
+             Copyright (C)1993 Don Lekei, ALL RIGHTS RESERVED.
+
+Limited  use for educational purposes is permitted. Commercial use of large
+portions of the software requires written permission of the author.
+
+RESTRICTIONS ON USE:
+
+Use of  any of the code provided here, in any commercial product (including
+paid consultancy) is restricted to REGISTERED users of ASPIC or  one of the
+other  MACRO+ Assemblers.    Use of  portions  of  the code  sufficient  to
+replicate  the FUNCTION of the  example will require  written permission of
+the author:
+
+     Don Lekei,
+     8678 110A Street,
+     Delta, BC
+     CANADA
+     V4C 4K7
+
+     CompuServe:    72677,2623  (CIS access to INTERNET, X.400, etc.)
+     BBS/FAX:       (604) 597-3479
+     Voice (home):  (604) 594-1458
+
+                            How to Use this Code
+
+The simplest  way to rebuild  the code  is to  use MAKE  with the  makefile
+provided and enter the command:
+
+     make pic
+
+to  re-assemble and make  the PIC  using PICSTART.   Note that to  make the
+PICSTART  work  from a  command line,  you  must have  a  keyboard stuffing
+program such as FAKEY, KEY_FAKE, etc. as there is no command line interface
+to PICSTART.
+
+To rebuild and simulate use:
+
+     make
+
+Note:  the makefile  will  automatically run  SIMVIEW  to post-process  the
+result of the simulation for viewing the waveforms. If you do not have this
+program  available, it will produce  an error (SIMVIEW.EXE  is available on
+the BBS to registered users of ASPIC).
+
+You may then view the pin waveforms with:
+
+     make view
+
+(note: this requires that SIMVIEW has been run). 
+
+If you do not have  a copy of MAKE for DOS (eg. MKS  MAKE, Microsoft MAKE),
+there is a shareware make available on the BBS called NDMAKE which has been
+tested with this makefile and works perfectly. Some implementations of MAKE
+do  not  accurately emulate  the UNIX  syntax  and may  require  some minor
+adjustments to the makefile.
+
+                  Personal Logic Debugger (PLD) - Synopsis
+
+This  device  is a  general purpose  logic  probe/analyzer consisting  of a
+keypad, LCD display, and probe in a calculator style case. Not  only can it
+preform  the usual  HIGH/LOW/PULSE  test,  but  it  can  also  detect  (and
+differentiate)  open circuits and un-driven inputs. It also has the ability
+to do approximate  voltage impedance checks of both  inputs and outputs and
+display and/or sample the waveform  on the probe tip. The PIC drives a raw,
+8  digit LCD  display and  keypad (up to  28 keys)  with only  2 small 74HC
+devices and a few resistors and capacitors for support.
+
+This design  can also  be a  generic calculator-style  (keypad/LCD) device,
+using either the  16C71 or 16C84  (for EEPROM) and  can be manufactured  in
+large  quantities,   then  in-circuit  programmed   at  a  later   time  to
+differentiate a number of specialized versions. 
+
+          Personal Logic Debugger - Circuit / Software Description
+
+The circuit  design uses  the fact that  a conductive-rubber keypad  is not
+actually a matrix of switches  but a series of resistors typically 1  - 3 K
+in value.  This allows passive multiplexing and the increased current drain
+during actual depression of a key can be easily discounted.
+
+The display is cycled through the three positive, then three negative back-
+plane  cycles.  To prevent current drain from the LCD matrix bias, one port
+pin (RB0) is constantly kept in the opposite phase to  the currently active
+back-plane.  Since only one back-plane is ever active at any time, the bias
+voltage is  kept at  a  constant VDD/2.   This  automatically provides  the
+correct bias voltage to the lines which are tristated at that time.
+
+RB0 is also  used to clock data into the shift registers, the last state of
+the line is left in the polarity  of the next phase of the back-plane bias.
+This signal is also A/C coupled to the probe tip through  a 10k resistor to
+allow the probe to make impedance measurements.
+
+The keyboard is wired  in an efficient 2-of-n  configuration as opposed  to
+the old-style X/Y  matrix.  The weak-pull-up feature of  the 16c7x/8x parts
+is ideal for this purpose.  The 2-of-n matrix  allows the PIC to scan up to
+28 keys  using only 7  I/O pins, as  opposed to the  11 wires which  an X/Y
+matrix would require.
+
+Pin RB1 switches power to  the 2 74HC595 shift registers used  to latch LCD
+data. The shift registers are loaded simultaneously  in order to reduce the
+time and number of pulses  sent to the devices. These 8 bit shift registers
+are made to latch 9 bits of  data each, by loading the output latches  with
+data then shifting the ninth bits through so that they wind-up in the shift
+expansion bit normally used to chain shift registers.
+
+The  crystal oscillator is used in this  case so that the software could be
+expanded  to  provide a  frequency  counter mode.  This  has  not yet  been
+implemented, so an R-C oscillator would probably suffice.
+
+The probe  analyzes the signal connected  to the tip by  injecting a square
+wave at A/C neutral with a  10K impedance. This signal is sampled with  the
+A/D input to determine if it matches the generated signal then measures the
+peak voltage resulting  from the  clamping effect of  the input  protection
+diodes.  If the signal has been attenuated, then clamped, it means that the
+clamping  is caused by the PICs  input diodes, and the  circuit is open. If
+the  signal is  clamped, then  attenuated, it  means that  the clamping  is
+happening at the probe tip. This would indicate that the probe is connected
+to an un-driven input.
+
+The voltage is measured during  the high and low phase of the clock.  These
+two measurements,  when  compared,  give  an  indication  of  the  relative
+impedance of  the circuit  under  test. This  can be  used  to measure  the
+approximate  impedance of  outputs,  even batteries.  The  circuit has  two
+voltage scales, switchable via RA4 which is an open drain output.
+
+RA4  could also,  in a  future enhancement, be  used as  an input  to RTCC,
+allowing  frequency  measurements.  By   careful  use  of  the  pre-scaler,
+frequencies up to the input limit of the pin (>fosc) can be measured. 
+
+RA0  is configured  as  a digital  input,  this allows  digital  and analog
+
+measurements to  be taken  simultaneously.   Since  RA0 is  also a  digital
+input, it  is used to detect pulses, and  the waveform sample is also kept,
+to be  displayed on  the  LCD. The  user can  enter a  sample  rate in  100
+microsecond/division increments (approximate).
+
+The ON/CLR  button is wired  to MCLR, making this  system extremely robust,
+however, if a 71c84 were used, it is unclear whether this arrangement would
+need to be changed to prevent accidental resets during an EEPROM write.
+
+The  prototype  was  built  into  a  standard  pocket  calculator  housing,
+(removing all active components) and following keys perform  the respective
+functions:
+
+     ON/C      On / all clear
+     +/-       Logic probe
+     SQROOT    Impedance (vh:vl)
+     %         Waveform
+     DIVIDE    Low scale select
+     X         High scale select
+     -         Negative slope (waveform trigger)
+     +         Positive slope
+     =         Single event waveform trigger
+     0-9       Enter display time/div (100-25500 microseconds/div)
+     .         (Reserved)
+     MRC       (Reserved)
+     M+        OFF
+

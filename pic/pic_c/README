@@ -1,0 +1,131 @@
+# This file is a form to be filled by uploaders.
+# Filled forms will be installed to the archive with a suffix ".info"
+# 
+# You don't *have to* fill this; material can be installed to our archive
+# without ".info"-files as well. But we think that a short description,
+# which is available separately from the package, is a very useful thing:
+# Too many ftp-archives in the world have only packed files,
+# without any information of contents of those files. Those archives
+# are too often considered useless.
+#
+# By filling this form, and posting it to us after your upload, you
+# help to keep this archive useful. Other archive users and we (archive 
+# maintainers) will appreciate your efforts.
+# (note that /pub/microprocs is maintained totally by voluntary work !)
+#
+# Instructions for uploaders:
+#	If you have something to upload, put it to the "incoming"
+#	directory, and please write short answers to the following 
+#	questions; then send the filled form to
+#		microprocs-adm@nic.funet.fi
+#	or put it to the incoming directory with suffix .info
+#	(Example: if package name is comp.tar.Z, use comp.info
+#	for info-form filename)
+#	Please note that file protections used for the incoming
+#	directory will not let you see what is in the directory.
+#
+# All lines beginning with "#" will be removed from the installed version
+# of this file.
+#
+# NOTE! If you do not know the answer to some question(s), leave the
+# field(s) empty. Don't guess. Even a minimal amount of information
+# helps !
+
+A Shareware C compiler (small subset) for the Microchip pic 16c5x microcontrollers.
+
+# Example:
+#   One-Line-Description-Of-The-Packet:
+#     The ultimate compiler, any lang -> any processor
+#
+
+
+                              pic_c
+
+                           Release 1.0
+
+Ownership
+     This software is owned by Collin Brendemuehl/DPC.  It is not
+"public domain".  You may register your copy with DPC by sending
+$25.00 (US) to:
+
+          DPC
+          Attn: PIC C 
+          103 S Broadway Suite 101
+          Edmond OK 73034
+
+     Registered users will receive updates to the compiler as
+they become available.
+
+     Source code to the compiler is available for the sum of
+$150.00 (US).  With the source code the user may make those
+enhancements desired or needed.
+
+Introduction
+     The PIC micro-controllers from Microchip have, for the type
+of work that I do, proved themselves very useful.  It is easy to
+use and has a simple instruction set.  But as a C programmer, I
+don't always like to work with multiple assembler formats, one
+for each micro-controller.  There exists too much to do and not
+enough hours in the day.
+
+     Each system has its own unique characteristics that need to
+be remembered.  While that can be done, I'd rather not take the
+time and clutter my mind with unnecessary information.  Rather,
+I'd prefer to continue programming in C and forget the rest. 
+(That's what reference manuals are for!)
+
+     I purchased a Parallax development system for my projects,
+but soon became frustrated at not having a C compiler available. 
+Hence, a few hours programming and "Voila!", I can now do my PIC
+programming in C.  The listings include the compiler along with
+some sample code.  In the sample code you'll see some of the
+characteristics of the PIC that make it unique.
+
+     First, a PIC can only call 2 levels of subroutines.  If you
+call 3, you'll NEVER return to the first.  That can be hair-
+raising to have happen.  But having a C compiler can help you
+control that problem.
+
+
+# You can fill this by cutting a piece of README-file or manual page of 
+# the package, and inserting it here, or by writing a longer description.
+# Some 10 or 20 lines should usually be enough.
+# If you think that the uploaded package is described well enough by
+# the one-line description, leave this field empty.
+
+
+Uploaded-by-The-Author: no
+
+# Write "yes" here, if you are the author. 
+
+
+Bug-Report-Email-Address: ?
+
+
+Original-Distribution-Site=Uploaded-From: PARALLAX BBS
+
+# if the uploaded material has an "official" distribution point (an ftp
+# server, BBS or equiv.) somewhere else in the world, tell it here.
+# Otherwise, if ftp.funet.fi (alias nic.funet.fi) is the official
+# distribution site, write "ftp.funet.fi"
+
+
+Copyright-Notices: Shareware
+
+# Please make a short notice if there are something special in it,
+# or mark "PD", if you know it is in public domain.
+# If there is a copyright statement, copying (limited or unlimited) *must*
+# be permitted (otherwise we are not allowed to add it to the archive !)
+
+
+Related-Packages: None
+
+# If there are something else that is designed to work with this,
+# or this is a derivation of another package, tell it here.
+
+# Upload-Date: will be filled by archive maintainers.
+
+
+Other-Notes: None
+
+# ...if any.

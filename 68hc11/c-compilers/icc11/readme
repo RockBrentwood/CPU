@@ -1,0 +1,207 @@
+Oct 4, 1994
+
+This is the freeware release of the C Cross Compiler for HC11. This
+program is not in the public domain, but this release may be distributed to
+other FTP sites or BBSs provided that all files are included as is without 
+any modifications.
+
+Note that general release of the compiler has been available since June 94.
+See the end of this file.
+
+The files included are:
+
+freeware.txt	ascii version of the user manual
+readme		this file
+readme.cpp	readme file for the DECUS C preprocessor
+readme.lcc	readme file for the lcc compiler front end
+cpp.mem		description of the DECUS C preprocessor
+icc11.exe	compiler driver
+icpp.exe	C preprocessor
+iccom11.exe	compiler
+ias11.exe	assembler
+crt.s		C runtime file
+printf.c	simple printf like function
+dhry.c		v 1.1 of dhrystone benchmark
+
+Even though there is no relocatable linker included, the assembler, the
+compiler and the compiler driver have been written such that mulitple files
+of different types can be specified. For example, you may compile your
+program and "link" it with the simple printf provided with these commands:
+
+	icc11 <your C and asm files> printf.c
+	or
+	icc11 <your C and asm files> printf.s
+		if you compile printf.c to printf.s first
+
+This release fixes some bugs, exposes more command line switches to the user
+(e.g., check for ANSI conformance), includes some rudimentary debugging
+aid and adds a few more peephole patterns.
+
+Note that the next release will likely use a modified version of Alan Baldwin 
+relocatable assembler and linker. Assembler modules will need to be changed
+when that happens. Note that this will be a giant step toward the general 1.0
+release, so send it your favorite "much-have" features - 1) floating point
+code generation, 2) libraries and header files, and 3) debugging.
+
+The builtin peephole optimizer increases the code quality typically by
+about 10%-20%.  On a 2 Mhz NMI SBC, I get ~200 dhrystones per second (V1.1). 
+This is in comparison to 400 dhrystones per second as quoted by a $1200 
+HC11 compiler vendor, and 200 dhrystones per second as quoted by the the 
+same vendor on its major competitor costing $2000!
+
+The assembler now supports the "sect" pseudo op, allowing code and data 
+sections to have their own program counters. This is especially useful in
+systems where the code would reside in EEPROM and data reside in RAM.
+
+There is now a version of the "miniboard" library that is compatible with
+icc11. For information on this library, please contact Fred Martin at
+fredm@media.mit.edu. Miniboard is a single chip mode HC11 system with on
+board motor drivers and sensors designed by Fred.
+
+Change Log:
+-----------
+Feb 24 1994 release 0.48
+	- fixed bugs in |= and &=
+Feb 23 1994 release 0.47
+	- fixed bugs with function call trashing local variables 
+Feb 18 1994 release 0.46
+	- negate was still not working properly
+Feb 15 1994 release 0.45
+	- negate was not working properly
+	- unsigned char assignment to int was not working
+Feb 14 1994 release 0.44
+	- Peepholer went into an infinite loop if the '&' AND operator is
+	  used.
+Feb 8 1994 release 0.43
+	- Fixed misc bugs
+	- Added debbugging line labels and variables' offset table
+	- Exposed more compiler switches
+	- Better code generation for char data type
+Jan 16 1994 release 0.42
+	- A line was accidentally deleted in the src code resulting in embedded 
+	  asm not being accepted
+	- Documentation on embedded asm should mention instructions must start
+	  with a space or tab
+Jan 15 1994 release 0.41
+	- The driver now supports environment variable ICC11_LIB
+	- Better handling of / vs \ in file paths
+	- The preprocessor now supports environment variable ICC11_INCLUDE
+	- Several bug fixes in the code generator:
+		. long operand names were output incorrectly
+		. return sequence sometimes trashed register D
+		. occasionally a short branch was generated when a long branch 
+		  sequence should be used
+	- Better error reporting from the assembler
+	- Recompile using VC 1.5. The programs no longer run under OS2 protected
+	  mode (a 32 bit OS2 and DOS version is available, please read the user
+	  manual for information)
+Dec 12 1993 release 0.40
+	- Add a builtin peephole optimizer
+	- Add embedded asm support
+	- Add sect pseudo op to the assembler
+Nov 16 1993 release 0.30
+	- Recompile using 16 bit compiler. The system now runs on 8086 real (DOS,
+	  386 VDM, DOS emulators) and 286 protected (OS2 1.X+) modes.
+	- The calling convention has been changed so that it is not necessary to
+	  save and restore IX in a function. This makes it more compatible with
+	  existing libraries (such as the miniboard lib) and the resulting code
+	  is faster too.
+Nov 11 1993 release 0.20
+	- full structure support (assignment, argument and function returning)
+	- added support for signed divide and modulo 
+	- better code generation for frame pointer access
+	- assembler listing file was not being created
+Oct 27 1993 release 0.11
+	- hexadecimal and octal literal constants were not accepted
+Oct 18 1993	release 0.1
+
+Richard F. Man
+imagecft@netcom.com
+
+*** General Release Info ****
+====
+**** Professional HC11 Tools At a Budget Price! ****
+
+The ImageCraft HC11 C Compiler, ICC11, version 1.1
+
+ICC11 is a high quality yet low cost compiler package that runs on the DOS 
+environment. Included in the package are:
+
+. NEW! Interspersed C and assembly output!
+
+. NEW! Smaller memory requirements plus better code generation for byte
+  variables!
+
+. NEW! Ability to assign different names to text and data sections allowing
+  better memory utilization.
+
+. A comprehensive 90 page manual.
+
+. A fast near-ANSI C (*) conformant compiler with built-in peephole optimizer.
+
+. Quality code generation. Code size is typically only 5% to 20% larger than 
+  expensive ($500 to $1200) compilers. 
+
+. Assembler, linker, and librarian.
+
+. Standard C header files and library functions.
+
+. HC11 specific support such as embedded assembly, pragma for declaring 
+  interrupt functions, etc.
+
+. Calling conventions compatible with other compilers.
+
+. Both 16 bit and 32 bit executables. 16 bit executables run on all DOS
+  compatible environments including Unix/Mac DOS emulators. 32 bit
+  compiler runs on DOS and DPMI DOS VDM including Windows and OS2 DOS
+  VDMs.
+
+. Technical support over the Internet, including a mailing list for 
+  discussions and product update information.
+
+. MIT Interactive C compatible multitasking kernel library.
+
+. Miniboard library. Source code included!
+
+. COMING SOON! REXIS - low priced multitasking executive with subsumption 
+  architecture semantics for robotic control.
+
+. COMING SOON! Linux port!
+
+Price: $45.00, plus $5.00 shipping and handling within the U.S. / Canada 
+and $10.00 to overseas. CA residents please add 8 1/4% sales tax. 
+
+$40.00 for library source. $40 for REXIS and $400 for source for REXIS.
+
+To order by phone with Visa or Mastercard, please call (408) 749-0702, or
+FAX the credit card account number, expiration date, and your name and
+shipping address to (408) 749-0702 (same number as for voice calls).
+
+To order by mail, please send a check or money order (international orders 
+may use a "postal" check in U.S. dollars) to:
+
+    ImageCraft
+    P.O.Box 64226
+    Sunnyvale, CA 94088-4226
+
+    (408) 749-0702
+
+Please direct email inquires to: imagecft@netcom.com. To join the mailing list,
+send the message "subscribe icc11-list" to listserv@netcom.com.
+
+----
+(*) The following ANSI C features are not yet supported, but most are expected 
+    to be released at some future date:
+
+. Long data type is only 2 bytes, although limited 32 bit support is provided
+  through typedef and library calls.
+
+. The compiler does not yet support floating point code generation.
+
+. A not quite full set of C library functions is supplied, but most of the 
+  missing functions are not applicable to embedded applications.
+
+. The preprocessor does not support trigraphs, and it only uses K & R macro 
+  rescanning rules.
+
+**** End ICC11 Announcement ****

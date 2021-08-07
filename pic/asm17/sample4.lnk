@@ -1,0 +1,6 @@
+; 'sample4.lnk' file gen'd by C:\LEVRNTR\MICROCH\UTVSYS\ASM17\LINK17.EXE.
+
+.LC  0      ; Order LCs 0,1,2.. 15
+.Org 0 0x0  ; Start LC 0 at 0.
+.Name sample4
+sample4

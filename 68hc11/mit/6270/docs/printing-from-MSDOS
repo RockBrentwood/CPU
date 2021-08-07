@@ -1,0 +1,51 @@
+Return-Path: sacbbx!citrus!vector0!jon@netcom.com
+Received: by media.mit.edu (5.57/DA1.0.4.amt)
+	id AA06524; Mon, 25 Oct 93 10:47:12 -0400
+Received: from sacbbx.UUCP by netcomsv.netcom.com with UUCP (4.1/SMI-4.1)
+	id AA17646; Mon, 25 Oct 93 07:46:59 PDT
+Received: by sacbbx.com (V1.16-T8/Amiga)
+	id AA01krt; Mon, 25 Oct 93 06:49:24 PST
+Received: from vector0 by citrus.SAC.CA.US with uucp
+	(Smail3.1.28.1 #6) id m0orRkJ-000BhVC; Mon, 25 Oct 93 06:14 PDT
+Received: by vector0.SAC.CA.US (1.65/waf)
+	via UUCP; Sun, 24 Oct 93 21:58:58 PST
+	for fredm@media.mit.edu
+Message-Id: <0ZLyBc1w165w@vector0.SAC.CA.US>
+Date: Sun, 24 Oct 93 21:51:20 PDT
+Organization: --The-Vector-Zero-Matrix->
+From: jon@vector0.SAC.CA.US  (Dazed N. Confused)
+To: fredm@media.mit.edu
+Subject: Printing 6.270 docs on MSDOS
+Status: O
+
+     I have successfully printed some of the 6.270 docs on MSDOS.
+Maybe you could add a little note to the README file.  I used the
+latest version of Ghostscript and font files, all obtainable through
+wuarchive.wustl.edu (or mirrors) in the msdos/postscript directory.
+The current version of Ghostscript (v2.6.1) can print on the entire
+Deskjet family of printers (great printers, IMHO), and also on
+Epson Laserwriters and [of course] HP Laserjets.  There may be other
+printers supported, but probably not generic dot matrix, though.
+     I also decided to order the preprinted manual through MIT press,
+since it is a good deal, a lot faster (Ghostscript needs to form
+a bitmap image and print line by line on the printer, after all),
+and it's spiral bound.
+
+[Note from fredm:  I think jon means the Epistemology and Learning
+publications office, not MIT Press.]
+
+     But, for those adventurous souls out there, it is possible on
+MSDOS.  I used the latest version of MSDOS gzip to unpack the files
+(also obtainable on wuarchive).
+     What I did print was the 6811 introduction and Chapter 1.
+The printer made it halfway through Chapter 2, but ran out of paper,
+and thus Ghostscript trashed the rest of the file (with only a few
+pages left to go--of course).  The only problems I had were in
+configuring Ghostscript, which just took a little hair-tearing..
+
+--Jon
+                                          .--.--.         .----.
+   jon@vector0.SAC.CA.US                 (   '   )       (      )
+   DoD#2600                        make   `.   .'   not   `'::`'
+                                            `.'             ::
+

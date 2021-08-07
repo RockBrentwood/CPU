@@ -1,0 +1,167 @@
+16c5x/7x Cross-Assembler V4.11 Released  Tue May 04 14:33:24 1993  Page 1
+
+Line   PC    Opcode
+
+0001               ;********************************************************
+                       ***********
+0002               ;			    SAMPLE.ASM
+0003               ;		    8x8 Software Multiplier
+0004               ;********************************************************
+                       ***********
+0005               ;
+0006               ;   The 16 bit result is stored in 2 bytes
+0007               ;
+0008               ; Before calling the subroutine " mpy ", the multiplier s
+                       hould
+0009               ; be loaded in location " mulplr ", and the multiplicand 
+                       in
+0010               ; " mulcnd " . The 16 bit result is stored in locations
+0011               ; H_byte & L_byte.
+0012               ;
+0013               ;	Performance :
+0014               ;			Program Memory	:  15 locations
+0015               ;			# of cycles	:  71
+0016               ;			Scratch RAM	:   0 locations
+0017               ;
+0018               ;  This routine is optimized for code efficiency ( looped
+                        code )
+0019               ;  For time efficiency code refer to "mult8x8F.asm" ( str
+                       aight line code )
+0020               ;********************************************************
+                       ***********
+0021               ;
+0022         0009  mulcnd	equ	09	; 8 bit multiplicand
+0023         0010  mulplr	equ	10	; 8 bit multiplier
+0024         0012  H_byte	equ	12	; High byte of the 16 bit result
+0025         0013  L_byte	equ	13	; Low byte of the 16 bit result
+0026         0014  count	equ	14	; loop counter
+0027         0006  portb	equ	06	; I/O register F6
+0028               ;
+0029               ;
+0030                    include	     "picreg.equ"
+0031         0000  LIST L=ON
+0032               
+0033               
+0034               ;
+0035               ; ***************************** 	Begin Multiplier Routine
+                       
+0036   0000  0072  mpy_S	clrf	H_byte
+0037   0001  0073  	clrf	L_byte
+0038   0002  0C08  	movlw	8
+0039   0003  0034  	movwf	count
+0040   0004  0209  	movf	mulcnd,w
+0041   0005  0403  	bcf	STATUS,CARRY	; Clear the carry bit in the status Reg
+                       .
+0042   0006  0330  loop	rrf	mulplr
+0043   0007  0603  	btfsc	STATUS,CARRY
+0044   0008  01F2  	addwf	H_byte,Same
+0045   0009  0332  	rrf	H_byte,Same
+0046   000A  0333  	rrf	L_byte,Same
+0047   000B  02F4  	decfsz	count
+0048   000C  0A06  	goto	loop
+0049               ;
+0050   000D  0800  	retlw	0
+0051               ;
+16c5x/7x Cross-Assembler V4.11 Released  Tue May 04 14:33:24 1993  Page 2
+
+Line   PC    Opcode
+
+0052               ;********************************************************
+                       ************
+0053               ;		Test Program
+0054               ;********************************************************
+                       *************
+0055   000E  0040  start	clrw
+0056   000F  0002  	option
+0057   0010  0206  main	movf	portb,w
+0058   0011  0030  	movwf	mulplr		; multiplier (in mulplr) = 05
+0059   0012  0206  	movf	portb,w
+0060   0013  0029  	movwf	mulcnd
+0061               ;
+0062   0014  0900  call_m	call	mpy_S		; The result is in locations F12 & F13
+                       
+0063               			       ; H_byte & L_byte
+0064               ;
+0065   0015  0A10  	goto	main
+0066               ;
+0067         0000  	org	01FFh
+0068   01FF  0A0E  	goto	start
+0069               ;
+0070         0000       END
+16c5x/7x Cross-Assembler V4.11 Released  Tue May 04 14:33:24 1993  Page 3
+
+
+
+Cross-Reference Listing
+LABEL        VALUE        DEFN        REFERENCES
+ADCON0       8            52          52     
+ADCON1       136          53          53     
+ADCS0        6            91          91     
+ADCS1        7            90          90     
+ADIE         6            83          83     
+ADIF         1            95          95     
+ADON         0            96          96     
+ADRES        9            51          51     
+C            0            65          65     
+CARRY        0            64          64     122    124    
+CHS0         3            93          93     
+CHS1         4            92          92     
+DC           1            67          67     
+DCARRY       1            66          66     
+FALSE        0            108         108    
+FSR          4            44          44     
+GIE          7            82          82     
+GO           2            94          94     
+H_byte       18           24          24     117    125    126    
+INTCON       11           55          55     
+INTE         4            85          85     
+INTF         1            88          88     
+IRP          7            81          81     
+LSB          0            103         103    
+L_byte       19           25          25     118    127    
+MSB          7            104         104    
+NO           0            109         109    
+PA0          5            74          74     
+PA1          6            75          75     
+PA2          7            76          76     
+PC           2            42          42     
+PCFG0        0            98          98     
+PCFG1        1            97          97     
+PCLATH       10           54          54     
+PD           3            71          71     
+PIC54        511          35          35     
+PIC55        511          36          36     
+PIC56        1023         37          37     
+PIC57        2047         38          38     
+PIC71        0            39          39     
+PORT_A       5            46          46     
+PORT_B       6            47          47     
+PORT_C       7            48          48     
+P_DOWN       3            70          70     
+RBIE         3            86          86     
+RBIF         0            89          89     
+RP0          5            79          79     
+RP1          6            80          80     
+RTCC         1            41          41     
+RTIE         5            84          84     
+RTIF         2            87          87     
+STATUS       3            43          43     122    124    
+Same         1            101         101    125    126    127    
+TO           4            73          73     
+TRISA        133          56          56     
+TRISB        134          57          57     
+TRUE         1            106         106    
+T_OUT        4            72          72     
+YES          1            107         107    
+Z            2            69          69     
+Z_bit        2            68          68     
+call_m       20           143         143    
+count        20           26          26     120    128    
+loop         6            123         123    129    
+main         16           138         138    146    
+mpy_S        0            117         117    143    
+mulcnd       9            22          22     121    141    
+mulplr       16           23          23     123    139    
+portb        6            27          27     138    140    
+start        14           136         136    149    
+

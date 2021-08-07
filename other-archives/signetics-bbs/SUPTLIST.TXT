@@ -1,0 +1,339 @@
+80C51 Development Support Contacts
+
+updated June 11, 1993
+
+This list includes only sources for which recent advertisments or other commercial 
+references could be found, and companies with whom we have had contact recently. The list 
+is undoubtedly not complete, however no products have been left out intentionally for any 
+reason other than for lack of information. Additional references will be added as they are 
+found. 
+
+The author of this list is not directly familiar with many of these products or companies 
+and their presence in the list should not be considered any kind of endorsement. This is 
+simply a summary list of what is being advertised or otherwise being promoted in the 
+industry.
+
+The first part of this document lists types of products and the seller or manufacturer 
+name, along with a brief description. The second section contains the addresses, telephone 
+numbers, and fax numbers (when available) for the sources in section one.
+
+
+
+Product Listing
+
+
+80C51 In-Circuit Emulator Contact List
+
+American Arium                In-circuit emulator.
+AMS Inc.                      In-circuit emulator.
+BSO/Tasking                   In-circuit emulator.
+Cactus Logic                  Integrated development system (EPROM emulator that creates 
+                                80C51 emulator type functions on a target processor).
+Ceibo Ltd.                    In-circuit emulator.
+Cybernetic Micro Systems      In-circuit emulator.
+HiTech Equipment Corp.        Low cost in-circuit emulator.
+Huntsville Microsystems Inc.  In-circuit emulator.
+MetaLink Corp.                In-circuit emulator (for most Philips 80C51 derivatives).
+Nohau Corp.                   In-circuit emulator (for most Philips 80C51 derivatives).
+Orion Instruments             In-circuit emulator.
+Signum Systems                In-circuit emulator.
+
+
+80C51 Software Support Contact List
+2500AD Software, Inc.         C compiler, cross assembler, simulator/debugger.
+Archimedes                    C compiler, cross assembler, simulator/debugger.
+A.T. Barrett & Associates     Real-time multitasking executive.
+Avocet Systems, Inc.          C compiler, Pascal compiler, cross assembler, 
+                                simulator/debugger.
+Binary Technology, Inc.       BASIC cross compiler.
+Blue Earth Research           BASIC interpreter, C & PLM compilers, cross assembler, 
+                                simulator/debugger.
+Byte Craft Limited            C preprocessor for fuzzy logic (not 8051 specific).
+ChipTools                     Simulator/debugger.
+Cimetrics Technology          Microcomputer network software.
+CMX Company                   Real-time multitasking OS.
+Dunfield Development Systems  C compiler, cross assembler, monitor/debugger, simulator.
+Franklin Software             C compiler, cross assembler, simulator/debugger.
+Logisoft                      Cross assembler, disassembler.
+Micro Computer Control        C compiler, cross assembler, simulator/debugger.
+Micromint Inc.                Cross assembler, 8052 BASIC.
+PLC                           BASIC cross compiler.
+PseudoCorp                    Cross assembler, disassembler, simulator/debugger.
+Raven Computer Systems        Cross assembler.
+Systronix, Inc.               BASIC cross compiler.
+US Software Corp.             Real-time multitasking executive, IEEE floating point pkg.
+
+
+80C51 Board Contact List
+Avocet Systems, Inc.          80C51/52 development board.
+Binary Technology, Inc.       8051 development/prototyping board.
+Blue Earth Research           Programmable 80C51 controller and peripheral modules.
+Ceibo Ltd.                    Development board.
+Dunfield Development Systems  8032 single board computer/development system.
+Iota Systems, Inc.            8051 embedded controller/debugger boards.
+Micromint Inc.                8031, 8032, 8052 BASIC controller/debugger boards.
+Micro/Sys                     80C31, 80C32, 8052 BASIC industrial controller cards.
+Suncoast Technologies         8051 single board computer (prototyping board).
+Sytronics                     80C552 "Chargecard" development/prototyping board.
+
+
+
+Other 80C51 Support
+Annabooks                     Keyboard design guide.
+Applied Logic Engineering     8051 interfacing and applications manual, code on disk.
+Circuit Cellar Ink            Periodical, complete hardware/software applications, 
+                                construction articles, many focusing on the 80C51.
+Embedded Systems Programming  Periodical, focus on embedded system software issues.
+Midnight Engineering          Periodical, focus on entrepreneurial engineering. Many 
+                                topics are relevant to embbeded system design.
+MTI Publications              Book: The 8051: Programming, Interfacing, Applications
+                                by Howard Boyet and Ron Katz.
+West Publishing Co.           Book: The 8051 Microcontroller: Architecture, Programming, 
+                                and Applications   by Kenneth J. Ayala.
+
+
+Contact Addresses and Telephone Numbers
+
+2500AD Software, Inc.
+109 Brookdale Ave.
+P.O. Box 480
+Buena Vista, CO  81211
+Tel: (719) 395-8683
+Fax: (719) 395-8206
+
+American Arium
+14281 Chambers Rd.
+Tustin, CA  92680
+Tel: (714) 731-1661
+Fax: (714) 731-6344
+
+Applied Logic Engineering
+13008 93rd Place N.
+Maple Grove, MN  55369
+Tel/Fax: (612) 494-3704
+
+Archimedes
+2159 Union St.
+San Francisco, CA  94123
+Tel: (415) 567-4010
+Fax: (415) 567-1318
+
+AMS Inc.
+1321 N.W. 65th Place
+Fort Lauderdale, FL  33309
+Tel: (305) 975-9515
+Fax: (305) 975-9698
+
+Annabooks
+15010 Avenue of Science, Suite 101
+Sab Diego, CA  92128
+Tel: (800) 462-1042 / (619) 673-0870
+Fax: (619) 673-1432
+
+A.T. Barrett & Associates
+11501 Chimney Rock
+Houston, TX  77035
+Tel: (800) 525-4302 / (713) 728-9688
+Fax: (713) 728-1049
+
+Avocet Systems, Inc.
+120 Union St.
+P.O. Box 490
+Rockport, ME  04856
+Tel: (207) 236-9055
+Fax: (207) 236-6713
+
+Binary Technology, Inc.
+P.O. Box 541
+Carlisle, MA  01741
+Tel: (508) 369-9556
+Fax: (508) 369-9549
+
+Blue Earth Research
+165 West Lind Ct.
+Mankato, MN  56001-0400
+	
+BSO/Tasking
+333 Elm St.
+Dedham, MA  02026
+Tel: (617) 320-9400
+Fax: (617) 320-9212
+
+Byte Craft Limited
+421 King St. N.
+Waterloo, Ontario, Canada   N2J4E4
+
+Cactus Logic
+180 N. Vinedo Ave.
+Pasadena, CA  91107
+Tel: (800) 847-1998
+Fax: (818) 796-6011
+
+Ceibo Ltd.
+ (headquarters)
+Merkazim Bldg. Industrial Zone
+P.O. Box 2106
+Herzelia  46120  Isreal
+Tel: (972) (52) 555-387
+Fax: (972) (52) 553-297
+    (U.S. office)
+1 Ballard Terrace
+Lexington, MA  02173
+Tel: (617) 863-9927
+Fax: (617) 863-9649
+
+ChipTools
+Tel: (416) 274-6244
+Fax: (416) 891-2715
+(distributed by Nohau & BSO/Tasking)
+
+Cimetrics Technology
+120 West State St.
+Ithaca, NY  14850
+Tel: (607) 273-5715
+Fax: (607) 273-5712
+
+Circuit Cellar Ink
+Subscriptions
+P.O. Box 3050-C
+Southeastern, PA  19398
+Tel: (215) 630-1914
+
+CMX Company
+19 Indian Head Heights
+Framingham, MA  01701
+Tel: (508) 872-7675
+
+Cybernetic Micro Systems
+P.O. Box 3000
+San Gregorio, CA  94074
+Tel: (415) 726-3000
+
+Dunfield Development Systems
+P.O. Box 31044
+Nepean, Ontario, Canada  K2B 8S8
+Tel: (613) 256-5820
+Fax: (613) 256- 5821
+
+Embedded Systems Programming
+P.O. Box 420046
+Palm Coast, FL  32142-0046
+Tel: (800) 829-5537
+
+Franklin Software
+888 Saratoga Ave. #2
+San Jose, CA  95129
+Tel: (408) 296-8051
+Fax: (408) 296-8061
+
+HiTech Equipment Corp.
+9400 Activity Rd.
+San Diego, CA  92126
+Tel: (619) 566-1892
+Fax: (619) 530-1458
+
+Huntsville Microsystems Inc.
+3322 South Memorial Parkway
+Huntsville, AL  35801
+Tel: (205) 881-6005
+Fax: (205) 882-6701
+
+Iota Systems, Inc.
+POB 8987
+Incline Village, NV  89452
+Tel: (702) 831-6302
+Fax: (702) 831-4629
+
+Logisoft
+P.O. Box 61929
+Sunnyvale, CA  94086
+Tel: (408) 773-8465
+Fax: (408) 773-8466
+
+MetaLink Corp.
+325 E. Elliot Rd, Suite 23
+Chandler, AZ  85225
+Tel: (602) 926-0797
+Fax: (602) 926-1198
+
+Micro Computer Control
+17 Model Ave.
+P.O Box 275
+Hopewell, NJ  08525
+Tel: (609) 466-1751
+Fax: (609) 466-4116
+
+Micromint Inc.
+4 Park Street
+Vernon, CT  06066
+Tel: (203) 871-6170
+Fax: (203) 872-2204
+
+Micro/Sys
+3447 Ocean View Blvd.
+Glendale, CA  91208
+Tel: (818) 244-4600
+Fax: (818) 244-4246
+	
+Midnight Engineering
+1700 Washington Ave.
+Rocky Ford, CO  81067-9900
+Tel: (719) 254-4558
+
+Nohau Corp.
+51 E. Campbell Ave.
+Campbell, CA  95008
+Tel: (408) 866-1820
+Fax: (408) 378-7869
+
+Orion Instruments
+180 Independence Dr.
+Menlo Park,  CA  94025
+Tel: (415) 327-8800
+Fax: (415) 327-9881
+
+PLC (Production Languages Corp.)
+P.O. Box 109
+Weatherford, TX  76086
+Tel: (800) 525-6289
+Fax: (817) 599-5098
+
+PseudoCorp
+716 Thimble Shoals Blvd.
+Newport News, VA  23606
+Tel: (804) 873-1947
+Fax: (804) 873-2154
+
+Raven Computer Systems
+P.O. Box 120116
+St. Paul, MN  55112
+Tel: (612) 636-0365
+
+Signum Systems
+171 E. Thousand Oaks Blvd., Suite 202
+Thousand Oaks, CA  91360
+Tel: (805) 371-4608
+Fax: (805) 371-4610
+
+Suncoast Technologies
+P.O. Box 5835-CAJ
+Spring Hill, FL  34606
+Tel: (904) 596-7599
+
+Systronix, Inc.
+555 S. 300 E. #21
+Salt Lake City, UT  84111
+Tel: (801) 534-1017
+Fax: (801) 534-1019
+
+Sytronics
+93 Horizon Hill Rd.
+Asheville, NC  28804
+Tel: (704) 251-9559
+
+US Software Corp.
+14215 NW Science Park Dr.
+Portland, OR  97229
+Tel: (800) 356-7097 / (503) 641-8446
+
+

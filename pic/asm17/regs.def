@@ -1,0 +1,76 @@
+;+	Begin regs.def
+;
+;	regs.def - include file detailing some special function
+;		registers.
+
+	CBLOCK	0x00			; Begin data definitions
+		indf0			; Interpret fsr2 (not a physical reg)
+		fsr0			; Indirect data memory address 0
+		pclo			; Program counter lo byte
+		pchi			; Program counter hi byte
+		alusta			; ALU status register
+		rtcsta			; RTC status register
+		cpusta			; CPU status register
+		intsta			; Interrtupt status register
+		indf1			; Interpret fsr1 (not a physical reg)
+		fsr1			; Indirect data memory address 1
+		wreg			; Working register
+		rtccl			; RTC lo byte
+		rtcch			; RTC hi byte
+		tblptrl			; Low byte of program mem table ptr
+		tblptrh			; Hi byte of program mem table ptr
+		bsr			; Bank select register
+	ENDC
+
+	CBLOCK	0x10			; Bank 0
+		porta			; I/O Port A
+		ddrb			; Data direction bits, Port B
+		portb			; I/O Port B
+		rcsta			; Receive status/control register
+		rcreg			; Receive buffer register
+		txsta			; Transmit status/control register
+		txreg			; Transmit buffer register
+		spbrg			; Baud rate generator
+	ENDC
+
+	CBLOCK	0x10			; Bank 1
+		ddrc			; Data direction bits, Port C
+		portc			; I/O Port C
+		ddrd			; Data direction bits, Port D
+		portd			; I/O Port D
+		ddre			; Data direction bits, Port E
+		porte			; I/O Port E
+		pir			; Peripheral interrupt flag register
+		pie			; Peripheral interrupt enable reg
+	ENDC
+
+	CBLOCK	0x10			; Bank 2
+		tmr1			; Timer/counter one (eight bit)
+		tmr2			; Timer/counter two (eight bit)
+		tmr3l			; Timer/counter three (lo 8 of 16)
+		tmr3h			; Timer/counter three (hi 8 of 16)
+		pr1			; Period register one
+		pr2			; Period register two
+		pr3l			; Period register three (lo 8 of 16)
+		pr3h			; Period register three (hi 8 of 16)
+	ENDC
+
+	CBLOCK	0x16			; Bank 2 (Redefined)
+		ca1l			; Capture register one (lo 8 of 16)
+		ca1h			; Capture register one (hi 8 of 16)
+	ENDC
+
+	CBLOCK	0x10			; Bank 3
+		pw1dcl			; PWM1 duty cycle, lower 2 bits
+		pw2dcl			; PWM2 duty cycle, lower 2 bits
+		pw1dch			; PWM1 duty cycle, upper 8 bits
+		pw2dch			; PWM2 duty cycle, upper 8 bits
+		ca2l			; Capture register two (lo 8 of 16)
+		ca2h			; Capture register two (hi 8 of 16)
+		tcon1			; Timer/capture/PWM control reg 1
+		tcon2			; Timer/capture/PWM control reg 2
+	ENDC
+
+#define	_CARRY	alusta,0		; Hit the ALU carry bit
+;
+;-	End regs.def

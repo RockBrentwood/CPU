@@ -1,0 +1,19 @@
+Hitachi gave this to me on two 1.44 MB diskettes.
+This is the directroy of disk 1.
+The files INSTALL.BAT and PKUNZIP.EXE were found identically on both 
+diskettes 1 and 2.
+
+ Volume in drive A has no label
+ Volume Serial Number is 0FD5-2079
+ Directory of A:\
+
+DISK1                    0 03-24-93   4:33p
+H83G-ASM ZIP        82,332 03-24-93  12:53p
+H83G-C   ZIP       482,333 03-24-93   1:06p
+H83G-DBG ZIP       364,799 03-24-93  12:55p
+H83G-DEM ZIP         5,247 03-24-93   1:10p
+INSTALL  BAT         1,217 03-25-93   8:08a
+PKUNZIP  EXE        29,378 02-01-93   2:04a
+README   TXT         1,118 03-24-93   4:29p
+        8 file(s)        966,424 bytes
+                         488,960 bytes free

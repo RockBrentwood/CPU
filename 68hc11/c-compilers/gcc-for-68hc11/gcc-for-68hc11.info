@@ -1,0 +1,11 @@
+One-Line-Description-Of-The-Packet:
+	68hc11 code generation patches for gcc 2.3.3
+
+Original-Distribution-Site=Uploaded-From:
+	netcom.com	/pub/coactive
+
+Related-Packages:
+	gcc 2.3.3, in /pub/gnu/gcc (needed)
+
+Upload-Date: 
+	Fri Mar  5 19:56:49 EET 1993

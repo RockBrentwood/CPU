@@ -1,0 +1,31 @@
+Return-Path: robot-board@oberon.com
+Received: by media.mit.edu (5.57/DA1.0.4.amt)
+	id AA23187; Tue, 26 Oct 93 14:44:38 -0400
+Received: from  ([127.0.0.1]) by oberon.com (4.1/SMI-4.1_Armado.MX)
+	id AA16213; Tue, 26 Oct 93 14:39:25 EDT
+Date: Tue, 26 Oct 93 14:39:25 EDT
+Message-Id: <199310261833.AA23850@vision1.cc.gatech.edu>
+Errors-To: gkulosa@oberon.com
+Reply-To: gboone@cc.gatech.edu
+Originator: robot-board@oberon.com
+Sender: gkulosa@oberon.com
+Precedence: bulk
+From: Gary Noel Boone <gboone@cc.gatech.edu>
+To: Multiple recipients of list <robot-board@oberon.com>
+Subject: Re: 6.270 assembly
+X-Listprocessor-Version: 6.0b -- ListProcessor by Anastasios Kotsikonas
+Status: O
+
+
+6.270 board building tip:
+
+Think about how you want to arrange the lone LED (is it the
+IR indicator?) before building! If you follow the directions,
+you will bury it under the expansion board and the TIP22 
+transistor! My solution was to bend the TIP down to the 
+left and at an angle. However, the pins are only just long enough
+to do this. A better solution might be found with some planning
+ahead.
+
+Good luck,
+Gary

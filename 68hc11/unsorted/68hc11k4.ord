@@ -1,0 +1,120 @@
+=============================  68HC11K4  ================== rev 12/20/91
+
+              *** CUSTOMER XC STATUS LETTER REQUIRED ***
+
+                    MOTOROLA ADVANCED MCU ORDER FORM
+
+------------------------------------------------------------------------
+   This form is subject to change.  Get a current copy from the 
+   freeware BBS at 512-891-FREE, or check with your Motorola 
+   salesperson or marketer to make sure you have a current form.
+  
+   This form must be filled out completely before code is submitted.
+   Contact your Motorola salesperson for assistance.
+------------------------------------------------------------------------
+
+Motorola SC Number (if pre-assigned):_____________________Date:_________
+
+Customer:_______________________________________________________________
+
+Street Address(No P.O. Boxes):__________________________________________
+
+City:_______________________________________State:______________________
+
+Zip Code:__________________Country:_____________________________________
+
+Customer Contact:_______________________________________________________
+
+Phone #: (_______)______________________Extension #:____________________
+
+Salesperson:____________________________________________________________
+
+Sales Office:___________________________Phone #: (_______)______________
+
+Customer Part Number:___________________________________________________
+
+
+  _____________________________  Customer part #, if part of marking, is
+          (signature)            for reference only.  There is either no
+                                 print, or print is tested to Motorola
+or                               data sheet electrical information.
+
+  _____________________________  There is a print/spec for this device
+          (signature)            and ordered parts must comply to this
+                                 spec as it deviates from Motorola
+                                 standard. (PRINT/SPEC MUST BE SUBMITTED
+                                 WITH THIS ORDER FORM.)
+
+Special Electrical Provisions:___________________________________________
+(prior factory approval required)
+
+Encryption Algorithm Included: YES ___ NO ___
+
+If encryption algorithm is included in your code, contact your Motorola 
+salesperson BEFORE SUBMITTING CODE, additional information is required.
+
+Customer End Use Description:___________________________________________
+(examples: automotive brakes, air-conditioner controller, video game, 
+information security (PIN), hard disk controller, telephone switching)
+
+End Use ECCN: __________________________________________________________
+
+Military Application:  YES ___ NO ___
+------------------------------------------------------------------------
+
+User ROM Area: $A000 to $FFFF                         internal use only:
+                                                            TSC/TKY
+SECURITY FEATURE ENABLED:
+___ Yes (requires prior factory approval)
+___ No
+
+CONFIGURATION REGISTER CONTENTS:
+___ factory default hex $: DF        CONFIGURATION RESISTER NOT SET
+___ user value hex $: ____           TO CUSTOMER VALUE ON DIE SALES.
+
+1) The factory config register default is "DF".  The security option,
+   XOUT clock, and the COP watchdog are disabled.  The ROM, EEPROM, and
+   PPAR (pullup register)are enabled.  The ROM address starts at $A000.
+2) We can also enable the COP watchdog if desired.
+3) If security is enabled, Motorola will not program the NOSEC bit to
+   zero as we consider this a customer responsibility.
+
+CONFIG FUNCTIONS USED:
+  Security: yes ___  no ___              XOUT Clock: yes ___  no ___
+       COP: yes ___  no ___   Pullup Register(PPAR): yes ___  no ___
+       ROM: yes ___  no ___             Alt ROM Map: yes ___  no ___
+    EEPROM: yes ___  no ___
+
+EXTERNAL OSCILLATOR FREQUENCY (16.0 MHz maximum):_______________________
+
+OPERATING (E CLOCK) FREQUENCY:__________________________________________
+(external oscillator frequency / 4)
+
+TEMPERATURE RANGE FOR 2.0 MHZ, 3.0 MHZ, OR 4 MHZ BUS:
+___  25 degrees C - scribed die or die in wafer form
+___ -40 to +85 degrees C (C)
+
+PACKAGE:
+___ 84 pin PLCC (FN)
+___ scribed die probed at 25 degrees C only (SCC)
+___ die in wafer form probed at 25 degrees C only (SCW)
+
+RVU SAMPLE PACKAGE TYPE (choose only one):
+___ 84 pin ceramic PLCC
+___ scribed die
+
+MARKING:
+___ standard Motorola marking
+    (Motorola logo, Motorola SC# *, Motorola traceability code)
+
+___ customer marking in addition to the above standard marking:
+
+    __________________________          maximum: 3 custom lines
+                                                14 characters per line
+    __________________________
+
+    __________________________
+
+* The Motorola SC# will not appear on the package if all additional
+  customer lines are used.
+=============================  68HC11K4  ===============================

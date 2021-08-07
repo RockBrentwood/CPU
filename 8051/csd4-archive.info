@@ -1,0 +1,16 @@
+One-Line-Description-Of-The-Packet:
+	Several 8051 utilities & programs from csd4
+
+Longer-Description:
+	assembler w. linker, kernel, arithmetic, debugger etc.
+	See description in csd4-archive/readme
+
+Bug-Report-Email-Address:
+   comments and feedback to markh@csd4.csd.uwm.edu (Mark Hopkins)
+
+Original-Distribution-Site=Uploaded-From:
+   csd4.csd.uwm.edu: /pub/8051
+
+Upload-Date:
+	Thu May  6 17:19:06 EET DST 1993
+

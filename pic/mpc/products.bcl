@@ -1,0 +1,23 @@
+     ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ C Code Development Systems ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+     C compiler with a built-in macro assembler, editor and integrated
+     development shell. Each compiler is targeted for a processor family
+     and features tight, highly optimized, ROMable code, interrupt support,
+     symbolic output for emulators and a linker and librarian.
+
+     ş C6805  (6805 family)                 ş Z8C  (Zilog Z8 family)
+     ş COP8C  (National COP8 family)        ş MPC  (Microchip PIC16/17Cxx)
+
+     Coming in 1994:
+     ş C6808  (Motorola 6808 family)        ş C38  (Mitsubishi MELPS740)
+
+     ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Debugging/Development Tools ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+     ş E6805 Symbolic Host Support
+     	   (Symbolic source level debugging for C6805 and Motorola EVM/EVS)
+
+     ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Fuzzy Logic ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+     ş Fuzz-C Preprocessor for Fuzzy Logic
+           (Mix fuzzy logic and C in one program. For any C compiler)
+
+     ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ BYTE CRAFT LIMITED ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+           421 King Street North, Waterloo, Ontario, Canada.  N2J 4E4
+         Tel. (519) 888-6911,   Fax (519) 746-6751,  BBS (519) 888-7626
