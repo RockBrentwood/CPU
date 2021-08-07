@@ -1,3 +1,14 @@
+This archive is derived from the original at
+	ftp://ftp.funet.fi/pub/microprocs
+and is being slated for future expansion.
+It contains the Frankenstein cross-assembler, as well as the CAS 8051 assember,
+and other tools and utilities for microcontroller CPUs.
+
+The changes made relative to the original, at the FTP site, along with the listings of the original contents of the GitHub version, are under Manifest.txt.
+
+The following is the README contained in the original, minus the original contact e-mail reference, and is subject to future change, after this archive is populated.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 /pub/microprocs @ ftp.funet.fi:
 the microprocessor (software) developers' archive
@@ -72,9 +83,3 @@ are still empty):
 
 
 	(others will be added when necessary)
-
-
-Send all comments to:
-
-	microprocs-adm@nic.funet.fi
-
