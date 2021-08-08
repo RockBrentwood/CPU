@@ -1,38 +1,5 @@
 This file is cited in the file "History" under 1990/12/04-06.
-
-Alt Sources 1990/12:
-∙	http://ftp.funet.fi/pub/archive/alt.sources/
-	Index: http://ftp.funet.fi/pub/archive/archive.log
-	(Missing Frankenstein Cross Assemblers, Hitachi 6301/3, Part 2 of 2)
-	http://cd.textfiles.com/sourcecode/usenet/altsrcs/2/2231
-∙	http://ftp.lp0.dk/pub/archives/usenet/utzoo-ex/b191/alt/sources/
-	(Missing Frankenstein Cross Assemblers, Hitachi 6301/3, Part 2 of 2)
-∙	https://www.digiater.nl/openvms/decus/lt91b/unixmisc/altsources/
-∙	http://cd.textfiles.com/sourcecode/00_index.txt
-	Under http://cd.textfiles.com/sourcecode/usenet/altsrcs/2:
-	2182.        Frankenstein Cross Assemblers, Base source, Part 1 of 3
-	2183.        Frankenstein Cross Assemblers, Base source, Part 2 of 3
-	2184.        Frankenstein Cross Assemblers, Base source, Part 3 of 3
-	2185.        Frankenstein Cross Assemblers, Motorola 6805 "Flavor", Part 1 of 
-	2186.        Frankenstein Cross Assemblers, Intel 8048 "Flavor, Part 1 of 2
-	2187.        Frankenstein Cross Assemblers, Intel 8048 "Flavor", Part 2 of 2
-	2203.        Frankenstein Cross Assembler, Motorola 6811 "Flavor", part 1 of 2
-	2204.        Frankenstein Cross Assemblers, Motorola 6811 "Flavor", part 2 of 
-	2205.        Frankenstein Cross Assemblers, Intel 8051 Flavor, Part 1 of 1
-	2206.        Frankenstein Cross Assemblers, Intel 8096 flavor, Part 1 of 2
-	2207.        Frankenstein Cross Assemblers, Intel 8096 flavor, Part 2 of 2
-	2208.        Frankenstein Cross Assemblers, Zilog Z8 flavor, Part 1 of 1
-	2220.        Frankenstein Cross Assemblers, 6502 flavor, part 1 of 2
-	2221.        Frankenstein Cross Assemblers, 6502 flavor, Part 2 of 2
-	2222.        Frankenstein Cross Assemblers, Motorola 6809 flavor, Part 1 of 2
-	2225.        Frankenstein Cross Assemblers, TI TMS7000 flavor, Part 1 of 1
-	2226.        Frankenstein Cross Assemblers, Zilog Z80, Part 1 of 2
-	2227.        Frankenstein Cross Assemblers, Zilog Z80 flavor, part 2 of 2
-	2228.        Frankenstein Cross Assemblers, Phillips/Signetics 2650, Part 1 of
-	2229.        Frankenstein Cross Assemblers, RCA 1805 flavor, Part 1 of 1
-	2230.        Frankenstein Cross Assemblers, Phillips/Signetics 2650, Part 2 of
-	2231.        Frankenstein Cross Assemblers, Hitachi 6301/3, Part 2 of 2
-	2232.        Frankenstein Cross Assemblers, Hitachi 6301/3, Part 1 of 2
+The original links are listed under Shars/README.
 
 === Base01 ===
 Path: hydra!news.funet.fi!sunic!mcsun!uunet!pilchuck!ssc!markz
