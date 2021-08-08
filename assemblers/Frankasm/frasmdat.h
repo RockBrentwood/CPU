@@ -18,6 +18,7 @@ AUTHORS: 	Mark Zenier;
 */
 
 #include <ctype.h>
+#include <stdlib.h>
 #define PRINTCTRL(char) ((char)+'@')
 
 #ifndef Global
@@ -174,7 +175,6 @@ extern enum readacts nextreadact;
 char * savestring(), *findgen();
 long	strtol();
 void	reservedsym();
-char	*calloc(), *malloc();
 
 extern struct symel * endsymbol;
 extern char ignosyn[] ;

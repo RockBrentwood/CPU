@@ -36,7 +36,7 @@ COMPILERS: 	Microport Sys V/AT, ATT Yacc, Turbo C V1.5, Bison (CUG disk 285)
 #include "frasmdat.h"
 
 FILE * intermedf = (FILE *) NULL;
-char *interfn = 
+char interfn[] = 
 #ifdef DOSTMP
  "frtXXXXXX";
 #else

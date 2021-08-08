@@ -61,4 +61,5 @@ History:
 		See Cover.txt for the article headers.
 		Note: not all alt.sources servers archived the Frankasm/As630102 SHAR file.
 2020/03/20:	Unpacked
+2021/07/28:	Made C99-compatible; with <stdlib.h> made mandatory, replacing in-line declarations.
 2021/08/04:	Recovered Frankasm/As630102 and as6301.y.
