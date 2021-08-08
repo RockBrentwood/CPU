@@ -1,20 +1,9 @@
-
-
-/*
-HEADER: 	;
-TITLE: 		Frankenstein Cross Assemblers;
-VERSION: 	2.0;
-DESCRIPTION: "	Reconfigurable Cross-assembler producing Intel (TM)
-		Hex format object records.  ";
-SYSTEM: 	UNIX, MS-Dos ;
-FILENAME: 	getopt.h;
-WARNINGS: 	"This is some ancient code I found on a version 7 system
-		when I was running the original port.  Asking for help from
-		the original authors is not advised.  (Especially after
-		the hack job I did on it.  Mark Zenier.)  "  ;
-SEE-ALSO: 	frasmain.c;
-AUTHORS: 	Keith Bostic, Rich $alz;
-*/
+// Frankenstain Cross-Assemblers, version 2.0.
+// Original authors: Keith Bostic, Rich $alz.
+// Adapted by Mark Zenier.
+// This is some ancient code I found on a version 7 system when I was running the original port.
+// Asking for help from the original authors is not advised.
+// (Especially after the hack job I did on it.  Mark Zenier.)
 /*
 **  This is a public domain version of getopt(3).
 **  Bugs, fixes to:
@@ -23,10 +12,10 @@ AUTHORS: 	Keith Bostic, Rich $alz;
 **			UUCP: seismo!keith
 **  Added NO_STDIO, opterr handling, Rich $alz (mirror!rs).
 
-  Framework Cross Assembler 
+  Framework Cross Assembler
 	use strchr
 	remove NO_STDIO code
-	Mark Zenier 	Specialized Systems Consultants, Inc.   
+	Mark Zenier 	Specialized Systems Consultants, Inc.
 */
 
 /*
@@ -104,4 +93,3 @@ getopt(nargc, nargv, ostr)
 Bad:
     return('?');
 }
-

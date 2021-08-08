@@ -1,36 +1,6 @@
-/*
-HEADER: 	;
-TITLE: 		Frankenstein Cross Assemblers;
-VERSION: 	2.0;
-DESCRIPTION: "	Reconfigurable Cross-assembler producing Intel (TM)
-		Hex format object records.  ";
-KEYWORDS: 	cross-assemblers, 1805, 2650, 6301, 6502, 6805, 6809, 
-		6811, tms7000, 8048, 8051, 8096, z8, z80;
-SYSTEM: 	UNIX, MS-Dos ;
-FILENAME: 	fryylex.c;
-WARNINGS: 	"This software is in the public domain.  
-		Any prior copyright claims are relinquished.  
-
-		This software is distributed with no warranty whatever.  
-		The author takes no responsibility for the consequences 
-		of its use.
-
-		Yacc (or Bison) required to compile."  ;
-SEE-ALSO: 	as*.y (yacc input files);
-AUTHORS: 	Mark Zenier;
-COMPILERS: 	Microport Sys V/AT, ATT Yacc, Turbo C V1.5, Bison (CUG disk 285)
-		(previous versions Xenix, Unisoft 68000 Version 7, Sun 3);
-*/
-
-
-/*
-	description	lexical analyzer for framework cross assembler
-	usage		Framework cross assembler, Unix
-	history		September 13, 1987
-			September 14, 1990  Dosify, 6 char unique names
-			October, 1990  hand carved scanner
-*/
-
+// Frankenstain Cross-Assemblers, version 2.0.
+// Original author: Mark Zenier.
+// Lexical analyzer for framework cross assembler.
 #include <stdio.h>
 #include "frasmdat.h"
 #include "fraytok.h"
@@ -39,13 +9,13 @@ COMPILERS: 	Microport Sys V/AT, ATT Yacc, Turbo C V1.5, Bison (CUG disk 285)
 #define DEBUG 0
 #endif
 
-	extern YYSTYPE yylval; 
+	extern YYSTYPE yylval;
 
 	enum symflag {Symopcode, Symsym} whichsym = Symopcode;
 
 	FILE *yyin;
 
-	char finbuff[INBUFFSZ] = "L:"; 
+	char finbuff[INBUFFSZ] = "L:";
 		/* initialization nonreusable, wiped out by pass 2 */
 	static char *frainptr = &finbuff[2];
 		/* point to null byte after L: on start up */
@@ -83,8 +53,8 @@ static struct
 {
 	char *textstrt, *textend;
 	YYSTYPE  lvalv;
-	int tokv; 
-	enum {Yetprint, Yetsymbol, Yetreserved, Yetopcode, 
+	int tokv;
+	enum {Yetprint, Yetsymbol, Yetreserved, Yetopcode,
 		Yetconstant, Yetstring, Yetunprint, Yetinvalid } errtype;
 }  scanqueue[INBUFFSZ], *lasttokfetch, *nexttokload;
 
@@ -181,7 +151,7 @@ static char * statelab[] = {
 		"21 bslash quote",
 		"22 bslash appos",
 		};
-			
+
 static char *actlab[] = {
 		" 0 skip/no op",
 		" 1 load EOL token",
@@ -233,12 +203,12 @@ static struct
 	STATE 0 =	{start of label}
 */
 	{
-	/* SKIP    */  	/* SPACE   */	/* NL      */  	/* LETTER  */ 
-	/* QUOTE   */  	/* OTHER   */	/* DOLLAR  */  	/* PERCENT */ 
-	/* APP     */  	/* BIN     */ 	/* OCT     */  	/* DEC     */ 
-	/* SEMIC   */  	/* LT      */	/* EQ      */  	/* GT      */ 
-	/* AT      */  	/* HEXU    */	/* B       */  	/* D       */ 
-	/* H       */  	/* OQ      */	/* HEXL    */  	/* BL      */ 
+	/* SKIP    */  	/* SPACE   */	/* NL      */  	/* LETTER  */
+	/* QUOTE   */  	/* OTHER   */	/* DOLLAR  */  	/* PERCENT */
+	/* APP     */  	/* BIN     */ 	/* OCT     */  	/* DEC     */
+	/* SEMIC   */  	/* LT      */	/* EQ      */  	/* GT      */
+	/* AT      */  	/* HEXU    */	/* B       */  	/* D       */
+	/* H       */  	/* OQ      */	/* HEXL    */  	/* BL      */
 	/* DL      */ 	/* BSLASH  */
 	{0, 0, FALSE},	{0, 3, FALSE},	{1, 0, FALSE},	{2, 2, TRUE},
 	{2,11, FALSE},	{5, 3, FALSE},	{33, 5, FALSE},	{33, 9, FALSE},
@@ -259,7 +229,7 @@ static struct
 	{0, 1, FALSE},	{0, 1, FALSE},	{0, 1, FALSE},	{0, 1, FALSE},
 	{0, 1, FALSE},	{0, 1, FALSE},	{0, 1, FALSE},	{0, 1, FALSE},
 	{0, 1, FALSE},	{0, 1, FALSE},	{0, 1, FALSE},	{0, 1, FALSE},
-	{0, 1, FALSE},	{0, 1, FALSE} 
+	{0, 1, FALSE},	{0, 1, FALSE}
 	},
 
 /*
@@ -272,7 +242,7 @@ static struct
 	{3, 1, FALSE},	{3,14, FALSE},	{3, 3, TRUE},	{3,13, FALSE},
 	{3, 3, TRUE},	{4, 2, FALSE},	{4, 2, FALSE},	{4, 2, FALSE},
 	{4, 2, FALSE},	{4, 2, FALSE},	{4, 2, FALSE},	{4, 2, FALSE},
-	{4, 2, FALSE},  {3, 3, TRUE} 
+	{4, 2, FALSE},  {3, 3, TRUE}
 	},
 
 /*
@@ -447,7 +417,7 @@ static struct
 /*
 	STATE 16 =	{base 8 maybe}
 */
-	{	
+	{
 	{0,16, FALSE},	{29, 3, FALSE},	{29, 3, TRUE},	{29, 3, TRUE},
 	{29, 3, TRUE},	{29, 3, TRUE},	{29, 3, TRUE},	{29, 3, TRUE},
 	{29, 3, TRUE},	{24,16, FALSE},	{24,16, FALSE},	{24,17, FALSE},
@@ -460,7 +430,7 @@ static struct
 /*
 	STATE 17 =	{base10 maybe}
 */
-	{	
+	{
 	{0,17, FALSE},	{29, 3, FALSE},	{29, 3, TRUE},	{29, 3, TRUE},
 	{29, 3, TRUE},	{29, 3, TRUE},	{29, 3, TRUE},	{29, 3, TRUE},
 	{29, 3, TRUE},	{24,17, FALSE},	{24,17, FALSE},	{24,17, FALSE},
@@ -473,7 +443,7 @@ static struct
 /*
 	STATE 18 =	{hex}
 */
-	{	
+	{
 	{0,18, FALSE},	{34, 3, FALSE},	{34, 3, TRUE},	{34, 3, TRUE},
 	{34, 3, TRUE},	{34, 3, TRUE},	{34, 3, TRUE},	{34, 3, TRUE},
 	{34, 3, TRUE},	{24,18, FALSE},	{24,18, FALSE},	{24,18, FALSE},
@@ -486,7 +456,7 @@ static struct
 /*
 	STATE 19 =	{bin or hex}
 */
-	{	
+	{
 	{0,19, FALSE},	{27, 3, FALSE},	{27, 3, TRUE},	{27, 3, TRUE},
 	{27, 3, TRUE},	{27, 3, TRUE},	{27, 3, TRUE},	{27, 3, TRUE},
 	{27, 3, TRUE},	{31,18, TRUE},	{31,18, TRUE},	{31,18, TRUE},
@@ -499,7 +469,7 @@ static struct
 /*
 	STATE 20 =	{dec or hex}
 */
-	{	
+	{
 	{0,20, FALSE},	{29, 3, FALSE},	{29, 3, TRUE},	{29, 3, TRUE},
 	{29, 3, TRUE},	{29, 3, TRUE},	{29, 3, TRUE},	{29, 3, TRUE},
 	{29, 3, TRUE},	{32,18, TRUE},	{32,18, TRUE},	{32,18, TRUE},
@@ -535,7 +505,7 @@ static struct
 	{4,12, FALSE},	{4,12, FALSE}
 	}
 };
-	
+
 #define YEXL 32
 static char yytext[YEXL];
 
@@ -663,7 +633,7 @@ int yylex()
 					nexttokload -> tokv = EOL;
 					nexttokload -> errtype = Yetunprint;
 					nexttokload++;
-					intokcnt++; 
+					intokcnt++;
 					break;
 
 				case 2: /* start string */
@@ -691,7 +661,7 @@ int yylex()
 			}
 			nexttokload -> textend = frainptr;
 			nexttokload++;
-			intokcnt++; 
+			intokcnt++;
 					}
 					break;
 
@@ -704,7 +674,7 @@ int yylex()
 					nexttokload -> tokv = nextchar;
 					nexttokload -> errtype = Yetprint;
 					nexttokload++;
-					intokcnt++; 
+					intokcnt++;
 					break;
 
 				case 6: /* load EQ token */
@@ -724,7 +694,7 @@ int yylex()
 			*tptrstr++ = '\0';
 			if(whichsym == Symopcode)
 			{
-				for(ytp = thistokstart; *ytp != '\0'; 
+				for(ytp = thistokstart; *ytp != '\0';
 					ytp++)
 				{
 					if(islower(*ytp))
@@ -732,9 +702,9 @@ int yylex()
 						*ytp = toupper(*ytp);
 					}
 				}
-				nexttokload -> lvalv.intv 
+				nexttokload -> lvalv.intv
 					= tempov = findop(thistokstart);
-				nexttokload -> tokv = 
+				nexttokload -> tokv =
 					optab[tempov].token;
 				nexttokload -> errtype = Yetopcode;
 				whichsym = Symsym;
@@ -749,7 +719,7 @@ int yylex()
 				}
 				else
 				{
-					nexttokload -> lvalv.intv 
+					nexttokload -> lvalv.intv
 						= symp->value;
 					nexttokload -> errtype = Yetreserved;
 				}
@@ -792,7 +762,7 @@ int yylex()
 					break;
 
 				case 13: /* load Constant token */
-					nexttokload -> lvalv.longv = 
+					nexttokload -> lvalv.longv =
 						consaccum;
 					nexttokload -> tokv = CONSTANT;
 					nexttokload -> errtype = Yetconstant;
@@ -829,7 +799,7 @@ int yylex()
 
 				case 18: /* load String token */
 					*tptrstr++  = '\0';
-					nexttokload -> lvalv.strng = 
+					nexttokload -> lvalv.strng =
 						thistokstart;
 					nexttokload -> tokv = STRING;
 					nexttokload -> errtype = Yetstring;
@@ -965,7 +935,7 @@ int yylex()
 				case 33: /* set text start */
 					nexttokload -> textstrt = frainptr;
 					break;
-				
+
 				case 34: /* token choke */
 					nexttokload -> lvalv.longv = 0L;
 					nexttokload -> tokv = KTK_invalid;
@@ -1002,7 +972,7 @@ int yylex()
 
 yyerror(str)
 	char *str;
-/*	
+/*
 	description	first pass - output a parser error to intermediate file
 */
 {
@@ -1013,28 +983,28 @@ yyerror(str)
 	case Yetprint:
 		if( ! isprint(lasttokfetch -> tokv))
 		{
-			fprintf(intermedf, 
+			fprintf(intermedf,
 				"E: ERROR - %s at/before character \"^%c\"\n",
 				str, PRINTCTRL(lasttokfetch -> tokv));
 		}
 		else
 		{
-			fprintf(intermedf, 
+			fprintf(intermedf,
 				"E: ERROR - %s at/before character \"%c\"\n",
 				str, lasttokfetch -> tokv );
 		}
 		break;
 
-	case Yetsymbol: 
-	case Yetreserved: 
-	case Yetopcode: 
-	case Yetconstant: 
+	case Yetsymbol:
+	case Yetreserved:
+	case Yetopcode:
+	case Yetconstant:
 		erryytextex(SYMBOL);
 		fprintf(intermedf, "E: ERROR - %s at/before token \"%s\" \n",
 			str, yytext);
 		break;
 
-	case Yetinvalid: 
+	case Yetinvalid:
 		erryytextex(SYMBOL);
 		fprintf(intermedf, "E: ERROR - %s at invalid token \"%s\" \n",
 			str, yytext);

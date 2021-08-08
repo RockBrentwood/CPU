@@ -1,31 +1,7 @@
 %{
-
-/*
-HEADER: 	;
-TITLE: 		Frankenstein Cross Assemblers;
-VERSION: 	2.0;
-DESCRIPTION: "	Reconfigurable Cross-assembler producing Intel (TM)
-		Hex format object records.  ";
-KEYWORDS: 	cross-assemblers, 1805, 2650, 6301, 6502, 6805, 6809, 
-		6811, tms7000, 8048, 8051, 8096, z8, z80;
-SYSTEM: 	UNIX, MS-Dos ;
-FILENAME: 	as8096.y;
-WARNINGS: 	"This software is in the public domain.  
-		Any prior copyright claims are relinquished.  
-
-		This software is distributed with no warranty whatever.  
-		The author takes no responsibility for the consequences 
-		of its use.
-
-		Yacc (or Bison) required to compile."  ;
-SEE-ALSO: 	as8096.doc,frasmain.c;	
-AUTHORS: 	Mark Zenier;
-COMPILERS: 	Microport Sys V/AT, ATT Yacc, Turbo C V1.5, Bison (CUG disk 285)
-		(previous versions Xenix, Unisoft 68000 Version 7, Sun 3);
-*/
-/* 8096 instruction generation file */
-/* November 17, 1990 */
-
+// Frankenstain Cross-Assemblers, version 2.0.
+// Original author: Mark Zenier.
+// 8096 instruction generation file.
 /*
 	description	frame work parser description for framework cross
 			assemblers
@@ -64,7 +40,7 @@ COMPILERS: 	Microport Sys V/AT, ATT Yacc, Turbo C V1.5, Bison (CUG disk 285)
 #define ST_INX1 0x2000
 #define ST_INX2 0x4000
 #define ST_INX3 0x8000
-	
+
 	int	cpuselect = CPU196;
 	static char	genbdef[] = "[1=];";
 	static char	genwdef[] = "[1=]y"; /* x for normal, y for byte rev */
@@ -169,12 +145,12 @@ allline	: 	line EOL
 			}
 	;
 
-line	:	LABEL KOC_END 
+line	:	LABEL KOC_END
 			{
 				endsymbol = $1;
 				nextreadact = Nra_end;
 			}
-	|	      KOC_END 
+	|	      KOC_END
 			{
 				nextreadact = Nra_end;
 			}
@@ -198,7 +174,7 @@ line	:	LABEL KOC_END
 			}
 		}
 			}
-	|	LABEL KOC_EQU expr 
+	|	LABEL KOC_EQU expr
 			{
 				if($1 -> seg == SSG_UNDEF)
 				{
@@ -222,7 +198,7 @@ line	:	LABEL KOC_END
 				"cannot change symbol value with EQU");
 				}
 			}
-	|	LABEL KOC_SET expr 
+	|	LABEL KOC_SET expr
 			{
 				if($1 -> seg == SSG_UNDEF
 				   || $1 -> seg == SSG_SET)
@@ -247,7 +223,7 @@ line	:	LABEL KOC_END
 				"cannot change symbol value with SET");
 				}
 			}
-	|	KOC_IF expr 
+	|	KOC_IF expr
 			{
 		if((++ifstkpt) < IFSTKDEPTH)
 		{
@@ -278,10 +254,10 @@ line	:	LABEL KOC_END
 			fraerror("IF stack overflow");
 		}
 			}
-						
-	|	KOC_IF 
+
+	|	KOC_IF
 			{
-		if(fraifskip) 
+		if(fraifskip)
 		{
 			if((++ifstkpt) < IFSTKDEPTH)
 			{
@@ -299,26 +275,26 @@ line	:	LABEL KOC_END
 			YYERROR;
 		}
 				}
-						
-	|	KOC_ELSE 
+
+	|	KOC_ELSE
 			{
 				switch(elseifstk[ifstkpt])
 				{
 				case If_Active:
 					fraifskip = FALSE;
 					break;
-				
+
 				case If_Skip:
 					fraifskip = TRUE;
 					break;
-				
+
 				case If_Err:
 					fraerror("ELSE with no matching if");
 					break;
 				}
 			}
 
-	|	KOC_ENDI 
+	|	KOC_ENDI
 			{
 				switch(endifstk[ifstkpt])
 				{
@@ -326,18 +302,18 @@ line	:	LABEL KOC_END
 					fraifskip = FALSE;
 					ifstkpt--;
 					break;
-				
+
 				case If_Skip:
 					fraifskip = TRUE;
 					ifstkpt--;
 					break;
-				
+
 				case If_Err:
 					fraerror("ENDI with no matching if");
 					break;
 				}
 			}
-	|	LABEL KOC_ORG expr 
+	|	LABEL KOC_ORG expr
 			{
 				pevalexpr(0, $3);
 				if(evalr[0].seg == SSG_ABS)
@@ -360,7 +336,7 @@ line	:	LABEL KOC_END
 					 "noncomputable expression for ORG");
 				}
 			}
-	|	      KOC_ORG expr 
+	|	      KOC_ORG expr
 			{
 				pevalexpr(0, $2);
 				if(evalr[0].seg == SSG_ABS)
@@ -459,12 +435,12 @@ line	:	LABEL KOC_END
 
 					case CF_INVALID:
 					case CF_NUMBER:
-				fracherror("invalid character to define", 
+				fracherror("invalid character to define",
 					before, sourcestr);
 						break;
 
 					case CF_CHAR:
-				fracherror("character already defined", 
+				fracherror("character already defined",
 					before, sourcestr);
 						break;
 					}
@@ -484,9 +460,9 @@ line	:	LABEL KOC_END
 		{
 			fraerror("no CHARSET statement active");
 		}
-			
+
 			}
-	|	LABEL 
+	|	LABEL
 			{
 			if($1 -> seg == SSG_UNDEF)
 			{
@@ -514,14 +490,14 @@ labeledline :	LABEL genline
 				"multiple definition of label");
 			labelloc = locctr;
 			}
-				
+
 	|	genline
 			{
 				labelloc = locctr;
 			}
 	;
 
-genline	:	KOC_BDEF	exprlist 
+genline	:	KOC_BDEF	exprlist
 			{
 				genlocrec(currseg, labelloc);
 				for( satsub = 0; satsub < $2; satsub++)
@@ -530,7 +506,7 @@ genline	:	KOC_BDEF	exprlist
 					locctr += geninstr(genbdef);
 				}
 			}
-	|	KOC_SDEF stringlist 
+	|	KOC_SDEF stringlist
 			{
 				genlocrec(currseg, labelloc);
 				for(satsub = 0; satsub < $2; satsub++)
@@ -538,7 +514,7 @@ genline	:	KOC_BDEF	exprlist
 					locctr += genstring(stringlist[satsub]);
 				}
 			}
-	|	KOC_WDEF exprlist 
+	|	KOC_WDEF exprlist
 			{
 				genlocrec(currseg, labelloc);
 				for( satsub = 0; satsub < $2; satsub++)
@@ -546,8 +522,8 @@ genline	:	KOC_BDEF	exprlist
 					pevalexpr(1, exprlist[satsub]);
 					locctr += geninstr(genwdef);
 				}
-			}	
-	|	KOC_RESM expr 
+			}
+	|	KOC_RESM expr
 			{
 				pevalexpr(0, $2);
 				if(evalr[0].seg == SSG_ABS)
@@ -590,7 +566,7 @@ stringlist :	stringlist ',' STRING
 	;
 
 
-genline :	KOC_AWRESM expr 
+genline :	KOC_AWRESM expr
 			{
 				while(labelloc & 1)
 				{
@@ -610,7 +586,7 @@ genline :	KOC_AWRESM expr
 				}
 			}
 	;
-genline :	KOC_ALRESM expr 
+genline :	KOC_ALRESM expr
 			{
 				while(labelloc & 3)
 				{
@@ -630,7 +606,7 @@ genline :	KOC_ALRESM expr
 				}
 			}
 	;
-genline :	KOC_ALDEF exprlist 
+genline :	KOC_ALDEF exprlist
 			{
 				while(labelloc & 3)
 				{
@@ -644,9 +620,9 @@ genline :	KOC_ALDEF exprlist
 					locctr += geninstr(
 						"[1=]~.ffff&y!.10}y");
 				}
-			}	
+			}
 	;
-genline :	KOC_AWDEF exprlist 
+genline :	KOC_AWDEF exprlist
 			{
 				if(labelloc & 1)
 				{
@@ -659,7 +635,7 @@ genline :	KOC_AWDEF exprlist
 					pevalexpr(1, exprlist[satsub]);
 					locctr += geninstr(genwdef);
 				}
-			}	
+			}
 	;
 line	:	KOC_CPU STRING
 			{
@@ -670,7 +646,7 @@ line	:	KOC_CPU STRING
 		}
 			}
 	;
-genline : KOC_opcode 
+genline : KOC_opcode
 			{
 		genlocrec(currseg, labelloc);
 		locctr += geninstr(findgen($1, ST_INH, cpuselect));
@@ -681,7 +657,7 @@ genline : KOC_opcode  expr
 		genlocrec(currseg, labelloc);
 		pevalexpr(1,$2);
 		locctr += geninstr(findgen($1, ST_DIR1, cpuselect
-				 + ( (evalr[1].seg == SSG_ABS 
+				 + ( (evalr[1].seg == SSG_ABS
 				&& evalr[1].value >= 0
 				&& evalr[1].value <= 255 )
 				? DIRECT : EXTENDED ) ) );
@@ -693,7 +669,7 @@ genline : KOC_opcode  expr ',' expr
 		pevalexpr(1,$2);
 		pevalexpr(2,$4);
 		locctr += geninstr(findgen($1, ST_DIR2, cpuselect
-				 + ( (evalr[2].seg == SSG_ABS 
+				 + ( (evalr[2].seg == SSG_ABS
 				&& evalr[2].value >= 0
 				&& evalr[2].value <= 255 )
 				? DIRECT : EXTENDED ) ) );
@@ -706,7 +682,7 @@ genline : KOC_opcode  expr ',' expr ',' expr
 		pevalexpr(2,$4);
 		pevalexpr(3,$6);
 		locctr += geninstr(findgen($1, ST_DIR3, cpuselect
-				 + ( (evalr[3].seg == SSG_ABS 
+				 + ( (evalr[3].seg == SSG_ABS
 				&& evalr[3].value >= 0
 				&& evalr[3].value <= 255 )
 				? DIRECT : EXTENDED ) ) );
@@ -796,7 +772,7 @@ genline : KOC_opcode  expr '[' expr ']'
 		pevalexpr(1,$2);
 		pevalexpr(2,$4);
 		locctr += geninstr(findgen($1, ST_INX1, cpuselect
-				 + ( (evalr[1].seg == SSG_ABS 
+				 + ( (evalr[1].seg == SSG_ABS
 				&& evalr[1].value >= -128
 				&& evalr[1].value <= 127 )
 				? DIRECT : EXTENDED ) ) );
@@ -809,7 +785,7 @@ genline : KOC_opcode  expr ',' expr '[' expr ']'
 		pevalexpr(2,$4);
 		pevalexpr(3,$6);
 		locctr += geninstr(findgen($1, ST_INX2, cpuselect
-				 + ( (evalr[2].seg == SSG_ABS 
+				 + ( (evalr[2].seg == SSG_ABS
 				&& evalr[2].value >= -128
 				&& evalr[2].value <= 127 )
 				? DIRECT : EXTENDED ) ) );
@@ -823,7 +799,7 @@ genline : KOC_opcode  expr ',' expr ',' expr '[' expr ']'
 		pevalexpr(3,$6);
 		pevalexpr(4,$8);
 		locctr += geninstr(findgen($1, ST_INX3, cpuselect
-				 + ( (evalr[3].seg == SSG_ABS 
+				 + ( (evalr[3].seg == SSG_ABS
 				&& evalr[3].value >= -128
 				&& evalr[3].value <= 127 )
 				? DIRECT : EXTENDED ) ) );
@@ -1073,7 +1049,7 @@ cpumatch(str)
 	{
 		{"19", CPU196 },
 		{"9", CPU96 },
-		{"", 0} 
+		{"", 0}
 	};
 
 	for(msub = 0; matchtab[msub].mtch[0] != '\0'; msub++)
@@ -1492,651 +1468,651 @@ struct opsynt ostab[NUMSYNBLK+1]
 
 struct igel igtab[NUMDIFFOP+1]
 	= {
-/* invalid 0 */   { 0 , 0, 
+/* invalid 0 */   { 0 , 0,
 		"[Xnullentry" },
-/* invalid 1 */   { 0 , 0, 
+/* invalid 1 */   { 0 , 0,
 		"[Xinvalid opcode" },
-/* ADD 2 */   { ADDR , DIRECT, 
+/* ADD 2 */   { ADDR , DIRECT,
 		"64;[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* ADD 3 */   { ADDR , EXTENDED, 
+/* ADD 3 */   { ADDR , EXTENDED,
 		"67;01;[2=]~.1&T!y[1=]~.1&T!.8I;" },
-/* ADD 4 */   { ADDR , DIRECT, 
+/* ADD 4 */   { ADDR , DIRECT,
 		"44;[3=]~.1&T!.8I;[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* ADD 5 */   { ADDR , EXTENDED, 
+/* ADD 5 */   { ADDR , EXTENDED,
 		"47;01;[3=]~.1&T!y[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* ADD 6 */   { 0 , 0, 
+/* ADD 6 */   { 0 , 0,
 		"65;[2=]y[1=]~.1&T!.8I;" },
-/* ADD 7 */   { 0 , 0, 
+/* ADD 7 */   { 0 , 0,
 		"45;[3=]y[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* ADD 8 */   { 0 , 0, 
+/* ADD 8 */   { 0 , 0,
 		"66;[2=]~.1&T!.8I.[3#]|;[1=]~.1&T!.8I;" },
-/* ADD 9 */   { 0 , 0, 
+/* ADD 9 */   { 0 , 0,
 		"46;[3=]~.1&T!.8I.[4#]|;[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* ADD 10 */   { ADDR , DIRECT, 
+/* ADD 10 */   { ADDR , DIRECT,
 		"67;[3=]~.1&T!.8I;[2=]r[1=]~.1&T!.8I;" },
-/* ADD 11 */   { ADDR , EXTENDED, 
+/* ADD 11 */   { ADDR , EXTENDED,
 		"67;[3=]~.1&T!.8I.1|;[2=]y[1=]~.1&T!.8I;" },
-/* ADD 12 */   { ADDR , DIRECT, 
+/* ADD 12 */   { ADDR , DIRECT,
 		"47;[4=]~.1&T!.8I;[3=]r[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* ADD 13 */   { ADDR , EXTENDED, 
+/* ADD 13 */   { ADDR , EXTENDED,
 		"47;[4=]~.1&T!.8I.1|;[3=]y[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* ADDB 14 */   { ADDR , DIRECT, 
+/* ADDB 14 */   { ADDR , DIRECT,
 		"74;[2=].8I;[1=].8I;" },
-/* ADDB 15 */   { ADDR , EXTENDED, 
+/* ADDB 15 */   { ADDR , EXTENDED,
 		"77;01;[2=]y[1=].8I;" },
-/* ADDB 16 */   { ADDR , DIRECT, 
+/* ADDB 16 */   { ADDR , DIRECT,
 		"54;[3=].8I;[2=].8I;[1=].8I;" },
-/* ADDB 17 */   { ADDR , EXTENDED, 
+/* ADDB 17 */   { ADDR , EXTENDED,
 		"57;01;[3=]y[2=].8I;[1=].8I;" },
-/* ADDB 18 */   { 0 , 0, 
+/* ADDB 18 */   { 0 , 0,
 		"75;[2=];[1=].8I;" },
-/* ADDB 19 */   { 0 , 0, 
+/* ADDB 19 */   { 0 , 0,
 		"55;[3=];[2=].8I;[1=].8I;" },
-/* ADDB 20 */   { 0 , 0, 
+/* ADDB 20 */   { 0 , 0,
 		"76;[2=]~.1&T!.8I.[3#]|;[1=].8I;" },
-/* ADDB 21 */   { 0 , 0, 
+/* ADDB 21 */   { 0 , 0,
 		"56;[3=]~.1&T!.8I.[4#]|;[2=].8I;[1=].8I;" },
-/* ADDB 22 */   { ADDR , DIRECT, 
+/* ADDB 22 */   { ADDR , DIRECT,
 		"77;[3=]~.1&T!.8I;[2=]r[1=].8I;" },
-/* ADDB 23 */   { ADDR , EXTENDED, 
+/* ADDB 23 */   { ADDR , EXTENDED,
 		"77;[3=]~.1&T!.8I.1|;[2=]y[1=].8I;" },
-/* ADDB 24 */   { ADDR , DIRECT, 
+/* ADDB 24 */   { ADDR , DIRECT,
 		"57;[4=]~.1&T!.8I;[3=]r[2=].8I;[1=].8I;" },
-/* ADDB 25 */   { ADDR , EXTENDED, 
+/* ADDB 25 */   { ADDR , EXTENDED,
 		"57;[4=]~.1&T!.8I.1|;[3=]y[2=].8I;[1=].8I;" },
-/* ADDC 26 */   { ADDR , DIRECT, 
+/* ADDC 26 */   { ADDR , DIRECT,
 		"a4;[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* ADDC 27 */   { ADDR , EXTENDED, 
+/* ADDC 27 */   { ADDR , EXTENDED,
 		"a7;01;[2=]~.1&T!y[1=]~.1&T!.8I;" },
-/* ADDC 28 */   { 0 , 0, 
+/* ADDC 28 */   { 0 , 0,
 		"a5;[2=]y[1=]~.1&T!.8I;" },
-/* ADDC 29 */   { 0 , 0, 
+/* ADDC 29 */   { 0 , 0,
 		"a6;[2=]~.1&T!.8I.[3#]|;[1=]~.1&T!.8I;" },
-/* ADDC 30 */   { ADDR , DIRECT, 
+/* ADDC 30 */   { ADDR , DIRECT,
 		"a7;[3=]~.1&T!.8I;[2=]r[1=]~.1&T!.8I;" },
-/* ADDC 31 */   { ADDR , EXTENDED, 
+/* ADDC 31 */   { ADDR , EXTENDED,
 		"a7;[3=]~.1&T!.8I.1|;[2=]y[1=]~.1&T!.8I;" },
-/* ADDCB 32 */   { ADDR , DIRECT, 
+/* ADDCB 32 */   { ADDR , DIRECT,
 		"b4;[2=].8I;[1=].8I;" },
-/* ADDCB 33 */   { ADDR , EXTENDED, 
+/* ADDCB 33 */   { ADDR , EXTENDED,
 		"b7;01;[2=]y[1=].8I;" },
-/* ADDCB 34 */   { 0 , 0, 
+/* ADDCB 34 */   { 0 , 0,
 		"b5;[2=];[1=].8I;" },
-/* ADDCB 35 */   { 0 , 0, 
+/* ADDCB 35 */   { 0 , 0,
 		"b6;[2=]~.1&T!.8I.[3#]|;[1=].8I;" },
-/* ADDCB 36 */   { ADDR , DIRECT, 
+/* ADDCB 36 */   { ADDR , DIRECT,
 		"b7;[3=]~.1&T!.8I;[2=]r[1=].8I;" },
-/* ADDCB 37 */   { ADDR , EXTENDED, 
+/* ADDCB 37 */   { ADDR , EXTENDED,
 		"b7;[3=]~.1&T!.8I.1|;[2=]y[1=].8I;" },
-/* AND 38 */   { ADDR , DIRECT, 
+/* AND 38 */   { ADDR , DIRECT,
 		"60;[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* AND 39 */   { ADDR , EXTENDED, 
+/* AND 39 */   { ADDR , EXTENDED,
 		"63;01;[2=]~.1&T!y[1=]~.1&T!.8I;" },
-/* AND 40 */   { ADDR , DIRECT, 
+/* AND 40 */   { ADDR , DIRECT,
 		"40;[3=]~.1&T!.8I;[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* AND 41 */   { ADDR , EXTENDED, 
+/* AND 41 */   { ADDR , EXTENDED,
 		"43;01;[3=]~.1&T!y[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* AND 42 */   { 0 , 0, 
+/* AND 42 */   { 0 , 0,
 		"61;[2=]y[1=]~.1&T!.8I;" },
-/* AND 43 */   { 0 , 0, 
+/* AND 43 */   { 0 , 0,
 		"41;[3=]y[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* AND 44 */   { 0 , 0, 
+/* AND 44 */   { 0 , 0,
 		"62;[2=]~.1&T!.8I.[3#]|;[1=]~.1&T!.8I;" },
-/* AND 45 */   { 0 , 0, 
+/* AND 45 */   { 0 , 0,
 		"42;[3=]~.1&T!.8I.[4#]|;[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* AND 46 */   { ADDR , DIRECT, 
+/* AND 46 */   { ADDR , DIRECT,
 		"63;[3=]~.1&T!.8I;[2=]r[1=]~.1&T!.8I;" },
-/* AND 47 */   { ADDR , EXTENDED, 
+/* AND 47 */   { ADDR , EXTENDED,
 		"63;[3=]~.1&T!.8I.1|;[2=]y[1=]~.1&T!.8I;" },
-/* AND 48 */   { ADDR , DIRECT, 
+/* AND 48 */   { ADDR , DIRECT,
 		"43;[4=]~.1&T!.8I;[3=]r[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* AND 49 */   { ADDR , EXTENDED, 
+/* AND 49 */   { ADDR , EXTENDED,
 		"43;[4=]~.1&T!.8I.1|;[3=]y[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* ANDB 50 */   { ADDR , DIRECT, 
+/* ANDB 50 */   { ADDR , DIRECT,
 		"70;[2=].8I;[1=].8I;" },
-/* ANDB 51 */   { ADDR , EXTENDED, 
+/* ANDB 51 */   { ADDR , EXTENDED,
 		"73;01;[2=]y[1=].8I;" },
-/* ANDB 52 */   { ADDR , DIRECT, 
+/* ANDB 52 */   { ADDR , DIRECT,
 		"50;[3=].8I;[2=].8I;[1=].8I;" },
-/* ANDB 53 */   { ADDR , EXTENDED, 
+/* ANDB 53 */   { ADDR , EXTENDED,
 		"53;01;[3=]y[2=].8I;[1=].8I;" },
-/* ANDB 54 */   { 0 , 0, 
+/* ANDB 54 */   { 0 , 0,
 		"71;[2=];[1=].8I;" },
-/* ANDB 55 */   { 0 , 0, 
+/* ANDB 55 */   { 0 , 0,
 		"51;[3=];[2=].8I;[1=].8I;" },
-/* ANDB 56 */   { 0 , 0, 
+/* ANDB 56 */   { 0 , 0,
 		"72;[2=]~.1&T!.8I.[3#]|;[1=].8I;" },
-/* ANDB 57 */   { 0 , 0, 
+/* ANDB 57 */   { 0 , 0,
 		"52;[3=]~.1&T!.8I.[4#]|;[2=].8I;[1=].8I;" },
-/* ANDB 58 */   { ADDR , DIRECT, 
+/* ANDB 58 */   { ADDR , DIRECT,
 		"73;[3=]~.1&T!.8I;[2=]r[1=].8I;" },
-/* ANDB 59 */   { ADDR , EXTENDED, 
+/* ANDB 59 */   { ADDR , EXTENDED,
 		"73;[3=]~.1&T!.8I.1|;[2=]y[1=].8I;" },
-/* ANDB 60 */   { ADDR , DIRECT, 
+/* ANDB 60 */   { ADDR , DIRECT,
 		"53;[4=]~.1&T!.8I;[3=]r[2=].8I;[1=].8I;" },
-/* ANDB 61 */   { ADDR , EXTENDED, 
+/* ANDB 61 */   { ADDR , EXTENDED,
 		"53;[4=]~.1&T!.8I.1|;[3=]y[2=].8I;[1=].8I;" },
-/* BMOV 62 */   { CPU196 , CPU196, 
+/* BMOV 62 */   { CPU196 , CPU196,
 		"c1;[2=]~.1&T!.8I;[1=]~.3&T!.8I;" },
-/* BR 63 */   { 0 , 0, 
+/* BR 63 */   { 0 , 0,
 		"e3;[1=]~.1&T!.8I;" },
-/* CLR 64 */   { 0 , 0, 
+/* CLR 64 */   { 0 , 0,
 		"01;[1=]~.1&T!.8I;" },
-/* CLRB 65 */   { 0 , 0, 
+/* CLRB 65 */   { 0 , 0,
 		"11;[1=].8I;" },
-/* CLRC 66 */   { 0 , 0, 
+/* CLRC 66 */   { 0 , 0,
 		"f8;" },
-/* CLRVT 67 */   { 0 , 0, 
+/* CLRVT 67 */   { 0 , 0,
 		"fc;" },
-/* CMP 68 */   { ADDR , DIRECT, 
+/* CMP 68 */   { ADDR , DIRECT,
 		"88;[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* CMP 69 */   { ADDR , EXTENDED, 
+/* CMP 69 */   { ADDR , EXTENDED,
 		"8b;01;[2=]~.1&T!y[1=]~.1&T!.8I;" },
-/* CMP 70 */   { 0 , 0, 
+/* CMP 70 */   { 0 , 0,
 		"89;[2=]y[1=]~.1&T!.8I;" },
-/* CMP 71 */   { 0 , 0, 
+/* CMP 71 */   { 0 , 0,
 		"8a;[2=]~.1&T!.8I.[3#]|;[1=]~.1&T!.8I;" },
-/* CMP 72 */   { ADDR , DIRECT, 
+/* CMP 72 */   { ADDR , DIRECT,
 		"8b;[3=]~.1&T!.8I;[2=]r[1=]~.1&T!.8I;" },
-/* CMP 73 */   { ADDR , EXTENDED, 
+/* CMP 73 */   { ADDR , EXTENDED,
 		"8b;[3=]~.1&T!.8I.1|;[2=]y[1=]~.1&T!.8I;" },
-/* CMPB 74 */   { ADDR , DIRECT, 
+/* CMPB 74 */   { ADDR , DIRECT,
 		"98;[2=].8I;[1=].8I;" },
-/* CMPB 75 */   { ADDR , EXTENDED, 
+/* CMPB 75 */   { ADDR , EXTENDED,
 		"9b;01;[2=]y[1=].8I;" },
-/* CMPB 76 */   { 0 , 0, 
+/* CMPB 76 */   { 0 , 0,
 		"99;[2=];[1=].8I;" },
-/* CMPB 77 */   { 0 , 0, 
+/* CMPB 77 */   { 0 , 0,
 		"9a;[2=]~.1&T!.8I.[3#]|;[1=].8I;" },
-/* CMPB 78 */   { ADDR , DIRECT, 
+/* CMPB 78 */   { ADDR , DIRECT,
 		"9b;[3=]~.1&T!.8I;[2=]r[1=].8I;" },
-/* CMPB 79 */   { ADDR , EXTENDED, 
+/* CMPB 79 */   { ADDR , EXTENDED,
 		"9b;[3=]~.1&T!.8I.1|;[2=]y[1=].8I;" },
-/* CMPL 80 */   { CPU196 , CPU196, 
+/* CMPL 80 */   { CPU196 , CPU196,
 		"c5;[2=]~.3&T!.8I;[1=]~.3&T!.8I;" },
-/* DEC 81 */   { 0 , 0, 
+/* DEC 81 */   { 0 , 0,
 		"05;[1=]~.1&T!.8I;" },
-/* DECB 82 */   { 0 , 0, 
+/* DECB 82 */   { 0 , 0,
 		"15;[1=].8I;" },
-/* DI 83 */   { 0 , 0, 
+/* DI 83 */   { 0 , 0,
 		"fa;" },
-/* DIV 84 */   { ADDR , DIRECT, 
+/* DIV 84 */   { ADDR , DIRECT,
 		"fe;8c;[2=]~.1&T!.8I;[1=]~.3&T!.8I;" },
-/* DIV 85 */   { ADDR , EXTENDED, 
+/* DIV 85 */   { ADDR , EXTENDED,
 		"fe;8f;01;[2=]~.1&T!y[1=]~.3&T!.8I;" },
-/* DIV 86 */   { 0 , 0, 
+/* DIV 86 */   { 0 , 0,
 		"fe;8d;[2=]y[1=]~.3&T!.8I;" },
-/* DIV 87 */   { 0 , 0, 
+/* DIV 87 */   { 0 , 0,
 		"fe;8e;[2=]~.1&T!.8I.[3#]|;[1=]~.3&T!.8I;" },
-/* DIV 88 */   { ADDR , DIRECT, 
+/* DIV 88 */   { ADDR , DIRECT,
 		"fe;8f;[3=]~.1&T!.8I;[2=]r[1=]~.3&T!.8I;" },
-/* DIV 89 */   { ADDR , EXTENDED, 
+/* DIV 89 */   { ADDR , EXTENDED,
 		"fe;8f;[3=]~.1&T!.8I.1|;[2=]y[1=]~.3&T!.8I;" },
-/* DIVB 90 */   { ADDR , DIRECT, 
+/* DIVB 90 */   { ADDR , DIRECT,
 		"fe;9c;[2=].8I;[1=]~.1&T!.8I;" },
-/* DIVB 91 */   { ADDR , EXTENDED, 
+/* DIVB 91 */   { ADDR , EXTENDED,
 		"fe;9f;01;[2=]y[1=]~.1&T!.8I;" },
-/* DIVB 92 */   { 0 , 0, 
+/* DIVB 92 */   { 0 , 0,
 		"fe;9d;[2=];[1=]~.1&T!.8I;" },
-/* DIVB 93 */   { 0 , 0, 
+/* DIVB 93 */   { 0 , 0,
 		"fe;9e;[2=]~.1&T!.8I.[3#]|;[1=]~.1&T!.8I;" },
-/* DIVB 94 */   { ADDR , DIRECT, 
+/* DIVB 94 */   { ADDR , DIRECT,
 		"fe;9f;[3=]~.1&T!.8I;[2=]r[1=]~.1&T!.8I;" },
-/* DIVB 95 */   { ADDR , EXTENDED, 
+/* DIVB 95 */   { ADDR , EXTENDED,
 		"fe;9f;[3=]~.1&T!.8I.1|;[2=]y[1=]~.1&T!.8I;" },
-/* DIVU 96 */   { ADDR , DIRECT, 
+/* DIVU 96 */   { ADDR , DIRECT,
 		"8c;[2=]~.1&T!.8I;[1=]~.3&T!.8I;" },
-/* DIVU 97 */   { ADDR , EXTENDED, 
+/* DIVU 97 */   { ADDR , EXTENDED,
 		"8f;01;[2=]~.1&T!y[1=]~.3&T!.8I;" },
-/* DIVU 98 */   { 0 , 0, 
+/* DIVU 98 */   { 0 , 0,
 		"8d;[2=]y[1=]~.3&T!.8I;" },
-/* DIVU 99 */   { 0 , 0, 
+/* DIVU 99 */   { 0 , 0,
 		"8e;[2=]~.1&T!.8I.[3#]|;[1=]~.3&T!.8I;" },
-/* DIVU 100 */   { ADDR , DIRECT, 
+/* DIVU 100 */   { ADDR , DIRECT,
 		"8f;[3=]~.1&T!.8I;[2=]r[1=]~.3&T!.8I;" },
-/* DIVU 101 */   { ADDR , EXTENDED, 
+/* DIVU 101 */   { ADDR , EXTENDED,
 		"8f;[3=]~.1&T!.8I.1|;[2=]y[1=]~.3&T!.8I;" },
-/* DIVUB 102 */   { ADDR , DIRECT, 
+/* DIVUB 102 */   { ADDR , DIRECT,
 		"9c;[2=].8I;[1=]~.1&T!.8I;" },
-/* DIVUB 103 */   { ADDR , EXTENDED, 
+/* DIVUB 103 */   { ADDR , EXTENDED,
 		"9f;01;[2=]y[1=]~.1&T!.8I;" },
-/* DIVUB 104 */   { 0 , 0, 
+/* DIVUB 104 */   { 0 , 0,
 		"9d;[2=];[1=]~.1&T!.8I;" },
-/* DIVUB 105 */   { 0 , 0, 
+/* DIVUB 105 */   { 0 , 0,
 		"9e;[2=]~.1&T!.8I.[3#]|;[1=]~.1&T!.8I;" },
-/* DIVUB 106 */   { ADDR , DIRECT, 
+/* DIVUB 106 */   { ADDR , DIRECT,
 		"9f;[3=]~.1&T!.8I;[2=]r[1=]~.1&T!.8I;" },
-/* DIVUB 107 */   { ADDR , EXTENDED, 
+/* DIVUB 107 */   { ADDR , EXTENDED,
 		"9f;[3=]~.1&T!.8I.1|;[2=]y[1=]~.1&T!.8I;" },
-/* DJNZ 108 */   { 0 , 0, 
+/* DJNZ 108 */   { 0 , 0,
 		"e0;[1=].8I;[2=].Q.1+-r" },
-/* DJNZW 109 */   { CPU196 , CPU196, 
+/* DJNZW 109 */   { CPU196 , CPU196,
 		"e1;[1=]~.1&T!.8I;[2=].Q.1+-r" },
-/* EI 110 */   { 0 , 0, 
+/* EI 110 */   { 0 , 0,
 		"fb;" },
-/* EXT 111 */   { 0 , 0, 
+/* EXT 111 */   { 0 , 0,
 		"06;[1=]~.3&T!.8I;" },
-/* EXTB 112 */   { 0 , 0, 
+/* EXTB 112 */   { 0 , 0,
 		"16;[1=]~.1&T!.8I;" },
-/* IDLPD 113 */   { CPU196 , CPU196, 
+/* IDLPD 113 */   { CPU196 , CPU196,
 		"f6;[1=];" },
-/* INC 114 */   { 0 , 0, 
+/* INC 114 */   { 0 , 0,
 		"07;[1=]~.1&T!.8I;" },
-/* INCB 115 */   { 0 , 0, 
+/* INCB 115 */   { 0 , 0,
 		"17;[1=].8I;" },
-/* JBC 116 */   { 0 , 0, 
+/* JBC 116 */   { 0 , 0,
 		"[2=].3I.30|;[1=].8I;[3=].Q.1+-r" },
-/* JBS 117 */   { 0 , 0, 
+/* JBS 117 */   { 0 , 0,
 		"[2=].3I.38|;[1=].8I;[3=].Q.1+-r" },
-/* JC 118 */   { 0 , 0, 
+/* JC 118 */   { 0 , 0,
 		"db;[1=].Q.1+-r" },
-/* JE 119 */   { 0 , 0, 
+/* JE 119 */   { 0 , 0,
 		"df;[1=].Q.1+-r" },
-/* JGE 120 */   { 0 , 0, 
+/* JGE 120 */   { 0 , 0,
 		"d6;[1=].Q.1+-r" },
-/* JGT 121 */   { 0 , 0, 
+/* JGT 121 */   { 0 , 0,
 		"d2;[1=].Q.1+-r" },
-/* JH 122 */   { 0 , 0, 
+/* JH 122 */   { 0 , 0,
 		"d9;[1=].Q.1+-r" },
-/* JLE 123 */   { 0 , 0, 
+/* JLE 123 */   { 0 , 0,
 		"da;[1=].Q.1+-r" },
-/* JLT 124 */   { 0 , 0, 
+/* JLT 124 */   { 0 , 0,
 		"de;[1=].Q.1+-r" },
-/* JNC 125 */   { 0 , 0, 
+/* JNC 125 */   { 0 , 0,
 		"d3;[1=].Q.1+-r" },
-/* JNE 126 */   { 0 , 0, 
+/* JNE 126 */   { 0 , 0,
 		"d7;[1=].Q.1+-r" },
-/* JNH 127 */   { 0 , 0, 
+/* JNH 127 */   { 0 , 0,
 		"d1;[1=].Q.1+-r" },
-/* JNST 128 */   { 0 , 0, 
+/* JNST 128 */   { 0 , 0,
 		"d0;[1=].Q.1+-r" },
-/* JNV 129 */   { 0 , 0, 
+/* JNV 129 */   { 0 , 0,
 		"d5;[1=].Q.1+-r" },
-/* JNVT 130 */   { 0 , 0, 
+/* JNVT 130 */   { 0 , 0,
 		"d4;[1=].Q.1+-r" },
-/* JST 131 */   { 0 , 0, 
+/* JST 131 */   { 0 , 0,
 		"d8;[1=].Q.1+-r" },
-/* JV 132 */   { 0 , 0, 
+/* JV 132 */   { 0 , 0,
 		"dd;[1=].Q.1+-r" },
-/* JVT 133 */   { 0 , 0, 
+/* JVT 133 */   { 0 , 0,
 		"dc;[1=].Q.1+-r" },
-/* LCALL 134 */   { 0 , 0, 
+/* LCALL 134 */   { 0 , 0,
 		"ef;[1=].Q.2+-.ffff&y" },
-/* LD 135 */   { ADDR , DIRECT, 
+/* LD 135 */   { ADDR , DIRECT,
 		"a0;[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* LD 136 */   { ADDR , EXTENDED, 
+/* LD 136 */   { ADDR , EXTENDED,
 		"a3;01;[2=]~.1&T!y[1=]~.1&T!.8I;" },
-/* LD 137 */   { 0 , 0, 
+/* LD 137 */   { 0 , 0,
 		"a1;[2=]y[1=]~.1&T!.8I;" },
-/* LD 138 */   { 0 , 0, 
+/* LD 138 */   { 0 , 0,
 		"a2;[2=]~.1&T!.8I.[3#]|;[1=]~.1&T!.8I;" },
-/* LD 139 */   { ADDR , DIRECT, 
+/* LD 139 */   { ADDR , DIRECT,
 		"a3;[3=]~.1&T!.8I;[2=]r[1=]~.1&T!.8I;" },
-/* LD 140 */   { ADDR , EXTENDED, 
+/* LD 140 */   { ADDR , EXTENDED,
 		"a3;[3=]~.1&T!.8I.1|;[2=]y[1=]~.1&T!.8I;" },
-/* LDB 141 */   { ADDR , DIRECT, 
+/* LDB 141 */   { ADDR , DIRECT,
 		"b0;[2=].8I;[1=].8I;" },
-/* LDB 142 */   { ADDR , EXTENDED, 
+/* LDB 142 */   { ADDR , EXTENDED,
 		"b3;01;[2=]y[1=].8I;" },
-/* LDB 143 */   { 0 , 0, 
+/* LDB 143 */   { 0 , 0,
 		"b1;[2=];[1=].8I;" },
-/* LDB 144 */   { 0 , 0, 
+/* LDB 144 */   { 0 , 0,
 		"b2;[2=]~.1&T!.8I.[3#]|;[1=].8I;" },
-/* LDB 145 */   { ADDR , DIRECT, 
+/* LDB 145 */   { ADDR , DIRECT,
 		"b3;[3=]~.1&T!.8I;[2=]r[1=].8I;" },
-/* LDB 146 */   { ADDR , EXTENDED, 
+/* LDB 146 */   { ADDR , EXTENDED,
 		"b3;[3=]~.1&T!.8I.1|;[2=]y[1=].8I;" },
-/* LDBSE 147 */   { ADDR , DIRECT, 
+/* LDBSE 147 */   { ADDR , DIRECT,
 		"bc;[2=].8I;[1=]~.1&T!.8I;" },
-/* LDBSE 148 */   { ADDR , EXTENDED, 
+/* LDBSE 148 */   { ADDR , EXTENDED,
 		"bf;01;[2=]y[1=]~.1&T!.8I;" },
-/* LDBSE 149 */   { 0 , 0, 
+/* LDBSE 149 */   { 0 , 0,
 		"bd;[2=];[1=]~.1&T!.8I;" },
-/* LDBSE 150 */   { 0 , 0, 
+/* LDBSE 150 */   { 0 , 0,
 		"be;[2=]~.1&T!.8I.[3#]|;[1=]~.1&T!.8I;" },
-/* LDBSE 151 */   { ADDR , DIRECT, 
+/* LDBSE 151 */   { ADDR , DIRECT,
 		"bf;[3=]~.1&T!.8I;[2=]r[1=]~.1&T!.8I;" },
-/* LDBSE 152 */   { ADDR , EXTENDED, 
+/* LDBSE 152 */   { ADDR , EXTENDED,
 		"bf;[3=]~.1&T!.8I.1|;[2=]y[1=]~.1&T!.8I;" },
-/* LDBZE 153 */   { ADDR , DIRECT, 
+/* LDBZE 153 */   { ADDR , DIRECT,
 		"ac;[2=].8I;[1=]~.1&T!.8I;" },
-/* LDBZE 154 */   { ADDR , EXTENDED, 
+/* LDBZE 154 */   { ADDR , EXTENDED,
 		"af;01;[2=]y[1=]~.1&T!.8I;" },
-/* LDBZE 155 */   { 0 , 0, 
+/* LDBZE 155 */   { 0 , 0,
 		"ad;[2=];[1=]~.1&T!.8I;" },
-/* LDBZE 156 */   { 0 , 0, 
+/* LDBZE 156 */   { 0 , 0,
 		"ae;[2=]~.1&T!.8I.[3#]|;[1=]~.1&T!.8I;" },
-/* LDBZE 157 */   { ADDR , DIRECT, 
+/* LDBZE 157 */   { ADDR , DIRECT,
 		"af;[3=]~.1&T!.8I;[2=]r[1=]~.1&T!.8I;" },
-/* LDBZE 158 */   { ADDR , EXTENDED, 
+/* LDBZE 158 */   { ADDR , EXTENDED,
 		"af;[3=]~.1&T!.8I.1|;[2=]y[1=]~.1&T!.8I;" },
-/* LJMP 159 */   { 0 , 0, 
+/* LJMP 159 */   { 0 , 0,
 		"e7;[1=].Q.2+-.ffff&y" },
-/* MUL 160 */   { ADDR , DIRECT, 
+/* MUL 160 */   { ADDR , DIRECT,
 		"fe;6c;[2=]~.1&T!.8I;[1=]~.3&T!.8I;" },
-/* MUL 161 */   { ADDR , EXTENDED, 
+/* MUL 161 */   { ADDR , EXTENDED,
 		"fe;6f;01;[2=]~.1&T!y[1=]~.3&T!.8I;" },
-/* MUL 162 */   { ADDR , DIRECT, 
+/* MUL 162 */   { ADDR , DIRECT,
 		"fe;4c;[3=]~.1&T!.8I;[2=]~.1&T!.8I;[1=]~.3&T!.8I;" },
-/* MUL 163 */   { ADDR , EXTENDED, 
+/* MUL 163 */   { ADDR , EXTENDED,
 		"fe;4f;01;[3=]~.1&T!y[2=]~.1&T!.8I;[1=]~.3&T!.8I;" },
-/* MUL 164 */   { 0 , 0, 
+/* MUL 164 */   { 0 , 0,
 		"fe;6d;[2=]y[1=]~.3&T!.8I;" },
-/* MUL 165 */   { 0 , 0, 
+/* MUL 165 */   { 0 , 0,
 		"fe;4d;[3=]y[2=]~.1&T!.8I;[1=]~.3&T!.8I;" },
-/* MUL 166 */   { 0 , 0, 
+/* MUL 166 */   { 0 , 0,
 		"fe;6e;[2=]~.1&T!.8I.[3#]|;[1=]~.3&T!.8I;" },
-/* MUL 167 */   { 0 , 0, 
+/* MUL 167 */   { 0 , 0,
 		"fe;4e;[3=]~.1&T!.8I.[4#]|;[2=]~.1&T!.8I;[1=]~.3&T!.8I;" },
-/* MUL 168 */   { ADDR , DIRECT, 
+/* MUL 168 */   { ADDR , DIRECT,
 		"fe;6f;[3=]~.1&T!.8I;[2=]r[1=]~.3&T!.8I;" },
-/* MUL 169 */   { ADDR , EXTENDED, 
+/* MUL 169 */   { ADDR , EXTENDED,
 		"fe;6f;[3=]~.1&T!.8I.1|;[2=]y[1=]~.3&T!.8I;" },
-/* MUL 170 */   { ADDR , DIRECT, 
+/* MUL 170 */   { ADDR , DIRECT,
 		"fe;4f;[4=]~.1&T!.8I;[3=]r[2=]~.1&T!.8I;[1=]~.3&T!.8I;" },
-/* MUL 171 */   { ADDR , EXTENDED, 
+/* MUL 171 */   { ADDR , EXTENDED,
 		"fe;4f;[4=]~.1&T!.8I.1|;[3=]y[2=]~.1&T!.8I;[1=]~.3&T!.8I;" },
-/* MULB 172 */   { ADDR , DIRECT, 
+/* MULB 172 */   { ADDR , DIRECT,
 		"fe;7c;[2=].8I;[1=]~.1&T!.8I;" },
-/* MULB 173 */   { ADDR , EXTENDED, 
+/* MULB 173 */   { ADDR , EXTENDED,
 		"fe;7f;01;[2=]y[1=]~.1&T!.8I;" },
-/* MULB 174 */   { ADDR , DIRECT, 
+/* MULB 174 */   { ADDR , DIRECT,
 		"fe;5c;[3=].8I;[2=].8I;[1=]~.1&T!.8I;" },
-/* MULB 175 */   { ADDR , EXTENDED, 
+/* MULB 175 */   { ADDR , EXTENDED,
 		"fe;5f;01;[3=]y[2=].8I;[1=]~.1&T!.8I;" },
-/* MULB 176 */   { 0 , 0, 
+/* MULB 176 */   { 0 , 0,
 		"fe;7d;[2=];[1=]~.1&T!.8I;" },
-/* MULB 177 */   { 0 , 0, 
+/* MULB 177 */   { 0 , 0,
 		"fe;5d;[3=];[2=].8I;[1=]~.1&T!.8I;" },
-/* MULB 178 */   { 0 , 0, 
+/* MULB 178 */   { 0 , 0,
 		"fe;7e;[2=]~.1&T!.8I.[3#]|;[1=]~.1&T!.8I;" },
-/* MULB 179 */   { 0 , 0, 
+/* MULB 179 */   { 0 , 0,
 		"fe;5e;[3=]~.1&T!.8I.[4#]|;[2=].8I;[1=]~.1&T!.8I;" },
-/* MULB 180 */   { ADDR , DIRECT, 
+/* MULB 180 */   { ADDR , DIRECT,
 		"fe;7f;[3=]~.1&T!.8I;[2=]r[1=]~.1&T!.8I;" },
-/* MULB 181 */   { ADDR , EXTENDED, 
+/* MULB 181 */   { ADDR , EXTENDED,
 		"fe;7f;[3=]~.1&T!.8I.1|;[2=]y[1=]~.1&T!.8I;" },
-/* MULB 182 */   { ADDR , DIRECT, 
+/* MULB 182 */   { ADDR , DIRECT,
 		"fe;5f;[4=]~.1&T!.8I;[3=]r[2=].8I;[1=]~.1&T!.8I;" },
-/* MULB 183 */   { ADDR , EXTENDED, 
+/* MULB 183 */   { ADDR , EXTENDED,
 		"fe;5f;[4=]~.1&T!.8I.1|;[3=]y[2=].8I;[1=]~.1&T!.8I;" },
-/* MULU 184 */   { ADDR , DIRECT, 
+/* MULU 184 */   { ADDR , DIRECT,
 		"6c;[2=]~.1&T!.8I;[1=]~.3&T!.8I;" },
-/* MULU 185 */   { ADDR , EXTENDED, 
+/* MULU 185 */   { ADDR , EXTENDED,
 		"6f;01;[2=]~.1&T!y[1=]~.3&T!.8I;" },
-/* MULU 186 */   { ADDR , DIRECT, 
+/* MULU 186 */   { ADDR , DIRECT,
 		"4c;[3=]~.1&T!.8I;[2=]~.1&T!.8I;[1=]~.3&T!.8I;" },
-/* MULU 187 */   { ADDR , EXTENDED, 
+/* MULU 187 */   { ADDR , EXTENDED,
 		"4f;01;[3=]~.1&T!y[2=]~.1&T!.8I;[1=]~.3&T!.8I;" },
-/* MULU 188 */   { 0 , 0, 
+/* MULU 188 */   { 0 , 0,
 		"6d;[2=]y[1=]~.3&T!.8I;" },
-/* MULU 189 */   { 0 , 0, 
+/* MULU 189 */   { 0 , 0,
 		"4d;[3=]y[2=]~.1&T!.8I;[1=]~.3&T!.8I;" },
-/* MULU 190 */   { 0 , 0, 
+/* MULU 190 */   { 0 , 0,
 		"6e;[2=]~.1&T!.8I.[3#]|;[1=]~.3&T!.8I;" },
-/* MULU 191 */   { 0 , 0, 
+/* MULU 191 */   { 0 , 0,
 		"4e;[3=]~.1&T!.8I.[4#]|;[2=]~.1&T!.8I;[1=]~.3&T!.8I;" },
-/* MULU 192 */   { ADDR , DIRECT, 
+/* MULU 192 */   { ADDR , DIRECT,
 		"6f;[3=]~.1&T!.8I;[2=]r[1=]~.3&T!.8I;" },
-/* MULU 193 */   { ADDR , EXTENDED, 
+/* MULU 193 */   { ADDR , EXTENDED,
 		"6f;[3=]~.1&T!.8I.1|;[2=]y[1=]~.3&T!.8I;" },
-/* MULU 194 */   { ADDR , DIRECT, 
+/* MULU 194 */   { ADDR , DIRECT,
 		"4f;[4=]~.1&T!.8I;[3=]r[2=]~.1&T!.8I;[1=]~.3&T!.8I;" },
-/* MULU 195 */   { ADDR , EXTENDED, 
+/* MULU 195 */   { ADDR , EXTENDED,
 		"4f;[4=]~.1&T!.8I.1|;[3=]y[2=]~.1&T!.8I;[1=]~.3&T!.8I;" },
-/* MULUB 196 */   { ADDR , DIRECT, 
+/* MULUB 196 */   { ADDR , DIRECT,
 		"7c;[2=].8I;[1=]~.1&T!.8I;" },
-/* MULUB 197 */   { ADDR , EXTENDED, 
+/* MULUB 197 */   { ADDR , EXTENDED,
 		"7f;01;[2=]y[1=]~.1&T!.8I;" },
-/* MULUB 198 */   { ADDR , DIRECT, 
+/* MULUB 198 */   { ADDR , DIRECT,
 		"5c;[3=].8I;[2=].8I;[1=]~.1&T!.8I;" },
-/* MULUB 199 */   { ADDR , EXTENDED, 
+/* MULUB 199 */   { ADDR , EXTENDED,
 		"5f;01;[3=]y[2=].8I;[1=]~.1&T!.8I;" },
-/* MULUB 200 */   { 0 , 0, 
+/* MULUB 200 */   { 0 , 0,
 		"7d;[2=];[1=]~.1&T!.8I;" },
-/* MULUB 201 */   { 0 , 0, 
+/* MULUB 201 */   { 0 , 0,
 		"5d;[3=];[2=].8I;[1=]~.1&T!.8I;" },
-/* MULUB 202 */   { 0 , 0, 
+/* MULUB 202 */   { 0 , 0,
 		"7e;[2=]~.1&T!.8I.[3#]|;[1=]~.1&T!.8I;" },
-/* MULUB 203 */   { 0 , 0, 
+/* MULUB 203 */   { 0 , 0,
 		"5e;[3=]~.1&T!.8I.[4#]|;[2=].8I;[1=]~.1&T!.8I;" },
-/* MULUB 204 */   { ADDR , DIRECT, 
+/* MULUB 204 */   { ADDR , DIRECT,
 		"7f;[3=]~.1&T!.8I;[2=]r[1=]~.1&T!.8I;" },
-/* MULUB 205 */   { ADDR , EXTENDED, 
+/* MULUB 205 */   { ADDR , EXTENDED,
 		"7f;[3=]~.1&T!.8I.1|;[2=]y[1=]~.1&T!.8I;" },
-/* MULUB 206 */   { ADDR , DIRECT, 
+/* MULUB 206 */   { ADDR , DIRECT,
 		"5f;[4=]~.1&T!.8I;[3=]r[2=].8I;[1=]~.1&T!.8I;" },
-/* MULUB 207 */   { ADDR , EXTENDED, 
+/* MULUB 207 */   { ADDR , EXTENDED,
 		"5f;[4=]~.1&T!.8I.1|;[3=]y[2=].8I;[1=]~.1&T!.8I;" },
-/* NEG 208 */   { 0 , 0, 
+/* NEG 208 */   { 0 , 0,
 		"03;[1=]~.1&T!.8I;" },
-/* NEGB 209 */   { 0 , 0, 
+/* NEGB 209 */   { 0 , 0,
 		"13;[1=].8I;" },
-/* NOP 210 */   { 0 , 0, 
+/* NOP 210 */   { 0 , 0,
 		"fd;" },
-/* NORML 211 */   { 0 , 0, 
+/* NORML 211 */   { 0 , 0,
 		"0f;[2=].8I;[1=]~.3&T!.8I;" },
-/* NOT 212 */   { 0 , 0, 
+/* NOT 212 */   { 0 , 0,
 		"02;[1=]~.1&T!.8I;" },
-/* NOTB 213 */   { 0 , 0, 
+/* NOTB 213 */   { 0 , 0,
 		"12;[1=].8I;" },
-/* OR 214 */   { ADDR , DIRECT, 
+/* OR 214 */   { ADDR , DIRECT,
 		"80;[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* OR 215 */   { ADDR , EXTENDED, 
+/* OR 215 */   { ADDR , EXTENDED,
 		"83;01;[2=]~.1&T!y[1=]~.1&T!.8I;" },
-/* OR 216 */   { 0 , 0, 
+/* OR 216 */   { 0 , 0,
 		"81;[2=]y[1=]~.1&T!.8I;" },
-/* OR 217 */   { 0 , 0, 
+/* OR 217 */   { 0 , 0,
 		"82;[2=]~.1&T!.8I.[3#]|;[1=]~.1&T!.8I;" },
-/* OR 218 */   { ADDR , DIRECT, 
+/* OR 218 */   { ADDR , DIRECT,
 		"83;[3=]~.1&T!.8I;[2=]r[1=]~.1&T!.8I;" },
-/* OR 219 */   { ADDR , EXTENDED, 
+/* OR 219 */   { ADDR , EXTENDED,
 		"83;[3=]~.1&T!.8I.1|;[2=]y[1=]~.1&T!.8I;" },
-/* ORB 220 */   { ADDR , DIRECT, 
+/* ORB 220 */   { ADDR , DIRECT,
 		"90;[2=].8I;[1=].8I;" },
-/* ORB 221 */   { ADDR , EXTENDED, 
+/* ORB 221 */   { ADDR , EXTENDED,
 		"93;01;[2=]y[1=].8I;" },
-/* ORB 222 */   { 0 , 0, 
+/* ORB 222 */   { 0 , 0,
 		"91;[2=];[1=].8I;" },
-/* ORB 223 */   { 0 , 0, 
+/* ORB 223 */   { 0 , 0,
 		"92;[2=]~.1&T!.8I.[3#]|;[1=].8I;" },
-/* ORB 224 */   { ADDR , DIRECT, 
+/* ORB 224 */   { ADDR , DIRECT,
 		"93;[3=]~.1&T!.8I;[2=]r[1=].8I;" },
-/* ORB 225 */   { ADDR , EXTENDED, 
+/* ORB 225 */   { ADDR , EXTENDED,
 		"93;[3=]~.1&T!.8I.1|;[2=]y[1=].8I;" },
-/* POP 226 */   { ADDR , DIRECT, 
+/* POP 226 */   { ADDR , DIRECT,
 		"cc;[1=]~.1&T!.8I;" },
-/* POP 227 */   { ADDR , EXTENDED, 
+/* POP 227 */   { ADDR , EXTENDED,
 		"cf;01;[1=]~.1&T!y" },
-/* POP 228 */   { 0 , 0, 
+/* POP 228 */   { 0 , 0,
 		"ce;[1=]~.1&T!.8I.[2#]|;" },
-/* POP 229 */   { ADDR , DIRECT, 
+/* POP 229 */   { ADDR , DIRECT,
 		"cf;[2=]~.1&T!.8I;[1=]r" },
-/* POP 230 */   { ADDR , EXTENDED, 
+/* POP 230 */   { ADDR , EXTENDED,
 		"cf;[2=]~.1&T!.8I.1|;[1=]y" },
-/* POPA 231 */   { CPU196 , CPU196, 
+/* POPA 231 */   { CPU196 , CPU196,
 		"f5;" },
-/* POPF 232 */   { 0 , 0, 
+/* POPF 232 */   { 0 , 0,
 		"f3;" },
-/* PUSH 233 */   { ADDR , DIRECT, 
+/* PUSH 233 */   { ADDR , DIRECT,
 		"c8;[1=]~.1&T!.8I;" },
-/* PUSH 234 */   { ADDR , EXTENDED, 
+/* PUSH 234 */   { ADDR , EXTENDED,
 		"cb;01;[1=]~.1&T!y" },
-/* PUSH 235 */   { 0 , 0, 
+/* PUSH 235 */   { 0 , 0,
 		"c9;[1=]y" },
-/* PUSH 236 */   { 0 , 0, 
+/* PUSH 236 */   { 0 , 0,
 		"ca;[1=]~.1&T!.8I.[2#]|;" },
-/* PUSH 237 */   { ADDR , DIRECT, 
+/* PUSH 237 */   { ADDR , DIRECT,
 		"cb;[2=]~.1&T!.8I;[1=]r" },
-/* PUSH 238 */   { ADDR , EXTENDED, 
+/* PUSH 238 */   { ADDR , EXTENDED,
 		"cb;[2=]~.1&T!.8I.1|;[1=]y" },
-/* PUSHA 239 */   { CPU196 , CPU196, 
+/* PUSHA 239 */   { CPU196 , CPU196,
 		"f4;" },
-/* PUSHF 240 */   { 0 , 0, 
+/* PUSHF 240 */   { 0 , 0,
 		"f2;" },
-/* RET 241 */   { 0 , 0, 
+/* RET 241 */   { 0 , 0,
 		"f0;" },
-/* RST 242 */   { 0 , 0, 
+/* RST 242 */   { 0 , 0,
 		"ff;" },
-/* SCALL 243 */   { 0 , 0, 
+/* SCALL 243 */   { 0 , 0,
 		"[1=].Q.2+-.bR.2800|x" },
-/* SETC 244 */   { 0 , 0, 
+/* SETC 244 */   { 0 , 0,
 		"f9;" },
-/* SHL 245 */   { 0 , 0, 
+/* SHL 245 */   { 0 , 0,
 		"09;[2=].8I~.24<T!;[1=]~.1&T!.8I;" },
-/* SHL 246 */   { 0 , 0, 
+/* SHL 246 */   { 0 , 0,
 		"09;[2=].4I;[1=]~.1&T!.8I;" },
-/* SHLB 247 */   { 0 , 0, 
+/* SHLB 247 */   { 0 , 0,
 		"19;[2=].8I~.24<T!;[1=].8I;" },
-/* SHLB 248 */   { 0 , 0, 
+/* SHLB 248 */   { 0 , 0,
 		"19;[2=].4I;[1=].8I;" },
-/* SHLL 249 */   { 0 , 0, 
+/* SHLL 249 */   { 0 , 0,
 		"0d;[2=].8I~.24<T!;[1=]~.3&T!.8I;" },
-/* SHLL 250 */   { 0 , 0, 
+/* SHLL 250 */   { 0 , 0,
 		"0d;[2=].4I;[1=]~.3&T!.8I;" },
-/* SHR 251 */   { 0 , 0, 
+/* SHR 251 */   { 0 , 0,
 		"08;[2=].8I~.24<T!;[1=]~.1&T!.8I;" },
-/* SHR 252 */   { 0 , 0, 
+/* SHR 252 */   { 0 , 0,
 		"08;[2=].4I;[1=]~.1&T!.8I;" },
-/* SHRA 253 */   { 0 , 0, 
+/* SHRA 253 */   { 0 , 0,
 		"0a;[2=].8I~.24<T!;[1=]~.1&T!.8I;" },
-/* SHRA 254 */   { 0 , 0, 
+/* SHRA 254 */   { 0 , 0,
 		"0a;[2=].4I;[1=]~.1&T!.8I;" },
-/* SHRAB 255 */   { 0 , 0, 
+/* SHRAB 255 */   { 0 , 0,
 		"1a;[2=].8I~.24<T!;[1=].8I;" },
-/* SHRAB 256 */   { 0 , 0, 
+/* SHRAB 256 */   { 0 , 0,
 		"1a;[2=].4I;[1=].8I;" },
-/* SHRAL 257 */   { 0 , 0, 
+/* SHRAL 257 */   { 0 , 0,
 		"0e;[2=].8I~.24<T!;[1=]~.3&T!.8I;" },
-/* SHRAL 258 */   { 0 , 0, 
+/* SHRAL 258 */   { 0 , 0,
 		"0e;[2=].4I;[1=]~.3&T!.8I;" },
-/* SHRB 259 */   { 0 , 0, 
+/* SHRB 259 */   { 0 , 0,
 		"18;[2=].8I~.24<T!;[1=].8I;" },
-/* SHRB 260 */   { 0 , 0, 
+/* SHRB 260 */   { 0 , 0,
 		"18;[2=].4I;[1=].8I;" },
-/* SHRL 261 */   { 0 , 0, 
+/* SHRL 261 */   { 0 , 0,
 		"0c;[2=].8I~.24<T!;[1=]~.3&T!.8I;" },
-/* SHRL 262 */   { 0 , 0, 
+/* SHRL 262 */   { 0 , 0,
 		"0c;[2=].4I;[1=]~.3&T!.8I;" },
-/* SJMP 263 */   { 0 , 0, 
+/* SJMP 263 */   { 0 , 0,
 		"[1=].Q.2+-.bR.2000|x" },
-/* SKIP 264 */   { 0 , 0, 
+/* SKIP 264 */   { 0 , 0,
 		"00;[1=];" },
-/* ST 265 */   { ADDR , DIRECT, 
+/* ST 265 */   { ADDR , DIRECT,
 		"c0;[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* ST 266 */   { ADDR , EXTENDED, 
+/* ST 266 */   { ADDR , EXTENDED,
 		"c3;01;[2=]~.1&T!y[1=]~.1&T!.8I;" },
-/* ST 267 */   { 0 , 0, 
+/* ST 267 */   { 0 , 0,
 		"c2;[2=]~.1&T!.8I.[3#]|;[1=]~.1&T!.8I;" },
-/* ST 268 */   { ADDR , DIRECT, 
+/* ST 268 */   { ADDR , DIRECT,
 		"c3;[3=]~.1&T!.8I;[2=]r[1=]~.1&T!.8I;" },
-/* ST 269 */   { ADDR , EXTENDED, 
+/* ST 269 */   { ADDR , EXTENDED,
 		"c3;[3=]~.1&T!.8I.1|;[2=]y[1=]~.1&T!.8I;" },
-/* STB 270 */   { ADDR , DIRECT, 
+/* STB 270 */   { ADDR , DIRECT,
 		"c4;[2=].8I;[1=].8I;" },
-/* STB 271 */   { ADDR , EXTENDED, 
+/* STB 271 */   { ADDR , EXTENDED,
 		"c7;01;[2=]y[1=].8I;" },
-/* STB 272 */   { 0 , 0, 
+/* STB 272 */   { 0 , 0,
 		"c6;[2=]~.1&T!.8I.[3#]|;[1=].8I;" },
-/* STB 273 */   { ADDR , DIRECT, 
+/* STB 273 */   { ADDR , DIRECT,
 		"c7;[3=]~.1&T!.8I;[2=]r[1=].8I;" },
-/* STB 274 */   { ADDR , EXTENDED, 
+/* STB 274 */   { ADDR , EXTENDED,
 		"c7;[3=]~.1&T!.8I.1|;[2=]y[1=].8I;" },
-/* SUB 275 */   { ADDR , DIRECT, 
+/* SUB 275 */   { ADDR , DIRECT,
 		"68;[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* SUB 276 */   { ADDR , EXTENDED, 
+/* SUB 276 */   { ADDR , EXTENDED,
 		"6b;01;[2=]~.1&T!y[1=]~.1&T!.8I;" },
-/* SUB 277 */   { ADDR , DIRECT, 
+/* SUB 277 */   { ADDR , DIRECT,
 		"48;[3=]~.1&T!.8I;[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* SUB 278 */   { ADDR , EXTENDED, 
+/* SUB 278 */   { ADDR , EXTENDED,
 		"4b;01;[3=]~.1&T!y[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* SUB 279 */   { 0 , 0, 
+/* SUB 279 */   { 0 , 0,
 		"69;[2=]y[1=]~.1&T!.8I;" },
-/* SUB 280 */   { 0 , 0, 
+/* SUB 280 */   { 0 , 0,
 		"49;[3=]y[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* SUB 281 */   { 0 , 0, 
+/* SUB 281 */   { 0 , 0,
 		"6a;[2=]~.1&T!.8I.[3#]|;[1=]~.1&T!.8I;" },
-/* SUB 282 */   { 0 , 0, 
+/* SUB 282 */   { 0 , 0,
 		"4a;[3=]~.1&T!.8I.[4#]|;[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* SUB 283 */   { ADDR , DIRECT, 
+/* SUB 283 */   { ADDR , DIRECT,
 		"6b;[3=]~.1&T!.8I;[2=]r[1=]~.1&T!.8I;" },
-/* SUB 284 */   { ADDR , EXTENDED, 
+/* SUB 284 */   { ADDR , EXTENDED,
 		"6b;[3=]~.1&T!.8I.1|;[2=]y[1=]~.1&T!.8I;" },
-/* SUB 285 */   { ADDR , DIRECT, 
+/* SUB 285 */   { ADDR , DIRECT,
 		"4b;[4=]~.1&T!.8I;[3=]r[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* SUB 286 */   { ADDR , EXTENDED, 
+/* SUB 286 */   { ADDR , EXTENDED,
 		"4b;[4=]~.1&T!.8I.1|;[3=]y[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* SUBB 287 */   { ADDR , DIRECT, 
+/* SUBB 287 */   { ADDR , DIRECT,
 		"78;[2=].8I;[1=].8I;" },
-/* SUBB 288 */   { ADDR , EXTENDED, 
+/* SUBB 288 */   { ADDR , EXTENDED,
 		"7b;01;[2=]y[1=].8I;" },
-/* SUBB 289 */   { ADDR , DIRECT, 
+/* SUBB 289 */   { ADDR , DIRECT,
 		"58;[3=].8I;[2=].8I;[1=].8I;" },
-/* SUBB 290 */   { ADDR , EXTENDED, 
+/* SUBB 290 */   { ADDR , EXTENDED,
 		"5b;01;[3=]y[2=].8I;[1=].8I;" },
-/* SUBB 291 */   { 0 , 0, 
+/* SUBB 291 */   { 0 , 0,
 		"79;[2=];[1=].8I;" },
-/* SUBB 292 */   { 0 , 0, 
+/* SUBB 292 */   { 0 , 0,
 		"59;[3=];[2=].8I;[1=].8I;" },
-/* SUBB 293 */   { 0 , 0, 
+/* SUBB 293 */   { 0 , 0,
 		"7a;[2=]~.1&T!.8I.[3#]|;[1=].8I;" },
-/* SUBB 294 */   { 0 , 0, 
+/* SUBB 294 */   { 0 , 0,
 		"5a;[3=]~.1&T!.8I.[4#]|;[2=].8I;[1=].8I;" },
-/* SUBB 295 */   { ADDR , DIRECT, 
+/* SUBB 295 */   { ADDR , DIRECT,
 		"7b;[3=]~.1&T!.8I;[2=]r[1=].8I;" },
-/* SUBB 296 */   { ADDR , EXTENDED, 
+/* SUBB 296 */   { ADDR , EXTENDED,
 		"7b;[3=]~.1&T!.8I.1|;[2=]y[1=].8I;" },
-/* SUBB 297 */   { ADDR , DIRECT, 
+/* SUBB 297 */   { ADDR , DIRECT,
 		"5b;[4=]~.1&T!.8I;[3=]r[2=].8I;[1=].8I;" },
-/* SUBB 298 */   { ADDR , EXTENDED, 
+/* SUBB 298 */   { ADDR , EXTENDED,
 		"5b;[4=]~.1&T!.8I.1|;[3=]y[2=].8I;[1=].8I;" },
-/* SUBC 299 */   { ADDR , DIRECT, 
+/* SUBC 299 */   { ADDR , DIRECT,
 		"a8;[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* SUBC 300 */   { ADDR , EXTENDED, 
+/* SUBC 300 */   { ADDR , EXTENDED,
 		"ab;01;[2=]~.1&T!y[1=]~.1&T!.8I;" },
-/* SUBC 301 */   { 0 , 0, 
+/* SUBC 301 */   { 0 , 0,
 		"a9;[2=]y[1=]~.1&T!.8I;" },
-/* SUBC 302 */   { 0 , 0, 
+/* SUBC 302 */   { 0 , 0,
 		"aa;[2=]~.1&T!.8I.[3#]|;[1=]~.1&T!.8I;" },
-/* SUBC 303 */   { ADDR , DIRECT, 
+/* SUBC 303 */   { ADDR , DIRECT,
 		"ab;[3=]~.1&T!.8I;[2=]r[1=]~.1&T!.8I;" },
-/* SUBC 304 */   { ADDR , EXTENDED, 
+/* SUBC 304 */   { ADDR , EXTENDED,
 		"ab;[3=]~.1&T!.8I.1|;[2=]y[1=]~.1&T!.8I;" },
-/* SUBCB 305 */   { ADDR , DIRECT, 
+/* SUBCB 305 */   { ADDR , DIRECT,
 		"b8;[2=].8I;[1=].8I;" },
-/* SUBCB 306 */   { ADDR , EXTENDED, 
+/* SUBCB 306 */   { ADDR , EXTENDED,
 		"bb;01;[2=]y[1=].8I;" },
-/* SUBCB 307 */   { 0 , 0, 
+/* SUBCB 307 */   { 0 , 0,
 		"b9;[2=];[1=].8I;" },
-/* SUBCB 308 */   { 0 , 0, 
+/* SUBCB 308 */   { 0 , 0,
 		"ba;[2=]~.1&T!.8I.[3#]|;[1=].8I;" },
-/* SUBCB 309 */   { ADDR , DIRECT, 
+/* SUBCB 309 */   { ADDR , DIRECT,
 		"bb;[3=]~.1&T!.8I;[2=]r[1=].8I;" },
-/* SUBCB 310 */   { ADDR , EXTENDED, 
+/* SUBCB 310 */   { ADDR , EXTENDED,
 		"bb;[3=]~.1&T!.8I.1|;[2=]y[1=].8I;" },
-/* XOR 311 */   { ADDR , DIRECT, 
+/* XOR 311 */   { ADDR , DIRECT,
 		"84;[2=]~.1&T!.8I;[1=]~.1&T!.8I;" },
-/* XOR 312 */   { ADDR , EXTENDED, 
+/* XOR 312 */   { ADDR , EXTENDED,
 		"87;01;[2=]~.1&T!y[1=]~.1&T!.8I;" },
-/* XOR 313 */   { 0 , 0, 
+/* XOR 313 */   { 0 , 0,
 		"85;[2=]y[1=]~.1&T!.8I;" },
-/* XOR 314 */   { 0 , 0, 
+/* XOR 314 */   { 0 , 0,
 		"86;[2=]~.1&T!.8I.[3#]|;[1=]~.1&T!.8I;" },
-/* XOR 315 */   { ADDR , DIRECT, 
+/* XOR 315 */   { ADDR , DIRECT,
 		"87;[3=]~.1&T!.8I;[2=]r[1=]~.1&T!.8I;" },
-/* XOR 316 */   { ADDR , EXTENDED, 
+/* XOR 316 */   { ADDR , EXTENDED,
 		"87;[3=]~.1&T!.8I.1|;[2=]y[1=]~.1&T!.8I;" },
-/* XORB 317 */   { ADDR , DIRECT, 
+/* XORB 317 */   { ADDR , DIRECT,
 		"94;[2=].8I;[1=].8I;" },
-/* XORB 318 */   { ADDR , EXTENDED, 
+/* XORB 318 */   { ADDR , EXTENDED,
 		"97;01;[2=]y[1=].8I;" },
-/* XORB 319 */   { 0 , 0, 
+/* XORB 319 */   { 0 , 0,
 		"95;[2=];[1=].8I;" },
-/* XORB 320 */   { 0 , 0, 
+/* XORB 320 */   { 0 , 0,
 		"96;[2=]~.1&T!.8I.[3#]|;[1=].8I;" },
-/* XORB 321 */   { ADDR , DIRECT, 
+/* XORB 321 */   { ADDR , DIRECT,
 		"97;[3=]~.1&T!.8I;[2=]r[1=].8I;" },
-/* XORB 322 */   { ADDR , EXTENDED, 
+/* XORB 322 */   { ADDR , EXTENDED,
 		"97;[3=]~.1&T!.8I.1|;[2=]y[1=].8I;" },
 	{ 0,0,""} };
 /* end fraptabdef.c */

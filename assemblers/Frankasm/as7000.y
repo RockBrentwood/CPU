@@ -1,34 +1,7 @@
 %{
-
-/*
-HEADER: 	;
-TITLE: 		Frankenstein Cross Assemblers;
-VERSION: 	2.0;
-DESCRIPTION: "	Reconfigurable Cross-assembler producing Intel (TM)
-		Hex format object records.  ";
-KEYWORDS: 	cross-assemblers, 1805, 2650, 6301, 6502, 6805, 6809, 
-		6811, tms7000, 8048, 8051, 8096, z8, z80;
-SYSTEM: 	UNIX, MS-Dos ;
-FILENAME: 	as7000.y;
-WARNINGS: 	"The language defined in this file does
-		not follow the standard Texas Instruments syntax.
-
-		This software is in the public domain.  
-		Any prior copyright claims are relinquished.  
-
-		This software is distributed with no warranty whatever.  
-		The author takes no responsibility for the consequences 
-		of its use.
-
-		Yacc (or Bison) required to compile."  ;
-SEE-ALSO: 	as7000.doc,frasmain.c;	
-AUTHORS: 	Mark Zenier;
-COMPILERS: 	Microport Sys V/AT, ATT Yacc, Turbo C V1.5, Bison (CUG disk 285)
-		(previous versions Xenix, Unisoft 68000 Version 7, Sun 3);
-*/
-/* TMS7000 instruction generation file */
-/* November 17, 1990 */
-
+// Frankenstain Cross-Assemblers, version 2.0.
+// Original author: Mark Zenier.
+// TMS7000 instruction generation file.
 /*
 	description	frame work parser description for framework cross
 			assemblers
@@ -62,7 +35,7 @@ COMPILERS: 	Microport Sys V/AT, ATT Yacc, Turbo C V1.5, Bison (CUG disk 285)
 #define ST_IMMIND 0x80
 #define ST_RINDIR 0x100
 #define ST_STATUS 0x200
-	
+
 	static int operselbits;
 	static char	genbdef[] = "[1=];";
 	static char	genwdef[] = "[1=]x"; /* x for normal, y for byte rev */
@@ -161,12 +134,12 @@ allline	: 	line EOL
 			}
 	;
 
-line	:	LABEL KOC_END 
+line	:	LABEL KOC_END
 			{
 				endsymbol = $1;
 				nextreadact = Nra_end;
 			}
-	|	      KOC_END 
+	|	      KOC_END
 			{
 				nextreadact = Nra_end;
 			}
@@ -190,7 +163,7 @@ line	:	LABEL KOC_END
 			}
 		}
 			}
-	|	LABEL KOC_EQU expr 
+	|	LABEL KOC_EQU expr
 			{
 				if($1 -> seg == SSG_UNDEF)
 				{
@@ -214,7 +187,7 @@ line	:	LABEL KOC_END
 				"cannot change symbol value with EQU");
 				}
 			}
-	|	LABEL KOC_SET expr 
+	|	LABEL KOC_SET expr
 			{
 				if($1 -> seg == SSG_UNDEF
 				   || $1 -> seg == SSG_SET)
@@ -239,7 +212,7 @@ line	:	LABEL KOC_END
 				"cannot change symbol value with SET");
 				}
 			}
-	|	KOC_IF expr 
+	|	KOC_IF expr
 			{
 		if((++ifstkpt) < IFSTKDEPTH)
 		{
@@ -270,10 +243,10 @@ line	:	LABEL KOC_END
 			fraerror("IF stack overflow");
 		}
 			}
-						
-	|	KOC_IF 
+
+	|	KOC_IF
 			{
-		if(fraifskip) 
+		if(fraifskip)
 		{
 			if((++ifstkpt) < IFSTKDEPTH)
 			{
@@ -291,26 +264,26 @@ line	:	LABEL KOC_END
 			YYERROR;
 		}
 				}
-						
-	|	KOC_ELSE 
+
+	|	KOC_ELSE
 			{
 				switch(elseifstk[ifstkpt])
 				{
 				case If_Active:
 					fraifskip = FALSE;
 					break;
-				
+
 				case If_Skip:
 					fraifskip = TRUE;
 					break;
-				
+
 				case If_Err:
 					fraerror("ELSE with no matching if");
 					break;
 				}
 			}
 
-	|	KOC_ENDI 
+	|	KOC_ENDI
 			{
 				switch(endifstk[ifstkpt])
 				{
@@ -318,18 +291,18 @@ line	:	LABEL KOC_END
 					fraifskip = FALSE;
 					ifstkpt--;
 					break;
-				
+
 				case If_Skip:
 					fraifskip = TRUE;
 					ifstkpt--;
 					break;
-				
+
 				case If_Err:
 					fraerror("ENDI with no matching if");
 					break;
 				}
 			}
-	|	LABEL KOC_ORG expr 
+	|	LABEL KOC_ORG expr
 			{
 				pevalexpr(0, $3);
 				if(evalr[0].seg == SSG_ABS)
@@ -352,7 +325,7 @@ line	:	LABEL KOC_END
 					 "noncomputable expression for ORG");
 				}
 			}
-	|	      KOC_ORG expr 
+	|	      KOC_ORG expr
 			{
 				pevalexpr(0, $2);
 				if(evalr[0].seg == SSG_ABS)
@@ -451,12 +424,12 @@ line	:	LABEL KOC_END
 
 					case CF_INVALID:
 					case CF_NUMBER:
-				fracherror("invalid character to define", 
+				fracherror("invalid character to define",
 					before, sourcestr);
 						break;
 
 					case CF_CHAR:
-				fracherror("character already defined", 
+				fracherror("character already defined",
 					before, sourcestr);
 						break;
 					}
@@ -476,9 +449,9 @@ line	:	LABEL KOC_END
 		{
 			fraerror("no CHARSET statement active");
 		}
-			
+
 			}
-	|	LABEL 
+	|	LABEL
 			{
 			if($1 -> seg == SSG_UNDEF)
 			{
@@ -506,14 +479,14 @@ labeledline :	LABEL genline
 				"multiple definition of label");
 			labelloc = locctr;
 			}
-				
+
 	|	genline
 			{
 				labelloc = locctr;
 			}
 	;
 
-genline	:	KOC_BDEF	exprlist 
+genline	:	KOC_BDEF	exprlist
 			{
 				genlocrec(currseg, labelloc);
 				for( satsub = 0; satsub < $2; satsub++)
@@ -522,7 +495,7 @@ genline	:	KOC_BDEF	exprlist
 					locctr += geninstr(genbdef);
 				}
 			}
-	|	KOC_SDEF stringlist 
+	|	KOC_SDEF stringlist
 			{
 				genlocrec(currseg, labelloc);
 				for(satsub = 0; satsub < $2; satsub++)
@@ -530,7 +503,7 @@ genline	:	KOC_BDEF	exprlist
 					locctr += genstring(stringlist[satsub]);
 				}
 			}
-	|	KOC_WDEF exprlist 
+	|	KOC_WDEF exprlist
 			{
 				genlocrec(currseg, labelloc);
 				for( satsub = 0; satsub < $2; satsub++)
@@ -538,8 +511,8 @@ genline	:	KOC_BDEF	exprlist
 					pevalexpr(1, exprlist[satsub]);
 					locctr += geninstr(genwdef);
 				}
-			}	
-	|	KOC_RESM expr 
+			}
+	|	KOC_RESM expr
 			{
 				pevalexpr(0, $2);
 				if(evalr[0].seg == SSG_ABS)
@@ -582,7 +555,7 @@ stringlist :	stringlist ',' STRING
 	;
 
 
-genline : KOC_opcode 
+genline : KOC_opcode
 			{
 		genlocrec(currseg, labelloc);
 		locctr += geninstr(findgen($1, ST_INH,  0));
@@ -603,7 +576,7 @@ genline : KOC_opcode  expr
 			{
 				operselbits |= DSTB;
 			}
-		}	
+		}
 		locctr += geninstr(findgen($1, ST_EXPR, operselbits));
 			}
 	;
@@ -623,7 +596,7 @@ genline : KOC_opcode  expr ',' expr
 			{
 				operselbits |= SRCB;
 			}
-		}	
+		}
 		if(evalr[2].seg == SSG_ABS)
 		{
 			if(evalr[2].value == 0)
@@ -634,7 +607,7 @@ genline : KOC_opcode  expr ',' expr
 			{
 				operselbits |= DSTB;
 			}
-		}	
+		}
 		locctr += geninstr(findgen($1, ST_EXPR2, operselbits));
 			}
 	;
@@ -655,7 +628,7 @@ genline : KOC_opcode  expr ',' expr ',' expr
 			{
 				operselbits |= SRCB;
 			}
-		}	
+		}
 		if(evalr[2].seg == SSG_ABS)
 		{
 			if(evalr[2].value == 0)
@@ -666,7 +639,7 @@ genline : KOC_opcode  expr ',' expr ',' expr
 			{
 				operselbits |= DSTB;
 			}
-		}	
+		}
 		locctr += geninstr(findgen($1, ST_EXPR3, operselbits));
 			}
 	;
@@ -686,7 +659,7 @@ genline : KOC_opcode  '#' expr ',' expr
 			{
 				operselbits |= DSTB;
 			}
-		}	
+		}
 		locctr += geninstr(findgen($1, ST_IEXPR2, operselbits));
 			}
 	;
@@ -707,7 +680,7 @@ genline : KOC_opcode  '#' expr ',' expr ',' expr
 			{
 				operselbits |= DSTB;
 			}
-		}	
+		}
 		locctr += geninstr(findgen($1, ST_IEXPR3, operselbits));
 			}
 	;
@@ -1229,431 +1202,431 @@ struct opsynt ostab[NUMSYNBLK+1]
 
 struct igel igtab[NUMDIFFOP+1]
 	= {
-/* invalid 0 */   { 0 , 0, 
+/* invalid 0 */   { 0 , 0,
 		"[Xnullentry" },
-/* invalid 1 */   { 0 , 0, 
+/* invalid 1 */   { 0 , 0,
 		"[Xinvalid opcode" },
-/* ADC 2 */   { SRCMASK|DSTMASK , SRCB|DSTA, 
+/* ADC 2 */   { SRCMASK|DSTMASK , SRCB|DSTA,
 		"69;" },
-/* ADC 3 */   { DSTMASK , DSTA, 
+/* ADC 3 */   { DSTMASK , DSTA,
 		"19;[1=].8I;" },
-/* ADC 4 */   { DSTMASK , DSTB, 
+/* ADC 4 */   { DSTMASK , DSTB,
 		"39;[1=].8I;" },
-/* ADC 5 */   { 0 , 0, 
+/* ADC 5 */   { 0 , 0,
 		"49;[1=].8I;[2=].8I;" },
-/* ADC 6 */   { DSTMASK , DSTA, 
+/* ADC 6 */   { DSTMASK , DSTA,
 		"29;[1=];" },
-/* ADC 7 */   { DSTMASK , DSTB, 
+/* ADC 7 */   { DSTMASK , DSTB,
 		"59;[1=];" },
-/* ADC 8 */   { 0 , 0, 
+/* ADC 8 */   { 0 , 0,
 		"79;[1=];[2=].8I;" },
-/* ADD 9 */   { SRCMASK|DSTMASK , SRCB|DSTA, 
+/* ADD 9 */   { SRCMASK|DSTMASK , SRCB|DSTA,
 		"68;" },
-/* ADD 10 */   { DSTMASK , DSTA, 
+/* ADD 10 */   { DSTMASK , DSTA,
 		"18;[1=].8I;" },
-/* ADD 11 */   { DSTMASK , DSTB, 
+/* ADD 11 */   { DSTMASK , DSTB,
 		"38;[1=].8I;" },
-/* ADD 12 */   { 0 , 0, 
+/* ADD 12 */   { 0 , 0,
 		"48;[1=].8I;[2=].8I;" },
-/* ADD 13 */   { DSTMASK , DSTA, 
+/* ADD 13 */   { DSTMASK , DSTA,
 		"28;[1=];" },
-/* ADD 14 */   { DSTMASK , DSTB, 
+/* ADD 14 */   { DSTMASK , DSTB,
 		"58;[1=];" },
-/* ADD 15 */   { 0 , 0, 
+/* ADD 15 */   { 0 , 0,
 		"78;[1=];[2=].8I;" },
-/* AND 16 */   { SRCMASK|DSTMASK , SRCB|DSTA, 
+/* AND 16 */   { SRCMASK|DSTMASK , SRCB|DSTA,
 		"63;" },
-/* AND 17 */   { DSTMASK , DSTA, 
+/* AND 17 */   { DSTMASK , DSTA,
 		"13;[1=].8I;" },
-/* AND 18 */   { DSTMASK , DSTB, 
+/* AND 18 */   { DSTMASK , DSTB,
 		"33;[1=].8I;" },
-/* AND 19 */   { 0 , 0, 
+/* AND 19 */   { 0 , 0,
 		"43;[1=].8I;[2=].8I;" },
-/* AND 20 */   { DSTMASK , DSTA, 
+/* AND 20 */   { DSTMASK , DSTA,
 		"23;[1=];" },
-/* AND 21 */   { DSTMASK , DSTB, 
+/* AND 21 */   { DSTMASK , DSTB,
 		"53;[1=];" },
-/* AND 22 */   { 0 , 0, 
+/* AND 22 */   { 0 , 0,
 		"73;[1=];[2=].8I;" },
-/* ANDP 23 */   { SRCMASK , SRCA, 
+/* ANDP 23 */   { SRCMASK , SRCA,
 		"83;[2=].100-.8I;" },
-/* ANDP 24 */   { SRCMASK , SRCB, 
+/* ANDP 24 */   { SRCMASK , SRCB,
 		"93;[2=].100-.8I;" },
-/* ANDP 25 */   { 0 , 0, 
+/* ANDP 25 */   { 0 , 0,
 		"a3;[1=];[2=].100-.8I;" },
-/* BR 26 */   { 0 , 0, 
+/* BR 26 */   { 0 , 0,
 		"8c;[1=]x" },
-/* BR 27 */   { SRCMASK , SRCB, 
+/* BR 27 */   { SRCMASK , SRCB,
 		"ac;[1=]x" },
-/* BR 28 */   { 0 , 0, 
+/* BR 28 */   { 0 , 0,
 		"9c;[1=].8I;" },
-/* BTJO 29 */   { SRCMASK|DSTMASK , SRCB|DSTA, 
+/* BTJO 29 */   { SRCMASK|DSTMASK , SRCB|DSTA,
 		"66;[3=].Q.1+-r" },
-/* BTJO 30 */   { DSTMASK , DSTA, 
+/* BTJO 30 */   { DSTMASK , DSTA,
 		"16;[1=].8I;[3=].Q.1+-r" },
-/* BTJO 31 */   { DSTMASK , DSTB, 
+/* BTJO 31 */   { DSTMASK , DSTB,
 		"36;[1=].8I;[3=].Q.1+-r" },
-/* BTJO 32 */   { 0 , 0, 
+/* BTJO 32 */   { 0 , 0,
 		"46;[1=].8I;[2=].8I;[3=].Q.1+-r" },
-/* BTJO 33 */   { DSTMASK , DSTA, 
+/* BTJO 33 */   { DSTMASK , DSTA,
 		"26;[1=];[3=].Q.1+-r" },
-/* BTJO 34 */   { DSTMASK , DSTB, 
+/* BTJO 34 */   { DSTMASK , DSTB,
 		"56;[1=];[3=].Q.1+-r" },
-/* BTJO 35 */   { 0 , 0, 
+/* BTJO 35 */   { 0 , 0,
 		"76;[1=];[2=].8I;[3=].Q.1+-r" },
-/* BTJOP 36 */   { SRCMASK , SRCA, 
+/* BTJOP 36 */   { SRCMASK , SRCA,
 		"86;[2=].100-.8I;[3=].Q.1+-r" },
-/* BTJOP 37 */   { SRCMASK , SRCB, 
+/* BTJOP 37 */   { SRCMASK , SRCB,
 		"96;[2=].100-.8I;[3=].Q.1+-r" },
-/* BTJOP 38 */   { 0 , 0, 
+/* BTJOP 38 */   { 0 , 0,
 		"a6;[1=];[2=].100-.8I;[3=].Q.1+-r" },
-/* BTJZ 39 */   { SRCMASK|DSTMASK , SRCB|DSTA, 
+/* BTJZ 39 */   { SRCMASK|DSTMASK , SRCB|DSTA,
 		"67;[3=].Q.1+-r" },
-/* BTJZ 40 */   { DSTMASK , DSTA, 
+/* BTJZ 40 */   { DSTMASK , DSTA,
 		"17;[1=].8I;[3=].Q.1+-r" },
-/* BTJZ 41 */   { DSTMASK , DSTB, 
+/* BTJZ 41 */   { DSTMASK , DSTB,
 		"37;[1=].8I;[3=].Q.1+-r" },
-/* BTJZ 42 */   { 0 , 0, 
+/* BTJZ 42 */   { 0 , 0,
 		"47;[1=].8I;[2=].8I;[3=].Q.1+-r" },
-/* BTJZ 43 */   { DSTMASK , DSTA, 
+/* BTJZ 43 */   { DSTMASK , DSTA,
 		"27;[1=];[3=].Q.1+-r" },
-/* BTJZ 44 */   { DSTMASK , DSTB, 
+/* BTJZ 44 */   { DSTMASK , DSTB,
 		"57;[1=];[3=].Q.1+-r" },
-/* BTJZ 45 */   { 0 , 0, 
+/* BTJZ 45 */   { 0 , 0,
 		"77;[1=];[2=].8I;[3=].Q.1+-r" },
-/* BTJZP 46 */   { SRCMASK , SRCA, 
+/* BTJZP 46 */   { SRCMASK , SRCA,
 		"87;[2=].100-.8I;[3=].Q.1+-r" },
-/* BTJZP 47 */   { SRCMASK , SRCB, 
+/* BTJZP 47 */   { SRCMASK , SRCB,
 		"97;[2=].100-.8I;[3=].Q.1+-r" },
-/* BTJZP 48 */   { 0 , 0, 
+/* BTJZP 48 */   { 0 , 0,
 		"a7;[1=];[2=].100-.8I;[3=].Q.1+-r" },
-/* CALL 49 */   { 0 , 0, 
+/* CALL 49 */   { 0 , 0,
 		"8e;[1=]x" },
-/* CALL 50 */   { SRCMASK , SRCB, 
+/* CALL 50 */   { SRCMASK , SRCB,
 		"ae;[1=]x" },
-/* CALL 51 */   { 0 , 0, 
+/* CALL 51 */   { 0 , 0,
 		"9e;[1=].8I;" },
-/* CLR 52 */   { DSTMASK , DSTA, 
+/* CLR 52 */   { DSTMASK , DSTA,
 		"b5;" },
-/* CLR 53 */   { DSTMASK , DSTB, 
+/* CLR 53 */   { DSTMASK , DSTB,
 		"c5;" },
-/* CLR 54 */   { 0 , 0, 
+/* CLR 54 */   { 0 , 0,
 		"d5;[1=].8I;" },
-/* CLRC 55 */   { 0 , 0, 
+/* CLRC 55 */   { 0 , 0,
 		"b0;" },
-/* CMP 56 */   { SRCMASK|DSTMASK , SRCB|DSTA, 
+/* CMP 56 */   { SRCMASK|DSTMASK , SRCB|DSTA,
 		"6d;" },
-/* CMP 57 */   { DSTMASK , DSTA, 
+/* CMP 57 */   { DSTMASK , DSTA,
 		"1d;[1=].8I;" },
-/* CMP 58 */   { DSTMASK , DSTB, 
+/* CMP 58 */   { DSTMASK , DSTB,
 		"3d;[1=].8I;" },
-/* CMP 59 */   { 0 , 0, 
+/* CMP 59 */   { 0 , 0,
 		"4d;[1=].8I;[2=].8I;" },
-/* CMP 60 */   { DSTMASK , DSTA, 
+/* CMP 60 */   { DSTMASK , DSTA,
 		"2d;[1=];" },
-/* CMP 61 */   { DSTMASK , DSTB, 
+/* CMP 61 */   { DSTMASK , DSTB,
 		"5d;[1=];" },
-/* CMP 62 */   { 0 , 0, 
+/* CMP 62 */   { 0 , 0,
 		"7d;[1=];[2=].8I;" },
-/* CMPA 63 */   { 0 , 0, 
+/* CMPA 63 */   { 0 , 0,
 		"8d;[1=]x" },
-/* CMPA 64 */   { SRCMASK , SRCB, 
+/* CMPA 64 */   { SRCMASK , SRCB,
 		"ad;[1=]x" },
-/* CMPA 65 */   { 0 , 0, 
+/* CMPA 65 */   { 0 , 0,
 		"9d;[1=].8I;" },
-/* DAC 66 */   { SRCMASK|DSTMASK , SRCB|DSTA, 
+/* DAC 66 */   { SRCMASK|DSTMASK , SRCB|DSTA,
 		"6e;" },
-/* DAC 67 */   { DSTMASK , DSTA, 
+/* DAC 67 */   { DSTMASK , DSTA,
 		"1e;[1=].8I;" },
-/* DAC 68 */   { DSTMASK , DSTB, 
+/* DAC 68 */   { DSTMASK , DSTB,
 		"3e;[1=].8I;" },
-/* DAC 69 */   { 0 , 0, 
+/* DAC 69 */   { 0 , 0,
 		"4e;[1=].8I;[2=].8I;" },
-/* DAC 70 */   { DSTMASK , DSTA, 
+/* DAC 70 */   { DSTMASK , DSTA,
 		"2e;[1=];" },
-/* DAC 71 */   { DSTMASK , DSTB, 
+/* DAC 71 */   { DSTMASK , DSTB,
 		"5e;[1=];" },
-/* DAC 72 */   { 0 , 0, 
+/* DAC 72 */   { 0 , 0,
 		"7e;[1=];[2=].8I;" },
-/* DEC 73 */   { DSTMASK , DSTA, 
+/* DEC 73 */   { DSTMASK , DSTA,
 		"b2;" },
-/* DEC 74 */   { DSTMASK , DSTB, 
+/* DEC 74 */   { DSTMASK , DSTB,
 		"c2;" },
-/* DEC 75 */   { 0 , 0, 
+/* DEC 75 */   { 0 , 0,
 		"d2;[1=].8I;" },
-/* DECD 76 */   { DSTMASK , DSTA, 
+/* DECD 76 */   { DSTMASK , DSTA,
 		"bb;" },
-/* DECD 77 */   { DSTMASK , DSTB, 
+/* DECD 77 */   { DSTMASK , DSTB,
 		"cb;" },
-/* DECD 78 */   { 0 , 0, 
+/* DECD 78 */   { 0 , 0,
 		"db;[1=].8I;" },
-/* DINT 79 */   { 0 , 0, 
+/* DINT 79 */   { 0 , 0,
 		"06;" },
-/* DJNZ 80 */   { SRCMASK , SRCA, 
+/* DJNZ 80 */   { SRCMASK , SRCA,
 		"ba;[2=].Q.1+-r" },
-/* DJNZ 81 */   { SRCMASK , SRCB, 
+/* DJNZ 81 */   { SRCMASK , SRCB,
 		"ca;[2=].Q.1+-r" },
-/* DJNZ 82 */   { 0 , 0, 
+/* DJNZ 82 */   { 0 , 0,
 		"da;[1=].8I;[2=].Q.1+-r" },
-/* DSB 83 */   { SRCMASK|DSTMASK , SRCB|DSTA, 
+/* DSB 83 */   { SRCMASK|DSTMASK , SRCB|DSTA,
 		"6f;" },
-/* DSB 84 */   { DSTMASK , DSTA, 
+/* DSB 84 */   { DSTMASK , DSTA,
 		"1f;[1=].8I;" },
-/* DSB 85 */   { DSTMASK , DSTB, 
+/* DSB 85 */   { DSTMASK , DSTB,
 		"3f;[1=].8I;" },
-/* DSB 86 */   { 0 , 0, 
+/* DSB 86 */   { 0 , 0,
 		"4f;[1=].8I;[2=].8I;" },
-/* DSB 87 */   { DSTMASK , DSTA, 
+/* DSB 87 */   { DSTMASK , DSTA,
 		"2f;[1=];" },
-/* DSB 88 */   { DSTMASK , DSTB, 
+/* DSB 88 */   { DSTMASK , DSTB,
 		"5f;[1=];" },
-/* DSB 89 */   { 0 , 0, 
+/* DSB 89 */   { 0 , 0,
 		"7f;[1=];[2=].8I;" },
-/* EINT 90 */   { 0 , 0, 
+/* EINT 90 */   { 0 , 0,
 		"05;" },
-/* IDLE 91 */   { 0 , 0, 
+/* IDLE 91 */   { 0 , 0,
 		"01;" },
-/* INC 92 */   { DSTMASK , DSTA, 
+/* INC 92 */   { DSTMASK , DSTA,
 		"b3;" },
-/* INC 93 */   { DSTMASK , DSTB, 
+/* INC 93 */   { DSTMASK , DSTB,
 		"c3;" },
-/* INC 94 */   { 0 , 0, 
+/* INC 94 */   { 0 , 0,
 		"d3;[1=].8I;" },
-/* INV 95 */   { DSTMASK , DSTA, 
+/* INV 95 */   { DSTMASK , DSTA,
 		"b4;" },
-/* INV 96 */   { DSTMASK , DSTB, 
+/* INV 96 */   { DSTMASK , DSTB,
 		"c4;" },
-/* INV 97 */   { 0 , 0, 
+/* INV 97 */   { 0 , 0,
 		"d4;[1=].8I;" },
-/* JC 98 */   { 0 , 0, 
+/* JC 98 */   { 0 , 0,
 		"e3;[1=].Q.1+-r" },
-/* JEQ 99 */   { 0 , 0, 
+/* JEQ 99 */   { 0 , 0,
 		"e2;[1=].Q.1+-r" },
-/* JGE 100 */   { 0 , 0, 
+/* JGE 100 */   { 0 , 0,
 		"e5;[1=].Q.1+-r" },
-/* JGT 101 */   { 0 , 0, 
+/* JGT 101 */   { 0 , 0,
 		"e4;[1=].Q.1+-r" },
-/* JHS 102 */   { 0 , 0, 
+/* JHS 102 */   { 0 , 0,
 		"e3;[1=].Q.1+-r" },
-/* JL 103 */   { 0 , 0, 
+/* JL 103 */   { 0 , 0,
 		"e7;[1=].Q.1+-r" },
-/* JLT 104 */   { 0 , 0, 
+/* JLT 104 */   { 0 , 0,
 		"e1;[1=].Q.1+-r" },
-/* JMP 105 */   { 0 , 0, 
+/* JMP 105 */   { 0 , 0,
 		"e0;[1=].Q.1+-r" },
-/* JN 106 */   { 0 , 0, 
+/* JN 106 */   { 0 , 0,
 		"e1;[1=].Q.1+-r" },
-/* JNC 107 */   { 0 , 0, 
+/* JNC 107 */   { 0 , 0,
 		"e7;[1=].Q.1+-r" },
-/* JNE 108 */   { 0 , 0, 
+/* JNE 108 */   { 0 , 0,
 		"e6;[1=].Q.1+-r" },
-/* JNZ 109 */   { 0 , 0, 
+/* JNZ 109 */   { 0 , 0,
 		"e6;[1=].Q.1+-r" },
-/* JP 110 */   { 0 , 0, 
+/* JP 110 */   { 0 , 0,
 		"e4;[1=].Q.1+-r" },
-/* JPZ 111 */   { 0 , 0, 
+/* JPZ 111 */   { 0 , 0,
 		"e5;[1=].Q.1+-r" },
-/* JZ 112 */   { 0 , 0, 
+/* JZ 112 */   { 0 , 0,
 		"e2;[1=].Q.1+-r" },
-/* LDA 113 */   { 0 , 0, 
+/* LDA 113 */   { 0 , 0,
 		"8a;[1=]x" },
-/* LDA 114 */   { SRCMASK , SRCB, 
+/* LDA 114 */   { SRCMASK , SRCB,
 		"aa;[1=]x" },
-/* LDA 115 */   { 0 , 0, 
+/* LDA 115 */   { 0 , 0,
 		"9a;[1=].8I;" },
-/* LDSP 116 */   { 0 , 0, 
+/* LDSP 116 */   { 0 , 0,
 		"0d;" },
-/* MOV 117 */   { SRCMASK|DSTMASK , SRCA|DSTB, 
+/* MOV 117 */   { SRCMASK|DSTMASK , SRCA|DSTB,
 		"c0;" },
-/* MOV 118 */   { SRCMASK|DSTMASK , SRCB|DSTA, 
+/* MOV 118 */   { SRCMASK|DSTMASK , SRCB|DSTA,
 		"62;" },
-/* MOV 119 */   { DSTMASK , DSTA, 
+/* MOV 119 */   { DSTMASK , DSTA,
 		"12;[1=].8I;" },
-/* MOV 120 */   { SRCMASK , SRCA, 
+/* MOV 120 */   { SRCMASK , SRCA,
 		"d0;[2=].8I;" },
-/* MOV 121 */   { SRCMASK , SRCB, 
+/* MOV 121 */   { SRCMASK , SRCB,
 		"d1;[2=].8I;" },
-/* MOV 122 */   { DSTMASK , DSTB, 
+/* MOV 122 */   { DSTMASK , DSTB,
 		"32;[1=].8I;" },
-/* MOV 123 */   { 0 , 0, 
+/* MOV 123 */   { 0 , 0,
 		"42;[1=].8I;[2=].8I;" },
-/* MOV 124 */   { DSTMASK , DSTA, 
+/* MOV 124 */   { DSTMASK , DSTA,
 		"22;[1=];" },
-/* MOV 125 */   { DSTMASK , DSTB, 
+/* MOV 125 */   { DSTMASK , DSTB,
 		"52;[1=];" },
-/* MOV 126 */   { 0 , 0, 
+/* MOV 126 */   { 0 , 0,
 		"72;[1=];[2=].8I;" },
-/* MOVD 127 */   { 0 , 0, 
+/* MOVD 127 */   { 0 , 0,
 		"98;[1=].8I;[2=].8I;" },
-/* MOVD 128 */   { 0 , 0, 
+/* MOVD 128 */   { 0 , 0,
 		"88;[1=]x[2=].8I;" },
-/* MOVD 129 */   { SRCMASK , SRCB, 
+/* MOVD 129 */   { SRCMASK , SRCB,
 		"a8;[1=]x[2=].8I;" },
-/* MOVP 130 */   { SRCMASK , SRCA, 
+/* MOVP 130 */   { SRCMASK , SRCA,
 		"82;[2=].100-.8I;" },
-/* MOVP 131 */   { SRCMASK , SRCB, 
+/* MOVP 131 */   { SRCMASK , SRCB,
 		"92;[2=].100-.8I;" },
-/* MOVP 132 */   { DSTMASK , DSTA, 
+/* MOVP 132 */   { DSTMASK , DSTA,
 		"80;[1=].100-.8I;" },
-/* MOVP 133 */   { DSTMASK , DSTB, 
+/* MOVP 133 */   { DSTMASK , DSTB,
 		"91;[1=].100-.8I;" },
-/* MOVP 134 */   { 0 , 0, 
+/* MOVP 134 */   { 0 , 0,
 		"a2;[1=];[2=].100-.8I;" },
-/* MPY 135 */   { SRCMASK|DSTMASK , SRCB|DSTA, 
+/* MPY 135 */   { SRCMASK|DSTMASK , SRCB|DSTA,
 		"6c;" },
-/* MPY 136 */   { DSTMASK , DSTA, 
+/* MPY 136 */   { DSTMASK , DSTA,
 		"1c;[1=].8I;" },
-/* MPY 137 */   { DSTMASK , DSTB, 
+/* MPY 137 */   { DSTMASK , DSTB,
 		"3c;[1=].8I;" },
-/* MPY 138 */   { 0 , 0, 
+/* MPY 138 */   { 0 , 0,
 		"4c;[1=].8I;[2=].8I;" },
-/* MPY 139 */   { DSTMASK , DSTA, 
+/* MPY 139 */   { DSTMASK , DSTA,
 		"2c;[1=];" },
-/* MPY 140 */   { DSTMASK , DSTB, 
+/* MPY 140 */   { DSTMASK , DSTB,
 		"5c;[1=];" },
-/* MPY 141 */   { 0 , 0, 
+/* MPY 141 */   { 0 , 0,
 		"7c;[1=];[2=].8I;" },
-/* NOP 142 */   { 0 , 0, 
+/* NOP 142 */   { 0 , 0,
 		"00;" },
-/* OR 143 */   { SRCMASK|DSTMASK , SRCB|DSTA, 
+/* OR 143 */   { SRCMASK|DSTMASK , SRCB|DSTA,
 		"64;" },
-/* OR 144 */   { DSTMASK , DSTA, 
+/* OR 144 */   { DSTMASK , DSTA,
 		"14;[1=].8I;" },
-/* OR 145 */   { DSTMASK , DSTB, 
+/* OR 145 */   { DSTMASK , DSTB,
 		"34;[1=].8I;" },
-/* OR 146 */   { 0 , 0, 
+/* OR 146 */   { 0 , 0,
 		"44;[1=].8I;[2=].8I;" },
-/* OR 147 */   { DSTMASK , DSTA, 
+/* OR 147 */   { DSTMASK , DSTA,
 		"24;[1=];" },
-/* OR 148 */   { DSTMASK , DSTB, 
+/* OR 148 */   { DSTMASK , DSTB,
 		"54;[1=];" },
-/* OR 149 */   { 0 , 0, 
+/* OR 149 */   { 0 , 0,
 		"74;[1=];[2=].8I;" },
-/* ORP 150 */   { SRCMASK , SRCA, 
+/* ORP 150 */   { SRCMASK , SRCA,
 		"84;[2=].100-.8I;" },
-/* ORP 151 */   { SRCMASK , SRCB, 
+/* ORP 151 */   { SRCMASK , SRCB,
 		"94;[2=].100-.8I;" },
-/* ORP 152 */   { 0 , 0, 
+/* ORP 152 */   { 0 , 0,
 		"a4;[1=];[2=].100-.8I;" },
-/* POP 153 */   { DSTMASK , DSTA, 
+/* POP 153 */   { DSTMASK , DSTA,
 		"b9;" },
-/* POP 154 */   { DSTMASK , DSTB, 
+/* POP 154 */   { DSTMASK , DSTB,
 		"c9;" },
-/* POP 155 */   { 0 , 0, 
+/* POP 155 */   { 0 , 0,
 		"d9;[1=].8I;" },
-/* POP 156 */   { 0 , 0, 
+/* POP 156 */   { 0 , 0,
 		"08;" },
-/* PUSH 157 */   { DSTMASK , DSTA, 
+/* PUSH 157 */   { DSTMASK , DSTA,
 		"b8;" },
-/* PUSH 158 */   { DSTMASK , DSTB, 
+/* PUSH 158 */   { DSTMASK , DSTB,
 		"c8;" },
-/* PUSH 159 */   { 0 , 0, 
+/* PUSH 159 */   { 0 , 0,
 		"d8;[1=].8I;" },
-/* PUSH 160 */   { 0 , 0, 
+/* PUSH 160 */   { 0 , 0,
 		"0e;" },
-/* RETI 161 */   { 0 , 0, 
+/* RETI 161 */   { 0 , 0,
 		"0b;" },
-/* RETS 162 */   { 0 , 0, 
+/* RETS 162 */   { 0 , 0,
 		"0a;" },
-/* RL 163 */   { DSTMASK , DSTA, 
+/* RL 163 */   { DSTMASK , DSTA,
 		"be;" },
-/* RL 164 */   { DSTMASK , DSTB, 
+/* RL 164 */   { DSTMASK , DSTB,
 		"ce;" },
-/* RL 165 */   { 0 , 0, 
+/* RL 165 */   { 0 , 0,
 		"de;[1=].8I;" },
-/* RLC 166 */   { DSTMASK , DSTA, 
+/* RLC 166 */   { DSTMASK , DSTA,
 		"bf;" },
-/* RLC 167 */   { DSTMASK , DSTB, 
+/* RLC 167 */   { DSTMASK , DSTB,
 		"cf;" },
-/* RLC 168 */   { 0 , 0, 
+/* RLC 168 */   { 0 , 0,
 		"df;[1=].8I;" },
-/* RR 169 */   { DSTMASK , DSTA, 
+/* RR 169 */   { DSTMASK , DSTA,
 		"bc;" },
-/* RR 170 */   { DSTMASK , DSTB, 
+/* RR 170 */   { DSTMASK , DSTB,
 		"cc;" },
-/* RR 171 */   { 0 , 0, 
+/* RR 171 */   { 0 , 0,
 		"dc;[1=].8I;" },
-/* RRC 172 */   { DSTMASK , DSTA, 
+/* RRC 172 */   { DSTMASK , DSTA,
 		"bd;" },
-/* RRC 173 */   { DSTMASK , DSTB, 
+/* RRC 173 */   { DSTMASK , DSTB,
 		"cd;" },
-/* RRC 174 */   { 0 , 0, 
+/* RRC 174 */   { 0 , 0,
 		"dd;[1=].8I;" },
-/* SBB 175 */   { SRCMASK|DSTMASK , SRCB|DSTA, 
+/* SBB 175 */   { SRCMASK|DSTMASK , SRCB|DSTA,
 		"6b;" },
-/* SBB 176 */   { DSTMASK , DSTA, 
+/* SBB 176 */   { DSTMASK , DSTA,
 		"1b;[1=].8I;" },
-/* SBB 177 */   { DSTMASK , DSTB, 
+/* SBB 177 */   { DSTMASK , DSTB,
 		"3b;[1=].8I;" },
-/* SBB 178 */   { 0 , 0, 
+/* SBB 178 */   { 0 , 0,
 		"4b;[1=].8I;[2=].8I;" },
-/* SBB 179 */   { DSTMASK , DSTA, 
+/* SBB 179 */   { DSTMASK , DSTA,
 		"2b;[1=];" },
-/* SBB 180 */   { DSTMASK , DSTB, 
+/* SBB 180 */   { DSTMASK , DSTB,
 		"5b;[1=];" },
-/* SBB 181 */   { 0 , 0, 
+/* SBB 181 */   { 0 , 0,
 		"7b;[1=];[2=].8I;" },
-/* SETC 182 */   { 0 , 0, 
+/* SETC 182 */   { 0 , 0,
 		"07;" },
-/* STA 183 */   { 0 , 0, 
+/* STA 183 */   { 0 , 0,
 		"8b;[1=]x" },
-/* STA 184 */   { SRCMASK , SRCB, 
+/* STA 184 */   { SRCMASK , SRCB,
 		"ab;[1=]x" },
-/* STA 185 */   { 0 , 0, 
+/* STA 185 */   { 0 , 0,
 		"9b;[1=].8I;" },
-/* STSP 186 */   { 0 , 0, 
+/* STSP 186 */   { 0 , 0,
 		"09;" },
-/* SUB 187 */   { SRCMASK|DSTMASK , SRCB|DSTA, 
+/* SUB 187 */   { SRCMASK|DSTMASK , SRCB|DSTA,
 		"6a;" },
-/* SUB 188 */   { DSTMASK , DSTA, 
+/* SUB 188 */   { DSTMASK , DSTA,
 		"1a;[1=].8I;" },
-/* SUB 189 */   { DSTMASK , DSTB, 
+/* SUB 189 */   { DSTMASK , DSTB,
 		"3a;[1=].8I;" },
-/* SUB 190 */   { 0 , 0, 
+/* SUB 190 */   { 0 , 0,
 		"4a;[1=].8I;[2=].8I;" },
-/* SUB 191 */   { DSTMASK , DSTA, 
+/* SUB 191 */   { DSTMASK , DSTA,
 		"2a;[1=];" },
-/* SUB 192 */   { DSTMASK , DSTB, 
+/* SUB 192 */   { DSTMASK , DSTB,
 		"5a;[1=];" },
-/* SUB 193 */   { 0 , 0, 
+/* SUB 193 */   { 0 , 0,
 		"7a;[1=];[2=].8I;" },
-/* SWAP 194 */   { DSTMASK , DSTA, 
+/* SWAP 194 */   { DSTMASK , DSTA,
 		"b7;" },
-/* SWAP 195 */   { DSTMASK , DSTB, 
+/* SWAP 195 */   { DSTMASK , DSTB,
 		"c7;" },
-/* SWAP 196 */   { 0 , 0, 
+/* SWAP 196 */   { 0 , 0,
 		"d7;[1=].8I;" },
-/* TRAP 197 */   { 0 , 0, 
+/* TRAP 197 */   { 0 , 0,
 		"ff.[1=].5I-~.e8<T!;" },
-/* TSTA 198 */   { 0 , 0, 
+/* TSTA 198 */   { 0 , 0,
 		"b0;" },
-/* TSTB 199 */   { 0 , 0, 
+/* TSTB 199 */   { 0 , 0,
 		"c1;" },
-/* XCHB 200 */   { DSTMASK , DSTA, 
+/* XCHB 200 */   { DSTMASK , DSTA,
 		"b6;" },
-/* XCHB 201 */   { DSTMASK , DSTB, 
+/* XCHB 201 */   { DSTMASK , DSTB,
 		"c6;" },
-/* XCHB 202 */   { 0 , 0, 
+/* XCHB 202 */   { 0 , 0,
 		"d6;[1=].8I;" },
-/* XOR 203 */   { SRCMASK|DSTMASK , SRCB|DSTA, 
+/* XOR 203 */   { SRCMASK|DSTMASK , SRCB|DSTA,
 		"65;" },
-/* XOR 204 */   { DSTMASK , DSTA, 
+/* XOR 204 */   { DSTMASK , DSTA,
 		"15;[1=].8I;" },
-/* XOR 205 */   { DSTMASK , DSTB, 
+/* XOR 205 */   { DSTMASK , DSTB,
 		"35;[1=].8I;" },
-/* XOR 206 */   { 0 , 0, 
+/* XOR 206 */   { 0 , 0,
 		"45;[1=].8I;[2=].8I;" },
-/* XOR 207 */   { DSTMASK , DSTA, 
+/* XOR 207 */   { DSTMASK , DSTA,
 		"25;[1=];" },
-/* XOR 208 */   { DSTMASK , DSTB, 
+/* XOR 208 */   { DSTMASK , DSTB,
 		"55;[1=];" },
-/* XOR 209 */   { 0 , 0, 
+/* XOR 209 */   { 0 , 0,
 		"75;[1=];[2=].8I;" },
-/* XORP 210 */   { SRCMASK , SRCA, 
+/* XORP 210 */   { SRCMASK , SRCA,
 		"85;[2=].100-.8I;" },
-/* XORP 211 */   { SRCMASK , SRCB, 
+/* XORP 211 */   { SRCMASK , SRCB,
 		"95;[2=].100-.8I;" },
-/* XORP 212 */   { 0 , 0, 
+/* XORP 212 */   { 0 , 0,
 		"a5;[1=];[2=].100-.8I;" },
 	{ 0,0,""} };
 /* end fraptabdef.c */

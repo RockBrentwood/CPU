@@ -1,31 +1,7 @@
 %{
-
-/*
-HEADER: 	;
-TITLE: 		Frankenstein Cross Assemblers;
-VERSION: 	2.0;
-DESCRIPTION: "	Reconfigurable Cross-assembler producing Intel (TM)
-		Hex format object records.  ";
-KEYWORDS: 	cross-assemblers, 1805, 2650, 6301, 6502, 6805, 6809, 
-		6811, tms7000, 8048, 8051, 8096, z8, z80;
-SYSTEM: 	UNIX, MS-Dos ;
-FILENAME: 	asz80.y;
-WARNINGS: 	"This software is in the public domain.  
-		Any prior copyright claims are relinquished.  
-
-		This software is distributed with no warranty whatever.  
-		The author takes no responsibility for the consequences 
-		of its use.
-
-		Yacc (or Bison) required to compile."  ;
-SEE-ALSO: 	asz80.doc,frasmain.c;	
-AUTHORS: 	Mark Zenier;
-COMPILERS: 	Microport Sys V/AT, ATT Yacc, Turbo C V1.5, Bison (CUG disk 285)
-		(previous versions Xenix, Unisoft 68000 Version 7, Sun 3);
-*/
-/*   framework crossassembler for z80 + and minus */
-/* November 17, 1990 */
-
+// Frankenstain Cross-Assemblers, version 2.0.
+// Original author: Mark Zenier.
+// Framework crossassembler for z80 + and minus.
 /*
 	description	frame work parser description for framework cross
 			assemblers
@@ -166,7 +142,7 @@ COMPILERS: 	Microport Sys V/AT, ATT Yacc, Turbo C V1.5, Bison (CUG disk 285)
 #define ST_N11 0x200
 #define ST_N12 0x400
 #define ST_R01 0x1
-	
+
 	unsigned int cpuselect = CPU64180;
 	static char	genbdef[] = "[1=];";
 	static char	genwdef[] = "[1=]y";
@@ -297,12 +273,12 @@ allline	: 	line EOL
 			}
 	;
 
-line	:	LABEL KOC_END 
+line	:	LABEL KOC_END
 			{
 				endsymbol = $1;
 				nextreadact = Nra_end;
 			}
-	|	      KOC_END 
+	|	      KOC_END
 			{
 				nextreadact = Nra_end;
 			}
@@ -326,7 +302,7 @@ line	:	LABEL KOC_END
 			}
 		}
 			}
-	|	LABEL KOC_EQU expr 
+	|	LABEL KOC_EQU expr
 			{
 				if($1 -> seg == SSG_UNDEF)
 				{
@@ -350,7 +326,7 @@ line	:	LABEL KOC_END
 				"cannot change symbol value with EQU");
 				}
 			}
-	|	LABEL KOC_SET expr 
+	|	LABEL KOC_SET expr
 			{
 				if($1 -> seg == SSG_UNDEF
 				   || $1 -> seg == SSG_SET)
@@ -375,7 +351,7 @@ line	:	LABEL KOC_END
 				"cannot change symbol value with SET");
 				}
 			}
-	|	KOC_IF expr 
+	|	KOC_IF expr
 			{
 		if((++ifstkpt) < IFSTKDEPTH)
 		{
@@ -406,10 +382,10 @@ line	:	LABEL KOC_END
 			fraerror("IF stack overflow");
 		}
 			}
-						
-	|	KOC_IF 
+
+	|	KOC_IF
 			{
-		if(fraifskip) 
+		if(fraifskip)
 		{
 			if((++ifstkpt) < IFSTKDEPTH)
 			{
@@ -427,26 +403,26 @@ line	:	LABEL KOC_END
 			YYERROR;
 		}
 				}
-						
-	|	KOC_ELSE 
+
+	|	KOC_ELSE
 			{
 				switch(elseifstk[ifstkpt])
 				{
 				case If_Active:
 					fraifskip = FALSE;
 					break;
-				
+
 				case If_Skip:
 					fraifskip = TRUE;
 					break;
-				
+
 				case If_Err:
 					fraerror("ELSE with no matching if");
 					break;
 				}
 			}
 
-	|	KOC_ENDI 
+	|	KOC_ENDI
 			{
 				switch(endifstk[ifstkpt])
 				{
@@ -454,18 +430,18 @@ line	:	LABEL KOC_END
 					fraifskip = FALSE;
 					ifstkpt--;
 					break;
-				
+
 				case If_Skip:
 					fraifskip = TRUE;
 					ifstkpt--;
 					break;
-				
+
 				case If_Err:
 					fraerror("ENDI with no matching if");
 					break;
 				}
 			}
-	|	LABEL KOC_ORG expr 
+	|	LABEL KOC_ORG expr
 			{
 				pevalexpr(0, $3);
 				if(evalr[0].seg == SSG_ABS)
@@ -488,7 +464,7 @@ line	:	LABEL KOC_END
 					 "noncomputable expression for ORG");
 				}
 			}
-	|	      KOC_ORG expr 
+	|	      KOC_ORG expr
 			{
 				pevalexpr(0, $2);
 				if(evalr[0].seg == SSG_ABS)
@@ -587,12 +563,12 @@ line	:	LABEL KOC_END
 
 					case CF_INVALID:
 					case CF_NUMBER:
-				fracherror("invalid character to define", 
+				fracherror("invalid character to define",
 					before, sourcestr);
 						break;
 
 					case CF_CHAR:
-				fracherror("character already defined", 
+				fracherror("character already defined",
 					before, sourcestr);
 						break;
 					}
@@ -612,9 +588,9 @@ line	:	LABEL KOC_END
 		{
 			fraerror("no CHARSET statement active");
 		}
-			
+
 			}
-	|	LABEL 
+	|	LABEL
 			{
 			if($1 -> seg == SSG_UNDEF)
 			{
@@ -642,14 +618,14 @@ labeledline :	LABEL genline
 				"multiple definition of label");
 			labelloc = locctr;
 			}
-				
+
 	|	genline
 			{
 				labelloc = locctr;
 			}
 	;
 
-genline	:	KOC_BDEF	exprlist 
+genline	:	KOC_BDEF	exprlist
 			{
 				genlocrec(currseg, labelloc);
 				for( satsub = 0; satsub < $2; satsub++)
@@ -658,7 +634,7 @@ genline	:	KOC_BDEF	exprlist
 					locctr += geninstr(genbdef);
 				}
 			}
-	|	KOC_SDEF stringlist 
+	|	KOC_SDEF stringlist
 			{
 				genlocrec(currseg, labelloc);
 				for(satsub = 0; satsub < $2; satsub++)
@@ -666,7 +642,7 @@ genline	:	KOC_BDEF	exprlist
 					locctr += genstring(stringlist[satsub]);
 				}
 			}
-	|	KOC_WDEF exprlist 
+	|	KOC_WDEF exprlist
 			{
 				genlocrec(currseg, labelloc);
 				for( satsub = 0; satsub < $2; satsub++)
@@ -674,8 +650,8 @@ genline	:	KOC_BDEF	exprlist
 					pevalexpr(1, exprlist[satsub]);
 					locctr += geninstr(genwdef);
 				}
-			}	
-	|	KOC_RESM expr 
+			}
+	|	KOC_RESM expr
 			{
 				pevalexpr(0, $2);
 				if(evalr[0].seg == SSG_ABS)
@@ -727,11 +703,11 @@ line	:	KOC_CPU STRING
 		}
 			}
 	;
-genline : KOC_bit  expr ',' '(' DREGHL ')' 
+genline : KOC_bit  expr ',' '(' DREGHL ')'
 			{
 		genlocrec(currseg, labelloc);
 		pevalexpr(1,$2);
-		if(evalr[1].seg != SSG_ABS || 
+		if(evalr[1].seg != SSG_ABS ||
 			evalr[1].value < 0 ||
 			evalr[1].value > 7)
 		{
@@ -742,11 +718,11 @@ genline : KOC_bit  expr ',' '(' DREGHL ')'
 		locctr += geninstr(findgen($1, ST_B01, cpuselect));
 			}
 	;
-genline : KOC_bit  expr ',' index 
+genline : KOC_bit  expr ',' index
 			{
 		genlocrec(currseg, labelloc);
 		pevalexpr(1,$2);
-		if(evalr[1].seg != SSG_ABS || 
+		if(evalr[1].seg != SSG_ABS ||
 			evalr[1].value < 0 ||
 			evalr[1].value > 7)
 		{
@@ -758,11 +734,11 @@ genline : KOC_bit  expr ',' index
 		locctr += geninstr(findgen($1, ST_B02, cpuselect|$4.indsel));
 			}
 	;
-genline : KOC_bit  expr ',' reg8 
+genline : KOC_bit  expr ',' reg8
 			{
 		genlocrec(currseg, labelloc);
 		pevalexpr(1,$2);
-		if(evalr[1].seg != SSG_ABS || 
+		if(evalr[1].seg != SSG_ABS ||
 			evalr[1].value < 0 ||
 			evalr[1].value > 7)
 		{
@@ -773,39 +749,39 @@ genline : KOC_bit  expr ',' reg8
 		locctr += geninstr(findgen($1, ST_B03, cpuselect));
 			}
 	;
-genline : KOC_ccop  '(' dreg ')' 
+genline : KOC_ccop  '(' dreg ')'
 			{
 		genlocrec(currseg, labelloc);
 		locctr += geninstr(findgen($1, ST_CC01, cpuselect|$3));
 			}
 	;
-genline : KOC_ccop  condition ',' expr 
+genline : KOC_ccop  condition ',' expr
 			{
 		genlocrec(currseg, labelloc);
 		pevalexpr(1, $4);
 		locctr += geninstr(findgen($1, ST_CC02, cpuselect|$2));
 			}
 	;
-genline : KOC_ccop  expr 
+genline : KOC_ccop  expr
 			{
 		genlocrec(currseg, labelloc);
 		pevalexpr(1,$2);
 		locctr += geninstr(findgen($1, ST_CC03, cpuselect));
 			}
 	;
-genline : KOC_ccop  condition  
+genline : KOC_ccop  condition
 			{
 		genlocrec(currseg, labelloc);
 		locctr += geninstr(findgen($1, ST_CC04, cpuselect|$2));
 			}
 	;
-genline : KOC_ccop  
+genline : KOC_ccop
 			{
 		genlocrec(currseg, labelloc);
 		locctr += geninstr(findgen($1, ST_CC05, cpuselect));
 			}
 	;
-genline : KOC_exop  dreg ',' dreg 
+genline : KOC_exop  dreg ',' dreg
 			{
 		int selc = 0;
 
@@ -834,13 +810,13 @@ genline : KOC_exop  dreg ',' dreg
 		locctr += geninstr(findgen($1, ST_EX01, cpuselect|selc));
 			}
 	;
-genline : KOC_exop  '(' DREGSP ')' ',' dreg 
+genline : KOC_exop  '(' DREGSP ')' ',' dreg
 			{
 		genlocrec(currseg, labelloc);
 		locctr += geninstr(findgen($1, ST_EX02, cpuselect|$6));
 			}
 	;
-genline : KOC_intmode  expr 
+genline : KOC_intmode  expr
 			{
 		int selc = 0;
 
@@ -859,7 +835,7 @@ genline : KOC_intmode  expr
 		locctr += geninstr(findgen($1, ST_IM01, cpuselect|selc));
 			}
 	;
-genline : KOC_ioop  '(' topexpr ')' ',' reg8 
+genline : KOC_ioop  '(' topexpr ')' ',' reg8
 			{
 		genlocrec(currseg, labelloc);
 		pevalexpr(1, $3);
@@ -868,14 +844,14 @@ genline : KOC_ioop  '(' topexpr ')' ',' reg8
 			| ($6 == VALREGA ? REGISA : 0)));
 			}
 	;
-genline : KOC_ioop  '(' REGC ')' ',' reg8 
+genline : KOC_ioop  '(' REGC ')' ',' reg8
 			{
 		genlocrec(currseg, labelloc);
 		evalr[1].value = $6 << 3;
 		locctr += geninstr(findgen($1, ST_IO02, cpuselect));
 			}
 	;
-genline : KOC_ioop  reg8 ',' '(' topexpr ')' 
+genline : KOC_ioop  reg8 ',' '(' topexpr ')'
 			{
 		genlocrec(currseg, labelloc);
 		evalr[1].value = $2 << 3;
@@ -884,21 +860,21 @@ genline : KOC_ioop  reg8 ',' '(' topexpr ')'
 			| ($2 == VALREGA ? REGISA : 0)));
 			}
 	;
-genline : KOC_ioop  reg8 ',' '(' REGC ')' 
+genline : KOC_ioop  reg8 ',' '(' REGC ')'
 			{
 		genlocrec(currseg, labelloc);
 		evalr[1].value = $2 << 3;
 		locctr += geninstr(findgen($1, ST_IO04, cpuselect));
 			}
 	;
-genline : KOC_ldop  '(' dreg ')' ',' topexpr 
+genline : KOC_ldop  '(' dreg ')' ',' topexpr
 			{
 		genlocrec(currseg, labelloc);
 		pevalexpr(1, $6);
 		locctr += geninstr(findgen($1, ST_LD01, cpuselect|$3));
 			}
 	;
-genline : KOC_ldop  '(' dreg ')' ',' reg8 
+genline : KOC_ldop  '(' dreg ')' ',' reg8
 			{
 		genlocrec(currseg, labelloc);
 		evalr[1].value = $6;
@@ -906,42 +882,42 @@ genline : KOC_ldop  '(' dreg ')' ',' reg8
 			| $3 | ($6 == VALREGA ? REGISA : 0)));
 			}
 	;
-genline : KOC_ldop  '(' topexpr ')' ',' dreg 
+genline : KOC_ldop  '(' topexpr ')' ',' dreg
 			{
 		genlocrec(currseg, labelloc);
 		pevalexpr(1, $3);
 		locctr += geninstr(findgen($1, ST_LD03, cpuselect|$6));
 			}
 	;
-genline : KOC_ldop  '(' topexpr ')' ',' REGA 
+genline : KOC_ldop  '(' topexpr ')' ',' REGA
 			{
 		genlocrec(currseg, labelloc);
 		pevalexpr(1, $3);
 		locctr += geninstr(findgen($1, ST_LD04, cpuselect));
 			}
 	;
-genline : KOC_ldop  dreg ',' '(' topexpr ')' 
+genline : KOC_ldop  dreg ',' '(' topexpr ')'
 			{
 		genlocrec(currseg, labelloc);
 		pevalexpr(1, $5);
 		locctr += geninstr(findgen($1, ST_LD05, cpuselect|$2));
 			}
 	;
-genline : KOC_ldop  dreg ',' dreg 
+genline : KOC_ldop  dreg ',' dreg
 			{
 		genlocrec(currseg, labelloc);
 		locctr += geninstr(findgen($1, ST_LD06, cpuselect|$4
 			| ($2 == DRSP ? DRDESTSP : 0)));
 			}
 	;
-genline : KOC_ldop  dreg ',' topexpr 
+genline : KOC_ldop  dreg ',' topexpr
 			{
 		genlocrec(currseg, labelloc);
 		pevalexpr(1, $4);
 		locctr += geninstr(findgen($1, ST_LD07, cpuselect|$2));
 			}
 	;
-genline : KOC_ldop  index ',' expr 
+genline : KOC_ldop  index ',' expr
 			{
 		genlocrec(currseg, labelloc);
 		pevalexpr(1, $2.exp);
@@ -949,7 +925,7 @@ genline : KOC_ldop  index ',' expr
 		locctr += geninstr(findgen($1, ST_LD08, cpuselect|$2.indsel));
 			}
 	;
-genline : KOC_ldop  index ',' reg8 
+genline : KOC_ldop  index ',' reg8
 			{
 		genlocrec(currseg, labelloc);
 		pevalexpr(1,$2.exp);
@@ -957,7 +933,7 @@ genline : KOC_ldop  index ',' reg8
 		locctr += geninstr(findgen($1, ST_LD09, cpuselect|$2.indsel));
 			}
 	;
-genline : KOC_ldop  reg8 ',' '(' dreg ')' 
+genline : KOC_ldop  reg8 ',' '(' dreg ')'
 			{
 		genlocrec(currseg, labelloc);
 		evalr[1].value = $2 << 3;
@@ -965,7 +941,7 @@ genline : KOC_ldop  reg8 ',' '(' dreg ')'
 			| $5 | ($2 == VALREGA ? REGISA : 0)));
 			}
 	;
-genline : KOC_ldop  reg8 ',' topexpr 
+genline : KOC_ldop  reg8 ',' topexpr
 			{
 		genlocrec(currseg, labelloc);
 		evalr[1].value = $2 << 3;
@@ -973,7 +949,7 @@ genline : KOC_ldop  reg8 ',' topexpr
 		locctr += geninstr(findgen($1, ST_LD11, cpuselect));
 			}
 	;
-genline : KOC_ldop  reg8 ',' index 
+genline : KOC_ldop  reg8 ',' index
 			{
 		genlocrec(currseg, labelloc);
 		evalr[1].value = $2 << 3;
@@ -981,14 +957,14 @@ genline : KOC_ldop  reg8 ',' index
 		locctr += geninstr(findgen($1, ST_LD12, cpuselect|$4.indsel));
 			}
 	;
-genline : KOC_ldop  reg8 ',' reg8 
+genline : KOC_ldop  reg8 ',' reg8
 			{
 		genlocrec(currseg, labelloc);
 		evalr[1].value = ($2 << 3 ) | $4;
 		locctr += geninstr(findgen($1, ST_LD13, cpuselect));
 			}
 	;
-genline : KOC_ldop  reg8 ',' '(' topexpr ')' 
+genline : KOC_ldop  reg8 ',' '(' topexpr ')'
 			{
 		genlocrec(currseg, labelloc);
 		pevalexpr(1, $5);
@@ -996,38 +972,38 @@ genline : KOC_ldop  reg8 ',' '(' topexpr ')'
 			| ($2 == VALREGA ? REGISA : 0)));
 			}
 	;
-genline : KOC_ldop  reg8 ',' specialr 
+genline : KOC_ldop  reg8 ',' specialr
 			{
 		genlocrec(currseg, labelloc);
 		locctr += geninstr(findgen($1, ST_LD15, cpuselect|$4
 			| ($2 == VALREGA ? REGISA : 0)));
 			}
 	;
-genline : KOC_ldop  specialr ',' REGA 
+genline : KOC_ldop  specialr ',' REGA
 			{
 		genlocrec(currseg, labelloc);
 		locctr += geninstr(findgen($1, ST_LD16, cpuselect|$2));
 			}
 	;
-genline : KOC_opcode 
+genline : KOC_opcode
 			{
 		genlocrec(currseg, labelloc);
 		locctr += geninstr(findgen($1, ST_N01, cpuselect));
 			}
 	;
-genline : KOC_opcode  '(' DREGHL ')' 
+genline : KOC_opcode  '(' DREGHL ')'
 			{
 		genlocrec(currseg, labelloc);
 		locctr += geninstr(findgen($1, ST_N02, cpuselect));
 			}
 	;
-genline : KOC_opcode  dreg 
+genline : KOC_opcode  dreg
 			{
 		genlocrec(currseg, labelloc);
 		locctr += geninstr(findgen($1, ST_N04, cpuselect|$2));
 			}
 	;
-genline : KOC_opcode  dreg ',' dreg 
+genline : KOC_opcode  dreg ',' dreg
 			{
 		int selc = 0;
 
@@ -1049,21 +1025,21 @@ genline : KOC_opcode  dreg ',' dreg
 			| $4| selc));
 			}
 	;
-genline : KOC_opcode  topexpr 
+genline : KOC_opcode  topexpr
 			{
 		genlocrec(currseg, labelloc);
 		pevalexpr(1, $2);
 		locctr += geninstr(findgen($1, ST_N06, cpuselect));
 			}
 	;
-genline : KOC_opcode  index 
+genline : KOC_opcode  index
 			{
 		genlocrec(currseg, labelloc);
 		pevalexpr(1, $2.exp);
 		locctr += geninstr(findgen($1, ST_N07, cpuselect|$2.indsel));
 			}
 	;
-genline : KOC_opcode  reg8 
+genline : KOC_opcode  reg8
 			{
 		genlocrec(currseg, labelloc);
 		evalr[1].value = $2;
@@ -1071,14 +1047,14 @@ genline : KOC_opcode  reg8
 		locctr += geninstr(findgen($1, ST_N08, cpuselect));
 			}
 	;
-genline : KOC_opcode  reg8 ',' '(' DREGHL ')' 
+genline : KOC_opcode  reg8 ',' '(' DREGHL ')'
 			{
 		genlocrec(currseg, labelloc);
 		locctr += geninstr(findgen($1, ST_N09, cpuselect
 			| ($2 == VALREGA ? REGISA : 0)));
 			}
 	;
-genline : KOC_opcode  reg8 ',' topexpr 
+genline : KOC_opcode  reg8 ',' topexpr
 			{
 		genlocrec(currseg, labelloc);
 		pevalexpr(1, $4);
@@ -1086,7 +1062,7 @@ genline : KOC_opcode  reg8 ',' topexpr
 			| ($2 == VALREGA ? REGISA : 0)));
 			}
 	;
-genline : KOC_opcode  reg8 ',' index 
+genline : KOC_opcode  reg8 ',' index
 			{
 		genlocrec(currseg, labelloc);
 		pevalexpr(1, $4.exp);
@@ -1094,7 +1070,7 @@ genline : KOC_opcode  reg8 ',' index
 			| ($2 == VALREGA ? REGISA : 0)));
 			}
 	;
-genline : KOC_opcode  reg8 ',' reg8 
+genline : KOC_opcode  reg8 ',' reg8
 			{
 		genlocrec(currseg, labelloc);
 		evalr[1].value = $4;
@@ -1102,7 +1078,7 @@ genline : KOC_opcode  reg8 ',' reg8
 			| ($2 == VALREGA ? REGISA : 0)));
 			}
 	;
-genline : KOC_restart  expr 
+genline : KOC_restart  expr
 			{
 		int selc = 0;
 
@@ -1131,7 +1107,7 @@ genline : KOC_restart  expr
 				break;
 			}
 		}
-		evalr[1].value &= 070;	
+		evalr[1].value &= 070;
 		locctr += geninstr(findgen($1, ST_R01, cpuselect));
 			}
 	;
@@ -1479,7 +1455,7 @@ cpumatch(str)
 		{"Z80", CPUZ80},
 		{"85", CPU8085},
 		{"80", CPU8080},
-		{"", 0} 
+		{"", 0}
 	};
 
 	for(msub = 0; matchtab[msub].cpuv != 0; msub++)
@@ -1796,557 +1772,557 @@ struct opsynt ostab[NUMSYNBLK+1]
 
 struct igel igtab[NUMDIFFOP+1]
 	= {
-/* invalid 0 */   { 0 , 0, 
+/* invalid 0 */   { 0 , 0,
 		"[Xnullentry" },
-/* invalid 1 */   { 0 , 0, 
+/* invalid 1 */   { 0 , 0,
 		"[Xinvalid opcode" },
-/* ADC 2 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTHL|DRBC, 
+/* ADC 2 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTHL|DRBC,
 		"ed;4a;" },
-/* ADC 3 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTHL|DRDE, 
+/* ADC 3 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTHL|DRDE,
 		"ed;5a;" },
-/* ADC 4 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTHL|DRHL, 
+/* ADC 4 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTHL|DRHL,
 		"ed;6a;" },
-/* ADC 5 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTHL|DRSP, 
+/* ADC 5 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTHL|DRSP,
 		"ed;7a;" },
-/* ADC 6 */   { REGISA , REGISA, 
+/* ADC 6 */   { REGISA , REGISA,
 		"8e;" },
-/* ADC 7 */   { REGISA , REGISA, 
+/* ADC 7 */   { REGISA , REGISA,
 		"ce;[1=];" },
-/* ADC 8 */   { REGISA|TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX|REGISA, 
+/* ADC 8 */   { REGISA|TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX|REGISA,
 		"dd;8e;[1=]r" },
-/* ADC 9 */   { REGISA|TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY|REGISA, 
+/* ADC 9 */   { REGISA|TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY|REGISA,
 		"fd;8e;[1=]r" },
-/* ADC 10 */   { REGISA|0 , 0|REGISA, 
+/* ADC 10 */   { REGISA|0 , 0|REGISA,
 		"88.[1#]|;" },
-/* ADD 11 */   { DRDESTMASK|DRMASK , DRDESTHL|DRBC, 
+/* ADD 11 */   { DRDESTMASK|DRMASK , DRDESTHL|DRBC,
 		"09;" },
-/* ADD 12 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTIX|DRBC, 
+/* ADD 12 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTIX|DRBC,
 		"dd;09;" },
-/* ADD 13 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTIY|DRBC, 
+/* ADD 13 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTIY|DRBC,
 		"fd;09;" },
-/* ADD 14 */   { DRDESTMASK|DRMASK , DRDESTHL|DRDE, 
+/* ADD 14 */   { DRDESTMASK|DRMASK , DRDESTHL|DRDE,
 		"19;" },
-/* ADD 15 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTIX|DRDE, 
+/* ADD 15 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTIX|DRDE,
 		"dd;19;" },
-/* ADD 16 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTIY|DRDE, 
+/* ADD 16 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTIY|DRDE,
 		"fd;19;" },
-/* ADD 17 */   { DRDESTMASK|DRMASK , DRDESTHL|DRHL, 
+/* ADD 17 */   { DRDESTMASK|DRMASK , DRDESTHL|DRHL,
 		"29;" },
-/* ADD 18 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTIX|DRIX, 
+/* ADD 18 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTIX|DRIX,
 		"dd;29;" },
-/* ADD 19 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTIY|DRIY, 
+/* ADD 19 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTIY|DRIY,
 		"fd;29;" },
-/* ADD 20 */   { DRDESTMASK|DRMASK , DRDESTHL|DRSP, 
+/* ADD 20 */   { DRDESTMASK|DRMASK , DRDESTHL|DRSP,
 		"39;" },
-/* ADD 21 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTIX|DRSP, 
+/* ADD 21 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTIX|DRSP,
 		"dd;39;" },
-/* ADD 22 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTIY|DRSP, 
+/* ADD 22 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTIY|DRSP,
 		"fd;39;" },
-/* ADD 23 */   { REGISA , REGISA, 
+/* ADD 23 */   { REGISA , REGISA,
 		"86;" },
-/* ADD 24 */   { REGISA , REGISA, 
+/* ADD 24 */   { REGISA , REGISA,
 		"c6;[1=];" },
-/* ADD 25 */   { REGISA|TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX|REGISA, 
+/* ADD 25 */   { REGISA|TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX|REGISA,
 		"dd;86;[1=]r" },
-/* ADD 26 */   { REGISA|TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY|REGISA, 
+/* ADD 26 */   { REGISA|TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY|REGISA,
 		"fd;86;[1=]r" },
-/* ADD 27 */   { REGISA|0 , 0|REGISA, 
+/* ADD 27 */   { REGISA|0 , 0|REGISA,
 		"80.[1#]|;" },
-/* AND 28 */   { 0 , 0, 
+/* AND 28 */   { 0 , 0,
 		"a6;" },
-/* AND 29 */   { 0 , 0, 
+/* AND 29 */   { 0 , 0,
 		"e6;[1=];" },
-/* AND 30 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX, 
+/* AND 30 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX,
 		"dd;a6;[1=]r" },
-/* AND 31 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY, 
+/* AND 31 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY,
 		"fd;a6;[1=]r" },
-/* AND 32 */   { 0 , 0, 
+/* AND 32 */   { 0 , 0,
 		"a0.[1#]|;" },
-/* BIT 33 */   { TSZ80PLUS , TSZ80PLUS, 
+/* BIT 33 */   { TSZ80PLUS , TSZ80PLUS,
 		"cb;[1#].46|;" },
-/* BIT 34 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX, 
+/* BIT 34 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX,
 		"dd;cb;[2=]r46.[1#]|;" },
-/* BIT 35 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY, 
+/* BIT 35 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY,
 		"fd;cb;[2=]r46.[1#]|;" },
-/* BIT 36 */   { TSZ80PLUS , TSZ80PLUS, 
+/* BIT 36 */   { TSZ80PLUS , TSZ80PLUS,
 		"cb;[1#].40|;" },
-/* CALL 37 */   { CCSELMASK , CCSELNZ, 
+/* CALL 37 */   { CCSELMASK , CCSELNZ,
 		"c4;[1=]y" },
-/* CALL 38 */   { CCSELMASK , CCSELZ, 
+/* CALL 38 */   { CCSELMASK , CCSELZ,
 		"cc;[1=]y" },
-/* CALL 39 */   { CCSELMASK , CCSELNC, 
+/* CALL 39 */   { CCSELMASK , CCSELNC,
 		"d4;[1=]y" },
-/* CALL 40 */   { CCSELMASK , CCSELC, 
+/* CALL 40 */   { CCSELMASK , CCSELC,
 		"dc;[1=]y" },
-/* CALL 41 */   { CCSELMASK , CCSELPO, 
+/* CALL 41 */   { CCSELMASK , CCSELPO,
 		"e4;[1=]y" },
-/* CALL 42 */   { CCSELMASK , CCSELPE, 
+/* CALL 42 */   { CCSELMASK , CCSELPE,
 		"ec;[1=]y" },
-/* CALL 43 */   { CCSELMASK , CCSELP, 
+/* CALL 43 */   { CCSELMASK , CCSELP,
 		"f4;[1=]y" },
-/* CALL 44 */   { CCSELMASK , CCSELM, 
+/* CALL 44 */   { CCSELMASK , CCSELM,
 		"fc;[1=]y" },
-/* CALL 45 */   { 0 , 0, 
+/* CALL 45 */   { 0 , 0,
 		"cd;[1=]y" },
-/* CCF 46 */   { 0 , 0, 
+/* CCF 46 */   { 0 , 0,
 		"3f;" },
-/* CP 47 */   { 0 , 0, 
+/* CP 47 */   { 0 , 0,
 		"be;" },
-/* CP 48 */   { 0 , 0, 
+/* CP 48 */   { 0 , 0,
 		"fe;[1=];" },
-/* CP 49 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX, 
+/* CP 49 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX,
 		"dd;be;[1=]r" },
-/* CP 50 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY, 
+/* CP 50 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY,
 		"fd;be;[1=]r" },
-/* CP 51 */   { 0 , 0, 
+/* CP 51 */   { 0 , 0,
 		"b8.[1#]|;" },
-/* CPD 52 */   { TSZ80PLUS , TSZ80PLUS, 
+/* CPD 52 */   { TSZ80PLUS , TSZ80PLUS,
 		"ed;a9;"  },
-/* CPDR 53 */   { TSZ80PLUS , TSZ80PLUS, 
+/* CPDR 53 */   { TSZ80PLUS , TSZ80PLUS,
 		"ed;b9;"  },
-/* CPI 54 */   { TSZ80PLUS , TSZ80PLUS, 
+/* CPI 54 */   { TSZ80PLUS , TSZ80PLUS,
 		"ed;a1;"  },
-/* CPIR 55 */   { TSZ80PLUS , TSZ80PLUS, 
+/* CPIR 55 */   { TSZ80PLUS , TSZ80PLUS,
 		"ed;b1;"  },
-/* CPL 56 */   { 0 , 0, 
+/* CPL 56 */   { 0 , 0,
 		"2f;" },
-/* DAA 57 */   { 0 , 0, 
+/* DAA 57 */   { 0 , 0,
 		"27;" },
-/* DEC 58 */   { 0 , 0, 
+/* DEC 58 */   { 0 , 0,
 		"35;" },
-/* DEC 59 */   { DRMASK , DRBC, 
+/* DEC 59 */   { DRMASK , DRBC,
 		"0b;" },
-/* DEC 60 */   { DRMASK , DRDE, 
+/* DEC 60 */   { DRMASK , DRDE,
 		"1b;" },
-/* DEC 61 */   { DRMASK , DRHL, 
+/* DEC 61 */   { DRMASK , DRHL,
 		"2b;" },
-/* DEC 62 */   { DRMASK , DRSP, 
+/* DEC 62 */   { DRMASK , DRSP,
 		"3b;" },
-/* DEC 63 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX, 
+/* DEC 63 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX,
 		"dd;2b;" },
-/* DEC 64 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY, 
+/* DEC 64 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY,
 		"fd;2b;" },
-/* DEC 65 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX, 
+/* DEC 65 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX,
 		"dd;35;[1=]r" },
-/* DEC 66 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY, 
+/* DEC 66 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY,
 		"fd;35;[1=]r" },
-/* DEC 67 */   { 0 , 0, 
+/* DEC 67 */   { 0 , 0,
 		"05.[2#]|;" },
-/* DI 68 */   { 0 , 0, 
+/* DI 68 */   { 0 , 0,
 		"f3;" },
-/* DJNZ 69 */   { 0 , 0, 
+/* DJNZ 69 */   { 0 , 0,
 		"10;[1=].P.2+-r" },
-/* EI 70 */   { 0 , 0, 
+/* EI 70 */   { 0 , 0,
 		"fb;" },
-/* EX 71 */   { EXMASK , EX1DE|EX2HL, 
+/* EX 71 */   { EXMASK , EX1DE|EX2HL,
 		"eb;" },
-/* EX 72 */   { TSZ80PLUS|EXMASK , TSZ80PLUS|EX1AF|EX2AF, 
+/* EX 72 */   { TSZ80PLUS|EXMASK , TSZ80PLUS|EX1AF|EX2AF,
 		"08;" },
-/* EX 73 */   { DRMASK , DRHL, 
+/* EX 73 */   { DRMASK , DRHL,
 		"e3;" },
-/* EX 74 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX, 
+/* EX 74 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX,
 		"dd;e3;" },
-/* EX 75 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY, 
+/* EX 75 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY,
 		"fd;e3;" },
-/* EXX 76 */   { TSZ80PLUS , TSZ80PLUS, 
+/* EXX 76 */   { TSZ80PLUS , TSZ80PLUS,
 		"d9;" },
-/* HALT 77 */   { 0 , 0, 
+/* HALT 77 */   { 0 , 0,
 		"76;" },
-/* IM 78 */   { TSZ80PLUS|INTSETMASK , TSZ80PLUS|INTSETMODE0, 
+/* IM 78 */   { TSZ80PLUS|INTSETMASK , TSZ80PLUS|INTSETMODE0,
 		"ed;46;" },
-/* IM 79 */   { TSZ80PLUS|INTSETMASK , TSZ80PLUS|INTSETMODE1, 
+/* IM 79 */   { TSZ80PLUS|INTSETMASK , TSZ80PLUS|INTSETMODE1,
 		"ed;56;" },
-/* IM 80 */   { TSZ80PLUS|INTSETMASK , TSZ80PLUS|INTSETMODE2, 
+/* IM 80 */   { TSZ80PLUS|INTSETMASK , TSZ80PLUS|INTSETMODE2,
 		"ed;5e;" },
-/* IN0 81 */   { TS64180 , TS64180, 
+/* IN0 81 */   { TS64180 , TS64180,
 		"ed;00.[1#]|;[2=];" },
-/* IN 82 */   { REGISA , REGISA, 
+/* IN 82 */   { REGISA , REGISA,
 		"db;[2=];" },
-/* IN 83 */   { TSZ80PLUS , TSZ80PLUS, 
+/* IN 83 */   { TSZ80PLUS , TSZ80PLUS,
 		"ed;40.[1#]|;" },
-/* INC 84 */   { 0 , 0, 
+/* INC 84 */   { 0 , 0,
 		"34;" },
-/* INC 85 */   { DRMASK , DRBC, 
+/* INC 85 */   { DRMASK , DRBC,
 		"03;" },
-/* INC 86 */   { DRMASK , DRDE, 
+/* INC 86 */   { DRMASK , DRDE,
 		"13;" },
-/* INC 87 */   { DRMASK , DRHL, 
+/* INC 87 */   { DRMASK , DRHL,
 		"23;" },
-/* INC 88 */   { DRMASK , DRSP, 
+/* INC 88 */   { DRMASK , DRSP,
 		"33;" },
-/* INC 89 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX, 
+/* INC 89 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX,
 		"dd;23;" },
-/* INC 90 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY, 
+/* INC 90 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY,
 		"fd;23;" },
-/* INC 91 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX, 
+/* INC 91 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX,
 		"dd;34;[1=]r" },
-/* INC 92 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY, 
+/* INC 92 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY,
 		"fd;34;[1=]r" },
-/* INC 93 */   { 0 , 0, 
+/* INC 93 */   { 0 , 0,
 		"04.[2#]|;" },
-/* IND 94 */   { TSZ80PLUS , TSZ80PLUS, 
+/* IND 94 */   { TSZ80PLUS , TSZ80PLUS,
 		"ed;aa;" },
-/* INDR 95 */   { TSZ80PLUS , TSZ80PLUS, 
+/* INDR 95 */   { TSZ80PLUS , TSZ80PLUS,
 		"ed;ba;" },
-/* INI 96 */   { TSZ80PLUS , TSZ80PLUS, 
+/* INI 96 */   { TSZ80PLUS , TSZ80PLUS,
 		"ed;a2;" },
-/* INIR 97 */   { TSZ80PLUS , TSZ80PLUS, 
+/* INIR 97 */   { TSZ80PLUS , TSZ80PLUS,
 		"ed;b2;" },
-/* JP 98 */   { DRMASK , DRHL, 
+/* JP 98 */   { DRMASK , DRHL,
 		"e9;" },
-/* JP 99 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX, 
+/* JP 99 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX,
 		"dd;e9;" },
-/* JP 100 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY, 
+/* JP 100 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY,
 		"fd;e9;" },
-/* JP 101 */   { CCSELMASK , CCSELNZ, 
+/* JP 101 */   { CCSELMASK , CCSELNZ,
 		"c2;[1=]y" },
-/* JP 102 */   { CCSELMASK , CCSELZ, 
+/* JP 102 */   { CCSELMASK , CCSELZ,
 		"ca;[1=]y" },
-/* JP 103 */   { CCSELMASK , CCSELNC, 
+/* JP 103 */   { CCSELMASK , CCSELNC,
 		"d2;[1=]y" },
-/* JP 104 */   { CCSELMASK , CCSELC, 
+/* JP 104 */   { CCSELMASK , CCSELC,
 		"da;[1=]y" },
-/* JP 105 */   { CCSELMASK , CCSELPO, 
+/* JP 105 */   { CCSELMASK , CCSELPO,
 		"e2;[1=]y" },
-/* JP 106 */   { CCSELMASK , CCSELPE, 
+/* JP 106 */   { CCSELMASK , CCSELPE,
 		"ea;[1=]y" },
-/* JP 107 */   { CCSELMASK , CCSELP, 
+/* JP 107 */   { CCSELMASK , CCSELP,
 		"f2;[1=]y" },
-/* JP 108 */   { CCSELMASK , CCSELM, 
+/* JP 108 */   { CCSELMASK , CCSELM,
 		"fa;[1=]y" },
-/* JP 109 */   { 0 , 0, 
+/* JP 109 */   { 0 , 0,
 		"c3;[1=]y" },
-/* JR 110 */   { TSZ80PLUS|CCSELMASK , CCSELNZ|TSZ80PLUS, 
+/* JR 110 */   { TSZ80PLUS|CCSELMASK , CCSELNZ|TSZ80PLUS,
 		"20;[1=].P.2+-r" },
-/* JR 111 */   { TSZ80PLUS|CCSELMASK , CCSELZ|TSZ80PLUS, 
+/* JR 111 */   { TSZ80PLUS|CCSELMASK , CCSELZ|TSZ80PLUS,
 		"28;[1=].P.2+-r" },
-/* JR 112 */   { TSZ80PLUS|CCSELMASK , CCSELNC|TSZ80PLUS, 
+/* JR 112 */   { TSZ80PLUS|CCSELMASK , CCSELNC|TSZ80PLUS,
 		"30;[1=].P.2+-r" },
-/* JR 113 */   { TSZ80PLUS|CCSELMASK , CCSELC|TSZ80PLUS, 
+/* JR 113 */   { TSZ80PLUS|CCSELMASK , CCSELC|TSZ80PLUS,
 		"38;[1=].P.2+-r" },
-/* JR 114 */   { TSZ80PLUS , TSZ80PLUS, 
+/* JR 114 */   { TSZ80PLUS , TSZ80PLUS,
 		"18;[1=].P.2+-r" },
-/* LD 115 */   { DRMASK , DRHL, 
+/* LD 115 */   { DRMASK , DRHL,
 		"36;[1=];" },
-/* LD 116 */   { DRMASK , DRHL, 
+/* LD 116 */   { DRMASK , DRHL,
 		"70.[1#]|;" },
-/* LD 117 */   { DRMASK|REGISA , DRBC|REGISA, 
+/* LD 117 */   { DRMASK|REGISA , DRBC|REGISA,
 		"02;" },
-/* LD 118 */   { DRMASK|REGISA , DRDE|REGISA, 
+/* LD 118 */   { DRMASK|REGISA , DRDE|REGISA,
 		"12;" },
-/* LD 119 */   { DRMASK , DRHL, 
+/* LD 119 */   { DRMASK , DRHL,
 		"22;[1=]y" },
-/* LD 120 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX, 
+/* LD 120 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX,
 		"dd;22;[1=]y" },
-/* LD 121 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY, 
+/* LD 121 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY,
 		"fd;22;[1=]y" },
-/* LD 122 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRBC, 
+/* LD 122 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRBC,
 		"ed;43;[1=]y" },
-/* LD 123 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRDE, 
+/* LD 123 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRDE,
 		"ed;53;[1=]y" },
-/* LD 124 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRSP, 
+/* LD 124 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRSP,
 		"ed;73;[1=]y" },
-/* LD 125 */   { 0 , 0, 
+/* LD 125 */   { 0 , 0,
 		"32;[1=]y" },
-/* LD 126 */   { DRMASK , DRHL, 
+/* LD 126 */   { DRMASK , DRHL,
 		"2a;[1=]y" },
-/* LD 127 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX, 
+/* LD 127 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX,
 		"dd;2a;[1=]y" },
-/* LD 128 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY, 
+/* LD 128 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY,
 		"fd;2a;[1=]y" },
-/* LD 129 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRBC, 
+/* LD 129 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRBC,
 		"ed;4b;[1=]y" },
-/* LD 130 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRDE, 
+/* LD 130 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRDE,
 		"ed;5b;[1=]y" },
-/* LD 131 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRSP, 
+/* LD 131 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRSP,
 		"ed;7b;[1=]y" },
-/* LD 132 */   { DRDESTMASK|TSZ80PLUS|DRMASK , TSZ80PLUS|DRHL|DRDESTSP, 
+/* LD 132 */   { DRDESTMASK|TSZ80PLUS|DRMASK , TSZ80PLUS|DRHL|DRDESTSP,
 		"f9;" },
-/* LD 133 */   { DRDESTMASK|TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX|DRDESTSP, 
+/* LD 133 */   { DRDESTMASK|TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX|DRDESTSP,
 		"dd;f9;" },
-/* LD 134 */   { DRDESTMASK|TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY|DRDESTSP, 
+/* LD 134 */   { DRDESTMASK|TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY|DRDESTSP,
 		"fd;f9;" },
-/* LD 135 */   { DRMASK , DRHL, 
+/* LD 135 */   { DRMASK , DRHL,
 		"21;[1=]y" },
-/* LD 136 */   { DRMASK , DRBC, 
+/* LD 136 */   { DRMASK , DRBC,
 		"01;[1=]y" },
-/* LD 137 */   { DRMASK , DRDE, 
+/* LD 137 */   { DRMASK , DRDE,
 		"11;[1=]y" },
-/* LD 138 */   { DRMASK , DRSP, 
+/* LD 138 */   { DRMASK , DRSP,
 		"31;[1=]y" },
-/* LD 139 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX, 
+/* LD 139 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX,
 		"dd;21;[1=]y" },
-/* LD 140 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY, 
+/* LD 140 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY,
 		"fd;21;[1=]y" },
-/* LD 141 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX, 
+/* LD 141 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX,
 		"dd;36;[1=]r[2=];" },
-/* LD 142 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY, 
+/* LD 142 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY,
 		"fd;36;[1=]r[2=];" },
-/* LD 143 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX, 
+/* LD 143 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX,
 		"dd;70.[2#]|;[1=]r" },
-/* LD 144 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY, 
+/* LD 144 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY,
 		"fd;70.[2#]|;[1=]r" },
-/* LD 145 */   { DRMASK , DRHL, 
+/* LD 145 */   { DRMASK , DRHL,
 		"46.[1#]|;" },
-/* LD 146 */   { DRMASK|REGISA , DRBC|REGISA, 
+/* LD 146 */   { DRMASK|REGISA , DRBC|REGISA,
 		"0a;" },
-/* LD 147 */   { DRMASK|REGISA , DRDE|REGISA, 
+/* LD 147 */   { DRMASK|REGISA , DRDE|REGISA,
 		"1a;" },
-/* LD 148 */   { 0 , 0, 
+/* LD 148 */   { 0 , 0,
 		"06.[1#]|;[2=];" },
-/* LD 149 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX, 
+/* LD 149 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX,
 		"dd;46.[1#]|;[2=]r" },
-/* LD 150 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY, 
+/* LD 150 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY,
 		"fd;46.[1#]|;[2=]r" },
-/* LD 151 */   { 0 , 0, 
+/* LD 151 */   { 0 , 0,
 		"40.[1#]|;" },
-/* LD 152 */   { REGISA , REGISA, 
+/* LD 152 */   { REGISA , REGISA,
 		"3a;[1=]y" },
-/* LD 153 */   { REGISA|TSZ80PLUS|SPECIALRMASK , TSZ80PLUS|SPECIALIR|REGISA, 
+/* LD 153 */   { REGISA|TSZ80PLUS|SPECIALRMASK , TSZ80PLUS|SPECIALIR|REGISA,
 		"ed;57;" },
-/* LD 154 */   { REGISA|TSZ80PLUS|SPECIALRMASK , TSZ80PLUS|SPECIALRR|REGISA, 
+/* LD 154 */   { REGISA|TSZ80PLUS|SPECIALRMASK , TSZ80PLUS|SPECIALRR|REGISA,
 		"ed;5f;" },
-/* LD 155 */   { TSZ80PLUS|SPECIALRMASK , TSZ80PLUS|SPECIALIR, 
+/* LD 155 */   { TSZ80PLUS|SPECIALRMASK , TSZ80PLUS|SPECIALIR,
 		"ed;47;" },
-/* LD 156 */   { TSZ80PLUS|SPECIALRMASK , TSZ80PLUS|SPECIALRR, 
+/* LD 156 */   { TSZ80PLUS|SPECIALRMASK , TSZ80PLUS|SPECIALRR,
 		"ed;4f;" },
-/* LDD 157 */   { TSZ80PLUS , TSZ80PLUS, 
+/* LDD 157 */   { TSZ80PLUS , TSZ80PLUS,
 		"ed;a8;" },
-/* LDDR 158 */   { TSZ80PLUS , TSZ80PLUS, 
+/* LDDR 158 */   { TSZ80PLUS , TSZ80PLUS,
 		"ed;b8;" },
-/* LDI 159 */   { TSZ80PLUS , TSZ80PLUS, 
+/* LDI 159 */   { TSZ80PLUS , TSZ80PLUS,
 		"ed;a0;" },
-/* LDIR 160 */   { TSZ80PLUS , TSZ80PLUS, 
+/* LDIR 160 */   { TSZ80PLUS , TSZ80PLUS,
 		"ed;b0;" },
-/* MULT 161 */   { TS64180|DRMASK , TS64180|DRBC, 
+/* MULT 161 */   { TS64180|DRMASK , TS64180|DRBC,
 		"ed;4c;" },
-/* MULT 162 */   { TS64180|DRMASK , TS64180|DRDE, 
+/* MULT 162 */   { TS64180|DRMASK , TS64180|DRDE,
 		"ed;5c;" },
-/* MULT 163 */   { TS64180|DRMASK , TS64180|DRHL, 
+/* MULT 163 */   { TS64180|DRMASK , TS64180|DRHL,
 		"ed;6c;" },
-/* MULT 164 */   { TS64180|DRMASK , TS64180|DRSP, 
+/* MULT 164 */   { TS64180|DRMASK , TS64180|DRSP,
 		"ed;7c;" },
-/* NEG 165 */   { TSZ80PLUS , TSZ80PLUS, 
+/* NEG 165 */   { TSZ80PLUS , TSZ80PLUS,
 		"ed;44;" },
-/* NOP 166 */   { 0 , 0, 
+/* NOP 166 */   { 0 , 0,
 		"00;" },
-/* OR 167 */   { 0 , 0, 
+/* OR 167 */   { 0 , 0,
 		"b6;" },
-/* OR 168 */   { 0 , 0, 
+/* OR 168 */   { 0 , 0,
 		"f6;[1=];" },
-/* OR 169 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX, 
+/* OR 169 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX,
 		"dd;b6;[1=]r" },
-/* OR 170 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY, 
+/* OR 170 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY,
 		"fd;b6;[1=]r" },
-/* OR 171 */   { 0 , 0, 
+/* OR 171 */   { 0 , 0,
 		"b0.[1#]|;" },
-/* OTDM 172 */   { TS64180 , TS64180, 
+/* OTDM 172 */   { TS64180 , TS64180,
 		"ed;8b;" },
-/* OTDMR 173 */   { TS64180 , TS64180, 
+/* OTDMR 173 */   { TS64180 , TS64180,
 		"ed;9b;" },
-/* OTDR 174 */   { TSZ80PLUS , TSZ80PLUS, 
+/* OTDR 174 */   { TSZ80PLUS , TSZ80PLUS,
 		"ed;bb;" },
-/* OTIM 175 */   { TS64180 , TS64180, 
+/* OTIM 175 */   { TS64180 , TS64180,
 		"ed;83;" },
-/* OTIMR 176 */   { TS64180 , TS64180, 
+/* OTIMR 176 */   { TS64180 , TS64180,
 		"ed;93;" },
-/* OTIR 177 */   { TSZ80PLUS , TSZ80PLUS, 
+/* OTIR 177 */   { TSZ80PLUS , TSZ80PLUS,
 		"ed;b3;" },
-/* OUT0 178 */   { TS64180 , TS64180, 
+/* OUT0 178 */   { TS64180 , TS64180,
 		"ed;01.[2#]|;[1=];" },
-/* OUT 179 */   { REGISA , REGISA, 
+/* OUT 179 */   { REGISA , REGISA,
 		"d3;[1=];" },
-/* OUT 180 */   { TSZ80PLUS , TSZ80PLUS, 
+/* OUT 180 */   { TSZ80PLUS , TSZ80PLUS,
 		"ed;41.[1#]|;" },
-/* OUTD 181 */   { TSZ80PLUS , TSZ80PLUS, 
+/* OUTD 181 */   { TSZ80PLUS , TSZ80PLUS,
 		"ed;ab;" },
-/* OUTI 182 */   { TSZ80PLUS , TSZ80PLUS, 
+/* OUTI 182 */   { TSZ80PLUS , TSZ80PLUS,
 		"ed;a3;" },
-/* POP 183 */   { DRMASK , DRBC, 
+/* POP 183 */   { DRMASK , DRBC,
 		"c1;" },
-/* POP 184 */   { DRMASK , DRDE, 
+/* POP 184 */   { DRMASK , DRDE,
 		"d1;" },
-/* POP 185 */   { DRMASK , DRHL, 
+/* POP 185 */   { DRMASK , DRHL,
 		"e1;" },
-/* POP 186 */   { DRMASK , DRAF, 
+/* POP 186 */   { DRMASK , DRAF,
 		"f1;" },
-/* POP 187 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX, 
+/* POP 187 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX,
 		"dd;e1;" },
-/* POP 188 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY, 
+/* POP 188 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY,
 		"fd;e1;" },
-/* PUSH 189 */   { DRMASK , DRBC, 
+/* PUSH 189 */   { DRMASK , DRBC,
 		"c5;" },
-/* PUSH 190 */   { DRMASK , DRDE, 
+/* PUSH 190 */   { DRMASK , DRDE,
 		"d5;" },
-/* PUSH 191 */   { DRMASK , DRHL, 
+/* PUSH 191 */   { DRMASK , DRHL,
 		"e5;" },
-/* PUSH 192 */   { DRMASK , DRAF, 
+/* PUSH 192 */   { DRMASK , DRAF,
 		"f5;" },
-/* PUSH 193 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX, 
+/* PUSH 193 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX,
 		"dd;e5;" },
-/* PUSH 194 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY, 
+/* PUSH 194 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY,
 		"fd;e5;" },
-/* RES 195 */   { TSZ80PLUS , TSZ80PLUS, 
+/* RES 195 */   { TSZ80PLUS , TSZ80PLUS,
 		"cb;[1#].86|;" },
-/* RES 196 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX, 
+/* RES 196 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX,
 		"dd;cb;[2=]r86.[1#]|;" },
-/* RES 197 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY, 
+/* RES 197 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY,
 		"fd;cb;[2=]r86.[1#]|;" },
-/* RES 198 */   { TSZ80PLUS , TSZ80PLUS, 
+/* RES 198 */   { TSZ80PLUS , TSZ80PLUS,
 		"cb;[1#].80|;" },
-/* RET 199 */   { CCSELMASK , CCSELNZ, 
+/* RET 199 */   { CCSELMASK , CCSELNZ,
 		"c0;" },
-/* RET 200 */   { CCSELMASK , CCSELZ, 
+/* RET 200 */   { CCSELMASK , CCSELZ,
 		"c8;" },
-/* RET 201 */   { CCSELMASK , CCSELNC, 
+/* RET 201 */   { CCSELMASK , CCSELNC,
 		"d0;" },
-/* RET 202 */   { CCSELMASK , CCSELC, 
+/* RET 202 */   { CCSELMASK , CCSELC,
 		"d8;" },
-/* RET 203 */   { CCSELMASK , CCSELPO, 
+/* RET 203 */   { CCSELMASK , CCSELPO,
 		"e0;" },
-/* RET 204 */   { CCSELMASK , CCSELPE, 
+/* RET 204 */   { CCSELMASK , CCSELPE,
 		"e8;" },
-/* RET 205 */   { CCSELMASK , CCSELP, 
+/* RET 205 */   { CCSELMASK , CCSELP,
 		"f0;" },
-/* RET 206 */   { CCSELMASK , CCSELM, 
+/* RET 206 */   { CCSELMASK , CCSELM,
 		"f8;" },
-/* RET 207 */   { 0 , 0, 
+/* RET 207 */   { 0 , 0,
 		"c9;" },
-/* RETI 208 */   { TSZ80PLUS , TSZ80PLUS, 
+/* RETI 208 */   { TSZ80PLUS , TSZ80PLUS,
 		"ed;4d;" },
-/* RETN 209 */   { TSZ80PLUS , TSZ80PLUS, 
+/* RETN 209 */   { TSZ80PLUS , TSZ80PLUS,
 		"ed;45;" },
-/* RIM 210 */   { CPUMASK , CPU8085, 
+/* RIM 210 */   { CPUMASK , CPU8085,
 		"20;" },
-/* RL 211 */   { TSZ80PLUS , TSZ80PLUS, 
+/* RL 211 */   { TSZ80PLUS , TSZ80PLUS,
 		"cb;16;" },
-/* RL 212 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX, 
+/* RL 212 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX,
 		"dd;cb;[1=]r16;" },
-/* RL 213 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY, 
+/* RL 213 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY,
 		"fd;cb;[1=]r16;" },
-/* RL 214 */   { TSZ80PLUS , TSZ80PLUS, 
+/* RL 214 */   { TSZ80PLUS , TSZ80PLUS,
 		"cb;10.[1#]|;" },
-/* RLA 215 */   { 0 , 0, 
+/* RLA 215 */   { 0 , 0,
 		"17;" },
-/* RLC 216 */   { TSZ80PLUS , TSZ80PLUS, 
+/* RLC 216 */   { TSZ80PLUS , TSZ80PLUS,
 		"cb;06;" },
-/* RLC 217 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX, 
+/* RLC 217 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX,
 		"dd;cb;[1=]r06;" },
-/* RLC 218 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY, 
+/* RLC 218 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY,
 		"fd;cb;[1=]r06;" },
-/* RLC 219 */   { TSZ80PLUS , TSZ80PLUS, 
+/* RLC 219 */   { TSZ80PLUS , TSZ80PLUS,
 		"cb;00.[1#]|;" },
-/* RLCA 220 */   { 0 , 0, 
+/* RLCA 220 */   { 0 , 0,
 		"07;" },
-/* RLD 221 */   { TSZ80PLUS , TSZ80PLUS, 
+/* RLD 221 */   { TSZ80PLUS , TSZ80PLUS,
 		"ed;6f;" },
-/* RR 222 */   { TSZ80PLUS , TSZ80PLUS, 
+/* RR 222 */   { TSZ80PLUS , TSZ80PLUS,
 		"cb;1e;" },
-/* RR 223 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX, 
+/* RR 223 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX,
 		"dd;cb;[1=]r1e;" },
-/* RR 224 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY, 
+/* RR 224 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY,
 		"fd;cb;[1=]r1e;" },
-/* RR 225 */   { TSZ80PLUS , TSZ80PLUS, 
+/* RR 225 */   { TSZ80PLUS , TSZ80PLUS,
 		"cb;18.[1#]|;" },
-/* RRA 226 */   { 0 , 0, 
+/* RRA 226 */   { 0 , 0,
 		"1f;" },
-/* RRC 227 */   { TSZ80PLUS , TSZ80PLUS, 
+/* RRC 227 */   { TSZ80PLUS , TSZ80PLUS,
 		"cb;0e;" },
-/* RRC 228 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX, 
+/* RRC 228 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX,
 		"dd;cb;[1=]r0e;" },
-/* RRC 229 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY, 
+/* RRC 229 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY,
 		"fd;cb;[1=]r0e;" },
-/* RRC 230 */   { TSZ80PLUS , TSZ80PLUS, 
+/* RRC 230 */   { TSZ80PLUS , TSZ80PLUS,
 		"cb;08.[1#]|;" },
-/* RRCA 231 */   { 0 , 0, 
+/* RRCA 231 */   { 0 , 0,
 		"0f;" },
-/* RRD 232 */   { TSZ80PLUS , TSZ80PLUS, 
+/* RRD 232 */   { TSZ80PLUS , TSZ80PLUS,
 		"ed;67;" },
-/* RST 233 */   { 0 , 0, 
+/* RST 233 */   { 0 , 0,
 		"c7.[1#]|;" },
-/* SBC 234 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTHL|DRBC, 
+/* SBC 234 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTHL|DRBC,
 		"ed;42;" },
-/* SBC 235 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTHL|DRDE, 
+/* SBC 235 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTHL|DRDE,
 		"ed;52;" },
-/* SBC 236 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTHL|DRHL, 
+/* SBC 236 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTHL|DRHL,
 		"ed;62;" },
-/* SBC 237 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTHL|DRSP, 
+/* SBC 237 */   { TSZ80PLUS|DRDESTMASK|DRMASK , TSZ80PLUS|DRDESTHL|DRSP,
 		"ed;72;" },
-/* SBC 238 */   { REGISA , REGISA, 
+/* SBC 238 */   { REGISA , REGISA,
 		"9e;" },
-/* SBC 239 */   { REGISA , REGISA, 
+/* SBC 239 */   { REGISA , REGISA,
 		"de;[1=];" },
-/* SBC 240 */   { REGISA|TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX|REGISA, 
+/* SBC 240 */   { REGISA|TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX|REGISA,
 		"dd;9e;[1=]r" },
-/* SBC 241 */   { REGISA|TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY|REGISA, 
+/* SBC 241 */   { REGISA|TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY|REGISA,
 		"fd;9e;[1=]r" },
-/* SBC 242 */   { REGISA|0 , 0|REGISA, 
+/* SBC 242 */   { REGISA|0 , 0|REGISA,
 		"98.[1#]|;" },
-/* SCF 243 */   { 0 , 0, 
+/* SCF 243 */   { 0 , 0,
 		"37;" },
-/* SET 244 */   { TSZ80PLUS , TSZ80PLUS, 
+/* SET 244 */   { TSZ80PLUS , TSZ80PLUS,
 		"cb;[1#].c6|;" },
-/* SET 245 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX, 
+/* SET 245 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIX,
 		"dd;cb;[2=]rc6.[1#]|;" },
-/* SET 246 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY, 
+/* SET 246 */   { TSZ80PLUS|DRMASK , TSZ80PLUS|DRIY,
 		"fd;cb;[2=]rc6.[1#]|;" },
-/* SET 247 */   { TSZ80PLUS , TSZ80PLUS, 
+/* SET 247 */   { TSZ80PLUS , TSZ80PLUS,
 		"cb;[1#].c0|;" },
-/* SIM 248 */   { CPUMASK , CPU8085, 
+/* SIM 248 */   { CPUMASK , CPU8085,
 		"30;" },
-/* SLA 249 */   { TSZ80PLUS , TSZ80PLUS, 
+/* SLA 249 */   { TSZ80PLUS , TSZ80PLUS,
 		"cb;26;" },
-/* SLA 250 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX, 
+/* SLA 250 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX,
 		"dd;cb;[1=]r26;" },
-/* SLA 251 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY, 
+/* SLA 251 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY,
 		"fd;cb;[1=]r26;" },
-/* SLA 252 */   { TSZ80PLUS , TSZ80PLUS, 
+/* SLA 252 */   { TSZ80PLUS , TSZ80PLUS,
 		"cb;20.[1#]|;" },
-/* SLP 253 */   { TS64180 , TS64180, 
+/* SLP 253 */   { TS64180 , TS64180,
 		"ed;76;" },
-/* SRA 254 */   { TSZ80PLUS , TSZ80PLUS, 
+/* SRA 254 */   { TSZ80PLUS , TSZ80PLUS,
 		"cb;2e;" },
-/* SRA 255 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX, 
+/* SRA 255 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX,
 		"dd;cb;[1=]r2e;" },
-/* SRA 256 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY, 
+/* SRA 256 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY,
 		"fd;cb;[1=]r2e;" },
-/* SRA 257 */   { TSZ80PLUS , TSZ80PLUS, 
+/* SRA 257 */   { TSZ80PLUS , TSZ80PLUS,
 		"cb;28.[1#]|;" },
-/* SRL 258 */   { TSZ80PLUS , TSZ80PLUS, 
+/* SRL 258 */   { TSZ80PLUS , TSZ80PLUS,
 		"cb;3e;" },
-/* SRL 259 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX, 
+/* SRL 259 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX,
 		"dd;cb;[1=]r3e;" },
-/* SRL 260 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY, 
+/* SRL 260 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY,
 		"fd;cb;[1=]r3e;" },
-/* SRL 261 */   { TSZ80PLUS , TSZ80PLUS, 
+/* SRL 261 */   { TSZ80PLUS , TSZ80PLUS,
 		"cb;38.[1#]|;" },
-/* SUB 262 */   { 0 , 0, 
+/* SUB 262 */   { 0 , 0,
 		"96;" },
-/* SUB 263 */   { 0 , 0, 
+/* SUB 263 */   { 0 , 0,
 		"d6;[1=];" },
-/* SUB 264 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX, 
+/* SUB 264 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX,
 		"dd;96;[1=]r" },
-/* SUB 265 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY, 
+/* SUB 265 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY,
 		"fd;96;[1=]r" },
-/* SUB 266 */   { 0 , 0, 
+/* SUB 266 */   { 0 , 0,
 		"90.[1#]|;" },
-/* TST 267 */   { TS64180 , TS64180, 
+/* TST 267 */   { TS64180 , TS64180,
 		"ed;34;" },
-/* TST 268 */   { TS64180 , TS64180, 
+/* TST 268 */   { TS64180 , TS64180,
 		"ed;64;[1=];" },
-/* TST 269 */   { TS64180 , TS64180, 
+/* TST 269 */   { TS64180 , TS64180,
 		"ed;04.[2#]|;" },
-/* TSTIO 270 */   { TS64180 , TS64180, 
+/* TSTIO 270 */   { TS64180 , TS64180,
 		"ed;74;[1=];" },
-/* XOR 271 */   { 0 , 0, 
+/* XOR 271 */   { 0 , 0,
 		"ae;" },
-/* XOR 272 */   { 0 , 0, 
+/* XOR 272 */   { 0 , 0,
 		"ee;[1=];" },
-/* XOR 273 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX, 
+/* XOR 273 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIX,
 		"dd;ae;[1=]r" },
-/* XOR 274 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY, 
+/* XOR 274 */   { DRMASK|TSZ80PLUS , TSZ80PLUS|DRIY,
 		"fd;ae;[1=]r" },
-/* XOR 275 */   { 0 , 0, 
+/* XOR 275 */   { 0 , 0,
 		"a8.[1#]|;" },
 	{ 0,0,""} };
 /* end fraptabdef.c */

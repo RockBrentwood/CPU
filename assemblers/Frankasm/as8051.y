@@ -1,31 +1,7 @@
 %{
-
-/*
-HEADER: 	;
-TITLE: 		Frankenstein Cross Assemblers;
-VERSION: 	2.0;
-DESCRIPTION: "	Reconfigurable Cross-assembler producing Intel (TM)
-		Hex format object records.  ";
-KEYWORDS: 	cross-assemblers, 1805, 2650, 6301, 6502, 6805, 6809, 
-		6811, tms7000, 8048, 8051, 8096, z8, z80;
-SYSTEM: 	UNIX, MS-Dos ;
-FILENAME: 	as8051.y;
-WARNINGS: 	"This software is in the public domain.  
-		Any prior copyright claims are relinquished.  
-
-		This software is distributed with no warranty whatever.  
-		The author takes no responsibility for the consequences 
-		of its use.
-
-		Yacc (or Bison) required to compile."  ;
-SEE-ALSO: 	as8051.doc,frasmain.c;	
-AUTHORS: 	Mark Zenier;
-COMPILERS: 	Microport Sys V/AT, ATT Yacc, Turbo C V1.5, Bison (CUG disk 285)
-		(previous versions Xenix, Unisoft 68000 Version 7, Sun 3);
-*/
-/* 8051 structured generation file */
-/* November 17, 1990 */
-
+// Frankenstain Cross-Assemblers, version 2.0.
+// Original author: Mark Zenier.
+// 8051 structured generation file.
 /*
 	description	frame work parser description for framework cross
 			assemblers
@@ -94,7 +70,7 @@ COMPILERS: 	Microport Sys V/AT, ATT Yacc, Turbo C V1.5, Bison (CUG disk 285)
 #define ST_CJNE1 0x1
 #define ST_CJNE2 0x2
 #define ST_CJNE3 0x4
-	
+
 	static char	genbdef[] = "[1=];";
 	static char	genwdef[] = "[1=]y"; /* x for normal, y for byte rev */
 	char ignosyn[] = "[Xinvalid syntax for instruction";
@@ -195,12 +171,12 @@ allline	: 	line EOL
 			}
 	;
 
-line	:	LABEL KOC_END 
+line	:	LABEL KOC_END
 			{
 				endsymbol = $1;
 				nextreadact = Nra_end;
 			}
-	|	      KOC_END 
+	|	      KOC_END
 			{
 				nextreadact = Nra_end;
 			}
@@ -224,7 +200,7 @@ line	:	LABEL KOC_END
 			}
 		}
 			}
-	|	LABEL KOC_EQU expr 
+	|	LABEL KOC_EQU expr
 			{
 				if($1 -> seg == SSG_UNDEF)
 				{
@@ -248,7 +224,7 @@ line	:	LABEL KOC_END
 				"cannot change symbol value with EQU");
 				}
 			}
-	|	LABEL KOC_SET expr 
+	|	LABEL KOC_SET expr
 			{
 				if($1 -> seg == SSG_UNDEF
 				   || $1 -> seg == SSG_SET)
@@ -273,7 +249,7 @@ line	:	LABEL KOC_END
 				"cannot change symbol value with SET");
 				}
 			}
-	|	KOC_IF expr 
+	|	KOC_IF expr
 			{
 		if((++ifstkpt) < IFSTKDEPTH)
 		{
@@ -304,10 +280,10 @@ line	:	LABEL KOC_END
 			fraerror("IF stack overflow");
 		}
 			}
-						
-	|	KOC_IF 
+
+	|	KOC_IF
 			{
-		if(fraifskip) 
+		if(fraifskip)
 		{
 			if((++ifstkpt) < IFSTKDEPTH)
 			{
@@ -325,26 +301,26 @@ line	:	LABEL KOC_END
 			YYERROR;
 		}
 				}
-						
-	|	KOC_ELSE 
+
+	|	KOC_ELSE
 			{
 				switch(elseifstk[ifstkpt])
 				{
 				case If_Active:
 					fraifskip = FALSE;
 					break;
-				
+
 				case If_Skip:
 					fraifskip = TRUE;
 					break;
-				
+
 				case If_Err:
 					fraerror("ELSE with no matching if");
 					break;
 				}
 			}
 
-	|	KOC_ENDI 
+	|	KOC_ENDI
 			{
 				switch(endifstk[ifstkpt])
 				{
@@ -352,18 +328,18 @@ line	:	LABEL KOC_END
 					fraifskip = FALSE;
 					ifstkpt--;
 					break;
-				
+
 				case If_Skip:
 					fraifskip = TRUE;
 					ifstkpt--;
 					break;
-				
+
 				case If_Err:
 					fraerror("ENDI with no matching if");
 					break;
 				}
 			}
-	|	LABEL KOC_ORG expr 
+	|	LABEL KOC_ORG expr
 			{
 				pevalexpr(0, $3);
 				if(evalr[0].seg == SSG_ABS)
@@ -386,7 +362,7 @@ line	:	LABEL KOC_END
 					 "noncomputable expression for ORG");
 				}
 			}
-	|	      KOC_ORG expr 
+	|	      KOC_ORG expr
 			{
 				pevalexpr(0, $2);
 				if(evalr[0].seg == SSG_ABS)
@@ -485,12 +461,12 @@ line	:	LABEL KOC_END
 
 					case CF_INVALID:
 					case CF_NUMBER:
-				fracherror("invalid character to define", 
+				fracherror("invalid character to define",
 					before, sourcestr);
 						break;
 
 					case CF_CHAR:
-				fracherror("character already defined", 
+				fracherror("character already defined",
 					before, sourcestr);
 						break;
 					}
@@ -510,9 +486,9 @@ line	:	LABEL KOC_END
 		{
 			fraerror("no CHARSET statement active");
 		}
-			
+
 			}
-	|	LABEL 
+	|	LABEL
 			{
 			if($1 -> seg == SSG_UNDEF)
 			{
@@ -540,14 +516,14 @@ labeledline :	LABEL genline
 				"multiple definition of label");
 			labelloc = locctr;
 			}
-				
+
 	|	genline
 			{
 				labelloc = locctr;
 			}
 	;
 
-genline	:	KOC_BDEF	exprlist 
+genline	:	KOC_BDEF	exprlist
 			{
 				genlocrec(currseg, labelloc);
 				for( satsub = 0; satsub < $2; satsub++)
@@ -556,7 +532,7 @@ genline	:	KOC_BDEF	exprlist
 					locctr += geninstr(genbdef);
 				}
 			}
-	|	KOC_SDEF stringlist 
+	|	KOC_SDEF stringlist
 			{
 				genlocrec(currseg, labelloc);
 				for(satsub = 0; satsub < $2; satsub++)
@@ -564,7 +540,7 @@ genline	:	KOC_BDEF	exprlist
 					locctr += genstring(stringlist[satsub]);
 				}
 			}
-	|	KOC_WDEF exprlist 
+	|	KOC_WDEF exprlist
 			{
 				genlocrec(currseg, labelloc);
 				for( satsub = 0; satsub < $2; satsub++)
@@ -572,8 +548,8 @@ genline	:	KOC_BDEF	exprlist
 					pevalexpr(1, exprlist[satsub]);
 					locctr += geninstr(genwdef);
 				}
-			}	
-	|	KOC_RESM expr 
+			}
+	|	KOC_RESM expr
 			{
 				pevalexpr(0, $2);
 				if(evalr[0].seg == SSG_ABS)
@@ -616,7 +592,7 @@ stringlist :	stringlist ',' STRING
 	;
 
 
-genline : KOC_opcode 
+genline : KOC_opcode
 			{
 		genlocrec(currseg, labelloc);
 		locctr += geninstr(findgen($1, ST_INH,  0));
@@ -653,7 +629,7 @@ genline : KOC_opcode  expr
 genline : KOC_opcode  '@' REG '+' REG
 			{
 		genlocrec(currseg, labelloc);
-		locctr += geninstr(findgen($1, ST_UOP05, ($3 & REGSEL_ALL) 
+		locctr += geninstr(findgen($1, ST_UOP05, ($3 & REGSEL_ALL)
 			| (($5 & REGSEL_ALL) >> REG2NDSHFT) ));
 			}
 	;
@@ -686,7 +662,7 @@ genline : KOC_aluop  REG ',' '@' REG
 		genlocrec(currseg, labelloc);
 		evalr[1].value = ( $2 & REGVALMASK);
 		evalr[2].value = ( $5 & REGVALMASK);
-		locctr += geninstr(findgen($1, ST_ALU03,  ($2 & REGSEL_ALL) 
+		locctr += geninstr(findgen($1, ST_ALU03,  ($2 & REGSEL_ALL)
 			| (($5 & REGSEL_ALL) >> REG2NDSHFT)));
 			}
 	;
@@ -695,7 +671,7 @@ genline : KOC_aluop  REG ',' REG
 		genlocrec(currseg, labelloc);
 		evalr[1].value = ( $2 & REGVALMASK);
 		evalr[2].value = ( $4 & REGVALMASK);
-		locctr += geninstr(findgen($1, ST_ALU04,  ($2 & REGSEL_ALL) 
+		locctr += geninstr(findgen($1, ST_ALU04,  ($2 & REGSEL_ALL)
 			| (($4 & REGSEL_ALL) >> REG2NDSHFT)));
 			}
 	;
@@ -760,7 +736,7 @@ genline : KOC_mov  '@' REG ',' REG
 		genlocrec(currseg, labelloc);
 		evalr[1].value = ( $3 & REGVALMASK);
 		evalr[2].value = ( $5 & REGVALMASK);
-		locctr += geninstr(findgen($1, ST_MOV02,  ($3 & REGSEL_ALL) 
+		locctr += geninstr(findgen($1, ST_MOV02,  ($3 & REGSEL_ALL)
 			| (($5 & REGSEL_ALL) >> REG2NDSHFT)));
 			}
 	;
@@ -785,7 +761,7 @@ genline : KOC_mov  REG ',' '@' REG
 		genlocrec(currseg, labelloc);
 		evalr[1].value = ( $2 & REGVALMASK);
 		evalr[2].value = ( $5 & REGVALMASK);
-		locctr += geninstr(findgen($1, ST_MOV05,  ($2 & REGSEL_ALL) 
+		locctr += geninstr(findgen($1, ST_MOV05,  ($2 & REGSEL_ALL)
 			| (($5 & REGSEL_ALL) >> REG2NDSHFT)));
 			}
 	;
@@ -801,7 +777,7 @@ genline : KOC_mov  REG ',' REG
 		genlocrec(currseg, labelloc);
 		evalr[1].value = ( $2 & REGVALMASK);
 		evalr[2].value = ( $4 & REGVALMASK);
-		locctr += geninstr(findgen($1, ST_MOV07,  ($2 & REGSEL_ALL) 
+		locctr += geninstr(findgen($1, ST_MOV07,  ($2 & REGSEL_ALL)
 			| (($4 & REGSEL_ALL) >> REG2NDSHFT)));
 			}
 	;
@@ -946,10 +922,10 @@ bit	:	expr '.' CONSTANT
 			else
 			{
 				fraerror(
-			"noncomputable expression in bit address");	
+			"noncomputable expression in bit address");
 				evalr[0].value = 0;
 			}
-			
+
 			if($3 < 0 || $3 > 7)
 			{
 				fraerror("bit number invalid");
@@ -1425,255 +1401,255 @@ struct opsynt ostab[NUMSYNBLK+1]
 
 struct igel igtab[NUMDIFFOP+1]
 	= {
-/* invalid 0 */   { 0 , 0, 
+/* invalid 0 */   { 0 , 0,
 		"[Xnullentry" },
-/* invalid 1 */   { 0 , 0, 
+/* invalid 1 */   { 0 , 0,
 		"[Xinvalid opcode" },
-/* ACALL 2 */   { 0 , 0, 
+/* ACALL 2 */   { 0 , 0,
 		"[1=].Q.2+.f800&-.bI~.3}.e0&.11|;!.ff&;" },
-/* ADD 3 */   { REGSEL_ACC , REGSEL_ACC, 
+/* ADD 3 */   { REGSEL_ACC , REGSEL_ACC,
 		"24;[2=];" },
-/* ADD 4 */   { REGSEL_ACC|REG2SEL_R01 , REGSEL_ACC|REG2SEL_R01, 
+/* ADD 4 */   { REGSEL_ACC|REG2SEL_R01 , REGSEL_ACC|REG2SEL_R01,
 		"26.[2#]|;" },
-/* ADD 5 */   { REGSEL_ACC|REG2SEL_R07 , REGSEL_ACC|REG2SEL_R07, 
+/* ADD 5 */   { REGSEL_ACC|REG2SEL_R07 , REGSEL_ACC|REG2SEL_R07,
 		"28.[2#]|;" },
-/* ADD 6 */   { REGSEL_ACC , REGSEL_ACC, 
+/* ADD 6 */   { REGSEL_ACC , REGSEL_ACC,
 		"25;[2=].8I;" },
-/* ADDC 7 */   { REGSEL_ACC , REGSEL_ACC, 
+/* ADDC 7 */   { REGSEL_ACC , REGSEL_ACC,
 		"34;[2=];" },
-/* ADDC 8 */   { REGSEL_ACC|REG2SEL_R01 , REGSEL_ACC|REG2SEL_R01, 
+/* ADDC 8 */   { REGSEL_ACC|REG2SEL_R01 , REGSEL_ACC|REG2SEL_R01,
 		"36.[2#]|;" },
-/* ADDC 9 */   { REGSEL_ACC|REG2SEL_R07 , REGSEL_ACC|REG2SEL_R07, 
+/* ADDC 9 */   { REGSEL_ACC|REG2SEL_R07 , REGSEL_ACC|REG2SEL_R07,
 		"38.[2#]|;" },
-/* ADDC 10 */   { REGSEL_ACC , REGSEL_ACC, 
+/* ADDC 10 */   { REGSEL_ACC , REGSEL_ACC,
 		"35;[2=].8I;" },
-/* AJMP 11 */   { 0 , 0, 
+/* AJMP 11 */   { 0 , 0,
 		"[1=].Q.2+.f800&-.bI~.3}.e0&.01|;!.ff&;" },
-/* ANL 12 */   { REGSEL_ACC , REGSEL_ACC, 
+/* ANL 12 */   { REGSEL_ACC , REGSEL_ACC,
 		"54;[2=];" },
-/* ANL 13 */   { REGSEL_C , REGSEL_C, 
+/* ANL 13 */   { REGSEL_C , REGSEL_C,
 		"b0;[2#];" },
-/* ANL 14 */   { REGSEL_C , REGSEL_C, 
+/* ANL 14 */   { REGSEL_C , REGSEL_C,
 		"b0;[2=].8I;" },
-/* ANL 15 */   { REGSEL_ACC|REG2SEL_R01 , REGSEL_ACC|REG2SEL_R01, 
+/* ANL 15 */   { REGSEL_ACC|REG2SEL_R01 , REGSEL_ACC|REG2SEL_R01,
 		"56.[2#]|;" },
-/* ANL 16 */   { REGSEL_ACC|REG2SEL_R07 , REGSEL_ACC|REG2SEL_R07, 
+/* ANL 16 */   { REGSEL_ACC|REG2SEL_R07 , REGSEL_ACC|REG2SEL_R07,
 		"58.[2#]|;" },
-/* ANL 17 */   { REGSEL_C , REGSEL_C, 
+/* ANL 17 */   { REGSEL_C , REGSEL_C,
 		"82;[2#];" },
-/* ANL 18 */   { REGSEL_ACC , REGSEL_ACC, 
+/* ANL 18 */   { REGSEL_ACC , REGSEL_ACC,
 		"55;[2=].8I;" },
-/* ANL 19 */   { REGSEL_C , REGSEL_C, 
+/* ANL 19 */   { REGSEL_C , REGSEL_C,
 		"82;[2=].8I;" },
-/* ANL 20 */   { 0 , 0, 
+/* ANL 20 */   { 0 , 0,
 		"53;[1=].8I;[2=];" },
-/* ANL 21 */   { REGSEL_ACC , REGSEL_ACC, 
+/* ANL 21 */   { REGSEL_ACC , REGSEL_ACC,
 		"52;[1=].8I;" },
-/* CJNE 22 */   { REGSEL_ACC , REGSEL_ACC, 
+/* CJNE 22 */   { REGSEL_ACC , REGSEL_ACC,
 		"b5;[2=].8I;[3=].Q.1+-r" },
-/* CJNE 23 */   { REGSEL_ACC , REGSEL_ACC, 
+/* CJNE 23 */   { REGSEL_ACC , REGSEL_ACC,
 		"b4;[2=];[3=].Q.1+-r" },
-/* CJNE 24 */   { REGSEL_R07 , REGSEL_R07, 
+/* CJNE 24 */   { REGSEL_R07 , REGSEL_R07,
 		"b8.[1#]|;[2=];[3=].Q.1+-r" },
-/* CJNE 25 */   { REGSEL_R01 , REGSEL_R01, 
+/* CJNE 25 */   { REGSEL_R01 , REGSEL_R01,
 		"b6.[1#]|;[2=];[3=].Q.1+-r" },
-/* CLR 26 */   { REGSEL_ACC , REGSEL_ACC, 
+/* CLR 26 */   { REGSEL_ACC , REGSEL_ACC,
 		"e4;" },
-/* CLR 27 */   { REGSEL_C , REGSEL_C, 
+/* CLR 27 */   { REGSEL_C , REGSEL_C,
 		"c3;" },
-/* CLR 28 */   { 0 , 0, 
+/* CLR 28 */   { 0 , 0,
 		"c2;[1#];" },
-/* CLR 29 */   { 0 , 0, 
+/* CLR 29 */   { 0 , 0,
 		"c2;[1=].8I;" },
-/* CPL 30 */   { REGSEL_ACC , REGSEL_ACC, 
+/* CPL 30 */   { REGSEL_ACC , REGSEL_ACC,
 		"f4;" },
-/* CPL 31 */   { REGSEL_C , REGSEL_C, 
+/* CPL 31 */   { REGSEL_C , REGSEL_C,
 		"b3;" },
-/* CPL 32 */   { 0 , 0, 
+/* CPL 32 */   { 0 , 0,
 		"b2;[1#];" },
-/* CPL 33 */   { 0 , 0, 
+/* CPL 33 */   { 0 , 0,
 		"b2;[1=].8I;" },
-/* DA 34 */   { REGSEL_ACC , REGSEL_ACC, 
+/* DA 34 */   { REGSEL_ACC , REGSEL_ACC,
 		"d4;" },
-/* DEC 35 */   { REGSEL_R01 , REGSEL_R01, 
+/* DEC 35 */   { REGSEL_R01 , REGSEL_R01,
 		"16.[1#]|;" },
-/* DEC 36 */   { REGSEL_ACC , REGSEL_ACC, 
+/* DEC 36 */   { REGSEL_ACC , REGSEL_ACC,
 		"14;" },
-/* DEC 37 */   { REGSEL_R07 , REGSEL_R07, 
+/* DEC 37 */   { REGSEL_R07 , REGSEL_R07,
 		"18.[1#]|;" },
-/* DEC 38 */   { 0 , 0, 
+/* DEC 38 */   { 0 , 0,
 		"15;[1=].8I;" },
-/* DIV 39 */   { REGSEL_AB , REGSEL_AB, 
+/* DIV 39 */   { REGSEL_AB , REGSEL_AB,
 		"84;" },
-/* DJNZ 40 */   { REGSEL_R07 , REGSEL_R07, 
+/* DJNZ 40 */   { REGSEL_R07 , REGSEL_R07,
 		"d8.[1#]|;[2=].Q.1+-r" },
-/* DJNZ 41 */   { 0 , 0, 
+/* DJNZ 41 */   { 0 , 0,
 		"d5;[1=].8I;[2=].Q.1+-r" },
-/* INC 42 */   { REGSEL_R01 , REGSEL_R01, 
+/* INC 42 */   { REGSEL_R01 , REGSEL_R01,
 		"06.[1#]|;" },
-/* INC 43 */   { REGSEL_ACC , REGSEL_ACC, 
+/* INC 43 */   { REGSEL_ACC , REGSEL_ACC,
 		"04;" },
-/* INC 44 */   { REGSEL_R07 , REGSEL_R07, 
+/* INC 44 */   { REGSEL_R07 , REGSEL_R07,
 		"08.[1#]|;" },
-/* INC 45 */   { REGSEL_DPTR , REGSEL_DPTR, 
+/* INC 45 */   { REGSEL_DPTR , REGSEL_DPTR,
 		"a3;" },
-/* INC 46 */   { 0 , 0, 
+/* INC 46 */   { 0 , 0,
 		"05;[1=].8I;" },
-/* JB 47 */   { 0 , 0, 
+/* JB 47 */   { 0 , 0,
 		"20;[1#];[2=].Q.1+-r" },
-/* JB 48 */   { 0 , 0, 
+/* JB 48 */   { 0 , 0,
 		"20;[1=].8I;[2=].Q.1+-r" },
-/* JBC 49 */   { 0 , 0, 
+/* JBC 49 */   { 0 , 0,
 		"10;[1#];[2=].Q.1+-r" },
-/* JBC 50 */   { 0 , 0, 
+/* JBC 50 */   { 0 , 0,
 		"10;[1=].8I;[2=].Q.1+-r" },
-/* JC 51 */   { 0 , 0, 
+/* JC 51 */   { 0 , 0,
 		"40;[1=].Q.1+-r" },
-/* JMP 52 */   { REGSEL_ACC|REG2SEL_DPTR , REGSEL_ACC|REG2SEL_DPTR, 
+/* JMP 52 */   { REGSEL_ACC|REG2SEL_DPTR , REGSEL_ACC|REG2SEL_DPTR,
 		"73;" },
-/* JNB 53 */   { 0 , 0, 
+/* JNB 53 */   { 0 , 0,
 		"30;[1#];[2=].Q.1+-r" },
-/* JNB 54 */   { 0 , 0, 
+/* JNB 54 */   { 0 , 0,
 		"30;[1=].8I;[2=].Q.1+-r" },
-/* JNC 55 */   { 0 , 0, 
+/* JNC 55 */   { 0 , 0,
 		"50;[1=].Q.1+-r" },
-/* JNZ 56 */   { 0 , 0, 
+/* JNZ 56 */   { 0 , 0,
 		"70;[1=].Q.1+-r" },
-/* JZ 57 */   { 0 , 0, 
+/* JZ 57 */   { 0 , 0,
 		"60;[1=].Q.1+-r" },
-/* LCALL 58 */   { 0 , 0, 
+/* LCALL 58 */   { 0 , 0,
 		"12;[1=]x" },
-/* LJMP 59 */   { 0 , 0, 
+/* LJMP 59 */   { 0 , 0,
 		"02;[1=]x" },
-/* MOV 60 */   { REGSEL_R01 , REGSEL_R01, 
+/* MOV 60 */   { REGSEL_R01 , REGSEL_R01,
 		"76.[1#]|;[2=];" },
-/* MOV 61 */   { REGSEL_R01|REG2SEL_ACC , REGSEL_R01|REG2SEL_ACC, 
+/* MOV 61 */   { REGSEL_R01|REG2SEL_ACC , REGSEL_R01|REG2SEL_ACC,
 		"f6.[1#]|;" },
-/* MOV 62 */   { REGSEL_R01 , REGSEL_R01, 
+/* MOV 62 */   { REGSEL_R01 , REGSEL_R01,
 		"a6.[1#]|;[2=].8I;" },
-/* MOV 63 */   { REGSEL_ACC , REGSEL_ACC, 
+/* MOV 63 */   { REGSEL_ACC , REGSEL_ACC,
 		"74;[2=];" },
-/* MOV 64 */   { REGSEL_DPTR , REGSEL_DPTR, 
+/* MOV 64 */   { REGSEL_DPTR , REGSEL_DPTR,
 		"90;[2=]x" },
-/* MOV 65 */   { REGSEL_R07 , REGSEL_R07, 
+/* MOV 65 */   { REGSEL_R07 , REGSEL_R07,
 		"78.[1#]|;[2=];" },
-/* MOV 66 */   { REGSEL_ACC|REG2SEL_R01 , REGSEL_ACC|REG2SEL_R01, 
+/* MOV 66 */   { REGSEL_ACC|REG2SEL_R01 , REGSEL_ACC|REG2SEL_R01,
 		"e6.[2#]|;" },
-/* MOV 67 */   { REGSEL_ACC|REG2SEL_R07 , REGSEL_ACC|REG2SEL_R07, 
+/* MOV 67 */   { REGSEL_ACC|REG2SEL_R07 , REGSEL_ACC|REG2SEL_R07,
 		"e8.[2#]|;" },
-/* MOV 68 */   { REGSEL_R07|REG2SEL_ACC , REGSEL_R07|REG2SEL_ACC, 
+/* MOV 68 */   { REGSEL_R07|REG2SEL_ACC , REGSEL_R07|REG2SEL_ACC,
 		"f8.[1#]|;" },
-/* MOV 69 */   { REGSEL_C , REGSEL_C, 
+/* MOV 69 */   { REGSEL_C , REGSEL_C,
 		"a2;[2#];" },
-/* MOV 70 */   { REGSEL_ACC , REGSEL_ACC, 
+/* MOV 70 */   { REGSEL_ACC , REGSEL_ACC,
 		"e5;[2=].8I;" },
-/* MOV 71 */   { REGSEL_C , REGSEL_C, 
+/* MOV 71 */   { REGSEL_C , REGSEL_C,
 		"a2;[2=].8I;" },
-/* MOV 72 */   { REGSEL_R07 , REGSEL_R07, 
+/* MOV 72 */   { REGSEL_R07 , REGSEL_R07,
 		"a8.[1#]|;[2=].8I;" },
-/* MOV 73 */   { REGSEL_C , REGSEL_C, 
+/* MOV 73 */   { REGSEL_C , REGSEL_C,
 		"92;[1#];" },
-/* MOV 74 */   { 0 , 0, 
+/* MOV 74 */   { 0 , 0,
 		"75;[1=].8I;[2=];" },
-/* MOV 75 */   { REGSEL_R01 , REGSEL_R01, 
+/* MOV 75 */   { REGSEL_R01 , REGSEL_R01,
 		"86.[2#]|;[1=].8I;" },
-/* MOV 76 */   { REGSEL_ACC , REGSEL_ACC, 
+/* MOV 76 */   { REGSEL_ACC , REGSEL_ACC,
 		"f5;[1=].8I;" },
-/* MOV 77 */   { REGSEL_C , REGSEL_C, 
+/* MOV 77 */   { REGSEL_C , REGSEL_C,
 		"92;[1=].8I;" },
-/* MOV 78 */   { REGSEL_R07 , REGSEL_R07, 
+/* MOV 78 */   { REGSEL_R07 , REGSEL_R07,
 		"88.[2#]|;[1=].8I;" },
-/* MOV 79 */   { 0 , 0, 
+/* MOV 79 */   { 0 , 0,
 		"85;[2=].8I;[1=].8I;" },
-/* MOVC 80 */   { REGSEL_ACC|REG2SEL_DPTR , REGSEL_ACC|REG2SEL_DPTR, 
+/* MOVC 80 */   { REGSEL_ACC|REG2SEL_DPTR , REGSEL_ACC|REG2SEL_DPTR,
 		"93;" },
-/* MOVC 81 */   { REGSEL_ACC|REG2SEL_PC , REGSEL_ACC|REG2SEL_PC, 
+/* MOVC 81 */   { REGSEL_ACC|REG2SEL_PC , REGSEL_ACC|REG2SEL_PC,
 		"83;" },
-/* MOVX 82 */   { REGSEL_DPTR|REG2SEL_ACC , REGSEL_DPTR|REG2SEL_ACC, 
+/* MOVX 82 */   { REGSEL_DPTR|REG2SEL_ACC , REGSEL_DPTR|REG2SEL_ACC,
 		"f0;" },
-/* MOVX 83 */   { REGSEL_R01|REG2SEL_ACC , REGSEL_R01|REG2SEL_ACC, 
+/* MOVX 83 */   { REGSEL_R01|REG2SEL_ACC , REGSEL_R01|REG2SEL_ACC,
 		"f2.[1#]|;" },
-/* MOVX 84 */   { REGSEL_ACC|REG2SEL_DPTR , REGSEL_ACC|REG2SEL_DPTR, 
+/* MOVX 84 */   { REGSEL_ACC|REG2SEL_DPTR , REGSEL_ACC|REG2SEL_DPTR,
 		"e0;" },
-/* MOVX 85 */   { REGSEL_ACC|REG2SEL_R01 , REGSEL_ACC|REG2SEL_R01, 
+/* MOVX 85 */   { REGSEL_ACC|REG2SEL_R01 , REGSEL_ACC|REG2SEL_R01,
 		"e2.[2#]|;" },
-/* MUL 86 */   { REGSEL_AB , REGSEL_AB, 
+/* MUL 86 */   { REGSEL_AB , REGSEL_AB,
 		"a4;" },
-/* NOP 87 */   { 0 , 0, 
+/* NOP 87 */   { 0 , 0,
 		"00;" },
-/* ORL 88 */   { REGSEL_ACC , REGSEL_ACC, 
+/* ORL 88 */   { REGSEL_ACC , REGSEL_ACC,
 		"44;[2=];" },
-/* ORL 89 */   { REGSEL_C , REGSEL_C, 
+/* ORL 89 */   { REGSEL_C , REGSEL_C,
 		"a0;[2#];" },
-/* ORL 90 */   { REGSEL_C , REGSEL_C, 
+/* ORL 90 */   { REGSEL_C , REGSEL_C,
 		"a0;[2=].8I;" },
-/* ORL 91 */   { REGSEL_ACC|REG2SEL_R01 , REGSEL_ACC|REG2SEL_R01, 
+/* ORL 91 */   { REGSEL_ACC|REG2SEL_R01 , REGSEL_ACC|REG2SEL_R01,
 		"46.[2#]|;" },
-/* ORL 92 */   { REGSEL_ACC|REG2SEL_R07 , REGSEL_ACC|REG2SEL_R07, 
+/* ORL 92 */   { REGSEL_ACC|REG2SEL_R07 , REGSEL_ACC|REG2SEL_R07,
 		"48.[2#]|;" },
-/* ORL 93 */   { REGSEL_C , REGSEL_C, 
+/* ORL 93 */   { REGSEL_C , REGSEL_C,
 		"72;[2#];" },
-/* ORL 94 */   { REGSEL_ACC , REGSEL_ACC, 
+/* ORL 94 */   { REGSEL_ACC , REGSEL_ACC,
 		"45;[2=].8I;" },
-/* ORL 95 */   { REGSEL_C , REGSEL_C, 
+/* ORL 95 */   { REGSEL_C , REGSEL_C,
 		"72;[2=].8I;" },
-/* ORL 96 */   { 0 , 0, 
+/* ORL 96 */   { 0 , 0,
 		"43;[1=].8I;[2=];" },
-/* ORL 97 */   { REGSEL_ACC , REGSEL_ACC, 
+/* ORL 97 */   { REGSEL_ACC , REGSEL_ACC,
 		"42;[1=].8I;" },
-/* POP 98 */   { 0 , 0, 
+/* POP 98 */   { 0 , 0,
 		"d0;[1=].8I;" },
-/* PUSH 99 */   { 0 , 0, 
+/* PUSH 99 */   { 0 , 0,
 		"c0;[1=].8I;" },
-/* RET 100 */   { 0 , 0, 
+/* RET 100 */   { 0 , 0,
 		"22;" },
-/* RETI 101 */   { 0 , 0, 
+/* RETI 101 */   { 0 , 0,
 		"32;" },
-/* RL 102 */   { REGSEL_ACC , REGSEL_ACC, 
+/* RL 102 */   { REGSEL_ACC , REGSEL_ACC,
 		"23;" },
-/* RLC 103 */   { REGSEL_ACC , REGSEL_ACC, 
+/* RLC 103 */   { REGSEL_ACC , REGSEL_ACC,
 		"33;" },
-/* RR 104 */   { REGSEL_ACC , REGSEL_ACC, 
+/* RR 104 */   { REGSEL_ACC , REGSEL_ACC,
 		"03;" },
-/* RRC 105 */   { REGSEL_ACC , REGSEL_ACC, 
+/* RRC 105 */   { REGSEL_ACC , REGSEL_ACC,
 		"13;" },
-/* SETB 106 */   { REGSEL_C , REGSEL_C, 
+/* SETB 106 */   { REGSEL_C , REGSEL_C,
 		"d3;" },
-/* SETB 107 */   { 0 , 0, 
+/* SETB 107 */   { 0 , 0,
 		"d2;[1#];" },
-/* SETB 108 */   { 0 , 0, 
+/* SETB 108 */   { 0 , 0,
 		"d2;[1=].8I;" },
-/* SJMP 109 */   { 0 , 0, 
+/* SJMP 109 */   { 0 , 0,
 		"80;[1=].Q.1+-r" },
-/* SUBB 110 */   { REGSEL_ACC , REGSEL_ACC, 
+/* SUBB 110 */   { REGSEL_ACC , REGSEL_ACC,
 		"94;[2=];" },
-/* SUBB 111 */   { REGSEL_ACC|REG2SEL_R01 , REGSEL_ACC|REG2SEL_R01, 
+/* SUBB 111 */   { REGSEL_ACC|REG2SEL_R01 , REGSEL_ACC|REG2SEL_R01,
 		"96.[2#]|;" },
-/* SUBB 112 */   { REGSEL_ACC|REG2SEL_R07 , REGSEL_ACC|REG2SEL_R07, 
+/* SUBB 112 */   { REGSEL_ACC|REG2SEL_R07 , REGSEL_ACC|REG2SEL_R07,
 		"98.[2#]|;" },
-/* SUBB 113 */   { REGSEL_ACC , REGSEL_ACC, 
+/* SUBB 113 */   { REGSEL_ACC , REGSEL_ACC,
 		"95;[2=].8I;" },
-/* SWAP 114 */   { REGSEL_ACC , REGSEL_ACC, 
+/* SWAP 114 */   { REGSEL_ACC , REGSEL_ACC,
 		"c4;" },
-/* XCH 115 */   { REGSEL_ACC|REG2SEL_R01 , REGSEL_ACC|REG2SEL_R01, 
+/* XCH 115 */   { REGSEL_ACC|REG2SEL_R01 , REGSEL_ACC|REG2SEL_R01,
 		"c6.[2#]|;" },
-/* XCH 116 */   { REGSEL_ACC|REG2SEL_R07 , REGSEL_ACC|REG2SEL_R07, 
+/* XCH 116 */   { REGSEL_ACC|REG2SEL_R07 , REGSEL_ACC|REG2SEL_R07,
 		"c8.[2#]|;" },
-/* XCH 117 */   { REGSEL_ACC , REGSEL_ACC, 
+/* XCH 117 */   { REGSEL_ACC , REGSEL_ACC,
 		"c5;[2=].8I;" },
-/* XCHD 118 */   { REGSEL_ACC|REG2SEL_R01 , REGSEL_ACC|REG2SEL_R01, 
+/* XCHD 118 */   { REGSEL_ACC|REG2SEL_R01 , REGSEL_ACC|REG2SEL_R01,
 		"d6.[2#]|;" },
-/* XRL 119 */   { REGSEL_ACC , REGSEL_ACC, 
+/* XRL 119 */   { REGSEL_ACC , REGSEL_ACC,
 		"64;[2=];" },
-/* XRL 120 */   { REGSEL_ACC|REG2SEL_R01 , REGSEL_ACC|REG2SEL_R01, 
+/* XRL 120 */   { REGSEL_ACC|REG2SEL_R01 , REGSEL_ACC|REG2SEL_R01,
 		"66.[2#]|;" },
-/* XRL 121 */   { REGSEL_ACC|REG2SEL_R07 , REGSEL_ACC|REG2SEL_R07, 
+/* XRL 121 */   { REGSEL_ACC|REG2SEL_R07 , REGSEL_ACC|REG2SEL_R07,
 		"68.[2#]|;" },
-/* XRL 122 */   { REGSEL_ACC , REGSEL_ACC, 
+/* XRL 122 */   { REGSEL_ACC , REGSEL_ACC,
 		"65;[2=].8I;" },
-/* XRL 123 */   { 0 , 0, 
+/* XRL 123 */   { 0 , 0,
 		"63;[1=].8I;[2=];" },
-/* XRL 124 */   { REGSEL_ACC , REGSEL_ACC, 
+/* XRL 124 */   { REGSEL_ACC , REGSEL_ACC,
 		"62;[1=].8I;" },
 	{ 0,0,""} };
 /* end fraptabdef.c */

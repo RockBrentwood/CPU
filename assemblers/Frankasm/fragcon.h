@@ -1,18 +1,7 @@
-/*
-HEADER: 	;
-TITLE: 		Frankenstein Cross Assemblers;
-VERSION: 	2.0;
-DESCRIPTION: "	Reconfigurable Cross-assembler producing Intel (TM)
-		Hex format object records.
-
-		constants used in intermediate file code generation
-		as the expression node operation value and the polish
-		expression operation  ";
-FILENAME: 	fragcon.h;
-SEE-ALSO: 	frapsub.c, fraosub.c, as*.y;
-AUTHORS: 	Mark Zenier;
-*/
-
+// Frankenstain Cross-Assemblers, version 2.0.
+// Original author: Mark Zenier.
+// The constants used in intermediate file code generation
+// as the expression node operation value and the polish expression operation
 #define IG_START	'['
 #define IG_END		']'
 #define IG_CPCON	'#'
@@ -65,4 +54,3 @@ AUTHORS: 	Mark Zenier;
 #define PCCASE_SYMB	4
 #define PCCASE_CONS	5
 #define PCCASE_PROGC	6
-

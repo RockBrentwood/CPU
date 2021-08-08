@@ -1,25 +1,7 @@
-# HEADER:	;
-# TITLE:	Frankenstein Cross Assemblers;
-# VERSION: 	2.0;
-# SYSTEM:	Unix (MicroPort system V/AT);
-# FILENAME:	Makefile ;
-# DESCRIPTION: "Reconfigurable Cross-assembler producing Intel (TM)
-#		Hex format object records.  ";
-# KEYWORDS: 	cross-assemblers, 1805, 2650, 6301, 6502, 6805, 6809, 
-#		6811, tms7000, 8048, 8051, 8096, z8, z80;
-# WARNINGS:	"This software is in the public domain.  
-#		Any prior copyright claims are relinquished.  
-#	
-#		This software is distributed with no warranty whatever.  
-#		The author takes no responsibility for the consequences 
-#		of its use.
-#	
-#		Yacc (or Bison) required to compile."  ;
-# AUTHORS:	Mark Zenier;
-# COMPILERS:	Microport System V/AT;
-#
-#	usage	
-#		make somename TARGET=somename 
+## Frankenstain Cross-Assemblers, version 2.0.
+## Original author: Mark Zenier.
+#	usage
+#		make somename TARGET=somename
 #		make newmachine       clean out machine dependent *.o
 #		make clean	      clean out for release disk
 #
@@ -32,9 +14,6 @@
 #			the older equivalent name index()
 #	NOSTRING	use internal definitions if the <string.h> include
 #			file does not exist
-#
-
-
 TARGET = frasm
 PRINTSPOOL = lpr
 
@@ -66,8 +45,8 @@ MAINDEPENDS =
 # MAINDEPENDS =
 
 # For MicroPort and Xenix:
-# CFLAGS = -Ml -g 
-# YACCLEXLIB = -ly 
+# CFLAGS = -Ml -g
+# YACCLEXLIB = -ly
 # MAINNEEDS =
 # MAINDEPENDS =
 
@@ -79,13 +58,13 @@ MAINDEPENDS =
 
 # For V7:
 # CFLAGS = -DUSEINDEX -DNOSTRING
-# YACCLEXLIB = -ly 
+# YACCLEXLIB = -ly
 # MAINNEEDS = -DNOGETOPT
 # MAINDEPENDS = getopt.h
 
 all: $(TARGET)
 clean:
-	rm -f *.o fraytok.h 
+	rm -f *.o fraytok.h
 	rm -f y.tab.[ch]
 	rm -f as*.c as*.h as*.o
 newmachine:

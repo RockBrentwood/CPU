@@ -1,31 +1,7 @@
 %{
-
-/*
-HEADER: 	;
-TITLE: 		Frankenstein Cross Assemblers;
-VERSION: 	2.0;
-DESCRIPTION: "	Reconfigurable Cross-assembler producing Intel (TM)
-		Hex format object records.  ";
-KEYWORDS: 	cross-assemblers, 1805, 2650, 6301, 6502, 6805, 6809, 
-		6811, tms7000, 8048, 8051, 8096, z8, z80;
-SYSTEM: 	UNIX, MS-Dos ;
-FILENAME: 	as6809.y;
-WARNINGS: 	"This software is in the public domain.  
-		Any prior copyright claims are relinquished.  
-
-		This software is distributed with no warranty whatever.  
-		The author takes no responsibility for the consequences 
-		of its use.
-
-		Yacc (or Bison) required to compile."  ;
-SEE-ALSO: 	as6809.doc,frasmain.c;	
-AUTHORS: 	Mark Zenier;
-COMPILERS: 	Microport Sys V/AT, ATT Yacc, Turbo C V1.5, Bison (CUG disk 285)
-		(previous versions Xenix, Unisoft 68000 Version 7, Sun 3);
-*/
-/* 6809 instruction generation file */
-/* November 17, 1990 */
-
+// Frankenstain Cross-Assemblers, version 2.0.
+// Original author: Mark Zenier.
+// 6809 instruction generation file.
 /*
 	description	frame work parser description for framework cross
 			assemblers
@@ -55,7 +31,7 @@ COMPILERS: 	Microport Sys V/AT, ATT Yacc, Turbo C V1.5, Bison (CUG disk 285)
 #define ST_SPSH 0x1
 #define ST_UPSH 0x1
 #define ST_TFR 0x1
-	
+
 	static char	genbdef[] = "[1=];";
 	static char	genwdef[] = "[1=]x"; /* x for normal, y for byte rev */
 	char ignosyn[] = "[Xinvalid syntax for instruction";
@@ -230,12 +206,12 @@ allline	: 	line EOL
 			}
 	;
 
-line	:	LABEL KOC_END 
+line	:	LABEL KOC_END
 			{
 				endsymbol = $1;
 				nextreadact = Nra_end;
 			}
-	|	      KOC_END 
+	|	      KOC_END
 			{
 				nextreadact = Nra_end;
 			}
@@ -259,7 +235,7 @@ line	:	LABEL KOC_END
 			}
 		}
 			}
-	|	LABEL KOC_EQU expr 
+	|	LABEL KOC_EQU expr
 			{
 				if($1 -> seg == SSG_UNDEF)
 				{
@@ -283,7 +259,7 @@ line	:	LABEL KOC_END
 				"cannot change symbol value with EQU");
 				}
 			}
-	|	LABEL KOC_SET expr 
+	|	LABEL KOC_SET expr
 			{
 				if($1 -> seg == SSG_UNDEF
 				   || $1 -> seg == SSG_SET)
@@ -308,7 +284,7 @@ line	:	LABEL KOC_END
 				"cannot change symbol value with SET");
 				}
 			}
-	|	KOC_IF expr 
+	|	KOC_IF expr
 			{
 		if((++ifstkpt) < IFSTKDEPTH)
 		{
@@ -339,10 +315,10 @@ line	:	LABEL KOC_END
 			fraerror("IF stack overflow");
 		}
 			}
-						
-	|	KOC_IF 
+
+	|	KOC_IF
 			{
-		if(fraifskip) 
+		if(fraifskip)
 		{
 			if((++ifstkpt) < IFSTKDEPTH)
 			{
@@ -360,26 +336,26 @@ line	:	LABEL KOC_END
 			YYERROR;
 		}
 				}
-						
-	|	KOC_ELSE 
+
+	|	KOC_ELSE
 			{
 				switch(elseifstk[ifstkpt])
 				{
 				case If_Active:
 					fraifskip = FALSE;
 					break;
-				
+
 				case If_Skip:
 					fraifskip = TRUE;
 					break;
-				
+
 				case If_Err:
 					fraerror("ELSE with no matching if");
 					break;
 				}
 			}
 
-	|	KOC_ENDI 
+	|	KOC_ENDI
 			{
 				switch(endifstk[ifstkpt])
 				{
@@ -387,18 +363,18 @@ line	:	LABEL KOC_END
 					fraifskip = FALSE;
 					ifstkpt--;
 					break;
-				
+
 				case If_Skip:
 					fraifskip = TRUE;
 					ifstkpt--;
 					break;
-				
+
 				case If_Err:
 					fraerror("ENDI with no matching if");
 					break;
 				}
 			}
-	|	LABEL KOC_ORG expr 
+	|	LABEL KOC_ORG expr
 			{
 				pevalexpr(0, $3);
 				if(evalr[0].seg == SSG_ABS)
@@ -421,7 +397,7 @@ line	:	LABEL KOC_END
 					 "noncomputable expression for ORG");
 				}
 			}
-	|	      KOC_ORG expr 
+	|	      KOC_ORG expr
 			{
 				pevalexpr(0, $2);
 				if(evalr[0].seg == SSG_ABS)
@@ -520,12 +496,12 @@ line	:	LABEL KOC_END
 
 					case CF_INVALID:
 					case CF_NUMBER:
-				fracherror("invalid character to define", 
+				fracherror("invalid character to define",
 					before, sourcestr);
 						break;
 
 					case CF_CHAR:
-				fracherror("character already defined", 
+				fracherror("character already defined",
 					before, sourcestr);
 						break;
 					}
@@ -545,9 +521,9 @@ line	:	LABEL KOC_END
 		{
 			fraerror("no CHARSET statement active");
 		}
-			
+
 			}
-	|	LABEL 
+	|	LABEL
 			{
 			if($1 -> seg == SSG_UNDEF)
 			{
@@ -575,14 +551,14 @@ labeledline :	LABEL genline
 				"multiple definition of label");
 			labelloc = locctr;
 			}
-				
+
 	|	genline
 			{
 				labelloc = locctr;
 			}
 	;
 
-genline	:	KOC_BDEF	exprlist 
+genline	:	KOC_BDEF	exprlist
 			{
 				genlocrec(currseg, labelloc);
 				for( satsub = 0; satsub < $2; satsub++)
@@ -591,7 +567,7 @@ genline	:	KOC_BDEF	exprlist
 					locctr += geninstr(genbdef);
 				}
 			}
-	|	KOC_SDEF stringlist 
+	|	KOC_SDEF stringlist
 			{
 				genlocrec(currseg, labelloc);
 				for(satsub = 0; satsub < $2; satsub++)
@@ -599,7 +575,7 @@ genline	:	KOC_BDEF	exprlist
 					locctr += genstring(stringlist[satsub]);
 				}
 			}
-	|	KOC_WDEF exprlist 
+	|	KOC_WDEF exprlist
 			{
 				genlocrec(currseg, labelloc);
 				for( satsub = 0; satsub < $2; satsub++)
@@ -607,8 +583,8 @@ genline	:	KOC_BDEF	exprlist
 					pevalexpr(1, exprlist[satsub]);
 					locctr += geninstr(genwdef);
 				}
-			}	
-	|	KOC_RESM expr 
+			}
+	|	KOC_RESM expr
 			{
 				pevalexpr(0, $2);
 				if(evalr[0].seg == SSG_ABS)
@@ -651,7 +627,7 @@ stringlist :	stringlist ',' STRING
 	;
 
 
-genline : KOC_opcode  
+genline : KOC_opcode
 			{
 		genlocrec(currseg, labelloc);
 		locctr += geninstr(findgen($1, ST_INH, 0));
@@ -668,8 +644,8 @@ genline : KOC_opcode  expr
 			{
 		genlocrec(currseg, labelloc);
 		pevalexpr(1, $2);
-		locctr += geninstr( findgen( $1, ST_EXP, 
-				  ( (evalr[1].seg == SSG_ABS 
+		locctr += geninstr( findgen( $1, ST_EXP,
+				  ( (evalr[1].seg == SSG_ABS
 				&& evalr[1].value >= 0
 				&& evalr[1].value <= 255 )
 				? DIRECT : EXTENDED ) )
@@ -688,7 +664,7 @@ genline : KOC_opcode  expr ',' PCRELATIVE
 		genlocrec(currseg, labelloc);
 		pevalexpr(1, $2);
 		locctr += geninstr(findgen($1, ST_IND, 0));
-		if(evalr[1].seg == SSG_ABS 
+		if(evalr[1].seg == SSG_ABS
 			&& (evalr[1].value - locctr) >= PCRNEG8M
 			&& (evalr[1].value - locctr) <= PCRPLUS8M)
 		{
@@ -705,7 +681,7 @@ genline : KOC_opcode  '[' expr ',' PCRELATIVE ']'
 		genlocrec(currseg, labelloc);
 		pevalexpr(1, $3);
 		locctr += geninstr(findgen($1, ST_IND, 0));
-		if(evalr[1].seg == SSG_ABS 
+		if(evalr[1].seg == SSG_ABS
 			&& (evalr[1].value - locctr) >= PCRNEG8M
 			&& (evalr[1].value - locctr) <= PCRPLUS8M)
 		{
@@ -736,7 +712,7 @@ genline : KOC_sstkop  regbits
 		else
 		{
 			evalr[1].value = $2 & 0xff;
-		}	
+		}
 		locctr += geninstr(findgen($1, ST_SPSH, 0));
 			}
 	;
@@ -751,7 +727,7 @@ genline : KOC_ustkop  regbits
 		else
 		{
 			evalr[1].value = $2 & 0xff;
-		}	
+		}
 		locctr += geninstr(findgen($1, ST_SPSH, 0));
 			}
 	;
@@ -1641,563 +1617,563 @@ struct opsynt ostab[NUMSYNBLK+1]
 
 struct igel igtab[NUMDIFFOP+1]
 	= {
-/* invalid 0 */   { 0 , 0, 
+/* invalid 0 */   { 0 , 0,
 		"[Xnullentry" },
-/* invalid 1 */   { 0 , 0, 
+/* invalid 1 */   { 0 , 0,
 		"[Xinvalid opcode" },
-/* ABX 2 */   { 0 , 0, 
+/* ABX 2 */   { 0 , 0,
 		"3a;" },
-/* ADCA 3 */   { ADDR , DIRECT, 
+/* ADCA 3 */   { ADDR , DIRECT,
 		"99;[1=];" },
-/* ADCA 4 */   { ADDR , EXTENDED, 
+/* ADCA 4 */   { ADDR , EXTENDED,
 		"b9;[1=]x" },
-/* ADCA 5 */   { 0 , 0, 
+/* ADCA 5 */   { 0 , 0,
 		"89;[1=];" },
-/* ADCA 6 */   { 0 , 0, 
+/* ADCA 6 */   { 0 , 0,
 		"a9;" },
-/* ADCB 7 */   { ADDR , DIRECT, 
+/* ADCB 7 */   { ADDR , DIRECT,
 		"d9;[1=];" },
-/* ADCB 8 */   { ADDR , EXTENDED, 
+/* ADCB 8 */   { ADDR , EXTENDED,
 		"f9;[1=]x" },
-/* ADCB 9 */   { 0 , 0, 
+/* ADCB 9 */   { 0 , 0,
 		"c9;[1=];" },
-/* ADCB 10 */   { 0 , 0, 
+/* ADCB 10 */   { 0 , 0,
 		"e9;" },
-/* ADDA 11 */   { ADDR , DIRECT, 
+/* ADDA 11 */   { ADDR , DIRECT,
 		"9b;[1=];" },
-/* ADDA 12 */   { ADDR , EXTENDED, 
+/* ADDA 12 */   { ADDR , EXTENDED,
 		"bb;[1=]x" },
-/* ADDA 13 */   { 0 , 0, 
+/* ADDA 13 */   { 0 , 0,
 		"8b;[1=];" },
-/* ADDA 14 */   { 0 , 0, 
+/* ADDA 14 */   { 0 , 0,
 		"ab;" },
-/* ADDB 15 */   { ADDR , DIRECT, 
+/* ADDB 15 */   { ADDR , DIRECT,
 		"db;[1=];" },
-/* ADDB 16 */   { ADDR , EXTENDED, 
+/* ADDB 16 */   { ADDR , EXTENDED,
 		"fb;[1=]x" },
-/* ADDB 17 */   { 0 , 0, 
+/* ADDB 17 */   { 0 , 0,
 		"cb;[1=];" },
-/* ADDB 18 */   { 0 , 0, 
+/* ADDB 18 */   { 0 , 0,
 		"eb;" },
-/* ADDD 19 */   { ADDR , DIRECT, 
+/* ADDD 19 */   { ADDR , DIRECT,
 		"d3;[1=];" },
-/* ADDD 20 */   { ADDR , EXTENDED, 
+/* ADDD 20 */   { ADDR , EXTENDED,
 		"f3;[1=]x" },
-/* ADDD 21 */   { 0 , 0, 
+/* ADDD 21 */   { 0 , 0,
 		"c3;[1=]x" },
-/* ADDD 22 */   { 0 , 0, 
+/* ADDD 22 */   { 0 , 0,
 		"e3;" },
-/* ANDA 23 */   { ADDR , DIRECT, 
+/* ANDA 23 */   { ADDR , DIRECT,
 		"94;[1=];" },
-/* ANDA 24 */   { ADDR , EXTENDED, 
+/* ANDA 24 */   { ADDR , EXTENDED,
 		"b4;[1=]x" },
-/* ANDA 25 */   { 0 , 0, 
+/* ANDA 25 */   { 0 , 0,
 		"84;[1=];" },
-/* ANDA 26 */   { 0 , 0, 
+/* ANDA 26 */   { 0 , 0,
 		"a4;" },
-/* ANDB 27 */   { ADDR , DIRECT, 
+/* ANDB 27 */   { ADDR , DIRECT,
 		"d4;[1=];" },
-/* ANDB 28 */   { ADDR , EXTENDED, 
+/* ANDB 28 */   { ADDR , EXTENDED,
 		"f4;[1=]x" },
-/* ANDB 29 */   { 0 , 0, 
+/* ANDB 29 */   { 0 , 0,
 		"c4;[1=];" },
-/* ANDB 30 */   { 0 , 0, 
+/* ANDB 30 */   { 0 , 0,
 		"e4;" },
-/* ANDCC 31 */   { 0 , 0, 
+/* ANDCC 31 */   { 0 , 0,
 		"1c;[1=];" },
-/* ASL 32 */   { ADDR , DIRECT, 
+/* ASL 32 */   { ADDR , DIRECT,
 		"08;[1=];" },
-/* ASL 33 */   { ADDR , EXTENDED, 
+/* ASL 33 */   { ADDR , EXTENDED,
 		"78;[1=]x" },
-/* ASL 34 */   { 0 , 0, 
+/* ASL 34 */   { 0 , 0,
 		"68;" },
-/* ASLA 35 */   { 0 , 0, 
+/* ASLA 35 */   { 0 , 0,
 		"48;" },
-/* ASLB 36 */   { 0 , 0, 
+/* ASLB 36 */   { 0 , 0,
 		"58;" },
-/* ASR 37 */   { ADDR , DIRECT, 
+/* ASR 37 */   { ADDR , DIRECT,
 		"07;[1=];" },
-/* ASR 38 */   { ADDR , EXTENDED, 
+/* ASR 38 */   { ADDR , EXTENDED,
 		"77;[1=]x" },
-/* ASR 39 */   { 0 , 0, 
+/* ASR 39 */   { 0 , 0,
 		"67;" },
-/* ASRA 40 */   { 0 , 0, 
+/* ASRA 40 */   { 0 , 0,
 		"47;" },
-/* ASRB 41 */   { 0 , 0, 
+/* ASRB 41 */   { 0 , 0,
 		"57;" },
-/* BCC 42 */   { 0 , 0, 
+/* BCC 42 */   { 0 , 0,
 		"24;[1=].Q.1+-r" },
-/* BCS 43 */   { 0 , 0, 
+/* BCS 43 */   { 0 , 0,
 		"25;[1=].Q.1+-r" },
-/* BEQ 44 */   { 0 , 0, 
+/* BEQ 44 */   { 0 , 0,
 		"27;[1=].Q.1+-r" },
-/* BGE 45 */   { 0 , 0, 
+/* BGE 45 */   { 0 , 0,
 		"2c;[1=].Q.1+-r" },
-/* BGT 46 */   { 0 , 0, 
+/* BGT 46 */   { 0 , 0,
 		"2e;[1=].Q.1+-r" },
-/* BHI 47 */   { 0 , 0, 
+/* BHI 47 */   { 0 , 0,
 		"22;[1=].Q.1+-r" },
-/* BHS 48 */   { 0 , 0, 
+/* BHS 48 */   { 0 , 0,
 		"24;[1=].Q.1+-r" },
-/* BITA 49 */   { ADDR , DIRECT, 
+/* BITA 49 */   { ADDR , DIRECT,
 		"95;[1=];" },
-/* BITA 50 */   { ADDR , EXTENDED, 
+/* BITA 50 */   { ADDR , EXTENDED,
 		"b5;[1=]x" },
-/* BITA 51 */   { 0 , 0, 
+/* BITA 51 */   { 0 , 0,
 		"85;[1=];" },
-/* BITA 52 */   { 0 , 0, 
+/* BITA 52 */   { 0 , 0,
 		"a5;" },
-/* BITB 53 */   { ADDR , DIRECT, 
+/* BITB 53 */   { ADDR , DIRECT,
 		"d5;[1=];" },
-/* BITB 54 */   { ADDR , EXTENDED, 
+/* BITB 54 */   { ADDR , EXTENDED,
 		"f5;[1=]x" },
-/* BITB 55 */   { 0 , 0, 
+/* BITB 55 */   { 0 , 0,
 		"c5;[1=];" },
-/* BITB 56 */   { 0 , 0, 
+/* BITB 56 */   { 0 , 0,
 		"e5;" },
-/* BLE 57 */   { 0 , 0, 
+/* BLE 57 */   { 0 , 0,
 		"2f;[1=].Q.1+-r" },
-/* BLO 58 */   { 0 , 0, 
+/* BLO 58 */   { 0 , 0,
 		"25;[1=].Q.1+-r" },
-/* BLS 59 */   { 0 , 0, 
+/* BLS 59 */   { 0 , 0,
 		"23;[1=].Q.1+-r" },
-/* BLT 60 */   { 0 , 0, 
+/* BLT 60 */   { 0 , 0,
 		"2d;[1=].Q.1+-r" },
-/* BMI 61 */   { 0 , 0, 
+/* BMI 61 */   { 0 , 0,
 		"2b;[1=].Q.1+-r" },
-/* BNE 62 */   { 0 , 0, 
+/* BNE 62 */   { 0 , 0,
 		"26;[1=].Q.1+-r" },
-/* BPL 63 */   { 0 , 0, 
+/* BPL 63 */   { 0 , 0,
 		"2a;[1=].Q.1+-r" },
-/* BRA 64 */   { 0 , 0, 
+/* BRA 64 */   { 0 , 0,
 		"20;[1=].Q.1+-r" },
-/* BRN 65 */   { 0 , 0, 
+/* BRN 65 */   { 0 , 0,
 		"21;[1=].Q.1+-r" },
-/* BSR 66 */   { 0 , 0, 
+/* BSR 66 */   { 0 , 0,
 		"8d;[1=].Q.1+-r" },
-/* BVC 67 */   { 0 , 0, 
+/* BVC 67 */   { 0 , 0,
 		"28;[1=].Q.1+-r" },
-/* BVS 68 */   { 0 , 0, 
+/* BVS 68 */   { 0 , 0,
 		"29;[1=].Q.1+-r" },
-/* CLR 69 */   { ADDR , DIRECT, 
+/* CLR 69 */   { ADDR , DIRECT,
 		"0f;[1=];" },
-/* CLR 70 */   { ADDR , EXTENDED, 
+/* CLR 70 */   { ADDR , EXTENDED,
 		"7f;[1=]x" },
-/* CLR 71 */   { 0 , 0, 
+/* CLR 71 */   { 0 , 0,
 		"6f;" },
-/* CLRA 72 */   { 0 , 0, 
+/* CLRA 72 */   { 0 , 0,
 		"4f;" },
-/* CLRB 73 */   { 0 , 0, 
+/* CLRB 73 */   { 0 , 0,
 		"5f;" },
-/* CMPA 74 */   { ADDR , DIRECT, 
+/* CMPA 74 */   { ADDR , DIRECT,
 		"91;[1=];" },
-/* CMPA 75 */   { ADDR , EXTENDED, 
+/* CMPA 75 */   { ADDR , EXTENDED,
 		"b1;[1=]x" },
-/* CMPA 76 */   { 0 , 0, 
+/* CMPA 76 */   { 0 , 0,
 		"81;[1=];" },
-/* CMPA 77 */   { 0 , 0, 
+/* CMPA 77 */   { 0 , 0,
 		"a1;" },
-/* CMPB 78 */   { ADDR , DIRECT, 
+/* CMPB 78 */   { ADDR , DIRECT,
 		"d1;[1=];" },
-/* CMPB 79 */   { ADDR , EXTENDED, 
+/* CMPB 79 */   { ADDR , EXTENDED,
 		"f1;[1=]x" },
-/* CMPB 80 */   { 0 , 0, 
+/* CMPB 80 */   { 0 , 0,
 		"c1;[1=];" },
-/* CMPB 81 */   { 0 , 0, 
+/* CMPB 81 */   { 0 , 0,
 		"e1;" },
-/* CMPD 82 */   { ADDR , DIRECT, 
+/* CMPD 82 */   { ADDR , DIRECT,
 		"10;93;[1=];" },
-/* CMPD 83 */   { ADDR , EXTENDED, 
+/* CMPD 83 */   { ADDR , EXTENDED,
 		"10;b3;[1=]x" },
-/* CMPD 84 */   { 0 , 0, 
+/* CMPD 84 */   { 0 , 0,
 		"10;83;[1=]x" },
-/* CMPD 85 */   { 0 , 0, 
+/* CMPD 85 */   { 0 , 0,
 		"10;a3;" },
-/* CMPS 86 */   { ADDR , DIRECT, 
+/* CMPS 86 */   { ADDR , DIRECT,
 		"11;9c;[1=];" },
-/* CMPS 87 */   { ADDR , EXTENDED, 
+/* CMPS 87 */   { ADDR , EXTENDED,
 		"11;bc;[1=]x" },
-/* CMPS 88 */   { 0 , 0, 
+/* CMPS 88 */   { 0 , 0,
 		"11;8c;[1=]x" },
-/* CMPS 89 */   { 0 , 0, 
+/* CMPS 89 */   { 0 , 0,
 		"11;ac;" },
-/* CMPU 90 */   { ADDR , DIRECT, 
+/* CMPU 90 */   { ADDR , DIRECT,
 		"11;93;[1=];" },
-/* CMPU 91 */   { ADDR , EXTENDED, 
+/* CMPU 91 */   { ADDR , EXTENDED,
 		"11;b3;[1=]x" },
-/* CMPU 92 */   { 0 , 0, 
+/* CMPU 92 */   { 0 , 0,
 		"11;83;[1=]x" },
-/* CMPU 93 */   { 0 , 0, 
+/* CMPU 93 */   { 0 , 0,
 		"11;a3;" },
-/* CMPX 94 */   { ADDR , DIRECT, 
+/* CMPX 94 */   { ADDR , DIRECT,
 		"9c;[1=];" },
-/* CMPX 95 */   { ADDR , EXTENDED, 
+/* CMPX 95 */   { ADDR , EXTENDED,
 		"bc;[1=]x" },
-/* CMPX 96 */   { 0 , 0, 
+/* CMPX 96 */   { 0 , 0,
 		"8c;[1=]x" },
-/* CMPX 97 */   { 0 , 0, 
+/* CMPX 97 */   { 0 , 0,
 		"ac;" },
-/* CMPY 98 */   { ADDR , DIRECT, 
+/* CMPY 98 */   { ADDR , DIRECT,
 		"10;9c;[1=];" },
-/* CMPY 99 */   { ADDR , EXTENDED, 
+/* CMPY 99 */   { ADDR , EXTENDED,
 		"10;bc;[1=]x" },
-/* CMPY 100 */   { 0 , 0, 
+/* CMPY 100 */   { 0 , 0,
 		"10;8c;[1=]x" },
-/* CMPY 101 */   { 0 , 0, 
+/* CMPY 101 */   { 0 , 0,
 		"10;ac;" },
-/* COM 102 */   { ADDR , DIRECT, 
+/* COM 102 */   { ADDR , DIRECT,
 		"03;[1=];" },
-/* COM 103 */   { ADDR , EXTENDED, 
+/* COM 103 */   { ADDR , EXTENDED,
 		"73;[1=]x" },
-/* COM 104 */   { 0 , 0, 
+/* COM 104 */   { 0 , 0,
 		"63;" },
-/* COMA 105 */   { 0 , 0, 
+/* COMA 105 */   { 0 , 0,
 		"43;" },
-/* COMB 106 */   { 0 , 0, 
+/* COMB 106 */   { 0 , 0,
 		"53;" },
-/* CWAI 107 */   { 0 , 0, 
+/* CWAI 107 */   { 0 , 0,
 		"3c;[1=];" },
-/* DAA 108 */   { 0 , 0, 
+/* DAA 108 */   { 0 , 0,
 		"19;" },
-/* DEC 109 */   { ADDR , DIRECT, 
+/* DEC 109 */   { ADDR , DIRECT,
 		"0a;[1=];" },
-/* DEC 110 */   { ADDR , EXTENDED, 
+/* DEC 110 */   { ADDR , EXTENDED,
 		"7a;[1=]x" },
-/* DEC 111 */   { 0 , 0, 
+/* DEC 111 */   { 0 , 0,
 		"6a;" },
-/* DECA 112 */   { 0 , 0, 
+/* DECA 112 */   { 0 , 0,
 		"4a;" },
-/* DECB 113 */   { 0 , 0, 
+/* DECB 113 */   { 0 , 0,
 		"5a;" },
-/* EORA 114 */   { ADDR , DIRECT, 
+/* EORA 114 */   { ADDR , DIRECT,
 		"98;[1=];" },
-/* EORA 115 */   { ADDR , EXTENDED, 
+/* EORA 115 */   { ADDR , EXTENDED,
 		"b8;[1=]x" },
-/* EORA 116 */   { 0 , 0, 
+/* EORA 116 */   { 0 , 0,
 		"88;[1=];" },
-/* EORA 117 */   { 0 , 0, 
+/* EORA 117 */   { 0 , 0,
 		"a8;" },
-/* EORB 118 */   { ADDR , DIRECT, 
+/* EORB 118 */   { ADDR , DIRECT,
 		"d8;[1=];" },
-/* EORB 119 */   { ADDR , EXTENDED, 
+/* EORB 119 */   { ADDR , EXTENDED,
 		"f8;[1=]x" },
-/* EORB 120 */   { 0 , 0, 
+/* EORB 120 */   { 0 , 0,
 		"c8;[1=];" },
-/* EORB 121 */   { 0 , 0, 
+/* EORB 121 */   { 0 , 0,
 		"e8;" },
-/* EXG 122 */   { 0 , 0, 
+/* EXG 122 */   { 0 , 0,
 		"1e;[1#2#];" },
-/* INC 123 */   { ADDR , DIRECT, 
+/* INC 123 */   { ADDR , DIRECT,
 		"0c;[1=];" },
-/* INC 124 */   { ADDR , EXTENDED, 
+/* INC 124 */   { ADDR , EXTENDED,
 		"7c;[1=]x" },
-/* INC 125 */   { 0 , 0, 
+/* INC 125 */   { 0 , 0,
 		"6c;" },
-/* INCA 126 */   { 0 , 0, 
+/* INCA 126 */   { 0 , 0,
 		"4c;" },
-/* INCB 127 */   { 0 , 0, 
+/* INCB 127 */   { 0 , 0,
 		"5c;" },
-/* JMP 128 */   { ADDR , DIRECT, 
+/* JMP 128 */   { ADDR , DIRECT,
 		"0e;[1=];" },
-/* JMP 129 */   { ADDR , EXTENDED, 
+/* JMP 129 */   { ADDR , EXTENDED,
 		"7e;[1=]x" },
-/* JMP 130 */   { 0 , 0, 
+/* JMP 130 */   { 0 , 0,
 		"6e;" },
-/* JSR 131 */   { ADDR , DIRECT, 
+/* JSR 131 */   { ADDR , DIRECT,
 		"9d;[1=];" },
-/* JSR 132 */   { ADDR , EXTENDED, 
+/* JSR 132 */   { ADDR , EXTENDED,
 		"bd;[1=]x" },
-/* JSR 133 */   { 0 , 0, 
+/* JSR 133 */   { 0 , 0,
 		"ad;" },
-/* LBCC 134 */   { 0 , 0, 
+/* LBCC 134 */   { 0 , 0,
 		"10;24;[1=].Q.2+-.ffff&x" },
-/* LBCS 135 */   { 0 , 0, 
+/* LBCS 135 */   { 0 , 0,
 		"10;25;[1=].Q.2+-.ffff&x" },
-/* LBEQ 136 */   { 0 , 0, 
+/* LBEQ 136 */   { 0 , 0,
 		"10;27;[1=].Q.2+-.ffff&x" },
-/* LBGE 137 */   { 0 , 0, 
+/* LBGE 137 */   { 0 , 0,
 		"10;2c;[1=].Q.2+-.ffff&x" },
-/* LBGT 138 */   { 0 , 0, 
+/* LBGT 138 */   { 0 , 0,
 		"10;2e;[1=].Q.2+-.ffff&x" },
-/* LBHI 139 */   { 0 , 0, 
+/* LBHI 139 */   { 0 , 0,
 		"10;22;[1=].Q.2+-.ffff&x" },
-/* LBHS 140 */   { 0 , 0, 
+/* LBHS 140 */   { 0 , 0,
 		"10;24;[1=].Q.2+-.ffff&x" },
-/* LBLE 141 */   { 0 , 0, 
+/* LBLE 141 */   { 0 , 0,
 		"10;2f;[1=].Q.2+-.ffff&x" },
-/* LBLO 142 */   { 0 , 0, 
+/* LBLO 142 */   { 0 , 0,
 		"10;25;[1=].Q.2+-.ffff&x" },
-/* LBLS 143 */   { 0 , 0, 
+/* LBLS 143 */   { 0 , 0,
 		"10;23;[1=].Q.2+-.ffff&x" },
-/* LBLT 144 */   { 0 , 0, 
+/* LBLT 144 */   { 0 , 0,
 		"10;2d;[1=].Q.2+-.ffff&x" },
-/* LBMI 145 */   { 0 , 0, 
+/* LBMI 145 */   { 0 , 0,
 		"10;2b;[1=].Q.2+-.ffff&x" },
-/* LBNE 146 */   { 0 , 0, 
+/* LBNE 146 */   { 0 , 0,
 		"10;26;[1=].Q.2+-.ffff&x" },
-/* LBPL 147 */   { 0 , 0, 
+/* LBPL 147 */   { 0 , 0,
 		"10;2a;[1=].Q.2+-.ffff&x" },
-/* LBRA 148 */   { 0 , 0, 
+/* LBRA 148 */   { 0 , 0,
 		"16;[1=].Q.2+-.ffff&x" },
-/* LBRN 149 */   { 0 , 0, 
+/* LBRN 149 */   { 0 , 0,
 		"10;21;[1=].Q.2+-.ffff&x" },
-/* LBSR 150 */   { 0 , 0, 
+/* LBSR 150 */   { 0 , 0,
 		"17;[1=].Q.2+-.ffff&x" },
-/* LBVC 151 */   { 0 , 0, 
+/* LBVC 151 */   { 0 , 0,
 		"10;28;[1=].Q.2+-.ffff&x" },
-/* LBVS 152 */   { 0 , 0, 
+/* LBVS 152 */   { 0 , 0,
 		"10;29;[1=].Q.2+-.ffff&x" },
-/* LDA 153 */   { ADDR , DIRECT, 
+/* LDA 153 */   { ADDR , DIRECT,
 		"96;[1=];" },
-/* LDA 154 */   { ADDR , EXTENDED, 
+/* LDA 154 */   { ADDR , EXTENDED,
 		"b6;[1=]x" },
-/* LDA 155 */   { 0 , 0, 
+/* LDA 155 */   { 0 , 0,
 		"86;[1=];" },
-/* LDA 156 */   { 0 , 0, 
+/* LDA 156 */   { 0 , 0,
 		"a6;" },
-/* LDB 157 */   { ADDR , DIRECT, 
+/* LDB 157 */   { ADDR , DIRECT,
 		"d6;[1=];" },
-/* LDB 158 */   { ADDR , EXTENDED, 
+/* LDB 158 */   { ADDR , EXTENDED,
 		"f6;[1=]x" },
-/* LDB 159 */   { 0 , 0, 
+/* LDB 159 */   { 0 , 0,
 		"c6;[1=];" },
-/* LDB 160 */   { 0 , 0, 
+/* LDB 160 */   { 0 , 0,
 		"e6;" },
-/* LDD 161 */   { ADDR , DIRECT, 
+/* LDD 161 */   { ADDR , DIRECT,
 		"dc;[1=];" },
-/* LDD 162 */   { ADDR , EXTENDED, 
+/* LDD 162 */   { ADDR , EXTENDED,
 		"fc;[1=]x" },
-/* LDD 163 */   { 0 , 0, 
+/* LDD 163 */   { 0 , 0,
 		"cc;[1=]x" },
-/* LDD 164 */   { 0 , 0, 
+/* LDD 164 */   { 0 , 0,
 		"ec;" },
-/* LDS 165 */   { ADDR , DIRECT, 
+/* LDS 165 */   { ADDR , DIRECT,
 		"10;de;[1=];" },
-/* LDS 166 */   { ADDR , EXTENDED, 
+/* LDS 166 */   { ADDR , EXTENDED,
 		"10;fe;[1=]x" },
-/* LDS 167 */   { 0 , 0, 
+/* LDS 167 */   { 0 , 0,
 		"10;ce;[1=]x" },
-/* LDS 168 */   { 0 , 0, 
+/* LDS 168 */   { 0 , 0,
 		"10;ee;" },
-/* LDU 169 */   { ADDR , DIRECT, 
+/* LDU 169 */   { ADDR , DIRECT,
 		"de;[1=];" },
-/* LDU 170 */   { ADDR , EXTENDED, 
+/* LDU 170 */   { ADDR , EXTENDED,
 		"fe;[1=]x" },
-/* LDU 171 */   { 0 , 0, 
+/* LDU 171 */   { 0 , 0,
 		"ce;[1=]x" },
-/* LDU 172 */   { 0 , 0, 
+/* LDU 172 */   { 0 , 0,
 		"ee;" },
-/* LDX 173 */   { ADDR , DIRECT, 
+/* LDX 173 */   { ADDR , DIRECT,
 		"9e;[1=];" },
-/* LDX 174 */   { ADDR , EXTENDED, 
+/* LDX 174 */   { ADDR , EXTENDED,
 		"be;[1=]x" },
-/* LDX 175 */   { 0 , 0, 
+/* LDX 175 */   { 0 , 0,
 		"8e;[1=]x" },
-/* LDX 176 */   { 0 , 0, 
+/* LDX 176 */   { 0 , 0,
 		"ae;" },
-/* LDY 177 */   { ADDR , DIRECT, 
+/* LDY 177 */   { ADDR , DIRECT,
 		"10;9e;[1=];" },
-/* LDY 178 */   { ADDR , EXTENDED, 
+/* LDY 178 */   { ADDR , EXTENDED,
 		"10;be;[1=]x" },
-/* LDY 179 */   { 0 , 0, 
+/* LDY 179 */   { 0 , 0,
 		"10;8e;[1=]x" },
-/* LDY 180 */   { 0 , 0, 
+/* LDY 180 */   { 0 , 0,
 		"10;ae;" },
-/* LEAS 181 */   { 0 , 0, 
+/* LEAS 181 */   { 0 , 0,
 		"32;" },
-/* LEAU 182 */   { 0 , 0, 
+/* LEAU 182 */   { 0 , 0,
 		"33;" },
-/* LEAX 183 */   { 0 , 0, 
+/* LEAX 183 */   { 0 , 0,
 		"30;" },
-/* LEAY 184 */   { 0 , 0, 
+/* LEAY 184 */   { 0 , 0,
 		"31;" },
-/* LSL 185 */   { ADDR , DIRECT, 
+/* LSL 185 */   { ADDR , DIRECT,
 		"08;[1=];" },
-/* LSL 186 */   { ADDR , EXTENDED, 
+/* LSL 186 */   { ADDR , EXTENDED,
 		"78;[1=]x" },
-/* LSL 187 */   { 0 , 0, 
+/* LSL 187 */   { 0 , 0,
 		"68;" },
-/* LSLA 188 */   { 0 , 0, 
+/* LSLA 188 */   { 0 , 0,
 		"48;" },
-/* LSLB 189 */   { 0 , 0, 
+/* LSLB 189 */   { 0 , 0,
 		"58;" },
-/* LSR 190 */   { ADDR , DIRECT, 
+/* LSR 190 */   { ADDR , DIRECT,
 		"04;[1=];" },
-/* LSR 191 */   { ADDR , EXTENDED, 
+/* LSR 191 */   { ADDR , EXTENDED,
 		"74;[1=]x" },
-/* LSR 192 */   { 0 , 0, 
+/* LSR 192 */   { 0 , 0,
 		"64;" },
-/* LSRA 193 */   { 0 , 0, 
+/* LSRA 193 */   { 0 , 0,
 		"44;" },
-/* LSRB 194 */   { 0 , 0, 
+/* LSRB 194 */   { 0 , 0,
 		"54;" },
-/* MUL 195 */   { 0 , 0, 
+/* MUL 195 */   { 0 , 0,
 		"3d;" },
-/* NEG 196 */   { ADDR , DIRECT, 
+/* NEG 196 */   { ADDR , DIRECT,
 		"00;[1=];" },
-/* NEG 197 */   { ADDR , EXTENDED, 
+/* NEG 197 */   { ADDR , EXTENDED,
 		"70;[1=]x" },
-/* NEG 198 */   { 0 , 0, 
+/* NEG 198 */   { 0 , 0,
 		"60;" },
-/* NEGA 199 */   { 0 , 0, 
+/* NEGA 199 */   { 0 , 0,
 		"40;" },
-/* NEGB 200 */   { 0 , 0, 
+/* NEGB 200 */   { 0 , 0,
 		"50;" },
-/* NOP 201 */   { 0 , 0, 
+/* NOP 201 */   { 0 , 0,
 		"12;" },
-/* ORA 202 */   { ADDR , DIRECT, 
+/* ORA 202 */   { ADDR , DIRECT,
 		"9a;[1=];" },
-/* ORA 203 */   { ADDR , EXTENDED, 
+/* ORA 203 */   { ADDR , EXTENDED,
 		"ba;[1=]x" },
-/* ORA 204 */   { 0 , 0, 
+/* ORA 204 */   { 0 , 0,
 		"8a;[1=];" },
-/* ORA 205 */   { 0 , 0, 
+/* ORA 205 */   { 0 , 0,
 		"aa;" },
-/* ORB 206 */   { ADDR , DIRECT, 
+/* ORB 206 */   { ADDR , DIRECT,
 		"da;[1=];" },
-/* ORB 207 */   { ADDR , EXTENDED, 
+/* ORB 207 */   { ADDR , EXTENDED,
 		"fa;[1=]x" },
-/* ORB 208 */   { 0 , 0, 
+/* ORB 208 */   { 0 , 0,
 		"ca;[1=];" },
-/* ORB 209 */   { 0 , 0, 
+/* ORB 209 */   { 0 , 0,
 		"ea;" },
-/* ORCC 210 */   { 0 , 0, 
+/* ORCC 210 */   { 0 , 0,
 		"1a;[1=];" },
-/* PSHS 211 */   { 0 , 0, 
+/* PSHS 211 */   { 0 , 0,
 		"34;[1#];" },
-/* PSHU 212 */   { 0 , 0, 
+/* PSHU 212 */   { 0 , 0,
 		"36;[1#];" },
-/* PULS 213 */   { 0 , 0, 
+/* PULS 213 */   { 0 , 0,
 		"35;[1#];" },
-/* PULU 214 */   { 0 , 0, 
+/* PULU 214 */   { 0 , 0,
 		"37;[1#];" },
-/* ROL 215 */   { ADDR , DIRECT, 
+/* ROL 215 */   { ADDR , DIRECT,
 		"09;[1=];" },
-/* ROL 216 */   { ADDR , EXTENDED, 
+/* ROL 216 */   { ADDR , EXTENDED,
 		"79;[1=]x" },
-/* ROL 217 */   { 0 , 0, 
+/* ROL 217 */   { 0 , 0,
 		"69;" },
-/* ROLA 218 */   { 0 , 0, 
+/* ROLA 218 */   { 0 , 0,
 		"49;" },
-/* ROLB 219 */   { 0 , 0, 
+/* ROLB 219 */   { 0 , 0,
 		"59;" },
-/* ROR 220 */   { ADDR , DIRECT, 
+/* ROR 220 */   { ADDR , DIRECT,
 		"06;[1=];" },
-/* ROR 221 */   { ADDR , EXTENDED, 
+/* ROR 221 */   { ADDR , EXTENDED,
 		"76;[1=]x" },
-/* ROR 222 */   { 0 , 0, 
+/* ROR 222 */   { 0 , 0,
 		"66;" },
-/* RORA 223 */   { 0 , 0, 
+/* RORA 223 */   { 0 , 0,
 		"46;" },
-/* RORB 224 */   { 0 , 0, 
+/* RORB 224 */   { 0 , 0,
 		"56;" },
-/* RTI 225 */   { 0 , 0, 
+/* RTI 225 */   { 0 , 0,
 		"3b;" },
-/* RTS 226 */   { 0 , 0, 
+/* RTS 226 */   { 0 , 0,
 		"39;" },
-/* SBCA 227 */   { ADDR , DIRECT, 
+/* SBCA 227 */   { ADDR , DIRECT,
 		"92;[1=];" },
-/* SBCA 228 */   { ADDR , EXTENDED, 
+/* SBCA 228 */   { ADDR , EXTENDED,
 		"b2;[1=]x" },
-/* SBCA 229 */   { 0 , 0, 
+/* SBCA 229 */   { 0 , 0,
 		"82;[1=];" },
-/* SBCA 230 */   { 0 , 0, 
+/* SBCA 230 */   { 0 , 0,
 		"a2;" },
-/* SBCB 231 */   { ADDR , DIRECT, 
+/* SBCB 231 */   { ADDR , DIRECT,
 		"d2;[1=];" },
-/* SBCB 232 */   { ADDR , EXTENDED, 
+/* SBCB 232 */   { ADDR , EXTENDED,
 		"f2;[1=]x" },
-/* SBCB 233 */   { 0 , 0, 
+/* SBCB 233 */   { 0 , 0,
 		"c2;[1=];" },
-/* SBCB 234 */   { 0 , 0, 
+/* SBCB 234 */   { 0 , 0,
 		"e2;" },
-/* SEX 235 */   { 0 , 0, 
+/* SEX 235 */   { 0 , 0,
 		"1d;" },
-/* STA 236 */   { ADDR , DIRECT, 
+/* STA 236 */   { ADDR , DIRECT,
 		"97;[1=];" },
-/* STA 237 */   { ADDR , EXTENDED, 
+/* STA 237 */   { ADDR , EXTENDED,
 		"b7;[1=]x" },
-/* STA 238 */   { 0 , 0, 
+/* STA 238 */   { 0 , 0,
 		"a7;" },
-/* STB 239 */   { ADDR , DIRECT, 
+/* STB 239 */   { ADDR , DIRECT,
 		"d7;[1=];" },
-/* STB 240 */   { ADDR , EXTENDED, 
+/* STB 240 */   { ADDR , EXTENDED,
 		"f7;[1=]x" },
-/* STB 241 */   { 0 , 0, 
+/* STB 241 */   { 0 , 0,
 		"e7;" },
-/* STD 242 */   { ADDR , DIRECT, 
+/* STD 242 */   { ADDR , DIRECT,
 		"dd;[1=];" },
-/* STD 243 */   { ADDR , EXTENDED, 
+/* STD 243 */   { ADDR , EXTENDED,
 		"fd;[1=]x" },
-/* STD 244 */   { 0 , 0, 
+/* STD 244 */   { 0 , 0,
 		"ed;" },
-/* STS 245 */   { ADDR , DIRECT, 
+/* STS 245 */   { ADDR , DIRECT,
 		"10;df;[1=];" },
-/* STS 246 */   { ADDR , EXTENDED, 
+/* STS 246 */   { ADDR , EXTENDED,
 		"10;ff;[1=]x" },
-/* STS 247 */   { 0 , 0, 
+/* STS 247 */   { 0 , 0,
 		"10;ef;" },
-/* STU 248 */   { ADDR , DIRECT, 
+/* STU 248 */   { ADDR , DIRECT,
 		"df;[1=];" },
-/* STU 249 */   { ADDR , EXTENDED, 
+/* STU 249 */   { ADDR , EXTENDED,
 		"ff;[1=]x" },
-/* STU 250 */   { 0 , 0, 
+/* STU 250 */   { 0 , 0,
 		"ef;" },
-/* STX 251 */   { ADDR , DIRECT, 
+/* STX 251 */   { ADDR , DIRECT,
 		"9f;[1=];" },
-/* STX 252 */   { ADDR , EXTENDED, 
+/* STX 252 */   { ADDR , EXTENDED,
 		"bf;[1=]x" },
-/* STX 253 */   { 0 , 0, 
+/* STX 253 */   { 0 , 0,
 		"af;" },
-/* STY 254 */   { ADDR , DIRECT, 
+/* STY 254 */   { ADDR , DIRECT,
 		"10;9f;[1=];" },
-/* STY 255 */   { ADDR , EXTENDED, 
+/* STY 255 */   { ADDR , EXTENDED,
 		"10;bf;[1=]x" },
-/* STY 256 */   { 0 , 0, 
+/* STY 256 */   { 0 , 0,
 		"10;af;" },
-/* SUBA 257 */   { ADDR , DIRECT, 
+/* SUBA 257 */   { ADDR , DIRECT,
 		"90;[1=];" },
-/* SUBA 258 */   { ADDR , EXTENDED, 
+/* SUBA 258 */   { ADDR , EXTENDED,
 		"b0;[1=]x" },
-/* SUBA 259 */   { 0 , 0, 
+/* SUBA 259 */   { 0 , 0,
 		"80;[1=];" },
-/* SUBA 260 */   { 0 , 0, 
+/* SUBA 260 */   { 0 , 0,
 		"a0;" },
-/* SUBB 261 */   { ADDR , DIRECT, 
+/* SUBB 261 */   { ADDR , DIRECT,
 		"d0;[1=];" },
-/* SUBB 262 */   { ADDR , EXTENDED, 
+/* SUBB 262 */   { ADDR , EXTENDED,
 		"f0;[1=]x" },
-/* SUBB 263 */   { 0 , 0, 
+/* SUBB 263 */   { 0 , 0,
 		"c0;[1=];" },
-/* SUBB 264 */   { 0 , 0, 
+/* SUBB 264 */   { 0 , 0,
 		"e0;" },
-/* SUBD 265 */   { ADDR , DIRECT, 
+/* SUBD 265 */   { ADDR , DIRECT,
 		"93;[1=];" },
-/* SUBD 266 */   { ADDR , EXTENDED, 
+/* SUBD 266 */   { ADDR , EXTENDED,
 		"b3;[1=]x" },
-/* SUBD 267 */   { 0 , 0, 
+/* SUBD 267 */   { 0 , 0,
 		"83;[1=]x" },
-/* SUBD 268 */   { 0 , 0, 
+/* SUBD 268 */   { 0 , 0,
 		"a3;" },
-/* SWI2 269 */   { 0 , 0, 
+/* SWI2 269 */   { 0 , 0,
 		"10;3f;" },
-/* SWI3 270 */   { 0 , 0, 
+/* SWI3 270 */   { 0 , 0,
 		"11;3f;" },
-/* SWI 271 */   { 0 , 0, 
+/* SWI 271 */   { 0 , 0,
 		"3f;" },
-/* SYNC 272 */   { 0 , 0, 
+/* SYNC 272 */   { 0 , 0,
 		"13;" },
-/* TFR 273 */   { 0 , 0, 
+/* TFR 273 */   { 0 , 0,
 		"1f;[1#2#];" },
-/* TST 274 */   { ADDR , DIRECT, 
+/* TST 274 */   { ADDR , DIRECT,
 		"0d;[1=];" },
-/* TST 275 */   { ADDR , EXTENDED, 
+/* TST 275 */   { ADDR , EXTENDED,
 		"7d;[1=]x" },
-/* TST 276 */   { 0 , 0, 
+/* TST 276 */   { 0 , 0,
 		"6d;" },
-/* TSTA 277 */   { 0 , 0, 
+/* TSTA 277 */   { 0 , 0,
 		"4d;" },
-/* TSTB 278 */   { 0 , 0, 
+/* TSTB 278 */   { 0 , 0,
 		"5d;" },
 	{ 0,0,""} };
 /* end fraptabdef.c */

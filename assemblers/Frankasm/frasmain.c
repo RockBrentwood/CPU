@@ -1,42 +1,13 @@
-/*
-HEADER: 	;
-TITLE: 		Frankenstein Cross Assemblers;
-VERSION: 	2.0;
-DESCRIPTION: "	Reconfigurable Cross-assembler producing Intel (TM)
-		Hex format object records.  ";
-KEYWORDS: 	cross-assemblers, 1805, 2650, 6301, 6502, 6805, 6809, 
-		6811, tms7000, 8048, 8051, 8096, z8, z80;
-SYSTEM: 	UNIX, MS-Dos ;
-FILENAME: 	frasmain.c;
-WARNINGS: 	"This software is in the public domain.  
-		Any prior copyright claims are relinquished.  
-
-		This software is distributed with no warranty whatever.  
-		The author takes no responsibility for the consequences 
-		of its use.
-
-		Yacc (or Bison) required to compile."  ;
-SEE-ALSO: 	base.doc, as*.doc (machine specific appendices) , 
-		as*.1 (man pages);
-AUTHORS: 	Mark Zenier;
-COMPILERS: 	Microport Sys V/AT, ATT Yacc, Turbo C V1.5, Bison (CUG disk 285)
-		(previous versions Xenix, Unisoft 68000 Version 7, Sun 3);
-*/
-/*
-	description	Main file
-	usage		Unix, framework crossassembler
-	history		September 25, 1987
-			August 3, 1988    v 1.4
-			September 14, 1990  v 1.5  Dosified
-*/
-
+// Frankenstain Cross-Assemblers, version 2.0.
+// Original author: Mark Zenier.
+// Main file.
 #define	Global
 
 #include <stdio.h>
 #include "frasmdat.h"
 
 FILE * intermedf = (FILE *) NULL;
-char interfn[] = 
+char interfn[] =
 #ifdef DOSTMP
  "frtXXXXXX";
 #else
@@ -84,7 +55,7 @@ main(argc, argv)
 			hexfn = optarg;
 			hexflag = hexvalid = TRUE;
 			break;
-		
+
 		case 'l':
 			loutfn = optarg;
 			listflag = TRUE;
@@ -102,8 +73,8 @@ main(argc, argv)
 		case 'p':
 			if( ! cpumatch(optarg) )
 			{
-				fprintf(stderr, 
-		"%s: no match on CPU type %s, default used\n", 
+				fprintf(stderr,
+		"%s: no match on CPU type %s, default used\n",
 					argv[0], optarg);
 			}
 			break;
@@ -123,7 +94,7 @@ main(argc, argv)
 		{
 			if( (yyin = fopen(argv[optind], "r")) == (FILE *)NULL)
 			{
-				fprintf(stderr, 
+				fprintf(stderr,
 					"%s: cannot open input file %s\n",
 					argv[0], argv[optind]);
 				exit(1);
@@ -138,7 +109,7 @@ main(argc, argv)
 
 	if(listflag)
 	{
-		if(strcmp(argv[optind], loutfn) == 0) 
+		if(strcmp(argv[optind], loutfn) == 0)
 		{
 			fprintf(stderr, "%s: list file overwrites input %s\n",
 				argv[0], loutfn);
@@ -173,9 +144,9 @@ main(argc, argv)
 	infilestk[0].fnm = argv[optind];
 	currfstk = 0;
 	currseg = 0;
-	
+
 	yyparse();
-	
+
 	if(ifstkpt != 0)
 		fraerror("active IF at end of file");
 
@@ -185,7 +156,7 @@ main(argc, argv)
 
 	if(symbflag)
 	{
-		if(strcmp(argv[optind], symbfn) == 0) 
+		if(strcmp(argv[optind], symbfn) == 0)
 		{
 			fprintf(stderr, "%s: symbol file overwrites input %s\n",
 				argv[0], symbfn);
@@ -202,7 +173,7 @@ main(argc, argv)
 		}
 	}
 
-	
+
 	fclose(intermedf);
 	if( (intermedf = fopen(interfn, "r")) == (FILE *) NULL)
 	{
@@ -216,7 +187,7 @@ main(argc, argv)
 
 	if(hexflag)
 	{
-		if(strcmp(argv[optind], hexfn) == 0) 
+		if(strcmp(argv[optind], hexfn) == 0)
 		{
 			fprintf(stderr, "%s: hex output overwrites input %s\n",
 				argv[0], hexfn);
@@ -241,31 +212,31 @@ main(argc, argv)
 
 	if(listflag)
 	{
-		fprintf(stderr, " ERROR SUMMARY - ERRORS DETECTED %d\n", 
+		fprintf(stderr, " ERROR SUMMARY - ERRORS DETECTED %d\n",
 			errorcnt);
-		fprintf(stderr, "               -  WARNINGS       %d\n", 
+		fprintf(stderr, "               -  WARNINGS       %d\n",
 			warncnt);
 	}
 
 	if(listflag)
 		fclose(loutf);
-	
+
 	if(hexflag)
 	{
 		fclose(hexoutf);
 		if( ! hexvalid)
 			unlink(hexfn);
 	}
-	
+
 	fclose(intermedf);
 	if( ! debugmode)
 		unlink(interfn);
 	else
 		abort();
-	
+
 	exit(errorcnt > 0 ? 2 : 0);
 }
-		
+
 
 frafatal(str)
 	char * str;
@@ -284,7 +255,7 @@ frafatal(str)
 		if( ! debugmode)
 			unlink(interfn);
 	}
-		
+
 	exit(2);
 }
 

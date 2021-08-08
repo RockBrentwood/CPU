@@ -1,23 +1,6 @@
-
-
-/*
-HEADER: 	;
-TITLE: 		Frankenstein Cross Assemblers;
-VERSION: 	2.0;
-DESCRIPTION: "	Reconfigurable Cross-assembler producing Intel (TM)
-		Hex format object records.  ";
-FILENAME: 	fraebin.h;
-SEE-ALSO: 	frapsub.c, fraosub.c;
-AUTHORS: 	Mark Zenier;
-*/
-
-/*
-	description	switch case actions for binary operators for
-			both the parse and output phase expression
-			evaluators
-*/
-
-
+// Frankenstain Cross-Assemblers, version 2.0.
+// Original author: Mark Zenier.
+// Switch case actions for binary operators for both the parse and output phase expression evaluators.
 		case IFC_MUL:
 			etop *= (estkm1p--)->v;
 			break;
@@ -81,4 +64,3 @@ AUTHORS: 	Mark Zenier;
 		case IFC_EQ:
 			etop = (estkm1p--)->v == etop ? 1 : 0;
 			break;
-

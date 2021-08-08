@@ -1,22 +1,6 @@
-
-/*
-HEADER: 	;
-TITLE: 		Frankenstein Cross Assemblers;
-VERSION: 	2.0;
-DESCRIPTION: "	Reconfigurable Cross-assembler producing Intel (TM)
-		Hex format object records.  ";
-FILENAME: 	frasmdat.h;
-SEE-ALSO: 	;
-AUTHORS: 	Mark Zenier;
-*/
-
-/*
-	description	structures and data used in parser and output phases
-	history		September 15, 1987
-			August 3, 1988   Global
-			September 14, 1990   6 char portable var
-*/
-
+// Frankenstain Cross-Assemblers, version 2.0.
+// Original author: Mark Zenier.
+// The structures and data used in parser and output phases.
 #include <ctype.h>
 #include <stdlib.h>
 #define PRINTCTRL(char) ((char)+'@')
@@ -38,7 +22,7 @@ extern int strlen();
 #include <string.h>
 #endif
 
-#define local 
+#define local
 
 #define TRUE 1
 #define FALSE 0
@@ -84,13 +68,13 @@ struct opsynt
 	int	gentabsub;
 };
 
-struct igel 
+struct igel
 {
 	int	selmask;
 	int	criteria;
 	char	* genstr;
 };
-	
+
 #define PPEXPRLEN 256
 
 struct evalrel
@@ -132,8 +116,8 @@ struct evstkel
 
 Global struct evstkel	estk[PESTKDEPTH], *estkm1p;
 
-Global int	currseg; 
-Global long 	locctr; 
+Global int	currseg;
+Global long 	locctr;
 
 extern FILE *yyin;
 extern FILE	*intermedf;
@@ -145,8 +129,8 @@ extern int errorcnt, warncnt;
 extern int linenumber;
 
 #define IFSTKDEPTH 32
-extern int	ifstkpt; 
-Global enum { If_Active, If_Skip, If_Err } 
+extern int	ifstkpt;
+Global enum { If_Active, If_Skip, If_Err }
 	elseifstk[IFSTKDEPTH], endifstk[IFSTKDEPTH];
 
 #define FILESTKDPTH 20
@@ -165,9 +149,9 @@ extern struct symel * endsymbol;
 
 enum readacts
 {
-	Nra_normal, 
-	Nra_new, 
-	Nra_end 
+	Nra_normal,
+	Nra_new,
+	Nra_end
 } ;
 
 extern enum readacts nextreadact;
@@ -190,4 +174,3 @@ int chtcreate(), chtcfind(), chtran();
 #define CF_UNDEF 	0
 #define CF_CHAR 	1
 #define CF_NUMBER 	2
-

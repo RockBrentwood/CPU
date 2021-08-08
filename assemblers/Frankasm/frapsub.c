@@ -1,27 +1,6 @@
-/*
-HEADER: 	;
-TITLE: 		Frankenstein Cross Assemblers;
-VERSION: 	2.0;
-DESCRIPTION: "	Reconfigurable Cross-assembler producing Intel (TM)
-		Hex format object records.  ";
-SYSTEM: 	UNIX, MS-Dos ;
-FILENAME: 	frapsub.c ;
-WARNINGS: 	"This software is in the public domain.  
-		Any prior copyright claims are relinquished.  
-
-		This software is distributed with no warranty whatever.  
-		The author takes no responsibility for the consequences 
-		of its use.  "  ;
-SEE-ALSO: 	frasmain.c;
-AUTHORS: 	Mark Zenier;
-*/
-
-/*
-	description	Parser phase utility routines
-	History		September 1987
-			September 14, 1990 Dosify, 6 char unique names
-*/
-
+// Frankenstain Cross-Assemblers, version 2.0.
+// Original author: Mark Zenier.
+// Parser phase utility routines.
 #include "fragcon.h"
 #include <stdio.h>
 #include "frasmdat.h"
@@ -197,14 +176,14 @@ static struct symel *getsymslot(str)
 				if there are no symbols for the hash value
 					create one for this string
 				otherwise
-				scan the linked list until the symbol is 
+				scan the linked list until the symbol is
 				found or the end of the list is found
 				if the symbol was found
 					exit
 				if the symbol was not found, allocate and
 				add at the end of the linked list
 				fill out the symbol
-	parameters	the character string 
+	parameters	the character string
 	globals		all the symbol table
 	return		a pointer to the symbol table element for this
 			character string
@@ -312,7 +291,7 @@ buildsymbolindex()
 	int hi;
 	struct symel *curr;
 
-	if((symbindex = (struct symel **)calloc((unsigned)nextsymnum, 
+	if((symbindex = (struct symel **)calloc((unsigned)nextsymnum,
 			sizeof (struct symel *))) == (struct symel **)NULL)
 	{
 		frafatal(" unable to allocate symbol index");
@@ -342,7 +321,7 @@ local int ohashtab[OPHASHSZ];
 setophash()
 /*
 	description	set up the linked list hash table for the
-			opcode symbols 
+			opcode symbols
 	globals		the opcode hash table
 			the opcode table
 */
@@ -515,7 +494,7 @@ void goutch(ch)
 	else
 	{
 		goutbuff[INBUFFSZ-1] = '\0';
-		goutptr = &goutbuff[INBUFFSZ]; 
+		goutptr = &goutbuff[INBUFFSZ];
 		fraerror("overflow in instruction generation");
 	}
 }
@@ -553,7 +532,7 @@ int geninstr(str)
 			in a 'D' record in the intermediate file, after
 			merging in the expression results.
 	parameters	the instruction generation string
-	globals		the evaluation results 
+	globals		the evaluation results
 				evalr[].value	a numeric value known at
 						the time of the first pass
 				evalr[].exprstr  a polish form expression
@@ -608,7 +587,7 @@ int geninstr(str)
 				state = GSTR_PASS;
 				str++;
 				break;
-			
+
 			case '0':
 			case '1':
 			case '2':
@@ -621,7 +600,7 @@ int geninstr(str)
 			case '9':
 				innum = (innum << 4) + (*str++) - '0';
 				break;
-			
+
 			case 'a':
 			case 'b':
 			case 'c':
@@ -630,7 +609,7 @@ int geninstr(str)
 			case 'f':
 				innum = (innum << 4) + (*str++) - 'a' + 10;
 				break;
-			
+
 			case 'A':
 			case 'B':
 			case 'C':
@@ -639,7 +618,7 @@ int geninstr(str)
 			case 'F':
 				innum = (innum << 4) + (*str++) - 'A' + 10;
 				break;
-			
+
 			case IG_CPCON:
 				goutxnum((unsigned long)evalr[innum].value);
 				innum = 0;
@@ -653,11 +632,11 @@ int geninstr(str)
 					goutch(*exp++);
 				str++;
 				break;
-			
+
 			case IG_ERROR:
 				fraerror(++str);
 				return 0;
-			
+
 			default:
 				fraerror(
 				"invalid char in instruction generation");
@@ -669,7 +648,7 @@ int geninstr(str)
 	if(goutptr > &goutbuff[2])
 	{
 		goutch('\n');
-		fwrite(goutbuff,sizeof (char), goutptr - &goutbuff[0], 
+		fwrite(goutbuff,sizeof (char), goutptr - &goutbuff[0],
 			intermedf);
 	}
 
@@ -696,7 +675,7 @@ int chtcreate()
 
 	for(cnt = 0; cnt < 512; cnt++)
 		trantab[cnt] = -1;
-	
+
 	chtatab[chtnxalph] = chtnpoint = trantab;
 
 	return chtnxalph++;
@@ -713,7 +692,7 @@ int chtcfind(chtab, sourcepnt, tabpnt, numret)
 	return		status of search
 */
 	int *chtab;
-	char **sourcepnt; 
+	char **sourcepnt;
 	int **tabpnt;
 	int *numret;
 {
@@ -742,14 +721,14 @@ int chtcfind(chtab, sourcepnt, tabpnt, numret)
 			return (*valaddr == -1) ?
 				CF_UNDEF : CF_CHAR;
 		}
-		
+
 	case '\\':
 		switch(cv =  *(++sptr) )
 		{
 		case '\0':
 			*sourcepnt = sptr;
 			return CF_INVALID;
-		
+
 		case '\'':
 		case '\"':
 		case '\\':
@@ -815,17 +794,17 @@ int chtcfind(chtab, sourcepnt, tabpnt, numret)
 			case '8': case '9':
 				numval = cv - '0';
 				break;
-			
+
 			case 'a': case 'b': case 'c':
 			case 'd': case 'e': case 'f':
-				numval = cv - 'a' + 10; 
+				numval = cv - 'a' + 10;
 				break;
-			
+
 			case 'A': case 'B': case 'C':
 			case 'D': case 'E': case 'F':
 				numval = cv - 'A' + 10;
 				break;
-			
+
 			default:
 				*sourcepnt = sptr;
 				return CF_INVALID;
@@ -839,19 +818,19 @@ int chtcfind(chtab, sourcepnt, tabpnt, numret)
 				numval = numval * 16 + cv - '0';
 				++sptr;
 				break;
-			
-			case 'a': case 'b': case 'c': 
+
+			case 'a': case 'b': case 'c':
 			case 'd': case 'e': case 'f':
-				numval = numval * 16 + cv - 'a' + 10; 
+				numval = numval * 16 + cv - 'a' + 10;
 				++sptr;
 				break;
-			
+
 			case 'A': case 'B': case 'C':
 			case 'D': case 'E': case 'F':
 				numval = numval * 16 + cv - 'A' + 10;
 				++sptr;
 				break;
-			
+
 			default:
 				break;
 			}
@@ -875,7 +854,7 @@ int chtran(sourceptr)
 	case CF_END:
 	default:
 		return 0;
-	
+
 	case CF_INVALID:
 		fracherror("invalid character constant", beforeptr, *sourceptr);
 		return 0;
@@ -910,7 +889,7 @@ int genstring(str)
 	{
 		goutptr = &goutbuff[2];
 
-		for( linecount = 0; 
+		for( linecount = 0;
 			linecount < STCHPERLINE && *str != '\0';
 			linecount++)
 		{
@@ -922,14 +901,14 @@ int genstring(str)
 		if(goutptr > &goutbuff[2])
 		{
 			goutch('\n');
-			fwrite(goutbuff,sizeof (char), goutptr - &goutbuff[0], 
+			fwrite(goutbuff,sizeof (char), goutptr - &goutbuff[0],
 				intermedf);
 		}
 	}
 
 	return rvlen;
 }
-	
+
 static char *pepolptr;
 static int pepolcnt;
 static long etop;
@@ -1050,7 +1029,7 @@ pepolcon(esub)
 
 			(++estkm1p)->v = etop;
 			estkm1p -> s = etopseg;
-			etopseg = SSG_UNUSED;	
+			etopseg = SSG_UNUSED;
 			etop = 0;
 
 			if( ! pepolcon(enode[esub].right))
@@ -1087,7 +1066,7 @@ pepolcon(esub)
 		etop = (enode[esub].sym) -> value;
 		etopseg = (enode[esub].sym) -> seg;
 		if(etopseg == SSG_EQU ||
-		   etopseg == SSG_SET ) 
+		   etopseg == SSG_SET )
 		{
 			etopseg = SSG_ABS;
 			polnumout((unsigned long)(enode[esub].sym) -> value);
@@ -1098,13 +1077,13 @@ pepolcon(esub)
 			polout(IFC_SYMB);
 		}
 		break;
-			
+
 	case  PCCASE_PROGC:
 		polout(IFC_PROGCTR);
 		etop = locctr;
 		etopseg = SSG_ABS;
 		break;
-			
+
 	case  PCCASE_CONS:
 		polnumout((unsigned long)enode[esub].val);
 		etop = enode[esub].val;

@@ -1,31 +1,7 @@
 %{
-
-/*
-HEADER: 	;
-TITLE: 		Frankenstein Cross Assemblers;
-VERSION: 	2.0;
-DESCRIPTION: "	Reconfigurable Cross-assembler producing Intel (TM)
-		Hex format object records.  ";
-KEYWORDS: 	cross-assemblers, 1805, 2650, 6301, 6502, 6805, 6809, 
-		6811, tms7000, 8048, 8051, 8096, z8, z80;
-SYSTEM: 	UNIX, MS-Dos ;
-FILENAME: 	as1805.y;
-WARNINGS: 	"This software is in the public domain.  
-		Any prior copyright claims are relinquished.  
-
-		This software is distributed with no warranty whatever.  
-		The author takes no responsibility for the consequences 
-		of its use.
-
-		Yacc (or Bison) required to compile."  ;
-SEE-ALSO: 	as1805.doc,frasmain.c;	
-AUTHORS: 	Mark Zenier;
-COMPILERS: 	Microport Sys V/AT, ATT Yacc, Turbo C V1.5, Bison (CUG disk 285)
-		(previous versions Xenix, Unisoft 68000 Version 7, Sun 3);
-*/
-/* RCA 1802 instruction generation file */
-/* November 17, 1990 - character set support */
-
+// Frankenstain Cross-Assemblers, version 2.0.
+// Original author: Mark Zenier.
+// RCA 1802 instruction generation file.
 /*
 	description	frame work parser description for framework cross
 			assemblers
@@ -42,7 +18,7 @@ COMPILERS: 	Microport Sys V/AT, ATT Yacc, Turbo C V1.5, Bison (CUG disk 285)
 #define yylex lexintercept
 
 #define CPUMASK		0xc000
-#define CPU1802		0x4000	
+#define CPU1802		0x4000
 #define CPU1805		0xc000
 #define TS1802PLUS	0x4000	/* mask and match values in table */
 #define TS1805	0x8000	/* if select value & mask == mask */
@@ -54,7 +30,7 @@ COMPILERS: 	Microport Sys V/AT, ATT Yacc, Turbo C V1.5, Bison (CUG disk 285)
 #define ST_LDN 0x1
 #define ST_RLDI 0x1
 #define ST_DBNZ 0x1
-	
+
 	int	cpuselect = CPU1805;
 	static char	genbdef[] = "[1=];";
 	static char	genwdef[] = "[1=]x"; /* x for normal, y for byte rev */
@@ -155,12 +131,12 @@ allline	: 	line EOL
 			}
 	;
 
-line	:	LABEL KOC_END 
+line	:	LABEL KOC_END
 			{
 				endsymbol = $1;
 				nextreadact = Nra_end;
 			}
-	|	      KOC_END 
+	|	      KOC_END
 			{
 				nextreadact = Nra_end;
 			}
@@ -184,7 +160,7 @@ line	:	LABEL KOC_END
 			}
 		}
 			}
-	|	LABEL KOC_EQU expr 
+	|	LABEL KOC_EQU expr
 			{
 				if($1 -> seg == SSG_UNDEF)
 				{
@@ -208,7 +184,7 @@ line	:	LABEL KOC_END
 				"cannot change symbol value with EQU");
 				}
 			}
-	|	LABEL KOC_SET expr 
+	|	LABEL KOC_SET expr
 			{
 				if($1 -> seg == SSG_UNDEF
 				   || $1 -> seg == SSG_SET)
@@ -233,7 +209,7 @@ line	:	LABEL KOC_END
 				"cannot change symbol value with SET");
 				}
 			}
-	|	KOC_IF expr 
+	|	KOC_IF expr
 			{
 		if((++ifstkpt) < IFSTKDEPTH)
 		{
@@ -264,10 +240,10 @@ line	:	LABEL KOC_END
 			fraerror("IF stack overflow");
 		}
 			}
-						
-	|	KOC_IF 
+
+	|	KOC_IF
 			{
-		if(fraifskip) 
+		if(fraifskip)
 		{
 			if((++ifstkpt) < IFSTKDEPTH)
 			{
@@ -285,26 +261,26 @@ line	:	LABEL KOC_END
 			YYERROR;
 		}
 				}
-						
-	|	KOC_ELSE 
+
+	|	KOC_ELSE
 			{
 				switch(elseifstk[ifstkpt])
 				{
 				case If_Active:
 					fraifskip = FALSE;
 					break;
-				
+
 				case If_Skip:
 					fraifskip = TRUE;
 					break;
-				
+
 				case If_Err:
 					fraerror("ELSE with no matching if");
 					break;
 				}
 			}
 
-	|	KOC_ENDI 
+	|	KOC_ENDI
 			{
 				switch(endifstk[ifstkpt])
 				{
@@ -312,18 +288,18 @@ line	:	LABEL KOC_END
 					fraifskip = FALSE;
 					ifstkpt--;
 					break;
-				
+
 				case If_Skip:
 					fraifskip = TRUE;
 					ifstkpt--;
 					break;
-				
+
 				case If_Err:
 					fraerror("ENDI with no matching if");
 					break;
 				}
 			}
-	|	LABEL KOC_ORG expr 
+	|	LABEL KOC_ORG expr
 			{
 				pevalexpr(0, $3);
 				if(evalr[0].seg == SSG_ABS)
@@ -346,7 +322,7 @@ line	:	LABEL KOC_END
 					 "noncomputable expression for ORG");
 				}
 			}
-	|	      KOC_ORG expr 
+	|	      KOC_ORG expr
 			{
 				pevalexpr(0, $2);
 				if(evalr[0].seg == SSG_ABS)
@@ -445,12 +421,12 @@ line	:	LABEL KOC_END
 
 					case CF_INVALID:
 					case CF_NUMBER:
-				fracherror("invalid character to define", 
+				fracherror("invalid character to define",
 					before, sourcestr);
 						break;
 
 					case CF_CHAR:
-				fracherror("character already defined", 
+				fracherror("character already defined",
 					before, sourcestr);
 						break;
 					}
@@ -470,9 +446,9 @@ line	:	LABEL KOC_END
 		{
 			fraerror("no CHARSET statement active");
 		}
-			
+
 			}
-	|	LABEL 
+	|	LABEL
 			{
 			if($1 -> seg == SSG_UNDEF)
 			{
@@ -500,14 +476,14 @@ labeledline :	LABEL genline
 				"multiple definition of label");
 			labelloc = locctr;
 			}
-				
+
 	|	genline
 			{
 				labelloc = locctr;
 			}
 	;
 
-genline	:	KOC_BDEF	exprlist 
+genline	:	KOC_BDEF	exprlist
 			{
 				genlocrec(currseg, labelloc);
 				for( satsub = 0; satsub < $2; satsub++)
@@ -516,7 +492,7 @@ genline	:	KOC_BDEF	exprlist
 					locctr += geninstr(genbdef);
 				}
 			}
-	|	KOC_SDEF stringlist 
+	|	KOC_SDEF stringlist
 			{
 				genlocrec(currseg, labelloc);
 				for(satsub = 0; satsub < $2; satsub++)
@@ -524,7 +500,7 @@ genline	:	KOC_BDEF	exprlist
 					locctr += genstring(stringlist[satsub]);
 				}
 			}
-	|	KOC_WDEF exprlist 
+	|	KOC_WDEF exprlist
 			{
 				genlocrec(currseg, labelloc);
 				for( satsub = 0; satsub < $2; satsub++)
@@ -532,8 +508,8 @@ genline	:	KOC_BDEF	exprlist
 					pevalexpr(1, exprlist[satsub]);
 					locctr += geninstr(genwdef);
 				}
-			}	
-	|	KOC_RESM expr 
+			}
+	|	KOC_RESM expr
 			{
 				pevalexpr(0, $2);
 				if(evalr[0].seg == SSG_ABS)
@@ -576,7 +552,7 @@ stringlist :	stringlist ',' STRING
 	;
 
 
-genline : KOC_opcode 
+genline : KOC_opcode
 			{
 		genlocrec(currseg, labelloc);
 		locctr += geninstr( findgen( $1, ST_INH, cpuselect
@@ -921,7 +897,7 @@ cpumatch(str)
 		{"05", CPU1805 },
 		{"04", CPU1805 },
 		{"06", CPU1805 },
-		{"", 0} 
+		{"", 0}
 	};
 
 	for(msub = 0; matchtab[msub].cpuv != 0; msub++)
@@ -1240,247 +1216,247 @@ struct opsynt ostab[NUMSYNBLK+1]
 
 struct igel igtab[NUMDIFFOP+1]
 	= {
-/* invalid 0 */   { 0 , 0, 
+/* invalid 0 */   { 0 , 0,
 		"[Xnullentry" },
-/* invalid 1 */   { 0 , 0, 
+/* invalid 1 */   { 0 , 0,
 		"[Xinvalid opcode" },
-/* ADC 2 */   { 0 , 0, 
+/* ADC 2 */   { 0 , 0,
 		"74;" },
-/* ADCI 3 */   { 0 , 0, 
+/* ADCI 3 */   { 0 , 0,
 		"7c;[1=];" },
-/* ADD 4 */   { 0 , 0, 
+/* ADD 4 */   { 0 , 0,
 		"f4;" },
-/* ADI 5 */   { 0 , 0, 
+/* ADI 5 */   { 0 , 0,
 		"fc;[1=];" },
-/* AND 6 */   { 0 , 0, 
+/* AND 6 */   { 0 , 0,
 		"f2;" },
-/* ANI 7 */   { 0 , 0, 
+/* ANI 7 */   { 0 , 0,
 		"fa;[1=];" },
-/* B1 8 */   { 0 , 0, 
+/* B1 8 */   { 0 , 0,
 		"34;[1=].Q.ff00&-~.0<T!;" },
-/* B2 9 */   { 0 , 0, 
+/* B2 9 */   { 0 , 0,
 		"35;[1=].Q.ff00&-~.0<T!;" },
-/* B3 10 */   { 0 , 0, 
+/* B3 10 */   { 0 , 0,
 		"36;[1=].Q.ff00&-~.0<T!;" },
-/* B4 11 */   { 0 , 0, 
+/* B4 11 */   { 0 , 0,
 		"37;[1=].Q.ff00&-~.0<T!;" },
-/* BCI 12 */   { TS1805 , TS1805, 
+/* BCI 12 */   { TS1805 , TS1805,
 		"68;3e;[1=].Q.ff00&-~.0<T!;" },
-/* BDF 13 */   { 0 , 0, 
+/* BDF 13 */   { 0 , 0,
 		"33;[1=].Q.ff00&-~.0<T!;" },
-/* BGE 14 */   { 0 , 0, 
+/* BGE 14 */   { 0 , 0,
 		"33;[1=].Q.ff00&-~.0<T!;" },
-/* BL 15 */   { 0 , 0, 
+/* BL 15 */   { 0 , 0,
 		"3b;[1=].Q.ff00&-~.0<T!;" },
-/* BM 16 */   { 0 , 0, 
+/* BM 16 */   { 0 , 0,
 		"3b;[1=].Q.ff00&-~.0<T!;" },
-/* BN1 17 */   { 0 , 0, 
+/* BN1 17 */   { 0 , 0,
 		"3c;[1=].Q.ff00&-~.0<T!;" },
-/* BN2 18 */   { 0 , 0, 
+/* BN2 18 */   { 0 , 0,
 		"3d;[1=].Q.ff00&-~.0<T!;" },
-/* BN3 19 */   { 0 , 0, 
+/* BN3 19 */   { 0 , 0,
 		"3e;[1=].Q.ff00&-~.0<T!;" },
-/* BN4 20 */   { 0 , 0, 
+/* BN4 20 */   { 0 , 0,
 		"3f;[1=].Q.ff00&-~.0<T!;" },
-/* BNF 21 */   { 0 , 0, 
+/* BNF 21 */   { 0 , 0,
 		"3b;[1=].Q.ff00&-~.0<T!;" },
-/* BNQ 22 */   { 0 , 0, 
+/* BNQ 22 */   { 0 , 0,
 		"39;[1=].Q.ff00&-~.0<T!;" },
-/* BNZ 23 */   { 0 , 0, 
+/* BNZ 23 */   { 0 , 0,
 		"3a;[1=].Q.ff00&-~.0<T!;" },
-/* BPZ 24 */   { 0 , 0, 
+/* BPZ 24 */   { 0 , 0,
 		"33;[1=].Q.ff00&-~.0<T!;" },
-/* BQ 25 */   { 0 , 0, 
+/* BQ 25 */   { 0 , 0,
 		"31;[1=].Q.ff00&-~.0<T!;" },
-/* BR 26 */   { 0 , 0, 
+/* BR 26 */   { 0 , 0,
 		"30;[1=].Q.ff00&-~.0<T!;" },
-/* BXI 27 */   { TS1805 , TS1805, 
+/* BXI 27 */   { TS1805 , TS1805,
 		"68;3f;[1=].Q.ff00&-~.0<T!;" },
-/* BZ 28 */   { 0 , 0, 
+/* BZ 28 */   { 0 , 0,
 		"32;[1=].Q.ff00&-~.0<T!;" },
-/* CID 29 */   { TS1805 , TS1805, 
+/* CID 29 */   { TS1805 , TS1805,
 		"68;0d;" },
-/* CIE 30 */   { TS1805 , TS1805, 
+/* CIE 30 */   { TS1805 , TS1805,
 		"68;0c;" },
-/* DACI 31 */   { TS1805 , TS1805, 
+/* DACI 31 */   { TS1805 , TS1805,
 		"68;7c;[1=];" },
-/* DADC 32 */   { TS1805 , TS1805, 
+/* DADC 32 */   { TS1805 , TS1805,
 		"68;74;" },
-/* DADD 33 */   { TS1805 , TS1805, 
+/* DADD 33 */   { TS1805 , TS1805,
 		"68;f4;" },
-/* DADI 34 */   { TS1805 , TS1805, 
+/* DADI 34 */   { TS1805 , TS1805,
 		"68;fc;[1=];" },
-/* DBNZ 35 */   { TS1805 , TS1805, 
+/* DBNZ 35 */   { TS1805 , TS1805,
 		"68;20.[1#]|;[2=]x" },
-/* DEC 36 */   { 0 , 0, 
+/* DEC 36 */   { 0 , 0,
 		"20.[1#]|;" },
-/* DIS 37 */   { 0 , 0, 
+/* DIS 37 */   { 0 , 0,
 		"71;" },
-/* DSAV 38 */   { TS1805 , TS1805, 
+/* DSAV 38 */   { TS1805 , TS1805,
 		"68;76;" },
-/* DSBI 39 */   { TS1805 , TS1805, 
+/* DSBI 39 */   { TS1805 , TS1805,
 		"68;7f;[1=];" },
-/* DSM 40 */   { TS1805 , TS1805, 
+/* DSM 40 */   { TS1805 , TS1805,
 		"68;f7;" },
-/* DSMB 41 */   { TS1805 , TS1805, 
+/* DSMB 41 */   { TS1805 , TS1805,
 		"68;77;" },
-/* DSMI 42 */   { TS1805 , TS1805, 
+/* DSMI 42 */   { TS1805 , TS1805,
 		"68;ff;[1=];" },
-/* DTC 43 */   { TS1805 , TS1805, 
+/* DTC 43 */   { TS1805 , TS1805,
 		"68;01;" },
-/* ETQ 44 */   { TS1805 , TS1805, 
+/* ETQ 44 */   { TS1805 , TS1805,
 		"68;09;" },
-/* GEC 45 */   { TS1805 , TS1805, 
+/* GEC 45 */   { TS1805 , TS1805,
 		"68;08;" },
-/* GHI 46 */   { 0 , 0, 
+/* GHI 46 */   { 0 , 0,
 		"90.[1#]|;" },
-/* GLO 47 */   { 0 , 0, 
+/* GLO 47 */   { 0 , 0,
 		"80.[1#]|;" },
-/* IDL 48 */   { 0 , 0, 
+/* IDL 48 */   { 0 , 0,
 		"00;" },
-/* INC 49 */   { 0 , 0, 
+/* INC 49 */   { 0 , 0,
 		"10.[1#]|;" },
-/* INP 50 */   { 0 , 0, 
+/* INP 50 */   { 0 , 0,
 		"68.[1#]|;" },
-/* IRX 51 */   { 0 , 0, 
+/* IRX 51 */   { 0 , 0,
 		"60;" },
-/* LBDF 52 */   { 0 , 0, 
+/* LBDF 52 */   { 0 , 0,
 		"c3;[1=]x" },
-/* LBNF 53 */   { 0 , 0, 
+/* LBNF 53 */   { 0 , 0,
 		"cb;[1=]x" },
-/* LBNQ 54 */   { 0 , 0, 
+/* LBNQ 54 */   { 0 , 0,
 		"c9;[1=]x" },
-/* LBNZ 55 */   { 0 , 0, 
+/* LBNZ 55 */   { 0 , 0,
 		"ca;[1=]x" },
-/* LBQ 56 */   { 0 , 0, 
+/* LBQ 56 */   { 0 , 0,
 		"c1;[1=]x" },
-/* LBR 57 */   { 0 , 0, 
+/* LBR 57 */   { 0 , 0,
 		"c0;[1=]x" },
-/* LBZ 58 */   { 0 , 0, 
+/* LBZ 58 */   { 0 , 0,
 		"c2;[1=]x" },
-/* LDA 59 */   { 0 , 0, 
+/* LDA 59 */   { 0 , 0,
 		"40.[1#]|;" },
-/* LDC 60 */   { TS1805 , TS1805, 
+/* LDC 60 */   { TS1805 , TS1805,
 		"68;06;" },
-/* LDI 61 */   { 0 , 0, 
+/* LDI 61 */   { 0 , 0,
 		"f8;[1=];" },
-/* LDN 62 */   { 0 , 0, 
+/* LDN 62 */   { 0 , 0,
 		"00.[1#]|;" },
-/* LDX 63 */   { 0 , 0, 
+/* LDX 63 */   { 0 , 0,
 		"f0;" },
-/* LDXA 64 */   { 0 , 0, 
+/* LDXA 64 */   { 0 , 0,
 		"72;" },
-/* LSDF 65 */   { 0 , 0, 
+/* LSDF 65 */   { 0 , 0,
 		"cf;" },
-/* LSIE 66 */   { 0 , 0, 
+/* LSIE 66 */   { 0 , 0,
 		"cc;" },
-/* LSKP 67 */   { 0 , 0, 
+/* LSKP 67 */   { 0 , 0,
 		"c8;" },
-/* LSNF 68 */   { 0 , 0, 
+/* LSNF 68 */   { 0 , 0,
 		"c7;" },
-/* LSNQ 69 */   { 0 , 0, 
+/* LSNQ 69 */   { 0 , 0,
 		"c5;" },
-/* LSNZ 70 */   { 0 , 0, 
+/* LSNZ 70 */   { 0 , 0,
 		"c6;" },
-/* LSQ 71 */   { 0 , 0, 
+/* LSQ 71 */   { 0 , 0,
 		"cd;" },
-/* LSZ 72 */   { 0 , 0, 
+/* LSZ 72 */   { 0 , 0,
 		"ce;" },
-/* MARK 73 */   { 0 , 0, 
+/* MARK 73 */   { 0 , 0,
 		"79;" },
-/* NBR 74 */   { 0 , 0, 
+/* NBR 74 */   { 0 , 0,
 		"38;[1=].Q.ff00&-~.0<T!;" },
-/* NLBR 75 */   { 0 , 0, 
+/* NLBR 75 */   { 0 , 0,
 		"c8;[1=]x" },
-/* NOP 76 */   { 0 , 0, 
+/* NOP 76 */   { 0 , 0,
 		"c4;" },
-/* OR 77 */   { 0 , 0, 
+/* OR 77 */   { 0 , 0,
 		"f1;" },
-/* ORI 78 */   { 0 , 0, 
+/* ORI 78 */   { 0 , 0,
 		"f9;[1=];" },
-/* OUT 79 */   { 0 , 0, 
+/* OUT 79 */   { 0 , 0,
 		"60.[1#]|;" },
-/* PHI 80 */   { 0 , 0, 
+/* PHI 80 */   { 0 , 0,
 		"b0.[1#]|;" },
-/* PLO 81 */   { 0 , 0, 
+/* PLO 81 */   { 0 , 0,
 		"a0.[1#]|;" },
-/* REQ 82 */   { 0 , 0, 
+/* REQ 82 */   { 0 , 0,
 		"7a;" },
-/* RET 83 */   { 0 , 0, 
+/* RET 83 */   { 0 , 0,
 		"70;" },
-/* RLDI 84 */   { TS1805 , TS1805, 
+/* RLDI 84 */   { TS1805 , TS1805,
 		"68;c0.[1#]|;[2=]x" },
-/* RLXA 85 */   { TS1805 , TS1805, 
+/* RLXA 85 */   { TS1805 , TS1805,
 		"68;60.[1#]|;" },
-/* RNX 86 */   { TS1805 , TS1805, 
+/* RNX 86 */   { TS1805 , TS1805,
 		"68;b0.[1#]|;" },
-/* RSHL 87 */   { 0 , 0, 
+/* RSHL 87 */   { 0 , 0,
 		"7e;" },
-/* RSHR 88 */   { 0 , 0, 
+/* RSHR 88 */   { 0 , 0,
 		"76;" },
-/* RSXD 89 */   { TS1805 , TS1805, 
+/* RSXD 89 */   { TS1805 , TS1805,
 		"68;a0.[1#]|;" },
-/* SAV 90 */   { 0 , 0, 
+/* SAV 90 */   { 0 , 0,
 		"78;" },
-/* SCAL 91 */   { TS1805 , TS1805, 
+/* SCAL 91 */   { TS1805 , TS1805,
 		"68;80.[1#]|;[2=]x" },
-/* SCM1 92 */   { TS1805 , TS1805, 
+/* SCM1 92 */   { TS1805 , TS1805,
 		"68;05;" },
-/* SCM2 93 */   { TS1805 , TS1805, 
+/* SCM2 93 */   { TS1805 , TS1805,
 		"68;03;" },
-/* SD 94 */   { 0 , 0, 
+/* SD 94 */   { 0 , 0,
 		"f5;" },
-/* SDB 95 */   { 0 , 0, 
+/* SDB 95 */   { 0 , 0,
 		"75;" },
-/* SDBI 96 */   { 0 , 0, 
+/* SDBI 96 */   { 0 , 0,
 		"7d;[1=];" },
-/* SDI 97 */   { 0 , 0, 
+/* SDI 97 */   { 0 , 0,
 		"fd;[1=];" },
-/* SEP 98 */   { 0 , 0, 
+/* SEP 98 */   { 0 , 0,
 		"d0.[1#]|;" },
-/* SEQ 99 */   { 0 , 0, 
+/* SEQ 99 */   { 0 , 0,
 		"7b;" },
-/* SEX 100 */   { 0 , 0, 
+/* SEX 100 */   { 0 , 0,
 		"e0.[1#]|;" },
-/* SHL 101 */   { 0 , 0, 
+/* SHL 101 */   { 0 , 0,
 		"fe;" },
-/* SHLC 102 */   { 0 , 0, 
+/* SHLC 102 */   { 0 , 0,
 		"7e;" },
-/* SHR 103 */   { 0 , 0, 
+/* SHR 103 */   { 0 , 0,
 		"f6;" },
-/* SHRC 104 */   { 0 , 0, 
+/* SHRC 104 */   { 0 , 0,
 		"76;" },
-/* SKP 105 */   { 0 , 0, 
+/* SKP 105 */   { 0 , 0,
 		"38;" },
-/* SM 106 */   { 0 , 0, 
+/* SM 106 */   { 0 , 0,
 		"f7;" },
-/* SMB 107 */   { 0 , 0, 
+/* SMB 107 */   { 0 , 0,
 		"77;" },
-/* SMBI 108 */   { 0 , 0, 
+/* SMBI 108 */   { 0 , 0,
 		"7f;[1=];" },
-/* SMI 109 */   { 0 , 0, 
+/* SMI 109 */   { 0 , 0,
 		"ff;[1=];" },
-/* SPM1 110 */   { TS1805 , TS1805, 
+/* SPM1 110 */   { TS1805 , TS1805,
 		"68;04;" },
-/* SPM2 111 */   { TS1805 , TS1805, 
+/* SPM2 111 */   { TS1805 , TS1805,
 		"68;02;" },
-/* SRET 112 */   { TS1805 , TS1805, 
+/* SRET 112 */   { TS1805 , TS1805,
 		"68;90.[1#]|;" },
-/* STM 113 */   { TS1805 , TS1805, 
+/* STM 113 */   { TS1805 , TS1805,
 		"68;07;" },
-/* STPC 114 */   { TS1805 , TS1805, 
+/* STPC 114 */   { TS1805 , TS1805,
 		"68;00;" },
-/* STR 115 */   { 0 , 0, 
+/* STR 115 */   { 0 , 0,
 		"50.[1#]|;" },
-/* STXD 116 */   { 0 , 0, 
+/* STXD 116 */   { 0 , 0,
 		"73;" },
-/* XID 117 */   { TS1805 , TS1805, 
+/* XID 117 */   { TS1805 , TS1805,
 		"68;0b;" },
-/* XIE 118 */   { TS1805 , TS1805, 
+/* XIE 118 */   { TS1805 , TS1805,
 		"68;0a;" },
-/* XOR 119 */   { 0 , 0, 
+/* XOR 119 */   { 0 , 0,
 		"f3;" },
-/* XRI 120 */   { 0 , 0, 
+/* XRI 120 */   { 0 , 0,
 		"fb;[1=];" },
 	{ 0,0,""} };
 /* end fraptabdef.c */

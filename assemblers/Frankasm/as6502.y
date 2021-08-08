@@ -1,31 +1,7 @@
 %{
-
-/*
-HEADER: 	;
-TITLE: 		Frankenstein Cross Assemblers;
-VERSION: 	2.0;
-DESCRIPTION: "	Reconfigurable Cross-assembler producing Intel (TM)
-		Hex format object records.  ";
-KEYWORDS: 	cross-assemblers, 1805, 2650, 6301, 6502, 6805, 6809, 
-		6811, tms7000, 8048, 8051, 8096, z8, z80;
-SYSTEM: 	UNIX, MS-Dos ;
-FILENAME: 	as6502.y;
-WARNINGS: 	"This software is in the public domain.  
-		Any prior copyright claims are relinquished.  
-
-		This software is distributed with no warranty whatever.  
-		The author takes no responsibility for the consequences 
-		of its use.
-
-		Yacc (or Bison) required to compile."  ;
-SEE-ALSO: 	as6502.doc,frasmain.c;	
-AUTHORS: 	Mark Zenier;
-COMPILERS: 	Microport Sys V/AT, ATT Yacc, Turbo C V1.5, Bison (CUG disk 285)
-		(previous versions Xenix, Unisoft 68000 Version 7, Sun 3);
-*/
-/* 65xx instruction generation file */
-/* November 17, 1990 */
-
+// Frankenstain Cross-Assemblers, version 2.0.
+// Original author: Mark Zenier.
+// 65xx instruction generation file.
 /*
 	description	frame work parser description for framework cross
 			assemblers
@@ -68,7 +44,7 @@ COMPILERS: 	Microport Sys V/AT, ATT Yacc, Turbo C V1.5, Bison (CUG disk 285)
 #define ST_POSTINDEX 0x40
 #define ST_IMMED 0x80
 #define ST_DIRREL 0x100
-	
+
 	int	cpuselect = CPUR65C;
 	static char	genbdef[] = "[1=];";
 	static char	genwdef[] = "[1=]y"; /* x for normal, y for byte rev */
@@ -169,12 +145,12 @@ allline	: 	line EOL
 			}
 	;
 
-line	:	LABEL KOC_END 
+line	:	LABEL KOC_END
 			{
 				endsymbol = $1;
 				nextreadact = Nra_end;
 			}
-	|	      KOC_END 
+	|	      KOC_END
 			{
 				nextreadact = Nra_end;
 			}
@@ -198,7 +174,7 @@ line	:	LABEL KOC_END
 			}
 		}
 			}
-	|	LABEL KOC_EQU expr 
+	|	LABEL KOC_EQU expr
 			{
 				if($1 -> seg == SSG_UNDEF)
 				{
@@ -222,7 +198,7 @@ line	:	LABEL KOC_END
 				"cannot change symbol value with EQU");
 				}
 			}
-	|	LABEL KOC_SET expr 
+	|	LABEL KOC_SET expr
 			{
 				if($1 -> seg == SSG_UNDEF
 				   || $1 -> seg == SSG_SET)
@@ -247,7 +223,7 @@ line	:	LABEL KOC_END
 				"cannot change symbol value with SET");
 				}
 			}
-	|	KOC_IF expr 
+	|	KOC_IF expr
 			{
 		if((++ifstkpt) < IFSTKDEPTH)
 		{
@@ -278,10 +254,10 @@ line	:	LABEL KOC_END
 			fraerror("IF stack overflow");
 		}
 			}
-						
-	|	KOC_IF 
+
+	|	KOC_IF
 			{
-		if(fraifskip) 
+		if(fraifskip)
 		{
 			if((++ifstkpt) < IFSTKDEPTH)
 			{
@@ -299,26 +275,26 @@ line	:	LABEL KOC_END
 			YYERROR;
 		}
 				}
-						
-	|	KOC_ELSE 
+
+	|	KOC_ELSE
 			{
 				switch(elseifstk[ifstkpt])
 				{
 				case If_Active:
 					fraifskip = FALSE;
 					break;
-				
+
 				case If_Skip:
 					fraifskip = TRUE;
 					break;
-				
+
 				case If_Err:
 					fraerror("ELSE with no matching if");
 					break;
 				}
 			}
 
-	|	KOC_ENDI 
+	|	KOC_ENDI
 			{
 				switch(endifstk[ifstkpt])
 				{
@@ -326,18 +302,18 @@ line	:	LABEL KOC_END
 					fraifskip = FALSE;
 					ifstkpt--;
 					break;
-				
+
 				case If_Skip:
 					fraifskip = TRUE;
 					ifstkpt--;
 					break;
-				
+
 				case If_Err:
 					fraerror("ENDI with no matching if");
 					break;
 				}
 			}
-	|	LABEL KOC_ORG expr 
+	|	LABEL KOC_ORG expr
 			{
 				pevalexpr(0, $3);
 				if(evalr[0].seg == SSG_ABS)
@@ -360,7 +336,7 @@ line	:	LABEL KOC_END
 					 "noncomputable expression for ORG");
 				}
 			}
-	|	      KOC_ORG expr 
+	|	      KOC_ORG expr
 			{
 				pevalexpr(0, $2);
 				if(evalr[0].seg == SSG_ABS)
@@ -459,12 +435,12 @@ line	:	LABEL KOC_END
 
 					case CF_INVALID:
 					case CF_NUMBER:
-				fracherror("invalid character to define", 
+				fracherror("invalid character to define",
 					before, sourcestr);
 						break;
 
 					case CF_CHAR:
-				fracherror("character already defined", 
+				fracherror("character already defined",
 					before, sourcestr);
 						break;
 					}
@@ -484,9 +460,9 @@ line	:	LABEL KOC_END
 		{
 			fraerror("no CHARSET statement active");
 		}
-			
+
 			}
-	|	LABEL 
+	|	LABEL
 			{
 			if($1 -> seg == SSG_UNDEF)
 			{
@@ -514,14 +490,14 @@ labeledline :	LABEL genline
 				"multiple definition of label");
 			labelloc = locctr;
 			}
-				
+
 	|	genline
 			{
 				labelloc = locctr;
 			}
 	;
 
-genline	:	KOC_BDEF	exprlist 
+genline	:	KOC_BDEF	exprlist
 			{
 				genlocrec(currseg, labelloc);
 				for( satsub = 0; satsub < $2; satsub++)
@@ -530,7 +506,7 @@ genline	:	KOC_BDEF	exprlist
 					locctr += geninstr(genbdef);
 				}
 			}
-	|	KOC_SDEF stringlist 
+	|	KOC_SDEF stringlist
 			{
 				genlocrec(currseg, labelloc);
 				for(satsub = 0; satsub < $2; satsub++)
@@ -538,7 +514,7 @@ genline	:	KOC_BDEF	exprlist
 					locctr += genstring(stringlist[satsub]);
 				}
 			}
-	|	KOC_WDEF exprlist 
+	|	KOC_WDEF exprlist
 			{
 				genlocrec(currseg, labelloc);
 				for( satsub = 0; satsub < $2; satsub++)
@@ -546,8 +522,8 @@ genline	:	KOC_BDEF	exprlist
 					pevalexpr(1, exprlist[satsub]);
 					locctr += geninstr(genwdef);
 				}
-			}	
-	|	KOC_RESM expr 
+			}
+	|	KOC_RESM expr
 			{
 				pevalexpr(0, $2);
 				if(evalr[0].seg == SSG_ABS)
@@ -599,7 +575,7 @@ line	:	KOC_CPU STRING
 		}
 			}
 	;
-genline : KOC_opcode 
+genline : KOC_opcode
 			{
 		genlocrec(currseg, labelloc);
 		locctr += geninstr(findgen($1, ST_INH, cpuselect));
@@ -615,8 +591,8 @@ genline : KOC_opcode  topexpr
 			{
 		pevalexpr(1, $2);
 		genlocrec(currseg, labelloc);
-		locctr += geninstr( findgen( $1, ST_EXPR, 
-				  ( (evalr[1].seg == SSG_ABS 
+		locctr += geninstr( findgen( $1, ST_EXPR,
+				  ( (evalr[1].seg == SSG_ABS
 				&& evalr[1].value >= 0
 				&& evalr[1].value <= 255 )
 				? DIRECT : EXTENDED ) | cpuselect )
@@ -627,8 +603,8 @@ genline : KOC_opcode  topexpr ',' INDEX
 			{
 		pevalexpr(1, $2);
 		genlocrec(currseg, labelloc);
-		locctr += geninstr( findgen( $1, ST_INDEX, 
-				  ( (evalr[1].seg == SSG_ABS 
+		locctr += geninstr( findgen( $1, ST_INDEX,
+				  ( (evalr[1].seg == SSG_ABS
 				&& evalr[1].value >= 0
 				&& evalr[1].value <= 255 )
 				? DIRECT : EXTENDED ) | cpuselect | $4 )
@@ -639,8 +615,8 @@ genline : KOC_opcode  '(' topexpr ',' INDEX ')'
 			{
 		pevalexpr(1, $3);
 		genlocrec(currseg, labelloc);
-		locctr += geninstr( findgen( $1, ST_PREINDEX, 
-				  ( (evalr[1].seg == SSG_ABS 
+		locctr += geninstr( findgen( $1, ST_PREINDEX,
+				  ( (evalr[1].seg == SSG_ABS
 				&& evalr[1].value >= 0
 				&& evalr[1].value <= 255 )
 				? DIRECT : EXTENDED ) | cpuselect | $5 )
@@ -651,8 +627,8 @@ genline : KOC_opcode  '(' topexpr ')'
 			{
 		pevalexpr(1, $3);
 		genlocrec(currseg, labelloc);
-		locctr += geninstr( findgen( $1, ST_INDIR, 
-				  ( (evalr[1].seg == SSG_ABS 
+		locctr += geninstr( findgen( $1, ST_INDIR,
+				  ( (evalr[1].seg == SSG_ABS
 				&& evalr[1].value >= 0
 				&& evalr[1].value <= 255 )
 				? DIRECT : EXTENDED ) | cpuselect )
@@ -663,8 +639,8 @@ genline : KOC_opcode  '(' topexpr ')' ',' INDEX
 			{
 		pevalexpr(1, $3);
 		genlocrec(currseg, labelloc);
-		locctr += geninstr( findgen( $1, ST_POSTINDEX, 
-				  ( (evalr[1].seg == SSG_ABS 
+		locctr += geninstr( findgen( $1, ST_POSTINDEX,
+				  ( (evalr[1].seg == SSG_ABS
 				&& evalr[1].value >= 0
 				&& evalr[1].value <= 255 )
 				? DIRECT : EXTENDED ) | cpuselect | $6 )
@@ -949,7 +925,7 @@ cpumatch(str)
 		{"r65", CPUR65 },
 		{"21", CPUR21 },
 		{"65", CPU65 },
-		{"", 0} 
+		{"", 0}
 	};
 
 	for(msub = 0; matchtab[msub].mtch[0] != '\0'; msub++)
@@ -1294,447 +1270,447 @@ struct opsynt ostab[NUMSYNBLK+1]
 
 struct igel igtab[NUMDIFFOP+1]
 	= {
-/* invalid 0 */   { 0 , 0, 
+/* invalid 0 */   { 0 , 0,
 		"[Xnullentry" },
-/* invalid 1 */   { 0 , 0, 
+/* invalid 1 */   { 0 , 0,
 		"[Xinvalid opcode" },
-/* ADC 2 */   { ADDRESS , DIRECT, 
+/* ADC 2 */   { ADDRESS , DIRECT,
 		"65;[1=];" },
-/* ADC 3 */   { ADDRESS , EXTENDED, 
+/* ADC 3 */   { ADDRESS , EXTENDED,
 		"6d;[1=]y" },
-/* ADC 4 */   { 0 , 0, 
+/* ADC 4 */   { 0 , 0,
 		"69;[1=];" },
-/* ADC 5 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* ADC 5 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"75;[1=];" },
-/* ADC 6 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX, 
+/* ADC 6 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX,
 		"7d;[1=]y" },
-/* ADC 7 */   { INDEXMASK , INDEXY, 
+/* ADC 7 */   { INDEXMASK , INDEXY,
 		"79;[1=]y" },
-/* ADC 8 */   { INSTCMOS|ADDRESS , DIRECT|INSTCMOS, 
+/* ADC 8 */   { INSTCMOS|ADDRESS , DIRECT|INSTCMOS,
 		"72;[1=];" },
-/* ADC 9 */   { ADDRESS|INDEXMASK , DIRECT|INDEXY, 
+/* ADC 9 */   { ADDRESS|INDEXMASK , DIRECT|INDEXY,
 		"71;[1=];" },
-/* ADC 10 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* ADC 10 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"61;[1=];" },
-/* AND 11 */   { ADDRESS , DIRECT, 
+/* AND 11 */   { ADDRESS , DIRECT,
 		"25;[1=];" },
-/* AND 12 */   { ADDRESS , EXTENDED, 
+/* AND 12 */   { ADDRESS , EXTENDED,
 		"2d;[1=]y" },
-/* AND 13 */   { 0 , 0, 
+/* AND 13 */   { 0 , 0,
 		"29;[1=];" },
-/* AND 14 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* AND 14 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"35;[1=];" },
-/* AND 15 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX, 
+/* AND 15 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX,
 		"3d;[1=]y" },
-/* AND 16 */   { INDEXMASK , INDEXY, 
+/* AND 16 */   { INDEXMASK , INDEXY,
 		"39;[1=]y" },
-/* AND 17 */   { INSTCMOS|ADDRESS , DIRECT|INSTCMOS, 
+/* AND 17 */   { INSTCMOS|ADDRESS , DIRECT|INSTCMOS,
 		"32;[1=];" },
-/* AND 18 */   { ADDRESS|INDEXMASK , DIRECT|INDEXY, 
+/* AND 18 */   { ADDRESS|INDEXMASK , DIRECT|INDEXY,
 		"31;[1=];" },
-/* AND 19 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* AND 19 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"21;[1=];" },
-/* ASL 20 */   { 0 , 0, 
+/* ASL 20 */   { 0 , 0,
 		"0a;" },
-/* ASL 21 */   { ADDRESS , DIRECT, 
+/* ASL 21 */   { ADDRESS , DIRECT,
 		"06;[1=];" },
-/* ASL 22 */   { ADDRESS , EXTENDED, 
+/* ASL 22 */   { ADDRESS , EXTENDED,
 		"0e;[1=]y" },
-/* ASL 23 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* ASL 23 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"16;[1=];" },
-/* ASL 24 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX, 
+/* ASL 24 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX,
 		"1e;[1=]y" },
-/* BBR0 25 */   { INSTROCKWELL , INSTROCKWELL, 
+/* BBR0 25 */   { INSTROCKWELL , INSTROCKWELL,
 		"0f;[1=];[2=].Q.1+-r" },
-/* BBR1 26 */   { INSTROCKWELL , INSTROCKWELL, 
+/* BBR1 26 */   { INSTROCKWELL , INSTROCKWELL,
 		"1f;[1=];[2=].Q.1+-r" },
-/* BBR2 27 */   { INSTROCKWELL , INSTROCKWELL, 
+/* BBR2 27 */   { INSTROCKWELL , INSTROCKWELL,
 		"2f;[1=];[2=].Q.1+-r" },
-/* BBR3 28 */   { INSTROCKWELL , INSTROCKWELL, 
+/* BBR3 28 */   { INSTROCKWELL , INSTROCKWELL,
 		"3f;[1=];[2=].Q.1+-r" },
-/* BBR4 29 */   { INSTROCKWELL , INSTROCKWELL, 
+/* BBR4 29 */   { INSTROCKWELL , INSTROCKWELL,
 		"4f;[1=];[2=].Q.1+-r" },
-/* BBR5 30 */   { INSTROCKWELL , INSTROCKWELL, 
+/* BBR5 30 */   { INSTROCKWELL , INSTROCKWELL,
 		"5f;[1=];[2=].Q.1+-r" },
-/* BBR6 31 */   { INSTROCKWELL , INSTROCKWELL, 
+/* BBR6 31 */   { INSTROCKWELL , INSTROCKWELL,
 		"6f;[1=];[2=].Q.1+-r" },
-/* BBR7 32 */   { INSTROCKWELL , INSTROCKWELL, 
+/* BBR7 32 */   { INSTROCKWELL , INSTROCKWELL,
 		"7f;[1=];[2=].Q.1+-r" },
-/* BBS0 33 */   { INSTROCKWELL , INSTROCKWELL, 
+/* BBS0 33 */   { INSTROCKWELL , INSTROCKWELL,
 		"8f;[1=];[2=].Q.1+-r" },
-/* BBS1 34 */   { INSTROCKWELL , INSTROCKWELL, 
+/* BBS1 34 */   { INSTROCKWELL , INSTROCKWELL,
 		"9f;[1=];[2=].Q.1+-r" },
-/* BBS2 35 */   { INSTROCKWELL , INSTROCKWELL, 
+/* BBS2 35 */   { INSTROCKWELL , INSTROCKWELL,
 		"af;[1=];[2=].Q.1+-r" },
-/* BBS3 36 */   { INSTROCKWELL , INSTROCKWELL, 
+/* BBS3 36 */   { INSTROCKWELL , INSTROCKWELL,
 		"bf;[1=];[2=].Q.1+-r" },
-/* BBS4 37 */   { INSTROCKWELL , INSTROCKWELL, 
+/* BBS4 37 */   { INSTROCKWELL , INSTROCKWELL,
 		"cf;[1=];[2=].Q.1+-r" },
-/* BBS5 38 */   { INSTROCKWELL , INSTROCKWELL, 
+/* BBS5 38 */   { INSTROCKWELL , INSTROCKWELL,
 		"df;[1=];[2=].Q.1+-r" },
-/* BBS6 39 */   { INSTROCKWELL , INSTROCKWELL, 
+/* BBS6 39 */   { INSTROCKWELL , INSTROCKWELL,
 		"ef;[1=];[2=].Q.1+-r" },
-/* BBS7 40 */   { INSTROCKWELL , INSTROCKWELL, 
+/* BBS7 40 */   { INSTROCKWELL , INSTROCKWELL,
 		"ff;[1=];[2=].Q.1+-r" },
-/* BCC 41 */   { 0 , 0, 
+/* BCC 41 */   { 0 , 0,
 		"90;[1=].Q.1+-r" },
-/* BCS 42 */   { 0 , 0, 
+/* BCS 42 */   { 0 , 0,
 		"b0;[1=].Q.1+-r" },
-/* BEQ 43 */   { 0 , 0, 
+/* BEQ 43 */   { 0 , 0,
 		"f0;[1=].Q.1+-r" },
-/* BGE 44 */   { 0 , 0, 
+/* BGE 44 */   { 0 , 0,
 		"b0;[1=].Q.1+-r" },
-/* BIT 45 */   { ADDRESS , DIRECT, 
+/* BIT 45 */   { ADDRESS , DIRECT,
 		"24;[1=];" },
-/* BIT 46 */   { ADDRESS , EXTENDED, 
+/* BIT 46 */   { ADDRESS , EXTENDED,
 		"2c;[1=]y" },
-/* BIT 47 */   { INSTCMOS , INSTCMOS, 
+/* BIT 47 */   { INSTCMOS , INSTCMOS,
 		"89;[1=];" },
-/* BIT 48 */   { ADDRESS|INDEXMASK|INSTCMOS , DIRECT|INDEXX|INSTCMOS, 
+/* BIT 48 */   { ADDRESS|INDEXMASK|INSTCMOS , DIRECT|INDEXX|INSTCMOS,
 		"34;[1=];" },
-/* BIT 49 */   { ADDRESS|INDEXMASK|INSTCMOS , EXTENDED|INDEXX|INSTCMOS, 
+/* BIT 49 */   { ADDRESS|INDEXMASK|INSTCMOS , EXTENDED|INDEXX|INSTCMOS,
 		"3c;[1=]y" },
-/* BLT 50 */   { 0 , 0, 
+/* BLT 50 */   { 0 , 0,
 		"90;[1=].Q.1+-r" },
-/* BMI 51 */   { 0 , 0, 
+/* BMI 51 */   { 0 , 0,
 		"30;[1=].Q.1+-r" },
-/* BNE 52 */   { 0 , 0, 
+/* BNE 52 */   { 0 , 0,
 		"d0;[1=].Q.1+-r" },
-/* BPL 53 */   { 0 , 0, 
+/* BPL 53 */   { 0 , 0,
 		"10;[1=].Q.1+-r" },
-/* BRA 54 */   { INST21 , INST21, 
+/* BRA 54 */   { INST21 , INST21,
 		"80;[1=].Q.1+-r" },
-/* BRA 55 */   { INSTCMOS , INSTCMOS, 
+/* BRA 55 */   { INSTCMOS , INSTCMOS,
 		"80;[1=].Q.1+-r" },
-/* BRK 56 */   { 0 , 0, 
+/* BRK 56 */   { 0 , 0,
 		"00;[1=];" },
-/* BRK 57 */   { 0 , 0, 
+/* BRK 57 */   { 0 , 0,
 		"00;" },
-/* BVC 58 */   { 0 , 0, 
+/* BVC 58 */   { 0 , 0,
 		"50;[1=].Q.1+-r" },
-/* BVS 59 */   { 0 , 0, 
+/* BVS 59 */   { 0 , 0,
 		"70;[1=].Q.1+-r" },
-/* CLC 60 */   { 0 , 0, 
+/* CLC 60 */   { 0 , 0,
 		"18;" },
-/* CLD 61 */   { 0 , 0, 
+/* CLD 61 */   { 0 , 0,
 		"d8;" },
-/* CLI 62 */   { 0 , 0, 
+/* CLI 62 */   { 0 , 0,
 		"58;" },
-/* CLV 63 */   { 0 , 0, 
+/* CLV 63 */   { 0 , 0,
 		"b8;" },
-/* CMP 64 */   { ADDRESS , DIRECT, 
+/* CMP 64 */   { ADDRESS , DIRECT,
 		"c5;[1=];" },
-/* CMP 65 */   { ADDRESS , EXTENDED, 
+/* CMP 65 */   { ADDRESS , EXTENDED,
 		"cd;[1=]y" },
-/* CMP 66 */   { 0 , 0, 
+/* CMP 66 */   { 0 , 0,
 		"c9;[1=];" },
-/* CMP 67 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* CMP 67 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"d5;[1=];" },
-/* CMP 68 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX, 
+/* CMP 68 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX,
 		"dd;[1=]y" },
-/* CMP 69 */   { INDEXMASK , INDEXY, 
+/* CMP 69 */   { INDEXMASK , INDEXY,
 		"d9;[1=]y" },
-/* CMP 70 */   { INSTCMOS|ADDRESS , DIRECT|INSTCMOS, 
+/* CMP 70 */   { INSTCMOS|ADDRESS , DIRECT|INSTCMOS,
 		"d2;[1=];" },
-/* CMP 71 */   { ADDRESS|INDEXMASK , DIRECT|INDEXY, 
+/* CMP 71 */   { ADDRESS|INDEXMASK , DIRECT|INDEXY,
 		"d1;[1=];" },
-/* CMP 72 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* CMP 72 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"c1;[1=];" },
-/* CPX 73 */   { ADDRESS , DIRECT, 
+/* CPX 73 */   { ADDRESS , DIRECT,
 		"e4;[1=];" },
-/* CPX 74 */   { ADDRESS , EXTENDED, 
+/* CPX 74 */   { ADDRESS , EXTENDED,
 		"ec;[1=]y" },
-/* CPX 75 */   { 0 , 0, 
+/* CPX 75 */   { 0 , 0,
 		"e0;[1=];" },
-/* CPY 76 */   { ADDRESS , DIRECT, 
+/* CPY 76 */   { ADDRESS , DIRECT,
 		"c4;[1=];" },
-/* CPY 77 */   { ADDRESS , EXTENDED, 
+/* CPY 77 */   { ADDRESS , EXTENDED,
 		"cc;[1=]y" },
-/* CPY 78 */   { 0 , 0, 
+/* CPY 78 */   { 0 , 0,
 		"c0;[1=];" },
-/* DEC 79 */   { INSTCMOS , INSTCMOS, 
+/* DEC 79 */   { INSTCMOS , INSTCMOS,
 		"3a;" },
-/* DEC 80 */   { ADDRESS , DIRECT, 
+/* DEC 80 */   { ADDRESS , DIRECT,
 		"c6;[1=];" },
-/* DEC 81 */   { ADDRESS , EXTENDED, 
+/* DEC 81 */   { ADDRESS , EXTENDED,
 		"ce;[1=]y" },
-/* DEC 82 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* DEC 82 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"d6;[1=];" },
-/* DEC 83 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX, 
+/* DEC 83 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX,
 		"de;[1=]y" },
-/* DEX 84 */   { 0 , 0, 
+/* DEX 84 */   { 0 , 0,
 		"ca;" },
-/* DEY 85 */   { 0 , 0, 
+/* DEY 85 */   { 0 , 0,
 		"88;" },
-/* EOR 86 */   { ADDRESS , DIRECT, 
+/* EOR 86 */   { ADDRESS , DIRECT,
 		"45;[1=];" },
-/* EOR 87 */   { ADDRESS , EXTENDED, 
+/* EOR 87 */   { ADDRESS , EXTENDED,
 		"4d;[1=]y" },
-/* EOR 88 */   { 0 , 0, 
+/* EOR 88 */   { 0 , 0,
 		"49;[1=];" },
-/* EOR 89 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* EOR 89 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"55;[1=];" },
-/* EOR 90 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX, 
+/* EOR 90 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX,
 		"5d;[1=]y" },
-/* EOR 91 */   { INDEXMASK , INDEXY, 
+/* EOR 91 */   { INDEXMASK , INDEXY,
 		"59;[1=]y" },
-/* EOR 92 */   { INSTCMOS|ADDRESS , DIRECT|INSTCMOS, 
+/* EOR 92 */   { INSTCMOS|ADDRESS , DIRECT|INSTCMOS,
 		"52;[1=];" },
-/* EOR 93 */   { ADDRESS|INDEXMASK , DIRECT|INDEXY, 
+/* EOR 93 */   { ADDRESS|INDEXMASK , DIRECT|INDEXY,
 		"51;[1=];" },
-/* EOR 94 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* EOR 94 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"41;[1=];" },
-/* INC 95 */   { INSTCMOS , INSTCMOS, 
+/* INC 95 */   { INSTCMOS , INSTCMOS,
 		"1a;" },
-/* INC 96 */   { ADDRESS , DIRECT, 
+/* INC 96 */   { ADDRESS , DIRECT,
 		"e6;[1=];" },
-/* INC 97 */   { ADDRESS , EXTENDED, 
+/* INC 97 */   { ADDRESS , EXTENDED,
 		"ee;[1=]y" },
-/* INC 98 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* INC 98 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"f6;[1=];" },
-/* INC 99 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX, 
+/* INC 99 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX,
 		"fe;[1=]y" },
-/* INX 100 */   { 0 , 0, 
+/* INX 100 */   { 0 , 0,
 		"e8;" },
-/* INY 101 */   { 0 , 0, 
+/* INY 101 */   { 0 , 0,
 		"c8;" },
-/* JMP 102 */   { 0 , 0, 
+/* JMP 102 */   { 0 , 0,
 		"4c;[1=]y" },
-/* JMP 103 */   { 0 , 0, 
+/* JMP 103 */   { 0 , 0,
 		"6c;[1=]y" },
-/* JMP 104 */   { INSTCMOS|INDEXMASK , INSTCMOS|INDEXX, 
+/* JMP 104 */   { INSTCMOS|INDEXMASK , INSTCMOS|INDEXX,
 		"7c;[1=]y" },
-/* JSR 105 */   { 0 , 0, 
+/* JSR 105 */   { 0 , 0,
 		"20;[1=]y" },
-/* LDA 106 */   { ADDRESS , DIRECT, 
+/* LDA 106 */   { ADDRESS , DIRECT,
 		"a5;[1=];" },
-/* LDA 107 */   { ADDRESS , EXTENDED, 
+/* LDA 107 */   { ADDRESS , EXTENDED,
 		"ad;[1=]y" },
-/* LDA 108 */   { 0 , 0, 
+/* LDA 108 */   { 0 , 0,
 		"a9;[1=];" },
-/* LDA 109 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* LDA 109 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"b5;[1=];" },
-/* LDA 110 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX, 
+/* LDA 110 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX,
 		"bd;[1=]y" },
-/* LDA 111 */   { INDEXMASK , INDEXY, 
+/* LDA 111 */   { INDEXMASK , INDEXY,
 		"b9;[1=]y" },
-/* LDA 112 */   { INSTCMOS|ADDRESS , DIRECT|INSTCMOS, 
+/* LDA 112 */   { INSTCMOS|ADDRESS , DIRECT|INSTCMOS,
 		"b2;[1=];" },
-/* LDA 113 */   { ADDRESS|INDEXMASK , DIRECT|INDEXY, 
+/* LDA 113 */   { ADDRESS|INDEXMASK , DIRECT|INDEXY,
 		"b1;[1=];" },
-/* LDA 114 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* LDA 114 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"a1;[1=];" },
-/* LDX 115 */   { ADDRESS , DIRECT, 
+/* LDX 115 */   { ADDRESS , DIRECT,
 		"a6;[1=];" },
-/* LDX 116 */   { ADDRESS , EXTENDED, 
+/* LDX 116 */   { ADDRESS , EXTENDED,
 		"ae;[1=]y" },
-/* LDX 117 */   { 0 , 0, 
+/* LDX 117 */   { 0 , 0,
 		"a2;[1=];" },
-/* LDX 118 */   { ADDRESS|INDEXMASK , DIRECT|INDEXY, 
+/* LDX 118 */   { ADDRESS|INDEXMASK , DIRECT|INDEXY,
 		"b6;[1=];" },
-/* LDX 119 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXY, 
+/* LDX 119 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXY,
 		"be;[1=]y" },
-/* LDY 120 */   { ADDRESS , DIRECT, 
+/* LDY 120 */   { ADDRESS , DIRECT,
 		"a4;[1=];" },
-/* LDY 121 */   { ADDRESS , EXTENDED, 
+/* LDY 121 */   { ADDRESS , EXTENDED,
 		"ac;[1=]y" },
-/* LDY 122 */   { 0 , 0, 
+/* LDY 122 */   { 0 , 0,
 		"a0;[1=];" },
-/* LDY 123 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* LDY 123 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"b4;[1=];" },
-/* LDY 124 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX, 
+/* LDY 124 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX,
 		"bc;[1=]y" },
-/* LSR 125 */   { 0 , 0, 
+/* LSR 125 */   { 0 , 0,
 		"4a;" },
-/* LSR 126 */   { ADDRESS , DIRECT, 
+/* LSR 126 */   { ADDRESS , DIRECT,
 		"46;[1=];" },
-/* LSR 127 */   { ADDRESS , EXTENDED, 
+/* LSR 127 */   { ADDRESS , EXTENDED,
 		"4e;[1=]y" },
-/* LSR 128 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* LSR 128 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"56;[1=];" },
-/* LSR 129 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX, 
+/* LSR 129 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX,
 		"5e;[1=]y" },
-/* MUL 130 */   { INST21 , INST21, 
+/* MUL 130 */   { INST21 , INST21,
 		"02;" },
-/* NOP 131 */   { 0 , 0, 
+/* NOP 131 */   { 0 , 0,
 		"ea;" },
-/* ORA 132 */   { ADDRESS , DIRECT, 
+/* ORA 132 */   { ADDRESS , DIRECT,
 		"05;[1=];" },
-/* ORA 133 */   { ADDRESS , EXTENDED, 
+/* ORA 133 */   { ADDRESS , EXTENDED,
 		"0d;[1=]y" },
-/* ORA 134 */   { 0 , 0, 
+/* ORA 134 */   { 0 , 0,
 		"09;[1=];" },
-/* ORA 135 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* ORA 135 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"15;[1=];" },
-/* ORA 136 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX, 
+/* ORA 136 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX,
 		"1d;[1=]y" },
-/* ORA 137 */   { INDEXMASK , INDEXY, 
+/* ORA 137 */   { INDEXMASK , INDEXY,
 		"19;[1=]y" },
-/* ORA 138 */   { INSTCMOS|ADDRESS , DIRECT|INSTCMOS, 
+/* ORA 138 */   { INSTCMOS|ADDRESS , DIRECT|INSTCMOS,
 		"12;[1=];" },
-/* ORA 139 */   { ADDRESS|INDEXMASK , DIRECT|INDEXY, 
+/* ORA 139 */   { ADDRESS|INDEXMASK , DIRECT|INDEXY,
 		"11;[1=];" },
-/* ORA 140 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* ORA 140 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"01;[1=];" },
-/* PHA 141 */   { 0 , 0, 
+/* PHA 141 */   { 0 , 0,
 		"48;" },
-/* PHP 142 */   { 0 , 0, 
+/* PHP 142 */   { 0 , 0,
 		"08;" },
-/* PHX 143 */   { INSTCMOS , INSTCMOS, 
+/* PHX 143 */   { INSTCMOS , INSTCMOS,
 		"da;" },
-/* PHX 144 */   { INST21 , INST21, 
+/* PHX 144 */   { INST21 , INST21,
 		"da;" },
-/* PHY 145 */   { INSTCMOS , INSTCMOS, 
+/* PHY 145 */   { INSTCMOS , INSTCMOS,
 		"5a;" },
-/* PHY 146 */   { INST21 , INST21, 
+/* PHY 146 */   { INST21 , INST21,
 		"5a;" },
-/* PLA 147 */   { 0 , 0, 
+/* PLA 147 */   { 0 , 0,
 		"68;" },
-/* PLP 148 */   { 0 , 0, 
+/* PLP 148 */   { 0 , 0,
 		"28;" },
-/* PLX 149 */   { INSTCMOS , INSTCMOS, 
+/* PLX 149 */   { INSTCMOS , INSTCMOS,
 		"fa;" },
-/* PLX 150 */   { INST21 , INST21, 
+/* PLX 150 */   { INST21 , INST21,
 		"fa;" },
-/* PLY 151 */   { INSTCMOS , INSTCMOS, 
+/* PLY 151 */   { INSTCMOS , INSTCMOS,
 		"7a;" },
-/* PLY 152 */   { INST21 , INST21, 
+/* PLY 152 */   { INST21 , INST21,
 		"7a;" },
-/* RMB0 153 */   { INSTROCKWELL , INSTROCKWELL, 
+/* RMB0 153 */   { INSTROCKWELL , INSTROCKWELL,
 		"07;[1=];" },
-/* RMB1 154 */   { INSTROCKWELL , INSTROCKWELL, 
+/* RMB1 154 */   { INSTROCKWELL , INSTROCKWELL,
 		"17;[1=];" },
-/* RMB2 155 */   { INSTROCKWELL , INSTROCKWELL, 
+/* RMB2 155 */   { INSTROCKWELL , INSTROCKWELL,
 		"27;[1=];" },
-/* RMB3 156 */   { INSTROCKWELL , INSTROCKWELL, 
+/* RMB3 156 */   { INSTROCKWELL , INSTROCKWELL,
 		"37;[1=];" },
-/* RMB4 157 */   { INSTROCKWELL , INSTROCKWELL, 
+/* RMB4 157 */   { INSTROCKWELL , INSTROCKWELL,
 		"47;[1=];" },
-/* RMB5 158 */   { INSTROCKWELL , INSTROCKWELL, 
+/* RMB5 158 */   { INSTROCKWELL , INSTROCKWELL,
 		"57;[1=];" },
-/* RMB6 159 */   { INSTROCKWELL , INSTROCKWELL, 
+/* RMB6 159 */   { INSTROCKWELL , INSTROCKWELL,
 		"67;[1=];" },
-/* RMB7 160 */   { INSTROCKWELL , INSTROCKWELL, 
+/* RMB7 160 */   { INSTROCKWELL , INSTROCKWELL,
 		"77;[1=];" },
-/* ROL 161 */   { 0 , 0, 
+/* ROL 161 */   { 0 , 0,
 		"2a;" },
-/* ROL 162 */   { ADDRESS , DIRECT, 
+/* ROL 162 */   { ADDRESS , DIRECT,
 		"26;[1=];" },
-/* ROL 163 */   { ADDRESS , EXTENDED, 
+/* ROL 163 */   { ADDRESS , EXTENDED,
 		"2e;[1=]y" },
-/* ROL 164 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* ROL 164 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"36;[1=];" },
-/* ROL 165 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX, 
+/* ROL 165 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX,
 		"3e;[1=]y" },
-/* ROR 166 */   { 0 , 0, 
+/* ROR 166 */   { 0 , 0,
 		"6a;" },
-/* ROR 167 */   { ADDRESS , DIRECT, 
+/* ROR 167 */   { ADDRESS , DIRECT,
 		"66;[1=];" },
-/* ROR 168 */   { ADDRESS , EXTENDED, 
+/* ROR 168 */   { ADDRESS , EXTENDED,
 		"6e;[1=]y" },
-/* ROR 169 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* ROR 169 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"76;[1=];" },
-/* ROR 170 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX, 
+/* ROR 170 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX,
 		"7e;[1=]y" },
-/* RTI 171 */   { 0 , 0, 
+/* RTI 171 */   { 0 , 0,
 		"40;" },
-/* RTS 172 */   { 0 , 0, 
+/* RTS 172 */   { 0 , 0,
 		"60;" },
-/* SBC 173 */   { ADDRESS , DIRECT, 
+/* SBC 173 */   { ADDRESS , DIRECT,
 		"e5;[1=];" },
-/* SBC 174 */   { ADDRESS , EXTENDED, 
+/* SBC 174 */   { ADDRESS , EXTENDED,
 		"ed;[1=]y" },
-/* SBC 175 */   { 0 , 0, 
+/* SBC 175 */   { 0 , 0,
 		"e9;[1=];" },
-/* SBC 176 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* SBC 176 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"f5;[1=];" },
-/* SBC 177 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX, 
+/* SBC 177 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX,
 		"fd;[1=]y" },
-/* SBC 178 */   { INDEXMASK , INDEXY, 
+/* SBC 178 */   { INDEXMASK , INDEXY,
 		"f9;[1=]y" },
-/* SBC 179 */   { INSTCMOS|ADDRESS , DIRECT|INSTCMOS, 
+/* SBC 179 */   { INSTCMOS|ADDRESS , DIRECT|INSTCMOS,
 		"f2;[1=];" },
-/* SBC 180 */   { ADDRESS|INDEXMASK , DIRECT|INDEXY, 
+/* SBC 180 */   { ADDRESS|INDEXMASK , DIRECT|INDEXY,
 		"f1;[1=];" },
-/* SBC 181 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* SBC 181 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"e1;[1=];" },
-/* SEC 182 */   { 0 , 0, 
+/* SEC 182 */   { 0 , 0,
 		"38;" },
-/* SED 183 */   { 0 , 0, 
+/* SED 183 */   { 0 , 0,
 		"f8;" },
-/* SEI 184 */   { 0 , 0, 
+/* SEI 184 */   { 0 , 0,
 		"78;" },
-/* SMB0 185 */   { INSTROCKWELL , INSTROCKWELL, 
+/* SMB0 185 */   { INSTROCKWELL , INSTROCKWELL,
 		"87;[1=];" },
-/* SMB1 186 */   { INSTROCKWELL , INSTROCKWELL, 
+/* SMB1 186 */   { INSTROCKWELL , INSTROCKWELL,
 		"97;[1=];" },
-/* SMB2 187 */   { INSTROCKWELL , INSTROCKWELL, 
+/* SMB2 187 */   { INSTROCKWELL , INSTROCKWELL,
 		"a7;[1=];" },
-/* SMB3 188 */   { INSTROCKWELL , INSTROCKWELL, 
+/* SMB3 188 */   { INSTROCKWELL , INSTROCKWELL,
 		"b7;[1=];" },
-/* SMB4 189 */   { INSTROCKWELL , INSTROCKWELL, 
+/* SMB4 189 */   { INSTROCKWELL , INSTROCKWELL,
 		"c7;[1=];" },
-/* SMB5 190 */   { INSTROCKWELL , INSTROCKWELL, 
+/* SMB5 190 */   { INSTROCKWELL , INSTROCKWELL,
 		"d7;[1=];" },
-/* SMB6 191 */   { INSTROCKWELL , INSTROCKWELL, 
+/* SMB6 191 */   { INSTROCKWELL , INSTROCKWELL,
 		"e7;[1=];" },
-/* SMB7 192 */   { INSTROCKWELL , INSTROCKWELL, 
+/* SMB7 192 */   { INSTROCKWELL , INSTROCKWELL,
 		"f7;[1=];" },
-/* STA 193 */   { ADDRESS , DIRECT, 
+/* STA 193 */   { ADDRESS , DIRECT,
 		"85;[1=];" },
-/* STA 194 */   { ADDRESS , EXTENDED, 
+/* STA 194 */   { ADDRESS , EXTENDED,
 		"8d;[1=]y" },
-/* STA 195 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* STA 195 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"95;[1=];" },
-/* STA 196 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX, 
+/* STA 196 */   { ADDRESS|INDEXMASK , EXTENDED|INDEXX,
 		"9d;[1=]y" },
-/* STA 197 */   { INDEXMASK , INDEXY, 
+/* STA 197 */   { INDEXMASK , INDEXY,
 		"99;[1=]y" },
-/* STA 198 */   { INSTCMOS|ADDRESS , DIRECT|INSTCMOS, 
+/* STA 198 */   { INSTCMOS|ADDRESS , DIRECT|INSTCMOS,
 		"92;[1=];" },
-/* STA 199 */   { ADDRESS|INDEXMASK , DIRECT|INDEXY, 
+/* STA 199 */   { ADDRESS|INDEXMASK , DIRECT|INDEXY,
 		"91;[1=];" },
-/* STA 200 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* STA 200 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"81;[1=];" },
-/* STX 201 */   { ADDRESS , DIRECT, 
+/* STX 201 */   { ADDRESS , DIRECT,
 		"86;[1=];" },
-/* STX 202 */   { ADDRESS , EXTENDED, 
+/* STX 202 */   { ADDRESS , EXTENDED,
 		"8e;[1=]y" },
-/* STX 203 */   { ADDRESS|INDEXMASK , DIRECT|INDEXY, 
+/* STX 203 */   { ADDRESS|INDEXMASK , DIRECT|INDEXY,
 		"96;[1=];" },
-/* STY 204 */   { ADDRESS , DIRECT, 
+/* STY 204 */   { ADDRESS , DIRECT,
 		"84;[1=];" },
-/* STY 205 */   { ADDRESS , EXTENDED, 
+/* STY 205 */   { ADDRESS , EXTENDED,
 		"8c;[1=]y" },
-/* STY 206 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX, 
+/* STY 206 */   { ADDRESS|INDEXMASK , DIRECT|INDEXX,
 		"94;[1=];" },
-/* STZ 207 */   { ADDRESS|INSTCMOS , DIRECT|INSTCMOS, 
+/* STZ 207 */   { ADDRESS|INSTCMOS , DIRECT|INSTCMOS,
 		"64;[1=];" },
-/* STZ 208 */   { ADDRESS|INSTCMOS , EXTENDED|INSTCMOS, 
+/* STZ 208 */   { ADDRESS|INSTCMOS , EXTENDED|INSTCMOS,
 		"9c;[1=]y" },
-/* STZ 209 */   { ADDRESS|INDEXMASK|INSTCMOS , DIRECT|INDEXX|INSTCMOS, 
+/* STZ 209 */   { ADDRESS|INDEXMASK|INSTCMOS , DIRECT|INDEXX|INSTCMOS,
 		"74;[1=];" },
-/* STZ 210 */   { ADDRESS|INDEXMASK|INSTCMOS , EXTENDED|INDEXX|INSTCMOS, 
+/* STZ 210 */   { ADDRESS|INDEXMASK|INSTCMOS , EXTENDED|INDEXX|INSTCMOS,
 		"9e;[1=]y" },
-/* TAX 211 */   { 0 , 0, 
+/* TAX 211 */   { 0 , 0,
 		"aa;" },
-/* TAY 212 */   { 0 , 0, 
+/* TAY 212 */   { 0 , 0,
 		"a8;" },
-/* TRB 213 */   { ADDRESS|INSTCMOS , DIRECT|INSTCMOS, 
+/* TRB 213 */   { ADDRESS|INSTCMOS , DIRECT|INSTCMOS,
 		"14;[1=];" },
-/* TRB 214 */   { ADDRESS|INSTCMOS , EXTENDED|INSTCMOS, 
+/* TRB 214 */   { ADDRESS|INSTCMOS , EXTENDED|INSTCMOS,
 		"1c;[1=]y" },
-/* TSB 215 */   { ADDRESS|INSTCMOS , DIRECT|INSTCMOS, 
+/* TSB 215 */   { ADDRESS|INSTCMOS , DIRECT|INSTCMOS,
 		"04;[1=];" },
-/* TSB 216 */   { ADDRESS|INSTCMOS , EXTENDED|INSTCMOS, 
+/* TSB 216 */   { ADDRESS|INSTCMOS , EXTENDED|INSTCMOS,
 		"0c;[1=]y" },
-/* TSX 217 */   { 0 , 0, 
+/* TSX 217 */   { 0 , 0,
 		"ba;" },
-/* TXA 218 */   { 0 , 0, 
+/* TXA 218 */   { 0 , 0,
 		"8a;" },
-/* TXS 219 */   { 0 , 0, 
+/* TXS 219 */   { 0 , 0,
 		"9a;" },
-/* TYA 220 */   { 0 , 0, 
+/* TYA 220 */   { 0 , 0,
 		"98;" },
 	{ 0,0,""} };
 /* end fraptabdef.c */

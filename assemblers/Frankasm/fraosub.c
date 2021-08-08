@@ -1,29 +1,6 @@
-/*
-HEADER: 	;
-TITLE: 		Frankenstein Cross Assemblers;
-VERSION: 	2.0;
-DESCRIPTION: "	Reconfigurable Cross-assembler producing Intel (TM)
-		Hex format object records.  ";
-SYSTEM: 	UNIX, MS-Dos ;
-FILENAME: 	fraosub.c;
-WARNINGS: 	"This software is in the public domain.  
-		Any prior copyright claims are relinquished.  
-
-		This software is distributed with no warranty whatever.  
-		The author takes no responsibility for the consequences 
-		of its use."  ;
-SEE-ALSO: 	frasmain.c;
-AUTHORS: 	Mark Zenier;
-*/
-
-/*
-	description	output pass utility routines
-	history		September 27, 1987
-			March 15, 1988   release 1.1 WIDTH
-			September 14, 1990  Dosify, 6 char unique names
-*/
-
-
+// Frankenstain Cross-Assemblers, version 2.0.
+// Original author: Mark Zenier.
+// Output pass utility routines.
 #include <stdio.h>
 #include "frasmdat.h"
 #include "fragcon.h"
@@ -73,7 +50,7 @@ static long widthmask[MAXIMPWID+1] =
 /* 23 */	(1L <<  23 ) -1,
 /* 24 */	(1L <<  24 ) -1
 };
-	
+
 
 static long dgethex()
 /*
@@ -110,7 +87,7 @@ static long dgethex()
 		case 'f':
 			rv = (rv << 4) + ((*oeptr) - 'a' + 10);
 			break;
-		
+
 		case 'A':
 		case 'B':
 		case 'C':
@@ -129,7 +106,7 @@ static long dgethex()
 
 	return rv;
 }
-	
+
 
 outphase()
 /*
@@ -153,7 +130,7 @@ outphase()
 			if(listflag)
 				flushlisthex();
 
-			if( fgets(&lineLbuff[1], INBUFFSZ-1, intermedf) 
+			if( fgets(&lineLbuff[1], INBUFFSZ-1, intermedf)
 			 == (char *)NULL)
 			{
 		frp2error( "error or premature end of intermediate file");
@@ -165,14 +142,14 @@ outphase()
 		else
 		{
 			finbuff[0] = firstchar;
-			if(fgets( &finbuff[1], INBUFFSZ-1, intermedf) 
+			if(fgets( &finbuff[1], INBUFFSZ-1, intermedf)
 			 == (char *)NULL)
 			{
 		frp2error("error or premature end of intermediate file");
 				break;
 			}
 		}
-	
+
 		switch(firstchar)
 		{
 		case 'E': /* error */
@@ -183,7 +160,7 @@ outphase()
 			}
 			else
 			{
-				fprintf(loutf, "%s - line %d - %s", 
+				fprintf(loutf, "%s - line %d - %s",
 					currentfnm, linenumber, &finbuff[2]);
 			}
 			break;
@@ -200,7 +177,7 @@ outphase()
 				if(stuff != NULL)
 					*stuff = '\0';
 
-				fprintf(loutf,"%-*.*s", 
+				fprintf(loutf,"%-*.*s",
 				 SOURCEOFFSET, SOURCEOFFSET, &finbuff[2]);
 				if(lineLflag)
 				{
@@ -220,7 +197,7 @@ outphase()
 			oeptr++;
 			genlocctr = locctr = dgethex();
 			break;
-		
+
 		case 'D': /* data */
 			oeptr = &finbuff[2];
 			nextresult = 0;
@@ -231,7 +208,7 @@ outphase()
 			if(listflag)
 				listhex();
 			break;
-		
+
 		case 'F': /* file start */
 			{
 				char *tp;
@@ -243,7 +220,7 @@ outphase()
 			lnumstk[currfstk++] = linenumber;
 			linenumber = 0;
 			break;
-		
+
 		case 'X': /* file resume */
 			{
 				char *tp;
@@ -270,7 +247,7 @@ outphase()
 
 outeval()
 /*
-	description	convert the polish form character string in the 
+	description	convert the polish form character string in the
 			intermediate file 'D' line to binary values in the
 			output result array.
 	globals		the output expression pointer
@@ -306,7 +283,7 @@ outeval()
 		case 'f':
 			etop = (etop << 4) + ((*oeptr) - 'a' + 10);
 			break;
-		
+
 		case 'A':
 		case 'B':
 		case 'C':
@@ -340,7 +317,7 @@ outeval()
 			}
 			break;
 
-		case IFC_CURRLOC: 
+		case IFC_CURRLOC:
 			etop = genlocctr;
 			break;
 
@@ -525,7 +502,7 @@ flushlisthex()
 
 listhex()
 /*
-	description	buffer the output result to block the hexidecimal 
+	description	buffer the output result to block the hexidecimal
 			listing on the output file to NUMHEXPERL bytes per
 			listing line.
 	globals		The output result array and count
@@ -543,7 +520,7 @@ listhex()
 
 	for(cht = 0; cht < nextresult; cht++)
 	{
-		if(lhnextaddr != inhaddr 
+		if(lhnextaddr != inhaddr
 		 || lhnext >= (lineLflag ? NUMHEXSOURCE : NUMHEXPERL ) )
 		{
 			listouthex();
@@ -613,7 +590,7 @@ listouthex()
 			fputc('\n', loutf);
 		}
 	}
-		
+
 	lhnext = 0;
 }
 
@@ -671,7 +648,7 @@ flushhex()
 		intelout(1, endsymbol -> value, 0, "");
 	else
 		intelout(1, 0L, 0, "");
-		
+
 }
 
 
@@ -732,7 +709,7 @@ frp2undef(symp)
 		fprintf(loutf," ERROR -  undefined symbol %s\n", symp ->symstr);
 	}
 	else
-		fprintf(loutf, "%s - line %d - ERROR - undefined symbol  %s\n", 
+		fprintf(loutf, "%s - line %d - ERROR - undefined symbol  %s\n",
 			currentfnm, linenumber, symp -> symstr);
 	errorcnt++;
 }
@@ -752,7 +729,7 @@ frp2warn(str)
 		fprintf(loutf, " WARNING - %s\n", str);
 	}
 	else
-		fprintf(loutf, "%s - line %d - WARNING - %s\n", 
+		fprintf(loutf, "%s - line %d - WARNING - %s\n",
 			currentfnm, linenumber, str);
 	warncnt++;
 }
@@ -772,7 +749,7 @@ frp2error(str)
 		fprintf(loutf, " ERROR - %s\n", str);
 	}
 	else
-		fprintf(loutf, "%s - line %d - ERROR - %s\n", 
+		fprintf(loutf, "%s - line %d - ERROR - %s\n",
 			currentfnm, linenumber, str);
 	errorcnt++;
 }

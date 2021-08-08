@@ -55,11 +55,16 @@ History:
 1990/09/14:	{frasmain,frapsub,fraosub}.c, frasmdat.h:	version 1.5, DOS'ified 6-character unique, portable variable names.
 1990/09/14:	as*.y:		Short variable names.
 1990/09/17:	as*.y:		Use yylex as external.
-1990/10:	Scan.c:		Hand-carved scanner.
+1990/10:	fryylex.c:	Hand-carved scanner.
 1990/11/17:	as*.y:		Character set support (explicitly stated as such, only in as1805.y).
 1990/12/04-06:	Posted to alt.sources.
 		See Cover.txt for the article headers.
 		Note: not all alt.sources servers archived the Frankasm/As630102 SHAR file.
 2020/03/20:	Unpacked
 2021/07/28:	Made C99-compatible; with <stdlib.h> made mandatory, replacing in-line declarations.
+2021/07/28:	Established operational baseline in ANSI-C.
+		The end-of-line spaces in the test output files for the 6301, 6811 and z8 were adjusted to match actual output.
+		The 6502 test output, in both this version and the original, has an invalid opcode error for ‟mul”.
+		The 2650 test output, in both this version and the original, has a page boundary warning.
+		There is an (as-yet-unresolved) mismatch in the 6809 test output.
 2021/08/04:	Recovered Frankasm/As630102 and as6301.y.
