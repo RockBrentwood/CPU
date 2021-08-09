@@ -47,7 +47,7 @@ CHARUSE
 .DS I N
 CPU string
 .DE
-The instruction set can be specified in the source file with the CPU 
+The instruction set can be specified in the source file with the CPU
 pseudooperation.
 The string, delimited by quotes or apostrophes, is scanned for a
 substring which selects which instruction set is used.
@@ -56,7 +56,7 @@ the program, then the -p optional arguement, if any, and then any CPU
 statements.
 The last one selects which subset of the instructions the assembler will
 accept.
-The instruction set can be changed at any place in the source file. 
+The instruction set can be changed at any place in the source file.
 .VL 30 5 1
 .LI "Instruction Set"
 Substrings
@@ -106,17 +106,17 @@ ASL	 expr	DIRECT
 ASL	 indexed	INDEX0
 ASL	 indexed	INDEX1
 .sp
-ASLA	
+ASLA
 .sp
-ASLX	
+ASLX
 .sp
 ASR	 expr	DIRECT
 ASR	 indexed	INDEX0
 ASR	 indexed	INDEX1
 .sp
-ASRA	
+ASRA
 .sp
-ASRX	
+ASRX
 .sp
 BCC	 expr
 .sp
@@ -171,17 +171,17 @@ BSET	 expr ',' expr
 .sp
 BSR	 expr
 .sp
-CLC	
+CLC
 .sp
-CLI	
+CLI
 .sp
 CLR	 expr	DIRECT
 CLR	 indexed	INDEX0
 CLR	 indexed	INDEX1
 .sp
-CLRA	
+CLRA
 .sp
-CLRX	
+CLRX
 .sp
 CMP	 '#' expr
 CMP	 expr	DIRECT
@@ -194,9 +194,9 @@ COM	 expr	DIRECT
 COM	 indexed	INDEX0
 COM	 indexed	INDEX1
 .sp
-COMA	
+COMA
 .sp
-COMX	
+COMX
 .sp
 CPX	 '#' expr
 CPX	 expr	DIRECT
@@ -211,9 +211,9 @@ DEC	 expr	DIRECT
 DEC	 indexed	INDEX0
 DEC	 indexed	INDEX1
 .sp
-DECA	
+DECA
 .sp
-DECX	
+DECX
 .sp
 EOR	 '#' expr
 EOR	 expr	DIRECT
@@ -226,9 +226,9 @@ INC	 expr	DIRECT
 INC	 indexed	INDEX0
 INC	 indexed	INDEX1
 .sp
-INCA	
+INCA
 .sp
-INCX	
+INCX
 .sp
 JMP	 expr	DIRECT
 JMP	 expr	EXTENDED
@@ -260,17 +260,17 @@ LSL	 expr	DIRECT
 LSL	 indexed	INDEX0
 LSL	 indexed	INDEX1
 .sp
-LSLA	
+LSLA
 .sp
-LSLX	
+LSLX
 .sp
 LSR	 expr	DIRECT
 LSR	 indexed	INDEX0
 LSR	 indexed	INDEX1
 .sp
-LSRA	
+LSRA
 .sp
-LSRX	
+LSRX
 .sp
 MUL		INSTMUL
 .sp
@@ -278,11 +278,11 @@ NEG	 expr	DIRECT
 NEG	 indexed	INDEX0
 NEG	 indexed	INDEX1
 .sp
-NEGA	
+NEGA
 .sp
-NEGX	
+NEGX
 .sp
-NOP	
+NOP
 .sp
 ORA	 '#' expr
 ORA	 expr	DIRECT
@@ -295,23 +295,23 @@ ROL	 expr	DIRECT
 ROL	 indexed	INDEX0
 ROL	 indexed	INDEX1
 .sp
-ROLA	
+ROLA
 .sp
-ROLX	
+ROLX
 .sp
 ROR	 expr	DIRECT
 ROR	 indexed	INDEX0
 ROR	 indexed	INDEX1
 .sp
-RORA	
+RORA
 .sp
-RORX	
+RORX
 .sp
-RSP	
+RSP
 .sp
-RTI	
+RTI
 .sp
-RTS	
+RTS
 .sp
 SBC	 '#' expr
 SBC	 expr	DIRECT
@@ -320,9 +320,9 @@ SBC	 indexed	INDEX0
 SBC	 indexed	INDEX1
 SBC	 indexed	INDEX2
 .sp
-SEC	
+SEC
 .sp
-SEI	
+SEI
 .sp
 STA	 expr	DIRECT
 STA	 expr	EXTENDED
@@ -345,27 +345,27 @@ SUB	 indexed	INDEX0
 SUB	 indexed	INDEX1
 SUB	 indexed	INDEX2
 .sp
-SWI	
+SWI
 .sp
-TAX	
+TAX
 .sp
 TST	 expr	DIRECT
 TST	 indexed	INDEX0
 TST	 indexed	INDEX1
 .sp
-TSTA	
+TSTA
 .sp
-TSTX	
+TSTX
 .sp
-TXA	
+TXA
 .sp
 WAIT		INSTSTWA
 .TE
 .H 3 "Selection Criteria Keywords"
-.VL 25 5 
+.VL 25 5
 .LI DIRECT
-The direct addressing mode can be used if the expression has a value 
-between 0 and 255. 
+The direct addressing mode can be used if the expression has a value
+between 0 and 255.
 The expression will be treated as a two byte long value if it is not
 defined when the statement is processed in the first pass.
 .LI EXTENDED
@@ -398,7 +398,7 @@ The indexed addressing mode is represented in two ways.
 First, with no offset, the form ",X" is used.
 .P
 Second, the form "expression, X" is used for both the one and two byte
-offsets modes.  
+offsets modes.
 The expression will be treated as a two byte long value if it is not
 defined when the statement is processed in the first pass.
 .H 3 "Reserved Symbols"

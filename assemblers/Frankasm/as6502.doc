@@ -50,7 +50,7 @@ byte) representation.
 .DS I N
 CPU string
 .DE
-The instruction set can be specified in the source file with the CPU 
+The instruction set can be specified in the source file with the CPU
 pseudooperation.
 The string, delimited by quotes or apostrophes, is scanned for a
 substring which selects which instruction set is used.
@@ -59,7 +59,7 @@ the program, then the -p optional arguement, if any, and then any CPU
 statements.
 The last one selects which subset of the instructions the assembler will
 accept.
-The instruction set can be changed at any place in the source file. 
+The instruction set can be changed at any place in the source file.
 .DS
 .VL 30 5 1
 .LI "Instruction Set"
@@ -172,19 +172,19 @@ BRA	 topexpr	INST21
 BRA	 topexpr	INSTCMOS
 .sp
 BRK	 '#' topexpr
-BRK	
+BRK
 .sp
 BVC	 topexpr
 .sp
 BVS	 topexpr
 .sp
-CLC	
+CLC
 .sp
-CLD	
+CLD
 .sp
-CLI	
+CLI
 .sp
-CLV	
+CLV
 .sp
 CMP	 '#' topexpr
 CMP	 '(' topexpr ')' ',' INDEX	DIRECT INDEXY
@@ -210,9 +210,9 @@ DEC	 topexpr ',' INDEX	EXTENDED INDEXX
 DEC	 topexpr	DIRECT
 DEC	 topexpr	EXTENDED
 .sp
-DEX	
+DEX
 .sp
-DEY	
+DEY
 .sp
 EOR	 '#' topexpr
 EOR	 '(' topexpr ')' ',' INDEX	DIRECT INDEXY
@@ -230,9 +230,9 @@ INC	 topexpr ',' INDEX	EXTENDED INDEXX
 INC	 topexpr	DIRECT
 INC	 topexpr	EXTENDED
 .sp
-INX	
+INX
 .sp
-INY	
+INY
 .sp
 JMP	 '(' topexpr ')'
 JMP	 '(' topexpr ',' INDEX ')'	INSTCMOS INDEXX
@@ -270,7 +270,7 @@ LSR	 topexpr	EXTENDED
 .sp
 MUL		INST21
 .sp
-NOP	
+NOP
 .sp
 ORA	 '#' topexpr
 ORA	 '(' topexpr ')' ',' INDEX	DIRECT INDEXY
@@ -282,9 +282,9 @@ ORA	 topexpr ',' INDEX	INDEXY
 ORA	 topexpr	DIRECT
 ORA	 topexpr	EXTENDED
 .sp
-PHA	
+PHA
 .sp
-PHP	
+PHP
 .sp
 PHX		INST21
 PHX		INSTCMOS
@@ -292,9 +292,9 @@ PHX		INSTCMOS
 PHY		INST21
 PHY		INSTCMOS
 .sp
-PLA	
+PLA
 .sp
-PLP	
+PLP
 .sp
 PLX		INST21
 PLX		INSTCMOS
@@ -330,9 +330,9 @@ ROR	 topexpr ',' INDEX	EXTENDED INDEXX
 ROR	 topexpr	DIRECT
 ROR	 topexpr	EXTENDED
 .sp
-RTI	
+RTI
 .sp
-RTS	
+RTS
 .sp
 SBC	 '#' topexpr
 SBC	 '(' topexpr ')' ',' INDEX	DIRECT INDEXY
@@ -344,11 +344,11 @@ SBC	 topexpr ',' INDEX	INDEXY
 SBC	 topexpr	DIRECT
 SBC	 topexpr	EXTENDED
 .sp
-SEC	
+SEC
 .sp
-SED	
+SED
 .sp
-SEI	
+SEI
 .sp
 SMB0	 topexpr	INSTROCKWELL
 .sp
@@ -388,9 +388,9 @@ STZ	 topexpr ',' INDEX	EXTENDED INDEXX INSTCMOS
 STZ	 topexpr	DIRECT INSTCMOS
 STZ	 topexpr	EXTENDED INSTCMOS
 .sp
-TAX	
+TAX
 .sp
-TAY	
+TAY
 .sp
 TRB	 topexpr	DIRECT INSTCMOS
 TRB	 topexpr	EXTENDED INSTCMOS
@@ -398,13 +398,13 @@ TRB	 topexpr	EXTENDED INSTCMOS
 TSB	 topexpr	DIRECT INSTCMOS
 TSB	 topexpr	EXTENDED INSTCMOS
 .sp
-TSX	
+TSX
 .sp
-TXA	
+TXA
 .sp
-TXS	
+TXS
 .sp
-TYA	
+TYA
 .TE
 .H 3 "Operands"
 .VL 25 5
@@ -414,9 +414,9 @@ The a or (A) reserved symbol
 The x or y (or X or Y) reserved symbols
 .LE
 .H 3 "Selection Criteria Keywords"
-.VL 25 5 
+.VL 25 5
 .LI DIRECT
-The instruction can use the direct addressing mode.  
+The instruction can use the direct addressing mode.
 The expression must have a value between 0 and 255 that is defined when the
 instruction is processed in the input pass.
 .LI EXTENDED
@@ -439,19 +439,19 @@ parser generator and are not put in the assembler source statement.
 .H 2 "Notes"
 .H 3 "Top Expressions"
 The syntax of some of the instructions combined with the standard expression
-syntax resulted in confusion whether an operand was an expression surrounded 
-by parenthesis, or a indexed reference.  
+syntax resulted in confusion whether an operand was an expression surrounded
+by parenthesis, or a indexed reference.
 To get around this, the expressions in these ambiguous cases were restricted
-to those forms of expression that don't have surrounding parenthesis at the 
+to those forms of expression that don't have surrounding parenthesis at the
 top level.
 Subexpressions may be parenthesized, but only if an operator seperates or
 precedes the subexpression.
 .DS I N
 Example
 .SP
-lda 47h,y	; load absolute, y 
-lda +(47h),y	; load absolute, y 
-lda (47h),y	; load (indirect), y 
+lda 47h,y	; load absolute, y
+lda +(47h),y	; load absolute, y
+lda (47h),y	; load (indirect), y
 lda ((47h)),y	; error
 .DE
 .H 3 "Reserved Symbols"

@@ -241,4 +241,4 @@ xddest	rreg	$44
 	xor	xdest , # immed
 	xor	xdest, @ xsrc
 	xor	xdest, xsrc
-jmpdst	
+jmpdst

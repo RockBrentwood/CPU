@@ -62,7 +62,7 @@ The optional label is set to the first location of this area.
 [Label]  DCL  expression [, expression] ...
 .DE
 .P
-The define long word statement generates a four byte integer 
+The define long word statement generates a four byte integer
 for each expression in the expression list.
 There can be up to 128 expressions on a line, more than the line length will
 allow.
@@ -78,7 +78,7 @@ The optional label is set to the first location of this area.
 .P
 This statement moves the location counter forward by
 the number of bytes specified in the expression.
-The location counter is adjusted by skipping bytes to make the 
+The location counter is adjusted by skipping bytes to make the
 first location address divisible by 2.
 The label is set to the first location of this area.
 .H 4 "Reserve Memory, Long Word Aligned"
@@ -88,14 +88,14 @@ The label is set to the first location of this area.
 .P
 This statement moves the location counter forward by
 the number of long words specified in the expression.
-The location counter is adjusted by skipping bytes to make 
+The location counter is adjusted by skipping bytes to make
 the first location address divisible by 4.
 The label is set to the first location of this area.
 .H 4 "Instruction Set Selection"
 .DS I N
 CPU string
 .DE
-The instruction set can be specified in the source file with the CPU 
+The instruction set can be specified in the source file with the CPU
 pseudooperation.
 The string, delimited by quotes or apostrophes, is scanned for a
 substring which selects which instruction set is used.
@@ -104,7 +104,7 @@ the program, then the -p optional arguement, if any, and then any CPU
 statements.
 The last one selects which subset of the instructions the assembler will
 accept.
-The instruction set can be changed at any place in the source file. 
+The instruction set can be changed at any place in the source file.
 .VL 30 5 1
 .LI "Instruction Set"
 Substrings
@@ -196,9 +196,9 @@ CLR	 expr
 .sp
 CLRB	 expr
 .sp
-CLRC	
+CLRC
 .sp
-CLRVT	
+CLRVT
 .sp
 CMP	 expr ',' '#' expr
 CMP	 expr ',' '[' expr ']'
@@ -220,7 +220,7 @@ DEC	 expr
 .sp
 DECB	 expr
 .sp
-DI	
+DI
 .sp
 DIV	 expr ',' '#' expr
 DIV	 expr ',' '[' expr ']'
@@ -254,7 +254,7 @@ DJNZ	 expr ',' expr
 .sp
 DJNZW	 expr ',' expr	CPU196
 .sp
-EI	
+EI
 .sp
 EXT	 expr
 .sp
@@ -390,7 +390,7 @@ NEG	 expr
 .sp
 NEGB	 expr
 .sp
-NOP	
+NOP
 .sp
 NORML	 expr ',' expr
 .sp
@@ -420,7 +420,7 @@ POP	 expr	EXTENDED
 .sp
 POPA		CPU196
 .sp
-POPF	
+POPF
 .sp
 PUSH	 '#' expr
 PUSH	 '[' expr ']'
@@ -431,15 +431,15 @@ PUSH	 expr	EXTENDED
 .sp
 PUSHA		CPU196
 .sp
-PUSHF	
+PUSHF
 .sp
-RET	
+RET
 .sp
-RST	
+RST
 .sp
 SCALL	 expr
 .sp
-SETC	
+SETC
 .sp
 SHL	 expr ',' '#' expr
 SHL	 expr ',' expr
@@ -539,7 +539,7 @@ XORB	 expr ',' expr	DIRECT
 XORB	 expr ',' expr	EXTENDED
 .TE
 .H 3 "Selection Criteria Keywords"
-.VL 25 5 
+.VL 25 5
 .LI DIRECT
 The instruction will be generated with a short form if the last operand
 will fit in one byte, and is defined when the instruction is processed in
@@ -556,11 +556,11 @@ parser generator and are not put in the assembler source statement.
 .H 3 "Data Alignment"
 In the second pass, data address are checked for alignment.
 If the operand field is not divisible by 2 for word references, or
-by 4 for long word references, the error message 
+by 4 for long word references, the error message
 "expression fails validity test" occurs.
 .H 3 "Generic Jumps"
 The assembler requires that the length of an instruction
-be able to be determined at the first pass, so generalized generic jumps 
+be able to be determined at the first pass, so generalized generic jumps
 could not be implemented.
 .H 3 "Reserved Symbols"
 .H 4 "Standard Reserved Symbols"

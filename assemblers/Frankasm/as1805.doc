@@ -51,15 +51,15 @@ Opcode	Syntax	Selection Criteria
 .sp
 .TH
 .sp
-ADC	
+ADC
 .sp
 ADCI	 '#' expr
 .sp
-ADD	
+ADD
 .sp
 ADI	 '#' expr
 .sp
-AND	
+AND
 .sp
 ANI	 '#' expr
 .sp
@@ -121,7 +121,7 @@ DBNZ	 expr ',' expr	TS1805
 .sp
 DEC	 expr
 .sp
-DIS	
+DIS
 .sp
 DSAV		TS1805
 .sp
@@ -143,13 +143,13 @@ GHI	 expr
 .sp
 GLO	 expr
 .sp
-IDL	
+IDL
 .sp
 INC	 expr
 .sp
 INP	 expr
 .sp
-IRX	
+IRX
 .sp
 LBDF	 expr
 .sp
@@ -173,35 +173,35 @@ LDI	 '#' expr
 .sp
 LDN	 expr
 .sp
-LDX	
+LDX
 .sp
-LDXA	
+LDXA
 .sp
-LSDF	
+LSDF
 .sp
-LSIE	
+LSIE
 .sp
-LSKP	
+LSKP
 .sp
-LSNF	
+LSNF
 .sp
-LSNQ	
+LSNQ
 .sp
-LSNZ	
+LSNZ
 .sp
-LSQ	
+LSQ
 .sp
-LSZ	
+LSZ
 .sp
-MARK	
+MARK
 .sp
 NBR	expr
 .sp
 NLBR	expr
 .sp
-NOP	
+NOP
 .sp
-OR	
+OR
 .sp
 ORI	 '#' expr
 .sp
@@ -211,9 +211,9 @@ PHI	 expr
 .sp
 PLO	 expr
 .sp
-REQ	
+REQ
 .sp
-RET	
+RET
 .sp
 RLDI	 expr ',' '#' expr	TS1805
 .sp
@@ -221,13 +221,13 @@ RLXA	 expr	TS1805
 .sp
 RNX	 expr	TS1805
 .sp
-RSHL	
+RSHL
 .sp
-RSHR	
+RSHR
 .sp
 RSXD	 expr	TS1805
 .sp
-SAV	
+SAV
 .sp
 SCAL	 expr ',' expr	TS1805
 .sp
@@ -235,9 +235,9 @@ SCM1		TS1805
 .sp
 SCM2		TS1805
 .sp
-SD	
+SD
 .sp
-SDB	
+SDB
 .sp
 SDBI	 '#' expr
 .sp
@@ -245,23 +245,23 @@ SDI	 '#' expr
 .sp
 SEP	 expr
 .sp
-SEQ	
+SEQ
 .sp
 SEX	 expr
 .sp
-SHL	
+SHL
 .sp
-SHLC	
+SHLC
 .sp
-SHR	
+SHR
 .sp
-SHRC	
+SHRC
 .sp
-SKP	
+SKP
 .sp
-SM	
+SM
 .sp
-SMB	
+SMB
 .sp
 SMBI	 '#' expr
 .sp
@@ -279,18 +279,18 @@ STPC		TS1805
 .sp
 STR	 expr
 .sp
-STXD	
+STXD
 .sp
 XID		TS1805
 .sp
 XIE		TS1805
 .sp
-XOR	
+XOR
 .sp
 XRI	 '#' expr
 .TE
 .H 3 "Selection Criteria Keywords"
-.VL 25 5 
+.VL 25 5
 .LI TS1805
 Instruction is only valid for the 1804A/1805A/1806A instruction sets.
 .LE
@@ -299,19 +299,19 @@ The apostrophes in the syntax field are a notation used for the
 parser generator and are not put in the assembler source statement.
 .H 2 "Notes"
 .H 3 "Instruction Set Selection"
-The default is the 1805 instruction set. 
+The default is the 1805 instruction set.
 To restrict the instruction set, use the -p 1802 optional arguement on
 the command line, or rename or link the program file with a name containing
 the string 1802 (or just "02").
 .H 3 "Register and Port expressions"
 The register and port numbers are specified as expressions.
-For registers, the value must be between 0 and 15 (1 and 15 for the LDN 
+For registers, the value must be between 0 and 15 (1 and 15 for the LDN
 instruction).
 For input/output ports, the value must be between 1 and 7.
 The value must be computable when processed in the first pass.
 The SET and EQU statements can be used to setup symbols for registers and
 ports.
-It is recomended that a standard include file be setup to assign 
+It is recomended that a standard include file be setup to assign
 a set of symbols (like R0 to R15) for registers.
 .H 3 "Branch Target Expression Validity"
 The "expression fails validity test" error message can occur if the
@@ -320,7 +320,7 @@ byte of the instruction.
 The "expression exceeds available field width" can also occur for this
 case.
 Usually the validity message occurs when the destination is at a lower
-page, and the width message occurs when the destination is at a higher page. 
+page, and the width message occurs when the destination is at a higher page.
 .H 3 "Immediate Data"
 The immediate data expressions for the RLDI (as well as the arithmetic and
 logic operations) are required to be on same line as the opcode.

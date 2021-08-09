@@ -1211,9 +1211,6 @@ cpumatch(str)
 */
 
 #define NUMOPCODE 163
-#define NUMSYNBLK 226
-#define NUMDIFFOP 279
-
 int gnumopcode = NUMOPCODE;
 
 int ophashlnk[NUMOPCODE];
@@ -1385,6 +1382,7 @@ struct opsym optab[NUMOPCODE+1]
 	{"WORD", KOC_WDEF, 0, 0 },
 	{ "", 0, 0, 0 }};
 
+#define NUMSYNBLK 226
 struct opsynt ostab[NUMSYNBLK+1]
 	= {
 /* invalid 0 */ { 0, 1, 0 },
@@ -1615,6 +1613,7 @@ struct opsynt ostab[NUMSYNBLK+1]
 /* TSTB 225 */ { ST_INH, 1, 278 },
 	{ 0, 0, 0 } };
 
+#define NUMDIFFOP 279
 struct igel igtab[NUMDIFFOP+1]
 	= {
 /* invalid 0 */   { 0 , 0,

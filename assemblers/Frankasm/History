@@ -67,4 +67,8 @@ History:
 		The 6502 test output, in both this version and the original, has an invalid opcode error for ‟mul”.
 		The 2650 test output, in both this version and the original, has a page boundary warning.
 		There is an (as-yet-unresolved) mismatch in the 6809 test output.
+2021/07/28:	Source files normalized:
+		∙	layout regularized,
+		∙	excess spaces trimmed.
+2021/07/28:	Toplogical sorting of routines.
 2021/08/04:	Recovered Frankasm/As630102 and as6301.y.

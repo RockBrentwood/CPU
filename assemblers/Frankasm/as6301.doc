@@ -51,9 +51,9 @@ Opcode	Syntax	Selection Criteria
 .sp
 .TH
 .sp
-ABA	
+ABA
 .sp
-ABX	
+ABX
 .sp
 ADC	 ACCUM '#' expr	REGA
 ADC	 ACCUM '#' expr	REGB
@@ -99,7 +99,7 @@ ADDD	 expr	EXTENDED
 ADDD	 indexed
 .sp
 AIM	 '#' expr ',' expr
-AIM	 '#' expr ',' indexed 
+AIM	 '#' expr ',' indexed
 .sp
 AND	 ACCUM '#' expr	REGA
 AND	 ACCUM '#' expr	REGB
@@ -125,20 +125,20 @@ ASL	 ACCUM	REGB
 ASL	 expr
 ASL	 indexed
 .sp
-ASLA	
+ASLA
 .sp
-ASLB	
+ASLB
 .sp
-ASLD	
+ASLD
 .sp
 ASR	 ACCUM	REGA
 ASR	 ACCUM	REGB
 ASR	 expr
 ASR	 indexed
 .sp
-ASRA	
+ASRA
 .sp
-ASRB	
+ASRB
 .sp
 BCC	 expr
 .sp
@@ -265,22 +265,22 @@ BVC	 expr
 .sp
 BVS	 expr
 .sp
-CBA	
+CBA
 .sp
-CLC	
+CLC
 .sp
-CLI	
+CLI
 .sp
 CLR	 ACCUM	REGA
 CLR	 ACCUM	REGB
 CLR	 expr
 CLR	 indexed
 .sp
-CLRA	
+CLRA
 .sp
-CLRB	
+CLRB
 .sp
-CLV	
+CLV
 .sp
 CMP	 ACCUM '#' expr	REGA
 CMP	 ACCUM '#' expr	REGB
@@ -306,32 +306,32 @@ COM	 ACCUM	REGB
 COM	 expr
 COM	 indexed
 .sp
-COMA	
+COMA
 .sp
-COMB	
+COMB
 .sp
 CPX	 '#' expr
 CPX	 expr	DIRECT
 CPX	 expr	EXTENDED
 CPX	 indexed
 .sp
-DAA	
+DAA
 .sp
 DEC	 ACCUM	REGA
 DEC	 ACCUM	REGB
 DEC	 expr
 DEC	 indexed
 .sp
-DECA	
+DECA
 .sp
-DECB	
+DECB
 .sp
-DES	
+DES
 .sp
-DEX	
+DEX
 .sp
 EIM	 '#' expr ',' expr
-EIM	 '#' expr ',' indexed 
+EIM	 '#' expr ',' indexed
 .sp
 EOR	 ACCUM '#' expr	REGA
 EOR	 ACCUM '#' expr	REGB
@@ -357,13 +357,13 @@ INC	 ACCUM	REGB
 INC	 expr
 INC	 indexed
 .sp
-INCA	
+INCA
 .sp
-INCB	
+INCB
 .sp
-INS	
+INS
 .sp
-INX	
+INX
 .sp
 JMP	 expr
 JMP	 indexed
@@ -411,38 +411,38 @@ LSL	 ACCUM	REGB
 LSL	 expr
 LSL	 indexed
 .sp
-LSLA	
+LSLA
 .sp
-LSLB	
+LSLB
 .sp
-LSLD	
+LSLD
 .sp
 LSR	 ACCUM	REGA
 LSR	 ACCUM	REGB
 LSR	 expr
 LSR	 indexed
 .sp
-LSRA	
+LSRA
 .sp
-LSRB	
+LSRB
 .sp
-LSRD	
+LSRD
 .sp
-MUL	
+MUL
 .sp
 NEG	 ACCUM	REGA
 NEG	 ACCUM	REGB
 NEG	 expr
 NEG	 indexed
 .sp
-NEGA	
+NEGA
 .sp
-NEGB	
+NEGB
 .sp
-NOP	
+NOP
 .sp
 OIM	 '#' expr ',' expr
-OIM	 '#' expr ',' indexed 
+OIM	 '#' expr ',' indexed
 .sp
 ORA	 ACCUM '#' expr	REGA
 ORA	 ACCUM '#' expr	REGB
@@ -467,45 +467,45 @@ PSH	 ACCUM	REGA
 PSH	 ACCUM	REGB
 PSH	 INDEX
 .sp
-PSHA	
+PSHA
 .sp
-PSHB	
+PSHB
 .sp
-PSHX	
+PSHX
 .sp
 PUL	 ACCUM	REGA
 PUL	 ACCUM	REGB
 PUL	 INDEX
 .sp
-PULA	
+PULA
 .sp
-PULB	
+PULB
 .sp
-PULX	
+PULX
 .sp
 ROL	 ACCUM	REGA
 ROL	 ACCUM	REGB
 ROL	 expr
 ROL	 indexed
 .sp
-ROLA	
+ROLA
 .sp
-ROLB	
+ROLB
 .sp
 ROR	 ACCUM	REGA
 ROR	 ACCUM	REGB
 ROR	 expr
 ROR	 indexed
 .sp
-RORA	
+RORA
 .sp
-RORB	
+RORB
 .sp
-RTI	
+RTI
 .sp
-RTS	
+RTS
 .sp
-SBA	
+SBA
 .sp
 SBC	 ACCUM '#' expr	REGA
 SBC	 ACCUM '#' expr	REGB
@@ -526,13 +526,13 @@ SBCB	 expr	DIRECT
 SBCB	 expr	EXTENDED
 SBCB	 indexed
 .sp
-SEC	
+SEC
 .sp
-SEI	
+SEI
 .sp
-SEV	
+SEV
 .sp
-SLP	
+SLP
 .sp
 STA	 ACCUM expr	REGA+DIRECT
 STA	 ACCUM expr	REGA+EXTENDED
@@ -585,44 +585,44 @@ SUBD	 expr	DIRECT
 SUBD	 expr	EXTENDED
 SUBD	 indexed
 .sp
-SWI	
+SWI
 .sp
-TAB	
+TAB
 .sp
-TAP	
+TAP
 .sp
-TBA	
+TBA
 .sp
 TIM	 '#' expr ',' expr
-TIM	 '#' expr ',' indexed 
+TIM	 '#' expr ',' indexed
 .sp
-TPA	
+TPA
 .sp
 TST	 ACCUM	REGA
 TST	 ACCUM	REGB
 TST	 expr
 TST	 indexed
 .sp
-TSTA	
+TSTA
 .sp
-TSTB	
+TSTB
 .sp
-TSX	
+TSX
 .sp
-TXS	
+TXS
 .sp
-WAI	
+WAI
 .sp
-XGDX	
+XGDX
 .TE
 .H 3 "Selection Criteria Keywords"
-.VL 25 5 
+.VL 25 5
 .LI REGA
 The A accumulator can be used for the instruction.
 .LI REGB
 The B accumulator can be used for the instruction.
 .LI DIRECT
-The instruction can use the direct addressing mode.  
+The instruction can use the direct addressing mode.
 The expression must have a value between 0 and 255 that is defined when the
 instruction is processed in the input pass.
 .LI EXTENDED
@@ -639,7 +639,7 @@ The value must be between 0 and 7.
 .H 4 "Indexed Addressing"
 The indexed addressing is represented in two ways.
 Either "expression, X" or "X, expression" is
-accepted by the assembler. 
+accepted by the assembler.
 .H 2 "Reserved Symbols"
 .H 3 "Machine Dependent Reserved Symbols"
 A

@@ -47,7 +47,7 @@ CHARUSE
 .DS I N
 CPU string
 .DE
-The instruction set can be specified in the source file with the CPU 
+The instruction set can be specified in the source file with the CPU
 pseudooperation.
 The string, delimited by quotes or apostrophes, is scanned for a
 substring which selects which instruction set is used.
@@ -56,7 +56,7 @@ the program, then the -p optional argument, if any, and then any CPU
 statements.
 The last one selects which subset of the instructions the assembler will
 accept.
-The instruction set can be changed at any place in the source file. 
+The instruction set can be changed at any place in the source file.
 .VL 30 5 1
 .LI "Instruction Set"
 Substrings
@@ -79,7 +79,7 @@ Opcode	Syntax	Selection Criteria
 .sp
 .TH
 .sp
-ABA	
+ABA
 .sp
 ABX		TS6801PLUS
 .sp
@@ -166,9 +166,9 @@ ASL	 expr
 ASL	 indexed	REGX
 ASL	 indexed	REGY+TS6811
 .sp
-ASLA	
+ASLA
 .sp
-ASLB	
+ASLB
 .sp
 ASLD		TS6801PLUS
 .sp
@@ -178,9 +178,9 @@ ASR	 expr
 ASR	 indexed	REGX
 ASR	 indexed	REGY+TS6811
 .sp
-ASRA	
+ASRA
 .sp
-ASRB	
+ASRB
 .sp
 BCC	 expr
 .sp
@@ -259,11 +259,11 @@ BVC	 expr
 .sp
 BVS	 expr
 .sp
-CBA	
+CBA
 .sp
-CLC	
+CLC
 .sp
-CLI	
+CLI
 .sp
 CLR	 ACCUM	REGA
 CLR	 ACCUM	REGB
@@ -271,11 +271,11 @@ CLR	 expr
 CLR	 indexed	REGX
 CLR	 indexed	REGY+TS6811
 .sp
-CLRA	
+CLRA
 .sp
-CLRB	
+CLRB
 .sp
-CLV	
+CLV
 .sp
 CMP	 ACCUM '#' expr	REGA
 CMP	 ACCUM '#' expr	REGB
@@ -306,9 +306,9 @@ COM	 expr
 COM	 indexed	REGX
 COM	 indexed	REGY+TS6811
 .sp
-COMA	
+COMA
 .sp
-COMB	
+COMB
 .sp
 CPD	 '#' expr	TS6811
 CPD	 expr	DIRECT+TS6811
@@ -328,7 +328,7 @@ CPY	 expr	EXTENDED+TS6811
 CPY	 indexed	REGX+TS6811
 CPY	 indexed	REGY+TS6811
 .sp
-DAA	
+DAA
 .sp
 DEC	 ACCUM	REGA
 DEC	 ACCUM	REGB
@@ -336,13 +336,13 @@ DEC	 expr
 DEC	 indexed	REGX
 DEC	 indexed	REGY+TS6811
 .sp
-DECA	
+DECA
 .sp
-DECB	
+DECB
 .sp
-DES	
+DES
 .sp
-DEX	
+DEX
 .sp
 DEY		TS6811
 .sp
@@ -379,13 +379,13 @@ INC	 expr
 INC	 indexed	REGX
 INC	 indexed	REGY+TS6811
 .sp
-INCA	
+INCA
 .sp
-INCB	
+INCB
 .sp
-INS	
+INS
 .sp
-INX	
+INX
 .sp
 INY		TS6811
 .sp
@@ -452,9 +452,9 @@ LSL	 expr
 LSL	 indexed	REGX
 LSL	 indexed	REGY+TS6811
 .sp
-LSLA	
+LSLA
 .sp
-LSLB	
+LSLB
 .sp
 LSLD		TS6801PLUS
 .sp
@@ -464,9 +464,9 @@ LSR	 expr
 LSR	 indexed	REGX
 LSR	 indexed	REGY+TS6811
 .sp
-LSRA	
+LSRA
 .sp
-LSRB	
+LSRB
 .sp
 LSRD		TS6801PLUS
 .sp
@@ -478,11 +478,11 @@ NEG	 expr
 NEG	 indexed	REGX
 NEG	 indexed	REGY+TS6811
 .sp
-NEGA	
+NEGA
 .sp
-NEGB	
+NEGB
 .sp
-NOP	
+NOP
 .sp
 ORA	 ACCUM '#' expr	REGA
 ORA	 ACCUM '#' expr	REGB
@@ -512,9 +512,9 @@ PSH	 ACCUM	REGB
 PSH	 INDEX	REGX+TS6801PLUS
 PSH	 INDEX	REGY+TS6811
 .sp
-PSHA	
+PSHA
 .sp
-PSHB	
+PSHB
 .sp
 PSHX		TS6801PLUS
 .sp
@@ -525,9 +525,9 @@ PUL	 ACCUM	REGB
 PUL	 INDEX	REGX+TS6801PLUS
 PUL	 INDEX	REGY+TS6811
 .sp
-PULA	
+PULA
 .sp
-PULB	
+PULB
 .sp
 PULX		TS6801PLUS
 .sp
@@ -539,9 +539,9 @@ ROL	 expr
 ROL	 indexed	REGX
 ROL	 indexed	REGY+TS6811
 .sp
-ROLA	
+ROLA
 .sp
-ROLB	
+ROLB
 .sp
 ROR	 ACCUM	REGA
 ROR	 ACCUM	REGB
@@ -549,15 +549,15 @@ ROR	 expr
 ROR	 indexed	REGX
 ROR	 indexed	REGY+TS6811
 .sp
-RORA	
+RORA
 .sp
-RORB	
+RORB
 .sp
-RTI	
+RTI
 .sp
-RTS	
+RTS
 .sp
-SBA	
+SBA
 .sp
 SBC	 ACCUM '#' expr	REGA
 SBC	 ACCUM '#' expr	REGB
@@ -582,11 +582,11 @@ SBCB	 expr	EXTENDED
 SBCB	 indexed	REGX
 SBCB	 indexed	REGY+TS6811
 .sp
-SEC	
+SEC
 .sp
-SEI	
+SEI
 .sp
-SEV	
+SEV
 .sp
 STA	 ACCUM expr	REGA+DIRECT
 STA	 ACCUM expr	REGA+EXTENDED
@@ -658,17 +658,17 @@ SUBD	 expr	EXTENDED+TS6801PLUS
 SUBD	 indexed	REGX+TS6801PLUS
 SUBD	 indexed	REGY+TS6811
 .sp
-SWI	
+SWI
 .sp
-TAB	
+TAB
 .sp
-TAP	
+TAP
 .sp
-TBA	
+TBA
 .sp
 TEST
 .sp
-TPA	
+TPA
 .sp
 TST	 ACCUM	REGA
 TST	 ACCUM	REGB
@@ -676,26 +676,26 @@ TST	 expr
 TST	 indexed	REGX
 TST	 indexed	REGY+TS6811
 .sp
-TSTA	
+TSTA
 .sp
-TSTB	
+TSTB
 .sp
-TSX	
+TSX
 .sp
 TSY		TS6811
 .sp
-TXS	
+TXS
 .sp
 TYS		TS6811
 .sp
-WAI	
+WAI
 .sp
 XGDX		TS6811
 .sp
 XGDY		TS6811
 .TE
 .H 3 "Selection Criteria Keywords"
-.VL 25 5 
+.VL 25 5
 .LI CPU6800
 The instruction is only valid for the 6800 instruction set.
 .LI CPU6801
@@ -713,7 +713,7 @@ The instruction can use the X index register.
 .LI REGY
 The instruction can use the Y index register.
 .LI DIRECT
-The instruction can use the direct addressing mode.  
+The instruction can use the direct addressing mode.
 The expression must have a value between 0 and 255 that is defined when the
 instruction is processed in the input pass.
 .LI EXTENDED

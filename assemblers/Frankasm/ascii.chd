@@ -12,6 +12,6 @@ ascii	charset
 	chardef	"pqrstuvw",$70,$71,$72,$73,$74,$75,$76,$77
 	chardef	"xyz{|}~",$78,$79,$7a,$7b,$7c,$7d,$7e
 	chardef	'"', $22 ; not the same table entry as '\"'
-	chardef	"'", $27 ; 
+	chardef	"'", $27 ;
 	chardef	"\n\t\v\b\r\f\a", $0a,$09,$0b,$08,$0d,$0c,$07
 	charuse ascii

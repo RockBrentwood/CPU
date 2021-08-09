@@ -148,7 +148,7 @@ CLR	 expr
 CLR	 expr	DSTA
 CLR	 expr	DSTB
 .sp
-CLRC	
+CLRC
 .sp
 CMP	 '#' expr ',' expr
 CMP	 '#' expr ',' expr	DSTA
@@ -178,7 +178,7 @@ DECD	 expr
 DECD	 expr	DSTA
 DECD	 expr	DSTB
 .sp
-DINT	
+DINT
 .sp
 DJNZ	 expr ',' expr
 DJNZ	 expr ',' expr	DSTA
@@ -192,9 +192,9 @@ DSB	 expr ',' expr	DSTA
 DSB	 expr ',' expr	DSTB
 DSB	 expr ',' expr	SRCB DSTA
 .sp
-EINT	
+EINT
 .sp
-IDLE	
+IDLE
 .sp
 INC	 expr
 INC	 expr	DSTA
@@ -238,7 +238,7 @@ LDA	 '[' expr ']'
 LDA	 expr '(' REG ')'	SRCB
 LDA	 expr
 .sp
-LDSP	
+LDSP
 .sp
 MOV	 '#' expr ',' expr
 MOV	 '#' expr ',' expr	DSTA
@@ -269,7 +269,7 @@ MPY	 expr ',' expr	DSTA
 MPY	 expr ',' expr	DSTB
 MPY	 expr ',' expr	SRCB DSTA
 .sp
-NOP	
+NOP
 .sp
 OR	 '#' expr ',' expr
 OR	 '#' expr ',' expr	DSTA
@@ -293,9 +293,9 @@ PUSH	 expr
 PUSH	 expr	DSTA
 PUSH	 expr	DSTB
 .sp
-RETI	
+RETI
 .sp
-RETS	
+RETS
 .sp
 RL	 expr
 RL	 expr	DSTA
@@ -321,13 +321,13 @@ SBB	 expr ',' expr	DSTA
 SBB	 expr ',' expr	DSTB
 SBB	 expr ',' expr	SRCB DSTA
 .sp
-SETC	
+SETC
 .sp
 STA	 '[' expr ']'
 STA	 expr '(' REG ')'	SRCB
 STA	 expr
 .sp
-STSP	
+STSP
 .sp
 SUB	 '#' expr ',' expr
 SUB	 '#' expr ',' expr	DSTA
@@ -343,9 +343,9 @@ SWAP	 expr	DSTB
 .sp
 TRAP	 expr
 .sp
-TSTA	
+TSTA
 .sp
-TSTB	
+TSTB
 .sp
 XCHB	 expr
 XCHB	 expr	DSTA
@@ -364,18 +364,18 @@ XORP	 expr ',' expr	SRCA
 XORP	 expr ',' expr	SRCB
 .TE
 .H 3 "Selection Criteria Keywords"
-.VL 25 5 
+.VL 25 5
 .LI DSTA
-The instruction will use a short form if the A register is used as the 
+The instruction will use a short form if the A register is used as the
 destination register.
 .LI DSTB
-The instruction will use a short form if the B register is used as the 
+The instruction will use a short form if the B register is used as the
 destination register.
 .LI SRCA
-The instruction will use a short form if the A register is used as the 
+The instruction will use a short form if the A register is used as the
 source register.
 .LI SRCB
-The instruction will use a short form if the B register is used as the 
+The instruction will use a short form if the B register is used as the
 source register.
 .LE
 .H 3 "Apostrophes"

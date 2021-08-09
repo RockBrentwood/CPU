@@ -1,17 +1,21 @@
 // Frankenstain Cross-Assemblers, version 2.0.
 // Original author: Mark Zenier.
 // Main file.
-#define	Global
-
 #include <stdio.h>
+#include <unistd.h> // For unlink(), which should be replaced by remove(), which is already declared in <stdio.h>.
+#define	Global
 #include "frasmdat.h"
+#ifdef NOGETOPT
+#include "getopt.h"
+#endif
 
 FILE * intermedf = (FILE *) NULL;
-char interfn[] =
-#ifdef DOSTMP
- "frtXXXXXX";
+#if defined DOSTMP
+char interfn[] = "frtXXXXXX";
+#elif defined AMIGA
+static char LogFile[] = "T:frtXXXXXX";
 #else
- "/usr/tmp/frtXXXXXX";
+char interfn[] = "/usr/tmp/frtXXXXXX";
 #endif
 char *hexfn, *loutfn;
 int errorcnt = 0, warncnt = 0;
@@ -22,9 +26,150 @@ static char *symbfn;
 static int  symbflag = FALSE;
 char hexcva[17] = "0123456789abcdef";
 
-#ifdef NOGETOPT
-#include "getopt.h"
-#endif
+frawarn(str)
+	char * str;
+/*
+	description	first pass - generate warning message by writing line
+			to intermediate file
+	parameters	message
+	globals		the count of warnings
+*/
+{
+	fprintf(intermedf, "E: WARNING - %s\n",str);
+	warncnt++;
+}
+
+fraerror(str)
+	char * str;
+/*
+	description	first pass - generate error message by writing line to
+			intermediate file
+	parameters	message
+	globals		count of errors
+*/
+{
+	fprintf(intermedf, "E: ERROR - %s\n",str);
+	errorcnt++;
+}
+
+frafatal(str)
+	char * str;
+/*
+	description	Fatal error subroutine, shutdown and quit right now!
+	parameters	message
+	globals		if debug mode is true, save intermediate file
+	return		exit(2)
+*/
+{
+	fprintf(stderr, "Fatal error - %s\n",str);
+
+	if( intermedf != (FILE *) NULL)
+	{
+		fclose(intermedf);
+		if( ! debugmode)
+			unlink(interfn);
+	}
+
+	exit(2);
+}
+
+fracherror(str, start, beyond)
+	char * str, *start, *beyond;
+/*
+	description	first pass - generate error message by writing line to
+			intermediate file
+	parameters	message
+			pointer to bad character definition
+			pointer after bad definition
+	globals		count of errors
+*/
+{
+	char bcbuff[8];
+	int cnt;
+
+	for(cnt=0; start < beyond && *start != '\0' && cnt < 7; cnt++)
+	{
+		bcbuff[cnt] = *start++;
+	}
+	bcbuff[cnt] = '\0';
+
+	fprintf(intermedf, "E: ERROR - %s \'%s\'\n",str, bcbuff);
+	errorcnt++;
+}
+
+
+prtequvalue(fstr, lv)
+	char * fstr;
+	long lv;
+/*
+	description	first pass - generate comment lines in intermediate file
+			for the value in a set, equate, or org statement, etc...
+	parameters	format string and a long integer value
+*/
+{
+	fprintf(intermedf, fstr, lv);
+}
+
+#define SYMPERLINE 3
+
+printsymbols()
+/*
+	description	print the symbols on the listing file, 3 symbols
+			across.  Only the first 15 characters are printed
+			though all are significant.  Reserved symbols are
+			not assigned symbol numbers and thus are not printed.
+	globals		the symbol index array and the symbol table elements.
+*/
+{
+	int syn, npl = 0;
+	struct symel *syp;
+
+	for(syn = 1; syn <nextsymnum; syn++)
+	{
+		if(npl >= SYMPERLINE)
+		{
+			fputc('\n', loutf);
+			npl = 0;
+		}
+
+		syp = symbindex[syn];
+
+		if(syp -> seg != SSG_UNDEF)
+			fprintf(loutf, "%8.8lx %-15.15s  ",syp -> value,
+				syp -> symstr);
+		else
+			fprintf(loutf, "???????? %-15.15s  ", syp -> symstr);
+		npl++;
+	}
+
+	if(npl > 0)
+		fputc('\n', loutf);
+
+	fputc('\f', loutf);
+}
+
+
+filesymbols()
+/*
+	description	print the symbols to the symbol table file
+	globals		the symbol index array and the symbol table elements.
+*/
+{
+	int syn;
+	struct symel *syp;
+
+	for(syn = 1; syn <nextsymnum; syn++)
+	{
+		syp = symbindex[syn];
+
+		if(syp -> seg != SSG_UNDEF)
+			fprintf(symbf, "%8.8lx %s\n",syp -> value,
+				syp -> symstr);
+		else
+			fprintf(symbf, "???????? %s\n", syp -> symstr);
+	}
+}
+
 main(argc, argv)
 	int argc;
 	char *(argv[]);
@@ -235,149 +380,4 @@ main(argc, argv)
 		abort();
 
 	exit(errorcnt > 0 ? 2 : 0);
-}
-
-
-frafatal(str)
-	char * str;
-/*
-	description	Fatal error subroutine, shutdown and quit right now!
-	parameters	message
-	globals		if debug mode is true, save intermediate file
-	return		exit(2)
-*/
-{
-	fprintf(stderr, "Fatal error - %s\n",str);
-
-	if( intermedf != (FILE *) NULL)
-	{
-		fclose(intermedf);
-		if( ! debugmode)
-			unlink(interfn);
-	}
-
-	exit(2);
-}
-
-frawarn(str)
-	char * str;
-/*
-	description	first pass - generate warning message by writing line
-			to intermediate file
-	parameters	message
-	globals		the count of warnings
-*/
-{
-	fprintf(intermedf, "E: WARNING - %s\n",str);
-	warncnt++;
-}
-
-fraerror(str)
-	char * str;
-/*
-	description	first pass - generate error message by writing line to
-			intermediate file
-	parameters	message
-	globals		count of errors
-*/
-{
-	fprintf(intermedf, "E: ERROR - %s\n",str);
-	errorcnt++;
-}
-
-fracherror(str, start, beyond)
-	char * str, *start, *beyond;
-/*
-	description	first pass - generate error message by writing line to
-			intermediate file
-	parameters	message
-			pointer to bad character definition
-			pointer after bad definition
-	globals		count of errors
-*/
-{
-	char bcbuff[8];
-	int cnt;
-
-	for(cnt=0; start < beyond && *start != '\0' && cnt < 7; cnt++)
-	{
-		bcbuff[cnt] = *start++;
-	}
-	bcbuff[cnt] = '\0';
-
-	fprintf(intermedf, "E: ERROR - %s \'%s\'\n",str, bcbuff);
-	errorcnt++;
-}
-
-
-prtequvalue(fstr, lv)
-	char * fstr;
-	long lv;
-/*
-	description	first pass - generate comment lines in intermediate file
-			for the value in a set, equate, or org statement, etc...
-	parameters	format string and a long integer value
-*/
-{
-	fprintf(intermedf, fstr, lv);
-}
-
-#define SYMPERLINE 3
-
-printsymbols()
-/*
-	description	print the symbols on the listing file, 3 symbols
-			across.  Only the first 15 characters are printed
-			though all are significant.  Reserved symbols are
-			not assigned symbol numbers and thus are not printed.
-	globals		the symbol index array and the symbol table elements.
-*/
-{
-	int syn, npl = 0;
-	struct symel *syp;
-
-	for(syn = 1; syn <nextsymnum; syn++)
-	{
-		if(npl >= SYMPERLINE)
-		{
-			fputc('\n', loutf);
-			npl = 0;
-		}
-
-		syp = symbindex[syn];
-
-		if(syp -> seg != SSG_UNDEF)
-			fprintf(loutf, "%8.8lx %-15.15s  ",syp -> value,
-				syp -> symstr);
-		else
-			fprintf(loutf, "???????? %-15.15s  ", syp -> symstr);
-		npl++;
-	}
-
-	if(npl > 0)
-		fputc('\n', loutf);
-
-	fputc('\f', loutf);
-}
-
-
-filesymbols()
-/*
-	description	print the symbols to the symbol table file
-	globals		the symbol index array and the symbol table elements.
-*/
-{
-	int syn;
-	struct symel *syp;
-
-	for(syn = 1; syn <nextsymnum; syn++)
-	{
-		syp = symbindex[syn];
-
-		if(syp -> seg != SSG_UNDEF)
-			fprintf(symbf, "%8.8lx %s\n",syp -> value,
-				syp -> symstr);
-		else
-			fprintf(symbf, "???????? %s\n", syp -> symstr);
-	}
 }

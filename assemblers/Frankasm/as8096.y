@@ -1036,6 +1036,22 @@ setreserved()
 	reservedsym("XOR", KEOP_XOR, 0);
 
 }
+
+
+strcontains(s1, sm)
+	char * s1, *sm;
+{
+	int l1 = strlen(s1), lm = strlen(sm);
+
+	for(; l1 >= lm; l1--, s1++)
+	{
+		if(strncmp(s1, sm, lm) == 0)
+		{
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
 cpumatch(str)
 	char * str;
 {
@@ -1061,22 +1077,6 @@ cpumatch(str)
 		}
 	}
 
-	return FALSE;
-}
-
-
-strcontains(s1, sm)
-	char * s1, *sm;
-{
-	int l1 = strlen(s1), lm = strlen(sm);
-
-	for(; l1 >= lm; l1--, s1++)
-	{
-		if(strncmp(s1, sm, lm) == 0)
-		{
-			return TRUE;
-		}
-	}
 	return FALSE;
 }
 

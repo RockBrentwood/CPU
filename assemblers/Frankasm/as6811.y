@@ -959,6 +959,22 @@ setreserved()
 
 }
 
+
+strcontains(s1, sm)
+	char * s1, *sm;
+{
+	int l1 = strlen(s1), lm = strlen(sm);
+
+	for(; l1 >= lm; l1--, s1++)
+	{
+		if(strncmp(s1, sm, lm) == 0)
+		{
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
 cpumatch(str)
 	char * str;
 {
@@ -991,22 +1007,6 @@ cpumatch(str)
 	return FALSE;
 }
 
-
-strcontains(s1, sm)
-	char * s1, *sm;
-{
-	int l1 = strlen(s1), lm = strlen(sm);
-
-	for(; l1 >= lm; l1--, s1++)
-	{
-		if(strncmp(s1, sm, lm) == 0)
-		{
-			return TRUE;
-		}
-	}
-	return FALSE;
-}
-
 /*
 	description	Opcode and Instruction generation tables
 	usage		Unix, framework crossassembler
@@ -1014,9 +1014,6 @@ strcontains(s1, sm)
 */
 
 #define NUMOPCODE 183
-#define NUMSYNBLK 277
-#define NUMDIFFOP 459
-
 int gnumopcode = NUMOPCODE;
 
 int ophashlnk[NUMOPCODE];
@@ -1208,6 +1205,7 @@ struct opsym optab[NUMOPCODE+1]
 	{"XGDY", KOC_opcode, 1, 276 },
 	{ "", 0, 0, 0 }};
 
+#define NUMSYNBLK 277
 struct opsynt ostab[NUMSYNBLK+1]
 	= {
 /* invalid 0 */ { 0, 1, 0 },
@@ -1489,6 +1487,7 @@ struct opsynt ostab[NUMSYNBLK+1]
 /* XGDY 276 */ { ST_INH, 1, 458 },
 	{ 0, 0, 0 } };
 
+#define NUMDIFFOP 459
 struct igel igtab[NUMDIFFOP+1]
 	= {
 /* invalid 0 */   { 0 , 0,

@@ -1,8 +1,8 @@
 // Frankenstain Cross-Assemblers, version 2.0.
 // Original author: Mark Zenier.
 // Parser phase utility routines.
-#include "fragcon.h"
 #include <stdio.h>
+#include "fragcon.h"
 #include "frasmdat.h"
 
 #define STRALLOCSZ 4096
@@ -318,6 +318,26 @@ buildsymbolindex()
 
 local int ohashtab[OPHASHSZ];
 
+int opcodehash(str)
+	char *str;
+/*
+	description	hash a character string
+	return		an integer related somehow to the character string
+*/
+{
+	unsigned rv = 0;
+	int offset = 1, c;
+
+	while((c = *(str++)) > 0)
+	{
+		rv += (c - ' ') * offset;
+		offset *= OPHASHOFF;
+	}
+
+	return rv % OPHASHSZ;
+}
+
+
 setophash()
 /*
 	description	set up the linked list hash table for the
@@ -382,26 +402,6 @@ int findop(str)
 	} while (ts != 0);
 
 	return 0;
-}
-
-
-int opcodehash(str)
-	char *str;
-/*
-	description	hash a character string
-	return		an integer related somehow to the character string
-*/
-{
-	unsigned rv = 0;
-	int offset = 1, c;
-
-	while((c = *(str++)) > 0)
-	{
-		rv += (c - ' ') * offset;
-		offset *= OPHASHOFF;
-	}
-
-	return rv % OPHASHSZ;
 }
 
 
@@ -474,9 +474,6 @@ genlocrec(seg, loc)
 	fprintf(intermedf, "P:%x:%lx\n", seg, loc);
 }
 
-#define GSTR_PASS 0
-#define GSTR_PROCESS 1
-
 local char *goutptr, goutbuff[INBUFFSZ] = "D:";
 
 void goutch(ch)
@@ -523,6 +520,9 @@ goutxnum(num)
 	goutch(hexch((int) num ));
 }
 
+
+#define GSTR_PASS 0
+#define GSTR_PROCESS 1
 
 int geninstr(str)
 	register char * str;
@@ -915,41 +915,6 @@ static long etop;
 static int	etopseg;
 #define STACKALLOWANCE 4 /* number of level used outside polish expr */
 
-pevalexpr(sub, exn)
-	int sub, exn;
-/*
-	description	evaluate and save the results of an expression tree
-	parameters	the subscript to the evalr element to place the results
-			the subscript of the root node of a parser expression
-				tree
-	globals		the evaluation results array
-			the expression stack
-			the expression tree node array
-	return		in evalr[sub].seg == SSG_UNDEF if the polish expression
-			conversion overflowed, or any undefined symbols were
-			referenced.
-*/
-{
-	etop = 0;
-	etopseg = SSG_UNUSED;
-	estkm1p = &estk[0];
-
-	pepolptr = &evalr[sub].exprstr[0];
-	pepolcnt = PPEXPRLEN;
-
-	if(pepolcon(exn))
-	{
-		evalr[sub].seg = etopseg;
-		evalr[sub].value = etop;
-		polout('\0');
-	}
-	else
-	{
-		evalr[sub].exprstr[0] = '\0';
-		evalr[sub].seg = SSG_UNDEF;
-	}
-}
-
 polout(ch)
 	char ch;
 /*
@@ -1092,4 +1057,39 @@ pepolcon(esub)
 
 	}
 	return TRUE;
+}
+
+pevalexpr(sub, exn)
+	int sub, exn;
+/*
+	description	evaluate and save the results of an expression tree
+	parameters	the subscript to the evalr element to place the results
+			the subscript of the root node of a parser expression
+				tree
+	globals		the evaluation results array
+			the expression stack
+			the expression tree node array
+	return		in evalr[sub].seg == SSG_UNDEF if the polish expression
+			conversion overflowed, or any undefined symbols were
+			referenced.
+*/
+{
+	etop = 0;
+	etopseg = SSG_UNUSED;
+	estkm1p = &estk[0];
+
+	pepolptr = &evalr[sub].exprstr[0];
+	pepolcnt = PPEXPRLEN;
+
+	if(pepolcon(exn))
+	{
+		evalr[sub].seg = etopseg;
+		evalr[sub].value = etop;
+		polout('\0');
+	}
+	else
+	{
+		evalr[sub].exprstr[0] = '\0';
+		evalr[sub].seg = SSG_UNDEF;
+	}
 }

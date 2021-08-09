@@ -51,7 +51,7 @@ Opcode	Syntax	Selection Criteria
 .sp
 .TH
 .sp
-ABX	 
+ABX
 .sp
 ADCA	 '#' expr
 ADCA	 expr	DIRECT
@@ -94,17 +94,17 @@ ASL	 expr	DIRECT
 ASL	 expr	EXTENDED
 ASL	 indexed
 .sp
-ASLA	 
+ASLA
 .sp
-ASLB	 
+ASLB
 .sp
 ASR	 expr	DIRECT
 ASR	 expr	EXTENDED
 ASR	 indexed
 .sp
-ASRA	 
+ASRA
 .sp
-ASRB	 
+ASRB
 .sp
 BCC	 expr
 .sp
@@ -158,9 +158,9 @@ CLR	 expr	DIRECT
 CLR	 expr	EXTENDED
 CLR	 indexed
 .sp
-CLRA	 
+CLRA
 .sp
-CLRB	 
+CLRB
 .sp
 CMPA	 '#' expr
 CMPA	 expr	DIRECT
@@ -201,21 +201,21 @@ COM	 expr	DIRECT
 COM	 expr	EXTENDED
 COM	 indexed
 .sp
-COMA	 
+COMA
 .sp
-COMB	 
+COMB
 .sp
 CWAI	 '#' expr
 .sp
-DAA	 
+DAA
 .sp
 DEC	 expr	DIRECT
 DEC	 expr	EXTENDED
 DEC	 indexed
 .sp
-DECA	 
+DECA
 .sp
-DECB	 
+DECB
 .sp
 EORA	 '#' expr
 EORA	 expr	DIRECT
@@ -233,9 +233,9 @@ INC	 expr	DIRECT
 INC	 expr	EXTENDED
 INC	 indexed
 .sp
-INCA	 
+INCA
 .sp
-INCB	 
+INCB
 .sp
 JMP	 expr	DIRECT
 JMP	 expr	EXTENDED
@@ -330,29 +330,29 @@ LSL	 expr	DIRECT
 LSL	 expr	EXTENDED
 LSL	 indexed
 .sp
-LSLA	 
+LSLA
 .sp
-LSLB	 
+LSLB
 .sp
 LSR	 expr	DIRECT
 LSR	 expr	EXTENDED
 LSR	 indexed
 .sp
-LSRA	 
+LSRA
 .sp
-LSRB	 
+LSRB
 .sp
-MUL	 
+MUL
 .sp
 NEG	 expr	DIRECT
 NEG	 expr	EXTENDED
 NEG	 indexed
 .sp
-NEGA	 
+NEGA
 .sp
-NEGB	 
+NEGB
 .sp
-NOP	 
+NOP
 .sp
 ORA	 '#' expr
 ORA	 expr	DIRECT
@@ -378,21 +378,21 @@ ROL	 expr	DIRECT
 ROL	 expr	EXTENDED
 ROL	 indexed
 .sp
-ROLA	 
+ROLA
 .sp
-ROLB	 
+ROLB
 .sp
 ROR	 expr	DIRECT
 ROR	 expr	EXTENDED
 ROR	 indexed
 .sp
-RORA	 
+RORA
 .sp
-RORB	 
+RORB
 .sp
-RTI	 
+RTI
 .sp
-RTS	 
+RTS
 .sp
 SBCA	 '#' expr
 SBCA	 expr	DIRECT
@@ -404,7 +404,7 @@ SBCB	 expr	DIRECT
 SBCB	 expr	EXTENDED
 SBCB	 indexed
 .sp
-SEX	 
+SEX
 .sp
 STA	 expr	DIRECT
 STA	 expr	EXTENDED
@@ -449,13 +449,13 @@ SUBD	 expr	DIRECT
 SUBD	 expr	EXTENDED
 SUBD	 indexed
 .sp
-SWI2	 
+SWI2
 .sp
-SWI3	 
+SWI3
 .sp
-SWI	 
+SWI
 .sp
-SYNC	 
+SYNC
 .sp
 TFR	 register ',' register
 .sp
@@ -463,9 +463,9 @@ TST	 expr	DIRECT
 TST	 expr	EXTENDED
 TST	 indexed
 .sp
-TSTA	 
+TSTA
 .sp
-TSTB	 
+TSTB
 .TE
 .H 3 "Operand Types"
 .H 4 "register list"
@@ -498,17 +498,17 @@ The indexed mode operands are in the forms.
 .LI "[ expr ]"
 .LE
 .P
-Index can be any of X, Y, S, U (or their lower case equivalents). 
+Index can be any of X, Y, S, U (or their lower case equivalents).
 Accumulator can be any of A, B, D (or their lower case equivalents).
 .P
 The short offset forms will only be used if the expression in the operand
 has a value defined at the first pass, and the value is small enough to fit.
-Expressions that have an as yet undefined value will use the 16 bit offset 
+Expressions that have an as yet undefined value will use the 16 bit offset
 form.
 .H 3 "Selection Criteria Keywords"
-.VL 25 5 
+.VL 25 5
 .LI DIRECT
-The instruction can use the direct addressing mode.  
+The instruction can use the direct addressing mode.
 The expression must have a value between 0 and 255 that is defined when the
 instruction is processed in the input pass.
 .LI EXTENDED

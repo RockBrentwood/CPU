@@ -1125,9 +1125,6 @@ cpumatch(str)
 */
 
 #define NUMOPCODE 102
-#define NUMSYNBLK 105
-#define NUMDIFFOP 128
-
 int gnumopcode = NUMOPCODE;
 
 int ophashlnk[NUMOPCODE];
@@ -1238,6 +1235,7 @@ struct opsym optab[NUMOPCODE+1]
 	{"ZBSR", KOC_opcode, 2, 103 },
 	{ "", 0, 0, 0 }};
 
+#define NUMSYNBLK 105
 struct opsynt ostab[NUMSYNBLK+1]
 	= {
 /* invalid 0 */ { 0, 1, 0 },
@@ -1347,6 +1345,7 @@ struct opsynt ostab[NUMSYNBLK+1]
 /* ZBSR 104 */ { ST_INDIR, 1, 127 },
 	{ 0, 0, 0 } };
 
+#define NUMDIFFOP 128
 struct igel igtab[NUMDIFFOP+1]
 	= {
 /* invalid 0 */   { 0 , 0,

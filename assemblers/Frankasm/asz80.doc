@@ -47,7 +47,7 @@ CHARUSE
 .DS I N
 CPU string
 .DE
-The instruction set can be specified in the source file with the CPU 
+The instruction set can be specified in the source file with the CPU
 pseudooperation.
 The string, delimited by quotes or apostrophes, is scanned for a
 substring which selects which instruction set is used.
@@ -56,7 +56,7 @@ the program, then the -p optional arguement, if any, and then any CPU
 statements.
 The last one selects the which subset of the instructions the assembler will
 accept.
-The instruction set can be changed at any place in the source file. 
+The instruction set can be changed at any place in the source file.
 .VL 30 5 1
 .LI "Instruction Set"
 Substrings
@@ -107,11 +107,11 @@ ADD	 reg8 ',' index 	TSZ80PLUS|DRIY|REGISA
 ADD	 reg8 ',' reg8 	0|REGISA
 ADD	 reg8 ',' topexpr 	REGISA
 .sp
-AND	 '(' DREGHL ')' 
+AND	 '(' DREGHL ')'
 AND	 index 	TSZ80PLUS|DRIX
 AND	 index 	TSZ80PLUS|DRIY
-AND	 reg8 
-AND	 topexpr 
+AND	 reg8
+AND	 topexpr
 .sp
 BIT	 expr ',' '(' DREGHL ')' 	TSZ80PLUS
 BIT	 expr ',' index 	TSZ80PLUS|DRIX
@@ -126,15 +126,15 @@ CALL	 condition ',' expr 	CCSELP
 CALL	 condition ',' expr 	CCSELPE
 CALL	 condition ',' expr 	CCSELPO
 CALL	 condition ',' expr 	CCSELZ
-CALL	 expr 
+CALL	 expr
 .sp
-CCF	
+CCF
 .sp
-CP	 '(' DREGHL ')' 
+CP	 '(' DREGHL ')'
 CP	 index 	TSZ80PLUS|DRIX
 CP	 index 	TSZ80PLUS|DRIY
-CP	 reg8 
-CP	 topexpr 
+CP	 reg8
+CP	 topexpr
 .sp
 CPD		TSZ80PLUS
 .sp
@@ -144,11 +144,11 @@ CPI		TSZ80PLUS
 .sp
 CPIR		TSZ80PLUS
 .sp
-CPL	
+CPL
 .sp
-DAA	
+DAA
 .sp
-DEC	 '(' DREGHL ')' 
+DEC	 '(' DREGHL ')'
 DEC	 dreg 	DRBC
 DEC	 dreg 	DRDE
 DEC	 dreg 	DRHL
@@ -157,13 +157,13 @@ DEC	 dreg 	TSZ80PLUS|DRIX
 DEC	 dreg 	TSZ80PLUS|DRIY
 DEC	 index 	TSZ80PLUS|DRIX
 DEC	 index 	TSZ80PLUS|DRIY
-DEC	 reg8 
+DEC	 reg8
 .sp
-DI	
+DI
 .sp
-DJNZ	 topexpr 
+DJNZ	 topexpr
 .sp
-EI	
+EI
 .sp
 EX	 '(' DREGSP ')' ',' dreg 	DRHL
 EX	 '(' DREGSP ')' ',' dreg 	TSZ80PLUS|DRIX
@@ -173,7 +173,7 @@ EX	 dreg ',' dreg 	TSZ80PLUS|EX1AF|EX2AF
 .sp
 EXX		TSZ80PLUS
 .sp
-HALT	
+HALT
 .sp
 IM	 expr 	TSZ80PLUS|INTSETMODE0
 IM	 expr 	TSZ80PLUS|INTSETMODE1
@@ -184,7 +184,7 @@ IN0	 reg8 ',' '(' topexpr ')' 	TS64180
 IN	 reg8 ',' '(' REGC ')' 	TSZ80PLUS
 IN	 reg8 ',' '(' topexpr ')' 	REGISA
 .sp
-INC	 '(' DREGHL ')' 
+INC	 '(' DREGHL ')'
 INC	 dreg 	DRBC
 INC	 dreg 	DRDE
 INC	 dreg 	DRHL
@@ -193,7 +193,7 @@ INC	 dreg 	TSZ80PLUS|DRIX
 INC	 dreg 	TSZ80PLUS|DRIY
 INC	 index 	TSZ80PLUS|DRIX
 INC	 index 	TSZ80PLUS|DRIY
-INC	 reg8 
+INC	 reg8
 .sp
 IND		TSZ80PLUS
 .sp
@@ -214,7 +214,7 @@ JP	 condition ',' expr 	CCSELP
 JP	 condition ',' expr 	CCSELPE
 JP	 condition ',' expr 	CCSELPO
 JP	 condition ',' expr 	CCSELZ
-JP	 expr 
+JP	 expr
 .sp
 JR	 condition ',' expr 	CCSELC|TSZ80PLUS
 JR	 condition ',' expr 	CCSELNC|TSZ80PLUS
@@ -226,7 +226,7 @@ LD	 '(' dreg ')' ',' reg8 	DRBC|REGISA
 LD	 '(' dreg ')' ',' reg8 	DRDE|REGISA
 LD	 '(' dreg ')' ',' reg8 	DRHL
 LD	 '(' dreg ')' ',' topexpr 	DRHL
-LD	 '(' topexpr ')' ',' REGA 
+LD	 '(' topexpr ')' ',' REGA
 LD	 '(' topexpr ')' ',' dreg 	DRHL
 LD	 '(' topexpr ')' ',' dreg 	TSZ80PLUS|DRBC
 LD	 '(' topexpr ')' ',' dreg 	TSZ80PLUS|DRDE
@@ -258,10 +258,10 @@ LD	 reg8 ',' '(' dreg ')' 	DRHL
 LD	 reg8 ',' '(' topexpr ')' 	REGISA
 LD	 reg8 ',' index 	TSZ80PLUS|DRIX
 LD	 reg8 ',' index 	TSZ80PLUS|DRIY
-LD	 reg8 ',' reg8 
+LD	 reg8 ',' reg8
 LD	 reg8 ',' specialr 	TSZ80PLUS|SPECIALIR|REGISA
 LD	 reg8 ',' specialr 	TSZ80PLUS|SPECIALRR|REGISA
-LD	 reg8 ',' topexpr 
+LD	 reg8 ',' topexpr
 LD	 specialr ',' REGA 	TSZ80PLUS|SPECIALIR
 LD	 specialr ',' REGA 	TSZ80PLUS|SPECIALRR
 .sp
@@ -280,13 +280,13 @@ MULT	 dreg 	TS64180|DRSP
 .sp
 NEG		TSZ80PLUS
 .sp
-NOP	
+NOP
 .sp
-OR	 '(' DREGHL ')' 
+OR	 '(' DREGHL ')'
 OR	 index 	TSZ80PLUS|DRIX
 OR	 index 	TSZ80PLUS|DRIY
-OR	 reg8 
-OR	 topexpr 
+OR	 reg8
+OR	 topexpr
 .sp
 OTDM		TS64180
 .sp
@@ -328,7 +328,7 @@ RES	 expr ',' index 	TSZ80PLUS|DRIX
 RES	 expr ',' index 	TSZ80PLUS|DRIY
 RES	 expr ',' reg8 	TSZ80PLUS
 .sp
-RET	 
+RET
 RET	 condition  	CCSELC
 RET	 condition  	CCSELM
 RET	 condition  	CCSELNC
@@ -349,14 +349,14 @@ RL	 index 	TSZ80PLUS|DRIX
 RL	 index 	TSZ80PLUS|DRIY
 RL	 reg8 	TSZ80PLUS
 .sp
-RLA	
+RLA
 .sp
 RLC	 '(' DREGHL ')' 	TSZ80PLUS
 RLC	 index 	TSZ80PLUS|DRIX
 RLC	 index 	TSZ80PLUS|DRIY
 RLC	 reg8 	TSZ80PLUS
 .sp
-RLCA	
+RLCA
 .sp
 RLD		TSZ80PLUS
 .sp
@@ -365,18 +365,18 @@ RR	 index 	TSZ80PLUS|DRIX
 RR	 index 	TSZ80PLUS|DRIY
 RR	 reg8 	TSZ80PLUS
 .sp
-RRA	
+RRA
 .sp
 RRC	 '(' DREGHL ')' 	TSZ80PLUS
 RRC	 index 	TSZ80PLUS|DRIX
 RRC	 index 	TSZ80PLUS|DRIY
 RRC	 reg8 	TSZ80PLUS
 .sp
-RRCA	
+RRCA
 .sp
 RRD		TSZ80PLUS
 .sp
-RST	 expr 
+RST	 expr
 .sp
 SBC	 dreg ',' dreg 	TSZ80PLUS|DRDESTHL|DRBC
 SBC	 dreg ',' dreg 	TSZ80PLUS|DRDESTHL|DRDE
@@ -388,7 +388,7 @@ SBC	 reg8 ',' index 	TSZ80PLUS|DRIY|REGISA
 SBC	 reg8 ',' reg8 	0|REGISA
 SBC	 reg8 ',' topexpr 	REGISA
 .sp
-SCF	
+SCF
 .sp
 SET	 expr ',' '(' DREGHL ')' 	TSZ80PLUS
 SET	 expr ',' index 	TSZ80PLUS|DRIX
@@ -414,11 +414,11 @@ SRL	 index 	TSZ80PLUS|DRIX
 SRL	 index 	TSZ80PLUS|DRIY
 SRL	 reg8 	TSZ80PLUS
 .sp
-SUB	 '(' DREGHL ')' 
+SUB	 '(' DREGHL ')'
 SUB	 index 	TSZ80PLUS|DRIX
 SUB	 index 	TSZ80PLUS|DRIY
-SUB	 reg8 
-SUB	 topexpr 
+SUB	 reg8
+SUB	 topexpr
 .sp
 TST	 '(' DREGHL ')' 	TS64180
 TST	 reg8 	TS64180
@@ -426,14 +426,14 @@ TST	 topexpr 	TS64180
 .sp
 TSTIO	 topexpr 	TS64180
 .sp
-XOR	 '(' DREGHL ')' 
+XOR	 '(' DREGHL ')'
 XOR	 index 	TSZ80PLUS|DRIX
 XOR	 index 	TSZ80PLUS|DRIY
-XOR	 reg8 
-XOR	 topexpr 
+XOR	 reg8
+XOR	 topexpr
 .TE
 .H 3 "Selection Criteria Keywords"
-.VL 25 5 
+.VL 25 5
 .LI CPU8085
 Instruction is only implemented for the 8085.
 .LI TSZ80PLUS
@@ -461,13 +461,13 @@ Pointer as the destination.
 Instruction which refers to two double register operands, uses the HL double
 register as the destination.
 .LI DRDESTIX
-Instruction which refers to two double register operands, uses the IX index 
+Instruction which refers to two double register operands, uses the IX index
 register as the destination.
 .LI DRDESTIY
 Instruction which refers to two double register operands, uses the IY index
 register as the destination.
 .LI REGISA
-Instruction is restricted to using the A register for an 8 bit register 
+Instruction is restricted to using the A register for an 8 bit register
 operand.
 .LI CCSELNZ
 Instruction uses NonZero condition.
@@ -503,17 +503,17 @@ The apostrophes in the syntax field are a notation used for the
 parser generator and are not put in the assembler source statement.
 .H 2 "Notes"
 .H 3 "Conditions"
-Conditions are represented by the reserved symbols z, nz, nc, pe, po, p, m, 
+Conditions are represented by the reserved symbols z, nz, nc, pe, po, p, m,
 and c, and their uppercase versions.
 .H 3 "Indexed Addressing"
 Index addressing uses the format "( index register + expression )" where
 index register is IX or IY.
 .H 3 "Top Expressions"
 The syntax of some of the instructions combined with the standard expression
-syntax resulted in confusion whether an operand was an expression surrounded 
-by parenthesis, or a memory reference.  
+syntax resulted in confusion whether an operand was an expression surrounded
+by parenthesis, or a memory reference.
 To get around this, the expressions in these ambiguous cases were restricted
-to those forms of expression that don't have surrounding parenthesis at the 
+to those forms of expression that don't have surrounding parenthesis at the
 top level.
 Subexpressions may be parenthesized, but only if an operator seperates or
 precedes the subexpression.
@@ -528,7 +528,7 @@ ld a, ((47h))	; error
 Double registers (dreg) are the set of symbols af, bc, de, hl, ix, iy, and sp
 and their uppercase versions.
 .P
-Eight bit registers (reg8) are the set of symbols a, b, c, d, e, h, l, and 
+Eight bit registers (reg8) are the set of symbols a, b, c, d, e, h, l, and
 their uppercase versions.
 .P
 Special registers are i, r, I, R.

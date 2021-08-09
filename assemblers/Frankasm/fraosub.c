@@ -5,8 +5,6 @@
 #include "frasmdat.h"
 #include "fragcon.h"
 
-#define OUTRESULTLEN 256
-#define NUMHEXPERL 16
 #define SOURCEOFFSET 24
 #define NUMHEXSOURCE 6
 
@@ -14,6 +12,7 @@ int linenumber = 0;
 char lineLbuff[INBUFFSZ];
 int lineLflag = FALSE;
 
+#define OUTRESULTLEN 256
 static unsigned char	outresult[OUTRESULTLEN];
 static int	nextresult;
 static long 	genlocctr, resultloc;
@@ -107,142 +106,158 @@ static long dgethex()
 	return rv;
 }
 
-
-outphase()
+flushsourceline()
 /*
-	description	process all the lines in the intermediate file
-	globals		the input line
-			the output expression pointer
-			line number
-			file name
-			the binary output array and counts
+	description	flush listing line buffer before an error for
+			that line is printed
 */
 {
-	int firstchar;
-
-	for(;;)
+	if(listflag && lineLflag)
 	{
-		if((firstchar = fgetc(intermedf)) == EOF)
-			break;
+		fputs("\t\t\t", loutf);
+		fputs(&lineLbuff[2], loutf);
+		lineLflag = FALSE;
+	}
+}
 
-		if(firstchar == 'L')
+frp2undef(symp)
+	struct symel * symp;
+/*
+	description	second pass - print undefined symbol error message on
+			the output listing device.  If the the listing flag
+			is false, the output device is the standard output, and
+			the message format is different.
+	parameters	a pointer to a symbol table element
+	globals		the count of errors
+*/
+{
+	if(listflag)
+	{
+		flushsourceline();
+		fprintf(loutf," ERROR -  undefined symbol %s\n", symp ->symstr);
+	}
+	else
+		fprintf(loutf, "%s - line %d - ERROR - undefined symbol  %s\n",
+			currentfnm, linenumber, symp -> symstr);
+	errorcnt++;
+}
+
+frp2warn(str)
+	char * str;
+/*
+	description	second pass - print a warning message on the listing
+			file, varying the format for console messages.
+	parameters	the message
+	globals		the count of warnings
+*/
+{
+	if(listflag)
+	{
+		flushsourceline();
+		fprintf(loutf, " WARNING - %s\n", str);
+	}
+	else
+		fprintf(loutf, "%s - line %d - WARNING - %s\n",
+			currentfnm, linenumber, str);
+	warncnt++;
+}
+
+
+frp2error(str)
+	char * str;
+/*
+	description	second pass - print a message on the listing file
+	parameters	message
+	globals		count of errors
+*/
+{
+	if(listflag)
+	{
+		flushsourceline();
+		fprintf(loutf, " ERROR - %s\n", str);
+	}
+	else
+		fprintf(loutf, "%s - line %d - ERROR - %s\n",
+			currentfnm, linenumber, str);
+	errorcnt++;
+}
+
+#define NUMHEXPERL 16
+static long lhaddr, lhnextaddr;
+static int lhnew, lhnext = 0;
+static unsigned char listbuffhex[NUMHEXPERL];
+
+listouthex()
+/*
+	description	print a line of hexidecimal on the listing
+	globals		the hex listing buffer
+*/
+{
+	register int cn;
+	register int tc;
+
+	if(lhnext > 0)
+	{
+		fputc(hexch((int)lhaddr>>12), loutf);
+		fputc(hexch((int)lhaddr>>8), loutf);
+		fputc(hexch((int)lhaddr>>4), loutf);
+		fputc(hexch((int)lhaddr), loutf);
+		fputc(' ', loutf);
+
+		for(cn = 0; cn < lhnext; cn++)
 		{
-			if(listflag)
-				flushlisthex();
+			fputc(hexch((int)(tc = listbuffhex[cn])>>4), loutf);
+			fputc(hexch(tc), loutf);
+			fputc(' ', loutf);
+		}
 
-			if( fgets(&lineLbuff[1], INBUFFSZ-1, intermedf)
-			 == (char *)NULL)
+		if( ! lineLflag)
+			fputc('\n', loutf);
+	}
+
+	if(lineLflag)
+	{
+		if(lineLbuff[2] != '\n')
+		{
+			switch(lhnext)
 			{
-		frp2error( "error or premature end of intermediate file");
+			case 0:
+				fputs("\t\t\t",loutf);
+				break;
+			case 1:
+			case 2:
+			case 3:
+				fputs("\t\t",loutf);
+				break;
+			case 4:
+			case 5:
+			case 6:
+				fputs("\t",loutf);
+			default:
 				break;
 			}
 
-			lineLflag = TRUE;
+			fputs(&lineLbuff[2], loutf);
+			lineLflag = FALSE;
 		}
 		else
 		{
-			finbuff[0] = firstchar;
-			if(fgets( &finbuff[1], INBUFFSZ-1, intermedf)
-			 == (char *)NULL)
-			{
-		frp2error("error or premature end of intermediate file");
-				break;
-			}
-		}
-
-		switch(firstchar)
-		{
-		case 'E': /* error */
-			if(listflag)
-			{
-				flushsourceline();
-				fputs(&finbuff[2], loutf);
-			}
-			else
-			{
-				fprintf(loutf, "%s - line %d - %s",
-					currentfnm, linenumber, &finbuff[2]);
-			}
-			break;
-
-		case 'L': /* listing */
-			linenumber++;
-			break;
-
-		case 'C': /* comment / uncounted listing */
-			if(listflag)
-			{
-				char *stuff = strchr(finbuff, '\n');
-
-				if(stuff != NULL)
-					*stuff = '\0';
-
-				fprintf(loutf,"%-*.*s",
-				 SOURCEOFFSET, SOURCEOFFSET, &finbuff[2]);
-				if(lineLflag)
-				{
-					fputs(&lineLbuff[2], loutf);
-					lineLflag = FALSE;
-				}
-				else
-				{
-					fputc('\n', loutf);
-				}
-			}
-			break;
-
-		case 'P': /* location set */
-			oeptr = &finbuff[2];
-			currseg = dgethex();
-			oeptr++;
-			genlocctr = locctr = dgethex();
-			break;
-
-		case 'D': /* data */
-			oeptr = &finbuff[2];
-			nextresult = 0;
-			resultloc = genlocctr;
-			outeval();
-			if(hexflag)
-				outhexblock();
-			if(listflag)
-				listhex();
-			break;
-
-		case 'F': /* file start */
-			{
-				char *tp;
-				if( (tp = strchr(finbuff,'\n')) != (char *)NULL)
-					*tp = '\0';
-				strncpy(currentfnm, &finbuff[2], 100);
-				currentfnm[99] = '\0';
-			}
-			lnumstk[currfstk++] = linenumber;
-			linenumber = 0;
-			break;
-
-		case 'X': /* file resume */
-			{
-				char *tp;
-				if( (tp = strchr(finbuff,'\n')) != (char *)NULL)
-					*tp = '\0';
-				strncpy(currentfnm, &finbuff[2], 100);
-				currentfnm[99] = '\0';
-			}
-			linenumber = lnumstk[--currfstk];
-			break;
-
-		default:
-			frp2error("unknown intermediate file command");
-			break;
+			fputc('\n', loutf);
 		}
 	}
 
-	if(hexflag)
-		flushhex();
+	lhnext = 0;
+}
 
-	if(listflag)
-		flushlisthex();
+flushlisthex()
+/*
+	description	output the residue of the hexidecimal values for
+			the previous assembler statement.
+	globals		the new hex list flag
+*/
+{
+	listouthex();
+	lhnew = TRUE;
 }
 
 outeval()
@@ -485,171 +500,11 @@ outeval()
 	}
 }
 
-static long lhaddr, lhnextaddr;
-static int lhnew, lhnext = 0;
-static unsigned char listbuffhex[NUMHEXPERL];
-
-flushlisthex()
-/*
-	description	output the residue of the hexidecimal values for
-			the previous assembler statement.
-	globals		the new hex list flag
-*/
-{
-	listouthex();
-	lhnew = TRUE;
-}
-
-listhex()
-/*
-	description	buffer the output result to block the hexidecimal
-			listing on the output file to NUMHEXPERL bytes per
-			listing line.
-	globals		The output result array and count
-			the hex line buffer and counts
-*/
-{
-	register int cht;
-	register long inhaddr = resultloc;
-
-	if(lhnew)
-	{
-		lhaddr = lhnextaddr = resultloc;
-		lhnew = FALSE;
-	}
-
-	for(cht = 0; cht < nextresult; cht++)
-	{
-		if(lhnextaddr != inhaddr
-		 || lhnext >= (lineLflag ? NUMHEXSOURCE : NUMHEXPERL ) )
-		{
-			listouthex();
-			lhaddr = lhnextaddr = inhaddr;
-		}
-		listbuffhex[lhnext++] = outresult[cht];
-		lhnextaddr ++;
-		inhaddr ++;
-	}
-}
-
-listouthex()
-/*
-	description	print a line of hexidecimal on the listing
-	globals		the hex listing buffer
-*/
-{
-	register int cn;
-	register int tc;
-
-	if(lhnext > 0)
-	{
-		fputc(hexch((int)lhaddr>>12), loutf);
-		fputc(hexch((int)lhaddr>>8), loutf);
-		fputc(hexch((int)lhaddr>>4), loutf);
-		fputc(hexch((int)lhaddr), loutf);
-		fputc(' ', loutf);
-
-		for(cn = 0; cn < lhnext; cn++)
-		{
-			fputc(hexch((int)(tc = listbuffhex[cn])>>4), loutf);
-			fputc(hexch(tc), loutf);
-			fputc(' ', loutf);
-		}
-
-		if( ! lineLflag)
-			fputc('\n', loutf);
-	}
-
-	if(lineLflag)
-	{
-		if(lineLbuff[2] != '\n')
-		{
-			switch(lhnext)
-			{
-			case 0:
-				fputs("\t\t\t",loutf);
-				break;
-			case 1:
-			case 2:
-			case 3:
-				fputs("\t\t",loutf);
-				break;
-			case 4:
-			case 5:
-			case 6:
-				fputs("\t",loutf);
-			default:
-				break;
-			}
-
-			fputs(&lineLbuff[2], loutf);
-			lineLflag = FALSE;
-		}
-		else
-		{
-			fputc('\n', loutf);
-		}
-	}
-
-	lhnext = 0;
-}
-
 #define INTELLEN 32
 
 static long nextoutaddr, blockaddr;
 static int hnextsub;
 static char hlinebuff[INTELLEN];
-
-
-outhexblock()
-/*
-	description	buffer the output result to group adjacent output
-			data into longer lines.
-	globals		the output result array
-			the intel hex line buffer
-*/
-{
-	long inbuffaddr = resultloc;
-	static int first = TRUE;
-
-	int loopc;
-
-	if(first)
-	{
-		nextoutaddr = blockaddr = resultloc;
-		hnextsub = 0;
-		first = FALSE;
-	}
-
-	for(loopc = 0; loopc < nextresult; loopc++)
-	{
-		if(nextoutaddr != inbuffaddr || hnextsub >= INTELLEN)
-		{
-			intelout(0, blockaddr, hnextsub, hlinebuff);
-			blockaddr = nextoutaddr = inbuffaddr;
-			hnextsub = 0;
-		}
-		hlinebuff[hnextsub++] = outresult[loopc];
-		nextoutaddr++;
-		inbuffaddr++;
-	}
-}
-
-flushhex()
-/*
-	description	flush the intel hex line buffer at the end of
-			the second pass
-	globals		the intel hex line buffer
-*/
-{
-	if(hnextsub > 0)
-		intelout(0, blockaddr, hnextsub, hlinebuff);
-	if(endsymbol != SYMNULL && endsymbol -> seg > 0)
-		intelout(1, endsymbol -> value, 0, "");
-	else
-		intelout(1, 0L, 0, "");
-
-}
 
 
 intelout(type, addr, count, data)
@@ -692,78 +547,222 @@ intelout(type, addr, count, data)
 }
 
 
-frp2undef(symp)
-	struct symel * symp;
+outhexblock()
 /*
-	description	second pass - print undefined symbol error message on
-			the output listing device.  If the the listing flag
-			is false, the output device is the standard output, and
-			the message format is different.
-	parameters	a pointer to a symbol table element
-	globals		the count of errors
+	description	buffer the output result to group adjacent output
+			data into longer lines.
+	globals		the output result array
+			the intel hex line buffer
 */
 {
-	if(listflag)
-	{
-		flushsourceline();
-		fprintf(loutf," ERROR -  undefined symbol %s\n", symp ->symstr);
-	}
-	else
-		fprintf(loutf, "%s - line %d - ERROR - undefined symbol  %s\n",
-			currentfnm, linenumber, symp -> symstr);
-	errorcnt++;
-}
+	long inbuffaddr = resultloc;
+	static int first = TRUE;
 
-frp2warn(str)
-	char * str;
-/*
-	description	second pass - print a warning message on the listing
-			file, varying the format for console messages.
-	parameters	the message
-	globals		the count of warnings
-*/
-{
-	if(listflag)
+	int loopc;
+
+	if(first)
 	{
-		flushsourceline();
-		fprintf(loutf, " WARNING - %s\n", str);
+		nextoutaddr = blockaddr = resultloc;
+		hnextsub = 0;
+		first = FALSE;
 	}
-	else
-		fprintf(loutf, "%s - line %d - WARNING - %s\n",
-			currentfnm, linenumber, str);
-	warncnt++;
+
+	for(loopc = 0; loopc < nextresult; loopc++)
+	{
+		if(nextoutaddr != inbuffaddr || hnextsub >= INTELLEN)
+		{
+			intelout(0, blockaddr, hnextsub, hlinebuff);
+			blockaddr = nextoutaddr = inbuffaddr;
+			hnextsub = 0;
+		}
+		hlinebuff[hnextsub++] = outresult[loopc];
+		nextoutaddr++;
+		inbuffaddr++;
+	}
 }
 
 
-frp2error(str)
-	char * str;
+listhex()
 /*
-	description	second pass - print a message on the listing file
-	parameters	message
-	globals		count of errors
+	description	buffer the output result to block the hexidecimal
+			listing on the output file to NUMHEXPERL bytes per
+			listing line.
+	globals		The output result array and count
+			the hex line buffer and counts
 */
 {
-	if(listflag)
+	register int cht;
+	register long inhaddr = resultloc;
+
+	if(lhnew)
 	{
-		flushsourceline();
-		fprintf(loutf, " ERROR - %s\n", str);
+		lhaddr = lhnextaddr = resultloc;
+		lhnew = FALSE;
 	}
-	else
-		fprintf(loutf, "%s - line %d - ERROR - %s\n",
-			currentfnm, linenumber, str);
-	errorcnt++;
+
+	for(cht = 0; cht < nextresult; cht++)
+	{
+		if(lhnextaddr != inhaddr
+		 || lhnext >= (lineLflag ? NUMHEXSOURCE : NUMHEXPERL ) )
+		{
+			listouthex();
+			lhaddr = lhnextaddr = inhaddr;
+		}
+		listbuffhex[lhnext++] = outresult[cht];
+		lhnextaddr ++;
+		inhaddr ++;
+	}
 }
 
-flushsourceline()
+flushhex()
 /*
-	description	flush listing line buffer before an error for
-			that line is printed
+	description	flush the intel hex line buffer at the end of
+			the second pass
+	globals		the intel hex line buffer
 */
 {
-	if(listflag && lineLflag)
+	if(hnextsub > 0)
+		intelout(0, blockaddr, hnextsub, hlinebuff);
+	if(endsymbol != SYMNULL && endsymbol -> seg > 0)
+		intelout(1, endsymbol -> value, 0, "");
+	else
+		intelout(1, 0L, 0, "");
+
+}
+
+outphase()
+/*
+	description	process all the lines in the intermediate file
+	globals		the input line
+			the output expression pointer
+			line number
+			file name
+			the binary output array and counts
+*/
+{
+	int firstchar;
+
+	for(;;)
 	{
-		fputs("\t\t\t", loutf);
-		fputs(&lineLbuff[2], loutf);
-		lineLflag = FALSE;
+		if((firstchar = fgetc(intermedf)) == EOF)
+			break;
+
+		if(firstchar == 'L')
+		{
+			if(listflag)
+				flushlisthex();
+
+			if( fgets(&lineLbuff[1], INBUFFSZ-1, intermedf)
+			 == (char *)NULL)
+			{
+		frp2error( "error or premature end of intermediate file");
+				break;
+			}
+
+			lineLflag = TRUE;
+		}
+		else
+		{
+			finbuff[0] = firstchar;
+			if(fgets( &finbuff[1], INBUFFSZ-1, intermedf)
+			 == (char *)NULL)
+			{
+		frp2error("error or premature end of intermediate file");
+				break;
+			}
+		}
+
+		switch(firstchar)
+		{
+		case 'E': /* error */
+			if(listflag)
+			{
+				flushsourceline();
+				fputs(&finbuff[2], loutf);
+			}
+			else
+			{
+				fprintf(loutf, "%s - line %d - %s",
+					currentfnm, linenumber, &finbuff[2]);
+			}
+			break;
+
+		case 'L': /* listing */
+			linenumber++;
+			break;
+
+		case 'C': /* comment / uncounted listing */
+			if(listflag)
+			{
+				char *stuff = strchr(finbuff, '\n');
+
+				if(stuff != NULL)
+					*stuff = '\0';
+
+				fprintf(loutf,"%-*.*s",
+				 SOURCEOFFSET, SOURCEOFFSET, &finbuff[2]);
+				if(lineLflag)
+				{
+					fputs(&lineLbuff[2], loutf);
+					lineLflag = FALSE;
+				}
+				else
+				{
+					fputc('\n', loutf);
+				}
+			}
+			break;
+
+		case 'P': /* location set */
+			oeptr = &finbuff[2];
+			currseg = dgethex();
+			oeptr++;
+			genlocctr = locctr = dgethex();
+			break;
+
+		case 'D': /* data */
+			oeptr = &finbuff[2];
+			nextresult = 0;
+			resultloc = genlocctr;
+			outeval();
+			if(hexflag)
+				outhexblock();
+			if(listflag)
+				listhex();
+			break;
+
+		case 'F': /* file start */
+			{
+				char *tp;
+				if( (tp = strchr(finbuff,'\n')) != (char *)NULL)
+					*tp = '\0';
+				strncpy(currentfnm, &finbuff[2], 100);
+				currentfnm[99] = '\0';
+			}
+			lnumstk[currfstk++] = linenumber;
+			linenumber = 0;
+			break;
+
+		case 'X': /* file resume */
+			{
+				char *tp;
+				if( (tp = strchr(finbuff,'\n')) != (char *)NULL)
+					*tp = '\0';
+				strncpy(currentfnm, &finbuff[2], 100);
+				currentfnm[99] = '\0';
+			}
+			linenumber = lnumstk[--currfstk];
+			break;
+
+		default:
+			frp2error("unknown intermediate file command");
+			break;
+		}
 	}
+
+	if(hexflag)
+		flushhex();
+
+	if(listflag)
+		flushlisthex();
 }

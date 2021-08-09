@@ -58,59 +58,59 @@ Opcode	Syntax	Selection Criteria
 .sp
 ACALL	expr
 .sp
-ADD	A ',' '#' expr	
+ADD	A ',' '#' expr
 ADD	A ',' '@' REG	R01
 ADD	A ',' REG	R07
-ADD	A ',' expr	
+ADD	A ',' expr
 .sp
-ADDC	A ',' '#' expr	
+ADDC	A ',' '#' expr
 ADDC	A ',' '@' REG	R01
 ADDC	A ',' REG	R07
-ADDC	A ',' expr	
+ADDC	A ',' expr
 .sp
 AJMP	expr
 .sp
-ANL	A ',' '#' expr	
+ANL	A ',' '#' expr
 ANL	A ',' '@' REG	R01
 ANL	A ',' REG	R07
-ANL	A ',' expr	
-ANL	C ',' '/' bit	
-ANL	C ',' '/' expr	
-ANL	C ',' bit	
-ANL	C ',' expr	
+ANL	A ',' expr
+ANL	C ',' '/' bit
+ANL	C ',' '/' expr
+ANL	C ',' bit
+ANL	C ',' expr
 ANL	expr ',' '#' expr
 ANL	expr ','A
 .sp
-CJNE	A ',' '#' expr ',' expr	
-CJNE	A ',' expr ',' expr	
+CJNE	A ',' '#' expr ',' expr
+CJNE	A ',' expr ',' expr
 CJNE	'@' REG ',' '#' expr ',' expr	R01
 CJNE	REG ',' '#' expr ',' expr	R07
 .sp
-CLR	A	
-CLR	C	
+CLR	A
+CLR	C
 CLR	bit
 CLR	expr
 .sp
-CPL	A	
-CPL	C	
+CPL	A
+CPL	C
 CPL	bit
 CPL	expr
 .sp
-DA	A	
+DA	A
 .sp
 DEC	'@' REG	R01
-DEC	A	
+DEC	A
 DEC	REG	R07
 DEC	expr
 .sp
-DIV	AB	
+DIV	AB
 .sp
 DJNZ	REG ',' expr	R07
 DJNZ	expr ',' expr
 .sp
 INC	'@' REG	R01
-INC	A	
-INC	DPTR	
+INC	A
+INC	DPTR
 INC	REG	R07
 INC	expr
 .sp
@@ -122,7 +122,7 @@ JBC	expr ',' expr
 .sp
 JC	expr
 .sp
-JMP	'@' A '+' DPTR	
+JMP	'@' A '+' DPTR
 .sp
 JNB	bit ',' expr
 JNB	expr ',' expr
@@ -140,91 +140,91 @@ LJMP	expr
 MOV	'@' REG ',' '#' expr	R01
 MOV	'@' REG ',' A	R01
 MOV	'@' REG ',' expr	R01
-MOV	A ',' '#' expr	
+MOV	A ',' '#' expr
 MOV	A ',' '@' REG	R01
 MOV	A ',' REG	R07
-MOV	A ',' expr	
-MOV	C ',' bit	
-MOV	C ',' expr	
-MOV	DPTR ',' '#' expr	
+MOV	A ',' expr
+MOV	C ',' bit
+MOV	C ',' expr
+MOV	DPTR ',' '#' expr
 MOV	REG ',' A	R07
 MOV	REG ',' '#' expr	R07
 MOV	REG ',' expr	R07
-MOV	bit ',' C	
+MOV	bit ',' C
 MOV	expr ',' '#' expr
 MOV	expr ',' '@' REG	R01
-MOV	expr ',' A	
-MOV	expr ',' C	
+MOV	expr ',' A
+MOV	expr ',' C
 MOV	expr ',' REG	R07
 MOV	expr ',' expr
 .sp
-MOVC	A ',' '@' A '+' DPTR	
-MOVC	A ',' '@' A '+' PC	
+MOVC	A ',' '@' A '+' DPTR
+MOVC	A ',' '@' A '+' PC
 .sp
-MOVX	'@' DPTR ',' A	
+MOVX	'@' DPTR ',' A
 MOVX	'@' REG ',' A	R01
-MOVX	A ',' '@' DPTR	
+MOVX	A ',' '@' DPTR
 MOVX	A ',' '@' REG	R01
 .sp
-MUL	AB	
+MUL	AB
 .sp
-NOP	
+NOP
 .sp
-ORL	A ',' '#' expr	
+ORL	A ',' '#' expr
 ORL	A ',' '@' REG	R01
 ORL	A ',' REG	R07
-ORL	A ',' expr	
-ORL	C ',' '/' bit	
-ORL	C ',' '/' expr	
-ORL	C ',' bit	
-ORL	C ',' expr	
+ORL	A ',' expr
+ORL	C ',' '/' bit
+ORL	C ',' '/' expr
+ORL	C ',' bit
+ORL	C ',' expr
 ORL	expr ',' '#' expr
-ORL	expr ',' A	
+ORL	expr ',' A
 .sp
 POP	expr
 .sp
 PUSH	expr
 .sp
-RET	
+RET
 .sp
-RETI	
+RETI
 .sp
-RL	A	
+RL	A
 .sp
-RLC	A	
+RLC	A
 .sp
-RR	A	
+RR	A
 .sp
-RRC	A	
+RRC	A
 .sp
-SETB	C	
+SETB	C
 SETB	bit
 SETB	expr
 .sp
 SJMP	expr
 .sp
-SUBB	A ',' '#' expr	
+SUBB	A ',' '#' expr
 SUBB	A ',' '@' REG	R01
 SUBB	A ',' REG	R07
-SUBB	A ',' expr	
+SUBB	A ',' expr
 .sp
-SWAP	A	
+SWAP	A
 .sp
 XCH	A ',' '@' REG	R01
 XCH	A ',' REG	R07
-XCH	A ',' expr	
+XCH	A ',' expr
 .sp
 XCHD	A ',' '@' REG	R01
 .sp
-XRL	A ',' '#' expr	
+XRL	A ',' '#' expr
 XRL	A ',' '@' REG	R01
 XRL	A ',' REG	R07
-XRL	A ',' expr	
+XRL	A ',' expr
 XRL	expr ',' '#' expr
-XRL	expr ',' A	
+XRL	expr ',' A
 .TE
 .H 3 "Selection Criteria Keywords"
-.VL 25 5 
+.VL 25 5
 .LI R01
 Only the reserved symbols R0 and R1 (or r0, r1) are acceptable as
 the REG operand.
@@ -234,8 +234,8 @@ All the reserved symbols R0 thru R7 are acceptable as the REG operand.
 .H 3 "Bit Operands"
 Bit Addresses can be in two forms.
 .P
-One form is "expression.constant" where expression gives an address for a 
-bit addressable register and constant (in the range of 0 to 7) gives the 
+One form is "expression.constant" where expression gives an address for a
+bit addressable register and constant (in the range of 0 to 7) gives the
 bit number in the byte.
 Expression values must be either in the range of 20h to 2fh, or
 the multiples of 8 between 80h and f8h, and defined in the first pass.
@@ -248,7 +248,7 @@ The apostrophes in the syntax field are a notation used for the
 parser generator and are not put in the assembler source statement.
 .H 2 "Notes"
 .H 3 "Address Spaces"
-The Four address spaces, Program Memory, Internal Data Memory, Bit Numbers, 
+The Four address spaces, Program Memory, Internal Data Memory, Bit Numbers,
 and External Data Memory are not differentiated in the symbol table.
 Which address space a symbol refers to is determined by the context of
 the instruction operands it appears in.
