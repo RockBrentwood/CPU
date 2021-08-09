@@ -20,7 +20,7 @@
 ##	make CPU=6502
 ## Conditional Compilation Flags:
 ##	DOSTMP		use the current directory for temporary intermediate file.
-##	NOGETOPT	define GetOpt() internally, otherwise define it as the library function getopt().
+##	NOGETOPT	use the getopt.h file
 
 ## Utilities:
 RM=rm -f
@@ -45,7 +45,7 @@ W=*
 YACC=yacc
 #YACC=bison
 
-## For Linux, Amiga and DOS cross-compiled on Xenix:
+## For Linux, Amiga and DOS cross-compiled on Xenix and DOS hosts:
 YACCLEXLIB =
 ## For SunOS 4.1, MicroPort, Xenix and V7:
 #YACCLEXLIB = -ly
@@ -57,14 +57,14 @@ LEXNEEDS =
 CC=gcc
 ## The host's native C99 compiler on POSIX-based systems.
 #CC=cc
-## For DOS-hosted implementations:
+## For DOS hosts:
 #CC=tcc
 
 ## For Linux:
 CFLAGS = -g -std=gnu99
 ## For Amiga:
 #CFLAGS = -O2 -Wno-unused #-m68030 -m68881
-## For SunOS 4.1 and V7 (V7's native compiler, "pcc", now supports C99):
+## For SunOS 4.1 and V7 and DOS hosts (V7's native compiler, "pcc", now supports C99):
 CFLAGS =
 ## For MicroPort and Xenix:
 #CFLAGS = -Ml -g
@@ -76,12 +76,12 @@ CFLAGS =
 MAINNEEDS =
 ## For V7:
 #MAINNEEDS = -DNOGETOPT
-## For DOS cross-compiled on Xenix:
+## For DOS cross-compiled on Xenix and DOS hosts:
 #MAINNEEDS = -DNOGETOPT -DDOSTMP
 
 ## For Linux, Amiga, SunOS 4.1, MicroPort and Xenix:
 MAINDEPENDS =
-## For V7 and DOS cross-compiled on Xenix:
+## For V7 and DOS cross-compiled on Xenix and DOS hosts:
 #MAINDEPENDS = getopt.h
 
 all: as$(CPU)

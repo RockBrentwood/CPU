@@ -844,12 +844,12 @@ static void polnumout(unsigned long inv) {
 //	which are propgated along as numeric operators are
 //	evaluated.  Undefined references result in an
 //	undefined result.
-static int pepolcon(int esub) {
+static bool pepolcon(int esub) {
    switch (enode[esub].evs) {
       case PCCASE_UN:
       {
          if (!pepolcon(enode[esub].left))
-            return FALSE;
+            return false;
 
          polout(enode[esub].op);
 
@@ -862,13 +862,13 @@ static int pepolcon(int esub) {
       case PCCASE_BIN:
       {
          if (!pepolcon(enode[esub].left))
-            return FALSE;
+            return false;
 
          polout(IFC_LOAD);
 
          if (estkm1p >= &estk[PESTKDEPTH - 1 - STACKALLOWANCE]) {
             fraerror("expression stack overflow");
-            return FALSE;
+            return false;
          }
 
          (++estkm1p)->v = etop;
@@ -877,7 +877,7 @@ static int pepolcon(int esub) {
          etop = 0;
 
          if (!pepolcon(enode[esub].right))
-            return FALSE;
+            return false;
 
          polout(enode[esub].op);
 
@@ -927,7 +927,7 @@ static int pepolcon(int esub) {
          break;
 
    }
-   return TRUE;
+   return true;
 }
 
 // Evaluate and save the results of an expression tree

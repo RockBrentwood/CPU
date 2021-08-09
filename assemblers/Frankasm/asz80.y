@@ -140,7 +140,7 @@ char ignosel[] = "[Xinvalid operands/illegal instruction for cpu";
 long labelloc;
 static int satsub;
 int ifstkpt = 0;
-int fraifskip = FALSE;
+static bool fraifskip = false;
 
 struct symel *endsymbol = SYMNULL;
 
@@ -316,12 +316,12 @@ line: LABEL KOC_END {
             elseifstk[ifstkpt] = If_Skip;
             endifstk[ifstkpt] = If_Active;
          } else {
-            fraifskip = TRUE;
+            fraifskip = true;
             elseifstk[ifstkpt] = If_Active;
             endifstk[ifstkpt] = If_Active;
          }
       } else {
-         fraifskip = TRUE;
+         fraifskip = true;
          elseifstk[ifstkpt] = If_Active;
          endifstk[ifstkpt] = If_Active;
       }
@@ -347,11 +347,11 @@ line: LABEL KOC_END {
 | KOC_ELSE {
    switch (elseifstk[ifstkpt]) {
       case If_Active:
-         fraifskip = FALSE;
+         fraifskip = false;
          break;
 
       case If_Skip:
-         fraifskip = TRUE;
+         fraifskip = true;
          break;
 
       case If_Err:
@@ -363,12 +363,12 @@ line: LABEL KOC_END {
 | KOC_ENDI {
    switch (endifstk[ifstkpt]) {
       case If_Active:
-         fraifskip = FALSE;
+         fraifskip = false;
          ifstkpt--;
          break;
 
       case If_Skip:
-         fraifskip = TRUE;
+         fraifskip = true;
          ifstkpt--;
          break;
 
@@ -1064,7 +1064,7 @@ int lexintercept(void) {
    int rv;
 
    if (fraifskip) {
-      for (;;) {
+      while (true) {
 
          switch (rv = yylex()) {
             case 0:
@@ -1167,18 +1167,18 @@ void setreserved(void) {
 
 }
 
-static int strcontains(char *s1, char *sm) {
+static bool strcontains(char *s1, char *sm) {
    int l1 = strlen(s1), lm = strlen(sm);
 
    for (; l1 >= lm; l1--, s1++) {
       if (strncmp(s1, sm, lm) == 0) {
-         return TRUE;
+         return true;
       }
    }
-   return FALSE;
+   return false;
 }
 
-int cpumatch(char *str) {
+bool cpumatch(char *str) {
    int msub;
 
    static struct {
@@ -1196,11 +1196,11 @@ int cpumatch(char *str) {
    for (msub = 0; matchtab[msub].cpuv != 0; msub++) {
       if (strcontains(str, matchtab[msub].mtch)) {
          cpuselect = matchtab[msub].cpuv;
-         return TRUE;
+         return true;
       }
    }
 
-   return FALSE;
+   return false;
 }
 
 // Opcode and Instruction generation tables

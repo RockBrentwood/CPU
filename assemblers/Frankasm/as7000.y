@@ -39,7 +39,7 @@ char ignosel[] = "[Xinvalid operands/illegal instruction for cpu";
 long labelloc;
 static int satsub;
 int ifstkpt = 0;
-int fraifskip = FALSE;
+static bool fraifskip = false;
 
 struct symel *endsymbol = SYMNULL;
 
@@ -183,12 +183,12 @@ line: LABEL KOC_END {
             elseifstk[ifstkpt] = If_Skip;
             endifstk[ifstkpt] = If_Active;
          } else {
-            fraifskip = TRUE;
+            fraifskip = true;
             elseifstk[ifstkpt] = If_Active;
             endifstk[ifstkpt] = If_Active;
          }
       } else {
-         fraifskip = TRUE;
+         fraifskip = true;
          elseifstk[ifstkpt] = If_Active;
          endifstk[ifstkpt] = If_Active;
       }
@@ -214,11 +214,11 @@ line: LABEL KOC_END {
 | KOC_ELSE {
    switch (elseifstk[ifstkpt]) {
       case If_Active:
-         fraifskip = FALSE;
+         fraifskip = false;
          break;
 
       case If_Skip:
-         fraifskip = TRUE;
+         fraifskip = true;
          break;
 
       case If_Err:
@@ -230,12 +230,12 @@ line: LABEL KOC_END {
 | KOC_ENDI {
    switch (endifstk[ifstkpt]) {
       case If_Active:
-         fraifskip = FALSE;
+         fraifskip = false;
          ifstkpt--;
          break;
 
       case If_Skip:
-         fraifskip = TRUE;
+         fraifskip = true;
          ifstkpt--;
          break;
 
@@ -675,7 +675,7 @@ int lexintercept(void) {
    int rv;
 
    if (fraifskip) {
-      for (;;) {
+      while (true) {
 
          switch (rv = yylex()) {
             case 0:
@@ -739,8 +739,8 @@ void setreserved(void) {
 
 }
 
-int cpumatch(char *str) {
-   return TRUE;
+bool cpumatch(char *str) {
+   return true;
 }
 
 // Opcode and Instruction generation tables

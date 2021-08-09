@@ -20,11 +20,11 @@ static char interfn[] = "/usr/tmp/frtXXXXXX";
 #endif
 char *hexfn, *loutfn;
 int errorcnt = 0, warncnt = 0;
-int listflag = FALSE, hexflag = FALSE, hexvalid = FALSE;
-static int debugmode = FALSE;
+bool listflag = false, hexflag = false, hexvalid = false;
+static bool debugmode = false;
 static FILE *symbf;
 static char *symbfn;
-static int symbflag = FALSE;
+static bool symbflag = false;
 char hexcva[17] = "0123456789abcdef";
 
 // First pass - generate warning message by writing line
@@ -169,20 +169,20 @@ int main(int argc, char *argv[]) {
          case 'o':
          case 'h':
             hexfn = optarg;
-            hexflag = hexvalid = TRUE;
+            hexflag = hexvalid = true;
             break;
 
          case 'l':
             loutfn = optarg;
-            listflag = TRUE;
+            listflag = true;
             break;
 
          case 'd':
-            debugmode = TRUE;
+            debugmode = true;
             break;
 
          case 's':
-            symbflag = TRUE;
+            symbflag = true;
             symbfn = optarg;
             break;
 
@@ -214,10 +214,10 @@ int main(int argc, char *argv[]) {
    if (listflag) {
       if (strcmp(argv[optind], loutfn) == 0) {
          fprintf(stderr, "%s: list file overwrites input %s\n", argv[0], loutfn);
-         listflag = FALSE;
+         listflag = false;
       } else if ((loutf = fopen(loutfn, "w")) == (FILE *) NULL) {
          fprintf(stderr, "%s: cannot open list file %s\n", argv[0], loutfn);
-         listflag = FALSE;
+         listflag = false;
       }
    }
 
@@ -267,15 +267,15 @@ int main(int argc, char *argv[]) {
    }
 
    if (errorcnt > 0)
-      hexflag = FALSE;
+      hexflag = false;
 
    if (hexflag) {
       if (strcmp(argv[optind], hexfn) == 0) {
          fprintf(stderr, "%s: hex output overwrites input %s\n", argv[0], hexfn);
-         hexflag = FALSE;
+         hexflag = false;
       } else if ((hexoutf = fopen(hexfn, "w")) == (FILE *) NULL) {
          fprintf(stderr, "%s: cannot open hex output %s\n", argv[0], hexfn);
-         hexflag = FALSE;
+         hexflag = false;
       }
    }
 
@@ -283,7 +283,7 @@ int main(int argc, char *argv[]) {
    outphase();
 
    if (errorcnt > 0)
-      hexvalid = FALSE;
+      hexvalid = false;
 
    fprintf(loutf, " ERROR SUMMARY - ERRORS DETECTED %d\n", errorcnt);
    fprintf(loutf, "               -  WARNINGS       %d\n", warncnt);

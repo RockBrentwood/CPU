@@ -13,6 +13,7 @@
 ## Usage:
 ##	make CPU=cpu	compile the assembler for the given cpu target.
 ##	make clean	clean out for the release distribution.
+##	make newmachine	clean out CPU-dependent generated files only.
 ## Supported values for CPU:
 ##	1805, 2650, 6502, 6805, 6809, 6811, 7000, 8048, 8051, 8096, Z80, Z8
 ## Example:
@@ -95,10 +96,13 @@ frasmain$O: frasmain.c frasmdat.h $(MAINDEPENDS)
 	$(CC) $(CFLAGS) $(MAINNEEDS) -c frasmain.c
 fraytok.h: as$(CPU).h
 	$(CP) as$(CPU).h fraytok.h
-fryylex$O: fryylex.c fraytok.h frasmdat.h
+fryylex$O: fryylex.c frasmdat.h fraytok.h
 	$(CC) $(CFLAGS) $(LEXNEEDS) -c fryylex.c
 as$(CPU).c as$(CPU).h: as$(CPU).y
 	$(YACC) -d as$(CPU).y
+##	$(MV) y.tab.c as$(CPU).c
+##	$(MV) y.tab.h as$(CPU).h
+##	$(RM) fraytok.h
 as$(CPU)$O: as$(CPU).c frasmdat.h fragcon.h
 	$(CC) $(CFLAGS) -c as$(CPU).c
 frapsub$O: frapsub.c fragcon.h frasmdat.h fraeuni.h fraebin.h

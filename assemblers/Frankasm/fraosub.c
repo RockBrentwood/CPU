@@ -8,9 +8,10 @@
 #define SOURCEOFFSET 24
 #define NUMHEXSOURCE 6
 
-int linenumber = 0;
-char lineLbuff[INBUFFSZ];
-int lineLflag = FALSE;
+static char currentfnm[100];
+static int linenumber = 0;
+static char lineLbuff[INBUFFSZ];
+static bool lineLflag = false;
 
 #define OUTRESULTLEN 256
 static unsigned char outresult[OUTRESULTLEN];
@@ -107,7 +108,7 @@ static void flushsourceline(void) {
    if (listflag && lineLflag) {
       fputs("\t\t\t", loutf);
       fputs(&lineLbuff[2], loutf);
-      lineLflag = FALSE;
+      lineLflag = false;
    }
 }
 
@@ -159,10 +160,11 @@ static void frp2error(char *str) {
 
 #define NUMHEXPERL 16
 static long lhaddr, lhnextaddr;
-static int lhnew, lhnext = 0;
+static bool lhnew;
+static int lhnext = 0;
 static unsigned char listbuffhex[NUMHEXPERL];
 
-// Print a line of hexidecimal on the listing
+// Print a line of hexadecimal on the listing
 // Globals:
 //	the hex listing buffer
 static void listouthex(void) {
@@ -206,7 +208,7 @@ static void listouthex(void) {
          }
 
          fputs(&lineLbuff[2], loutf);
-         lineLflag = FALSE;
+         lineLflag = false;
       } else {
          fputc('\n', loutf);
       }
@@ -221,7 +223,7 @@ static void listouthex(void) {
 //	the new hex list flag
 static void flushlisthex(void) {
    listouthex();
-   lhnew = TRUE;
+   lhnew = true;
 }
 
 // Convert the polish form character string in the
@@ -461,14 +463,14 @@ static void intelout(int type, long addr, int count, char data[]) {
 //	the intel hex line buffer
 static void outhexblock(void) {
    long inbuffaddr = resultloc;
-   static int first = TRUE;
+   static bool first = true;
 
    int loopc;
 
    if (first) {
       nextoutaddr = blockaddr = resultloc;
       hnextsub = 0;
-      first = FALSE;
+      first = false;
    }
 
    for (loopc = 0; loopc < nextresult; loopc++) {
@@ -495,7 +497,7 @@ static void listhex(void) {
 
    if (lhnew) {
       lhaddr = lhnextaddr = resultloc;
-      lhnew = FALSE;
+      lhnew = false;
    }
 
    for (cht = 0; cht < nextresult; cht++) {
@@ -533,7 +535,7 @@ static void flushhex(void) {
 void outphase(void) {
    int firstchar;
 
-   for (;;) {
+   while (true) {
       if ((firstchar = fgetc(intermedf)) == EOF)
          break;
 
@@ -547,7 +549,7 @@ void outphase(void) {
             break;
          }
 
-         lineLflag = TRUE;
+         lineLflag = true;
       } else {
          finbuff[0] = firstchar;
          if (fgets(&finbuff[1], INBUFFSZ - 1, intermedf)
@@ -581,7 +583,7 @@ void outphase(void) {
                fprintf(loutf, "%-*.*s", SOURCEOFFSET, SOURCEOFFSET, &finbuff[2]);
                if (lineLflag) {
                   fputs(&lineLbuff[2], loutf);
-                  lineLflag = FALSE;
+                  lineLflag = false;
                } else {
                   fputc('\n', loutf);
                }

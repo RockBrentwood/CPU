@@ -25,7 +25,7 @@
 
 /* Global variables. */
 static char EMSG[] = "";
-int opterr = 1; /* undocumented error-suppressor */
+bool opterr = true; /* undocumented error-suppressor */
 int optind = 1; /* index into argv vector       */
 int optopt; /* char checked for validity    */
 char *optarg; /* arg associated with option   */

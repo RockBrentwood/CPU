@@ -5,18 +5,93 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define PRINTCTRL(char) ((char)+'@')
+typedef enum { false, true } bool;
 
 #ifndef Global
 #   define	Global	extern
 #endif
 
-#define TRUE 1
-#define FALSE 0
-
+// frasmain.c:
 #define hexch(cv) (hexcva[(cv)&0xf])
 extern char hexcva[];
 
+extern FILE *intermedf;
+extern int errorcnt, warncnt;
+
+extern bool listflag;
+extern bool hexvalid, hexflag;
+
+#define IFSTKDEPTH 32
+extern int ifstkpt;
+Global enum { If_Active, If_Skip, If_Err } elseifstk[IFSTKDEPTH], endifstk[IFSTKDEPTH];
+
+Global FILE *hexoutf, *loutf;
+
+#define FILESTKDPTH 20
+Global struct fstkel {
+   char *fnm;
+   FILE *fpt;
+} infilestk[FILESTKDPTH];
+Global int lnumstk[FILESTKDPTH];
+
+void frawarn(char *str);
+void fraerror(char *str);
+void frafatal(char *str);
+void fracherror(char *str, char *start, char *beyond);
+void prtequvalue(char *fstr, long lv);
+int main(int argc, char *argv[]);
+
+// fryylex.c:
+#define INBUFFSZ 258
+extern char finbuff[INBUFFSZ];
+
+extern FILE *yyin;
+
+enum readacts {
+   Nra_normal,
+   Nra_new,
+   Nra_end
+};
+extern enum readacts nextreadact;
+
+int yylex(void);
+void yyerror(char *str);
+
+// as*.y:
+extern char ignosyn[];
+extern char ignosel[];
+
+/* opcode symbol table element */
+struct opsym {
+   char *opstr;
+   int token;
+   int numsyn;
+   int subsyn;
+};
+extern struct opsym optab[];
+extern int gnumopcode;
+extern int ophashlnk[];
+
+struct opsynt {
+   int syntaxgrp;
+   int elcnt;
+   int gentabsub;
+};
+extern struct opsynt ostab[];
+
+struct igel {
+   int selmask;
+   int criteria;
+   char *genstr;
+};
+extern struct igel igtab[];
+
+int yyparse(void);
+int lexintercept(void);
+void setreserved(void);
+bool cpumatch(char *str);
+
+// frapsub.c:
 /* symbol table element */
 struct symel {
    char *symstr;
@@ -35,43 +110,8 @@ struct symel {
 #define SSG_SET 3
 
 #define SYMNULL (struct symel *) NULL
-
-/* opcode symbol table element */
-
-struct opsym {
-   char *opstr;
-   int token;
-   int numsyn;
-   int subsyn;
-};
-
-struct opsynt {
-   int syntaxgrp;
-   int elcnt;
-   int gentabsub;
-};
-
-struct igel {
-   int selmask;
-   int criteria;
-   char *genstr;
-};
-
-#define PPEXPRLEN 256
-
-struct evalrel {
-   int seg;
-   long value;
-   char exprstr[PPEXPRLEN];
-};
-
-#define INBUFFSZ 258
-extern char finbuff[INBUFFSZ];
-
-extern int nextsymnum;
-Global struct symel **symbindex;
-
 #define EXPRLSIZE (INBUFFSZ/2)
+
 extern int nextexprs;
 Global int exprlist[EXPRLSIZE];
 
@@ -79,63 +119,15 @@ Global int exprlist[EXPRLSIZE];
 extern int nextstrs;
 Global char *stringlist[STRLSIZE];
 
-extern struct opsym optab[];
-extern int gnumopcode;
-extern struct opsynt ostab[];
-extern struct igel igtab[];
-extern int ophashlnk[];
+#define PPEXPRLEN 256
+struct evalrel {
+   int seg;
+   long value;
+   char exprstr[PPEXPRLEN];
+};
 
 #define NUMPEXP 6
 Global struct evalrel evalr[NUMPEXP];
-
-#define PESTKDEPTH 32
-struct evstkel {
-   long v;
-   int s;
-};
-
-Global struct evstkel estk[PESTKDEPTH], *estkm1p;
-
-Global int currseg;
-Global long locctr;
-
-extern FILE *yyin;
-extern FILE *intermedf;
-extern int listflag;
-extern int hexvalid, hexflag;
-Global FILE *hexoutf, *loutf;
-extern int errorcnt, warncnt;
-
-extern int linenumber;
-
-#define IFSTKDEPTH 32
-extern int ifstkpt;
-Global enum { If_Active, If_Skip, If_Err } elseifstk[IFSTKDEPTH], endifstk[IFSTKDEPTH];
-
-#define FILESTKDPTH 20
-Global int currfstk;
-#define nextfstk (currfstk+1)
-Global struct fstkel {
-   char *fnm;
-   FILE *fpt;
-} infilestk[FILESTKDPTH];
-
-Global int lnumstk[FILESTKDPTH];
-Global char currentfnm[100];
-
-extern struct symel *endsymbol;
-
-enum readacts {
-   Nra_normal,
-   Nra_new,
-   Nra_end
-};
-
-extern enum readacts nextreadact;
-
-extern struct symel *endsymbol;
-extern char ignosyn[];
-extern char ignosel[];
 
 #define NUM_CHTA 6
 extern int chtnxalph, *chtcpoint, *chtnpoint;
@@ -147,25 +139,10 @@ Global int *chtatab[NUM_CHTA];
 #define CF_CHAR 	1
 #define CF_NUMBER 	2
 
-// frasmain.c:
-void frawarn(char *str);
-void fraerror(char *str);
-void frafatal(char *str);
-void fracherror(char *str, char *start, char *beyond);
-void prtequvalue(char *fstr, long lv);
-int main(int argc, char *argv[]);
+extern int nextsymnum;
+Global struct symel **symbindex;
+extern struct symel *endsymbol;
 
-// fryylex.c:
-int yylex(void);
-void yyerror(char *str);
-
-// as*.y:
-int yyparse(void);
-int lexintercept(void);
-void setreserved(void);
-int cpumatch(char *str);
-
-// frapsub.c:
 char *savestring(char *stx, int len);
 void clrexpr(void);
 int exprnode(int swact, int left, int op, int right, long value, struct symel *symbol);
@@ -184,4 +161,17 @@ int genstring(char *str);
 void pevalexpr(int sub, int exn);
 
 // fraosub.c:
+#define PESTKDEPTH 32
+struct evstkel {
+   long v;
+   int s;
+};
+Global struct evstkel estk[PESTKDEPTH], *estkm1p;
+
+Global int currfstk;
+#define nextfstk (currfstk+1)
+
+Global int currseg;
+Global long locctr;
+
 void outphase(void);
