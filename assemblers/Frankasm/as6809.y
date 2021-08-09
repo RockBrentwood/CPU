@@ -2,22 +2,16 @@
 // Frankenstain Cross-Assemblers, version 2.0.
 // Original author: Mark Zenier.
 // 6809 instruction generation file.
-/*
-	description	frame work parser description for framework cross
-			assemblers
-	history		February 2, 1988
-			September 11, 1990 - merge table definition
-			September 12, 1990 - short file names
-			September 14, 1990 - short variable names
-			September 17, 1990 - use yylex as external
-*/
+
+// Frame work parser description for framework cross
+// assemblers
 #include <stdio.h>
 #include "frasmdat.h"
 #include "fragcon.h"
 
 #define yylex lexintercept
 
-	/* select criteria for ST_EXP  0000.0000.0000.00xx */
+        /* select criteria for ST_EXP  0000.0000.0000.00xx */
 #define	ADDR	0x3
 #define	DIRECT	0x1
 #define	EXTENDED	0x2
@@ -32,10 +26,10 @@
 #define ST_UPSH 0x1
 #define ST_TFR 0x1
 
-	static char	genbdef[] = "[1=];";
-	static char	genwdef[] = "[1=]x"; /* x for normal, y for byte rev */
-	char ignosyn[] = "[Xinvalid syntax for instruction";
-	char ignosel[] = "[Xinvalid operands";
+static char genbdef[] = "[1=];";
+static char genwdef[] = "[1=]x"; /* x for normal, y for byte rev */
+char ignosyn[] = "[Xinvalid syntax for instruction";
+char ignosel[] = "[Xinvalid operands";
 #define	IDM000	0
 #define	IDM100	1
 #define	IDM101	2
@@ -55,8 +49,8 @@
 #define	IDM118	16
 #define	IDM119	17
 #define	IDM11B	18
-	char *(indexgen [] [4]) = {
-/*IDM000;*/ { "[1=].5R.00|;", "[1=].5R.20|;", "[1=].5R.40|;", "[1=].5R.60|;"},
+char *(indexgen[][4]) = {
+/*IDM000;*/ { "[1=].5R.00|;", "[1=].5R.20|;", "[1=].5R.40|;", "[1=].5R.60|;" },
 /*IDM100;*/ { "80;", "a0;", "c0;", "e0;" },
 /*IDM101;*/ { "81;", "a1;", "c1;", "e1;" },
 /*IDM102;*/ { "82;", "a2;", "c2;", "e2;" },
@@ -75,7 +69,7 @@
 /*IDM118;*/ { "98;[1=]r", "b8;[1=]r", "d8;[1=]r", "f8;[1=]r" },
 /*IDM119;*/ { "99;[1=]x", "b9;[1=]x", "d9;[1=]x", "f9;[1=]x" },
 /*IDM11B;*/ { "9B;", "BB;", "DB;", "FB;" }
-		};
+};
 
 #define	PCRNEG8M	-126
 #define	PCRPLUS8M	129
@@ -107,12 +101,12 @@
 #define	PPOSTU	(0x40|REGBUSTK)
 #define	PPOSTPC	0x80
 
-	long	labelloc;
-	static int satsub;
-	int	ifstkpt = 0;
-	int	fraifskip = FALSE;
+long labelloc;
+static int satsub;
+int ifstkpt = 0;
+int fraifskip = FALSE;
 
-	struct symel * endsymbol = SYMNULL;
+struct symel *endsymbol = SYMNULL;
 
 %}
 %union {
@@ -190,1201 +184,947 @@
 
 %%
 
-file	:	file allline
-	|	allline
-	;
+file: file allline
+| allline
+;
 
-allline	: 	line EOL
-			{
-				clrexpr();
-			}
-	|	EOL
-	|	error EOL
-			{
-				clrexpr();
-				yyerrok;
-			}
-	;
+allline: line EOL {
+   clrexpr();
+}
+| EOL
 
-line	:	LABEL KOC_END
-			{
-				endsymbol = $1;
-				nextreadact = Nra_end;
-			}
-	|	      KOC_END
-			{
-				nextreadact = Nra_end;
-			}
-	|	KOC_INCLUDE STRING
-			{
-		if(nextfstk >= FILESTKDPTH)
-		{
-			fraerror("include file nesting limit exceeded");
-		}
-		else
-		{
-			infilestk[nextfstk].fnm = savestring($2,strlen($2));
-			if( (infilestk[nextfstk].fpt = fopen($2,"r"))
-				==(FILE *)NULL )
-			{
-				fraerror("cannot open include file");
-			}
-			else
-			{
-				nextreadact = Nra_new;
-			}
-		}
-			}
-	|	LABEL KOC_EQU expr
-			{
-				if($1 -> seg == SSG_UNDEF)
-				{
-					pevalexpr(0, $3);
-					if(evalr[0].seg == SSG_ABS)
-					{
-						$1 -> seg = SSG_EQU;
-						$1 -> value = evalr[0].value;
-						prtequvalue("C: 0x%lx\n",
-							evalr[0].value);
-					}
-					else
-					{
-						fraerror(
-					"noncomputable expression for EQU");
-					}
-				}
-				else
-				{
-					fraerror(
-				"cannot change symbol value with EQU");
-				}
-			}
-	|	LABEL KOC_SET expr
-			{
-				if($1 -> seg == SSG_UNDEF
-				   || $1 -> seg == SSG_SET)
-				{
-					pevalexpr(0, $3);
-					if(evalr[0].seg == SSG_ABS)
-					{
-						$1 -> seg = SSG_SET;
-						$1 -> value = evalr[0].value;
-						prtequvalue("C: 0x%lx\n",
-							evalr[0].value);
-					}
-					else
-					{
-						fraerror(
-					"noncomputable expression for SET");
-					}
-				}
-				else
-				{
-					fraerror(
-				"cannot change symbol value with SET");
-				}
-			}
-	|	KOC_IF expr
-			{
-		if((++ifstkpt) < IFSTKDEPTH)
-		{
-			pevalexpr(0, $2);
-			if(evalr[0].seg == SSG_ABS)
-			{
-				if(evalr[0].value != 0)
-				{
-					elseifstk[ifstkpt] = If_Skip;
-					endifstk[ifstkpt] = If_Active;
-				}
-				else
-				{
-					fraifskip = TRUE;
-					elseifstk[ifstkpt] = If_Active;
-					endifstk[ifstkpt] = If_Active;
-				}
-			}
-			else
-			{
-				fraifskip = TRUE;
-				elseifstk[ifstkpt] = If_Active;
-				endifstk[ifstkpt] = If_Active;
-			}
-		}
-		else
-		{
-			fraerror("IF stack overflow");
-		}
-			}
+| error EOL {
+   clrexpr();
+   yyerrok;
+}
+;
 
-	|	KOC_IF
-			{
-		if(fraifskip)
-		{
-			if((++ifstkpt) < IFSTKDEPTH)
-			{
-					elseifstk[ifstkpt] = If_Skip;
-					endifstk[ifstkpt] = If_Skip;
-			}
-			else
-			{
-				fraerror("IF stack overflow");
-			}
-		}
-		else
-		{
-			yyerror("syntax error");
-			YYERROR;
-		}
-				}
+line: LABEL KOC_END {
+   endsymbol = $1;
+   nextreadact = Nra_end;
+}
+| KOC_END {
+   nextreadact = Nra_end;
+}
+| KOC_INCLUDE STRING {
+   if (nextfstk >= FILESTKDPTH) {
+      fraerror("include file nesting limit exceeded");
+   } else {
+      infilestk[nextfstk].fnm = savestring($2, strlen($2));
+      if ((infilestk[nextfstk].fpt = fopen($2, "r"))
+         == (FILE *) NULL) {
+         fraerror("cannot open include file");
+      } else {
+         nextreadact = Nra_new;
+      }
+   }
+}
+| LABEL KOC_EQU expr {
+   if ($1->seg == SSG_UNDEF) {
+      pevalexpr(0, $3);
+      if (evalr[0].seg == SSG_ABS) {
+         $1->seg = SSG_EQU;
+         $1->value = evalr[0].value;
+         prtequvalue("C: 0x%lx\n", evalr[0].value);
+      } else {
+         fraerror("noncomputable expression for EQU");
+      }
+   } else {
+      fraerror("cannot change symbol value with EQU");
+   }
+}
+| LABEL KOC_SET expr {
+   if ($1->seg == SSG_UNDEF || $1->seg == SSG_SET) {
+      pevalexpr(0, $3);
+      if (evalr[0].seg == SSG_ABS) {
+         $1->seg = SSG_SET;
+         $1->value = evalr[0].value;
+         prtequvalue("C: 0x%lx\n", evalr[0].value);
+      } else {
+         fraerror("noncomputable expression for SET");
+      }
+   } else {
+      fraerror("cannot change symbol value with SET");
+   }
+}
+| KOC_IF expr {
+   if ((++ifstkpt) < IFSTKDEPTH) {
+      pevalexpr(0, $2);
+      if (evalr[0].seg == SSG_ABS) {
+         if (evalr[0].value != 0) {
+            elseifstk[ifstkpt] = If_Skip;
+            endifstk[ifstkpt] = If_Active;
+         } else {
+            fraifskip = TRUE;
+            elseifstk[ifstkpt] = If_Active;
+            endifstk[ifstkpt] = If_Active;
+         }
+      } else {
+         fraifskip = TRUE;
+         elseifstk[ifstkpt] = If_Active;
+         endifstk[ifstkpt] = If_Active;
+      }
+   } else {
+      fraerror("IF stack overflow");
+   }
+}
 
-	|	KOC_ELSE
-			{
-				switch(elseifstk[ifstkpt])
-				{
-				case If_Active:
-					fraifskip = FALSE;
-					break;
+| KOC_IF {
+   if (fraifskip) {
+      if ((++ifstkpt) < IFSTKDEPTH) {
+         elseifstk[ifstkpt] = If_Skip;
+         endifstk[ifstkpt] = If_Skip;
+      } else {
+         fraerror("IF stack overflow");
+      }
+   } else {
+      yyerror("syntax error");
+      YYERROR;
+   }
+}
 
-				case If_Skip:
-					fraifskip = TRUE;
-					break;
+| KOC_ELSE {
+   switch (elseifstk[ifstkpt]) {
+      case If_Active:
+         fraifskip = FALSE;
+         break;
 
-				case If_Err:
-					fraerror("ELSE with no matching if");
-					break;
-				}
-			}
+      case If_Skip:
+         fraifskip = TRUE;
+         break;
 
-	|	KOC_ENDI
-			{
-				switch(endifstk[ifstkpt])
-				{
-				case If_Active:
-					fraifskip = FALSE;
-					ifstkpt--;
-					break;
+      case If_Err:
+         fraerror("ELSE with no matching if");
+         break;
+   }
+}
 
-				case If_Skip:
-					fraifskip = TRUE;
-					ifstkpt--;
-					break;
+| KOC_ENDI {
+   switch (endifstk[ifstkpt]) {
+      case If_Active:
+         fraifskip = FALSE;
+         ifstkpt--;
+         break;
 
-				case If_Err:
-					fraerror("ENDI with no matching if");
-					break;
-				}
-			}
-	|	LABEL KOC_ORG expr
-			{
-				pevalexpr(0, $3);
-				if(evalr[0].seg == SSG_ABS)
-				{
-					locctr = labelloc = evalr[0].value;
-					if($1 -> seg == SSG_UNDEF)
-					{
-						$1 -> seg = SSG_ABS;
-						$1 -> value = labelloc;
-					}
-					else
-						fraerror(
-						"multiple definition of label");
-					prtequvalue("C: 0x%lx\n",
-						evalr[0].value);
-				}
-				else
-				{
-					fraerror(
-					 "noncomputable expression for ORG");
-				}
-			}
-	|	      KOC_ORG expr
-			{
-				pevalexpr(0, $2);
-				if(evalr[0].seg == SSG_ABS)
-				{
-					locctr = labelloc = evalr[0].value;
-					prtequvalue("C: 0x%lx\n",
-						evalr[0].value);
-				}
-				else
-				{
-					fraerror(
-					 "noncomputable expression for ORG");
-				}
-			}
-	|	LABEL KOC_CHSET
-			{
-				if($1 -> seg == SSG_UNDEF)
-				{
-					$1 -> seg = SSG_EQU;
-					if( ($1->value = chtcreate()) <= 0)
-					{
-		fraerror( "cannot create character translation table");
-					}
-					prtequvalue("C: 0x%lx\n", $1 -> value);
-				}
-				else
-				{
-			fraerror( "multiple definition of label");
-				}
-			}
-	|		KOC_CHUSE
-			{
-				chtcpoint = (int *) NULL;
-				prtequvalue("C: 0x%lx\n", 0L);
-			}
-	|		KOC_CHUSE expr
-			{
-				pevalexpr(0, $2);
-				if( evalr[0].seg == SSG_ABS)
-				{
-					if( evalr[0].value == 0)
-					{
-						chtcpoint = (int *)NULL;
-						prtequvalue("C: 0x%lx\n", 0L);
-					}
-					else if(evalr[0].value < chtnxalph)
-					{
-				chtcpoint = chtatab[evalr[0].value];
-				prtequvalue("C: 0x%lx\n", evalr[0].value);
-					}
-					else
-					{
-			fraerror("nonexistent character translation table");
-					}
-				}
-				else
-				{
-					fraerror("noncomputable expression");
-				}
-			}
-	|		KOC_CHDEF STRING ',' exprlist
-			{
-		int findrv, numret, *charaddr;
-		char *sourcestr = $2, *before;
+      case If_Skip:
+         fraifskip = TRUE;
+         ifstkpt--;
+         break;
 
-		if(chtnpoint != (int *)NULL)
-		{
-			for(satsub = 0; satsub < $4; satsub++)
-			{
-				before = sourcestr;
+      case If_Err:
+         fraerror("ENDI with no matching if");
+         break;
+   }
+}
+| LABEL KOC_ORG expr {
+   pevalexpr(0, $3);
+   if (evalr[0].seg == SSG_ABS) {
+      locctr = labelloc = evalr[0].value;
+      if ($1->seg == SSG_UNDEF) {
+         $1->seg = SSG_ABS;
+         $1->value = labelloc;
+      } else
+         fraerror("multiple definition of label");
+      prtequvalue("C: 0x%lx\n", evalr[0].value);
+   } else {
+      fraerror("noncomputable expression for ORG");
+   }
+}
+| KOC_ORG expr {
+   pevalexpr(0, $2);
+   if (evalr[0].seg == SSG_ABS) {
+      locctr = labelloc = evalr[0].value;
+      prtequvalue("C: 0x%lx\n", evalr[0].value);
+   } else {
+      fraerror("noncomputable expression for ORG");
+   }
+}
+| LABEL KOC_CHSET {
+   if ($1->seg == SSG_UNDEF) {
+      $1->seg = SSG_EQU;
+      if (($1->value = chtcreate()) <= 0) {
+         fraerror("cannot create character translation table");
+      }
+      prtequvalue("C: 0x%lx\n", $1->value);
+   } else {
+      fraerror("multiple definition of label");
+   }
+}
+| KOC_CHUSE {
+   chtcpoint = (int *)NULL;
+   prtequvalue("C: 0x%lx\n", 0L);
+}
+| KOC_CHUSE expr {
+   pevalexpr(0, $2);
+   if (evalr[0].seg == SSG_ABS) {
+      if (evalr[0].value == 0) {
+         chtcpoint = (int *)NULL;
+         prtequvalue("C: 0x%lx\n", 0L);
+      } else if (evalr[0].value < chtnxalph) {
+         chtcpoint = chtatab[evalr[0].value];
+         prtequvalue("C: 0x%lx\n", evalr[0].value);
+      } else {
+         fraerror("nonexistent character translation table");
+      }
+   } else {
+      fraerror("noncomputable expression");
+   }
+}
+| KOC_CHDEF STRING ',' exprlist {
+   int findrv, numret, *charaddr;
+   char *sourcestr = $2, *before;
 
-				pevalexpr(0, exprlist[satsub]);
-				findrv = chtcfind(chtnpoint, &sourcestr,
-						&charaddr, &numret);
-				if(findrv == CF_END)
-				{
-			fraerror("more expressions than characters");
-					break;
-				}
+   if (chtnpoint != (int *)NULL) {
+      for (satsub = 0; satsub < $4; satsub++) {
+         before = sourcestr;
 
-				if(evalr[0].seg == SSG_ABS)
-				{
-					switch(findrv)
-					{
-					case CF_UNDEF:
-						{
-				if(evalr[0].value < 0 ||
-					evalr[0].value > 255)
-				{
-			frawarn("character translation value truncated");
-				}
-				*charaddr = evalr[0].value & 0xff;
-				prtequvalue("C: 0x%lx\n", evalr[0].value);
-						}
-						break;
+         pevalexpr(0, exprlist[satsub]);
+         findrv = chtcfind(chtnpoint, &sourcestr, &charaddr, &numret);
+         if (findrv == CF_END) {
+            fraerror("more expressions than characters");
+            break;
+         }
 
-					case CF_INVALID:
-					case CF_NUMBER:
-				fracherror("invalid character to define",
-					before, sourcestr);
-						break;
+         if (evalr[0].seg == SSG_ABS) {
+            switch (findrv) {
+               case CF_UNDEF:
+               {
+                  if (evalr[0].value < 0 || evalr[0].value > 255) {
+                     frawarn("character translation value truncated");
+                  }
+                  *charaddr = evalr[0].value & 0xff;
+                  prtequvalue("C: 0x%lx\n", evalr[0].value);
+               }
+                  break;
 
-					case CF_CHAR:
-				fracherror("character already defined",
-					before, sourcestr);
-						break;
-					}
-				}
-				else
-				{
-					fraerror("noncomputable expression");
-				}
-			}
+               case CF_INVALID:
+               case CF_NUMBER:
+                  fracherror("invalid character to define", before, sourcestr);
+                  break;
 
-			if( *sourcestr != '\0')
-			{
-				fraerror("more characters than expressions");
-			}
-		}
-		else
-		{
-			fraerror("no CHARSET statement active");
-		}
+               case CF_CHAR:
+                  fracherror("character already defined", before, sourcestr);
+                  break;
+            }
+         } else {
+            fraerror("noncomputable expression");
+         }
+      }
 
-			}
-	|	LABEL
-			{
-			if($1 -> seg == SSG_UNDEF)
-			{
-				$1 -> seg = SSG_ABS;
-				$1 -> value = labelloc;
-				prtequvalue("C: 0x%lx\n", labelloc);
+      if (*sourcestr != '\0') {
+         fraerror("more characters than expressions");
+      }
+   } else {
+      fraerror("no CHARSET statement active");
+   }
 
-			}
-			else
-				fraerror(
-				"multiple definition of label");
-			}
-	|	labeledline
-	;
+}
+| LABEL {
+   if ($1->seg == SSG_UNDEF) {
+      $1->seg = SSG_ABS;
+      $1->value = labelloc;
+      prtequvalue("C: 0x%lx\n", labelloc);
 
-labeledline :	LABEL genline
-			{
-			if($1 -> seg == SSG_UNDEF)
-			{
-				$1 -> seg = SSG_ABS;
-				$1 -> value = labelloc;
-			}
-			else
-				fraerror(
-				"multiple definition of label");
-			labelloc = locctr;
-			}
+   } else
+      fraerror("multiple definition of label");
+}
+| labeledline
 
-	|	genline
-			{
-				labelloc = locctr;
-			}
-	;
+;
 
-genline	:	KOC_BDEF	exprlist
-			{
-				genlocrec(currseg, labelloc);
-				for( satsub = 0; satsub < $2; satsub++)
-				{
-					pevalexpr(1, exprlist[satsub]);
-					locctr += geninstr(genbdef);
-				}
-			}
-	|	KOC_SDEF stringlist
-			{
-				genlocrec(currseg, labelloc);
-				for(satsub = 0; satsub < $2; satsub++)
-				{
-					locctr += genstring(stringlist[satsub]);
-				}
-			}
-	|	KOC_WDEF exprlist
-			{
-				genlocrec(currseg, labelloc);
-				for( satsub = 0; satsub < $2; satsub++)
-				{
-					pevalexpr(1, exprlist[satsub]);
-					locctr += geninstr(genwdef);
-				}
-			}
-	|	KOC_RESM expr
-			{
-				pevalexpr(0, $2);
-				if(evalr[0].seg == SSG_ABS)
-				{
-					locctr = labelloc + evalr[0].value;
-					prtequvalue("C: 0x%lx\n", labelloc);
-				}
-				else
-				{
-					fraerror(
-				 "noncomputable result for RMB expression");
-				}
-			}
-	;
+labeledline: LABEL genline {
+   if ($1->seg == SSG_UNDEF) {
+      $1->seg = SSG_ABS;
+      $1->value = labelloc;
+   } else
+      fraerror("multiple definition of label");
+   labelloc = locctr;
+}
 
-exprlist :	exprlist ',' expr
-			{
-				exprlist[nextexprs ++ ] = $3;
-				$$ = nextexprs;
-			}
-	|	expr
-			{
-				nextexprs = 0;
-				exprlist[nextexprs ++ ] = $1;
-				$$ = nextexprs;
-			}
-	;
+| genline {
+   labelloc = locctr;
+}
+;
 
-stringlist :	stringlist ',' STRING
-			{
-				stringlist[nextstrs ++ ] = $3;
-				$$ = nextstrs;
-			}
-	|	STRING
-			{
-				nextstrs = 0;
-				stringlist[nextstrs ++ ] = $1;
-				$$ = nextstrs;
-			}
-	;
+genline: KOC_BDEF	exprlist {
+   genlocrec(currseg, labelloc);
+   for (satsub = 0; satsub < $2; satsub++) {
+      pevalexpr(1, exprlist[satsub]);
+      locctr += geninstr(genbdef);
+   }
+}
+| KOC_SDEF stringlist {
+   genlocrec(currseg, labelloc);
+   for (satsub = 0; satsub < $2; satsub++) {
+      locctr += genstring(stringlist[satsub]);
+   }
+}
+| KOC_WDEF exprlist {
+   genlocrec(currseg, labelloc);
+   for (satsub = 0; satsub < $2; satsub++) {
+      pevalexpr(1, exprlist[satsub]);
+      locctr += geninstr(genwdef);
+   }
+}
+| KOC_RESM expr {
+   pevalexpr(0, $2);
+   if (evalr[0].seg == SSG_ABS) {
+      locctr = labelloc + evalr[0].value;
+      prtequvalue("C: 0x%lx\n", labelloc);
+   } else {
+      fraerror("noncomputable result for RMB expression");
+   }
+}
+;
+
+exprlist: exprlist ',' expr {
+   exprlist[nextexprs++] = $3;
+   $$ = nextexprs;
+}
+| expr {
+   nextexprs = 0;
+   exprlist[nextexprs++] = $1;
+   $$ = nextexprs;
+}
+;
+
+stringlist: stringlist ',' STRING {
+   stringlist[nextstrs++] = $3;
+   $$ = nextstrs;
+}
+| STRING {
+   nextstrs = 0;
+   stringlist[nextstrs++] = $1;
+   $$ = nextstrs;
+}
+;
 
 
-genline : KOC_opcode
-			{
-		genlocrec(currseg, labelloc);
-		locctr += geninstr(findgen($1, ST_INH, 0));
-			}
-	;
-genline : KOC_opcode  '#' expr
-			{
-		pevalexpr(1, $3);
-		genlocrec(currseg, labelloc);
-		locctr += geninstr( findgen($1, ST_IMM, 0));
-			}
-	;
-genline : KOC_opcode  expr
-			{
-		genlocrec(currseg, labelloc);
-		pevalexpr(1, $2);
-		locctr += geninstr( findgen( $1, ST_EXP,
-				  ( (evalr[1].seg == SSG_ABS
-				&& evalr[1].value >= 0
-				&& evalr[1].value <= 255 )
-				? DIRECT : EXTENDED ) )
-				);
-			}
-	;
-genline : KOC_opcode  indexed
-			{
-		genlocrec(currseg, labelloc);
-		locctr += geninstr(findgen($1, ST_IND, 0));
-		locctr += geninstr($2);
-			}
-	;
-genline : KOC_opcode  expr ',' PCRELATIVE
-			{
-		genlocrec(currseg, labelloc);
-		pevalexpr(1, $2);
-		locctr += geninstr(findgen($1, ST_IND, 0));
-		if(evalr[1].seg == SSG_ABS
-			&& (evalr[1].value - locctr) >= PCRNEG8M
-			&& (evalr[1].value - locctr) <= PCRPLUS8M)
-		{
-			locctr += geninstr(PCR8STR);
-		}
-		else
-		{
-			locctr += geninstr(PCR16STR);
-		}
-			}
-	;
-genline : KOC_opcode  '[' expr ',' PCRELATIVE ']'
-			{
-		genlocrec(currseg, labelloc);
-		pevalexpr(1, $3);
-		locctr += geninstr(findgen($1, ST_IND, 0));
-		if(evalr[1].seg == SSG_ABS
-			&& (evalr[1].value - locctr) >= PCRNEG8M
-			&& (evalr[1].value - locctr) <= PCRPLUS8M)
-		{
-			locctr += geninstr(IPCR8STR);
-		}
-		else
-		{
-			locctr += geninstr(IPCR16STR);
-		}
-			}
-	;
-genline : KOC_opcode  '[' expr ']'
-			{
-		genlocrec(currseg, labelloc);
-		pevalexpr(1, $3);
-		locctr += geninstr(findgen($1, ST_IND, 0));
-		locctr += geninstr(IEXPSTR);
-			}
-	;
-genline : KOC_sstkop  regbits
-			{
-		genlocrec(currseg, labelloc);
-		if($2 & REGBSSTK)
-		{
-			fraerror("push/pop of system stack register");
-			evalr[1].value = 0;
-		}
-		else
-		{
-			evalr[1].value = $2 & 0xff;
-		}
-		locctr += geninstr(findgen($1, ST_SPSH, 0));
-			}
-	;
-genline : KOC_ustkop  regbits
-			{
-		genlocrec(currseg, labelloc);
-		if($2 & REGBUSTK)
-		{
-			fraerror("push/pop of user stack register");
-			evalr[1].value = 0;
-		}
-		else
-		{
-			evalr[1].value = $2 & 0xff;
-		}
-		locctr += geninstr(findgen($1, ST_SPSH, 0));
-			}
-	;
-genline : KOC_tfrop  register ',' register
-			{
-		genlocrec(currseg, labelloc);
-		if(($2 & TFR8BIT) == ($4 & TFR8BIT))
-		{
-			evalr[1].value = $2;
-			evalr[2].value = $4;
-		}
-		else
-		{
-			evalr[1].value = 0;
-			evalr[2].value = 0;
-			fraerror("operands are different sizes");
-		}
-		locctr += geninstr(findgen($1, ST_TFR, 0));
-			}
-	;
-indexed :	expr ',' INDEX
-			{
-		pevalexpr(1, $1);
-		if(evalr[1].seg == SSG_ABS
-			&& evalr[1].value >= -128
-			&& evalr[1].value <= 127 )
-		{
-			if(evalr[1].value >= -16
-			&& evalr[1].value <= 15)
-			{
-				if(evalr[1].value == 0)
-					$$ = indexgen [IDM104] [$3 - TFRX];
-				else
-					$$ = indexgen [IDM000] [$3 - TFRX];
-			}
-			else
-			{
-				$$ = indexgen [IDM108] [$3 - TFRX];
-			}
-		}
-		else
-		{
-			$$ = indexgen [IDM109] [$3 - TFRX];
-		}
-			}
+genline: KOC_opcode {
+   genlocrec(currseg, labelloc);
+   locctr += geninstr(findgen($1, ST_INH, 0));
+}
+;
+genline: KOC_opcode  '#' expr {
+   pevalexpr(1, $3);
+   genlocrec(currseg, labelloc);
+   locctr += geninstr(findgen($1, ST_IMM, 0));
+}
+;
+genline: KOC_opcode  expr {
+   genlocrec(currseg, labelloc);
+   pevalexpr(1, $2);
+   locctr += geninstr(findgen($1, ST_EXP, ((evalr[1].seg == SSG_ABS && evalr[1].value >= 0 && evalr[1].value <= 255)
+            ? DIRECT : EXTENDED))
+      );
+}
+;
+genline: KOC_opcode  indexed {
+   genlocrec(currseg, labelloc);
+   locctr += geninstr(findgen($1, ST_IND, 0));
+   locctr += geninstr($2);
+}
+;
+genline: KOC_opcode  expr ',' PCRELATIVE {
+   genlocrec(currseg, labelloc);
+   pevalexpr(1, $2);
+   locctr += geninstr(findgen($1, ST_IND, 0));
+   if (evalr[1].seg == SSG_ABS && (evalr[1].value - locctr) >= PCRNEG8M && (evalr[1].value - locctr) <= PCRPLUS8M) {
+      locctr += geninstr(PCR8STR);
+   } else {
+      locctr += geninstr(PCR16STR);
+   }
+}
+;
+genline: KOC_opcode  '[' expr ',' PCRELATIVE ']' {
+   genlocrec(currseg, labelloc);
+   pevalexpr(1, $3);
+   locctr += geninstr(findgen($1, ST_IND, 0));
+   if (evalr[1].seg == SSG_ABS && (evalr[1].value - locctr) >= PCRNEG8M && (evalr[1].value - locctr) <= PCRPLUS8M) {
+      locctr += geninstr(IPCR8STR);
+   } else {
+      locctr += geninstr(IPCR16STR);
+   }
+}
+;
+genline: KOC_opcode  '[' expr ']' {
+   genlocrec(currseg, labelloc);
+   pevalexpr(1, $3);
+   locctr += geninstr(findgen($1, ST_IND, 0));
+   locctr += geninstr(IEXPSTR);
+}
+;
+genline: KOC_sstkop  regbits {
+   genlocrec(currseg, labelloc);
+   if ($2 & REGBSSTK) {
+      fraerror("push/pop of system stack register");
+      evalr[1].value = 0;
+   } else {
+      evalr[1].value = $2 & 0xff;
+   }
+   locctr += geninstr(findgen($1, ST_SPSH, 0));
+}
+;
+genline: KOC_ustkop  regbits {
+   genlocrec(currseg, labelloc);
+   if ($2 & REGBUSTK) {
+      fraerror("push/pop of user stack register");
+      evalr[1].value = 0;
+   } else {
+      evalr[1].value = $2 & 0xff;
+   }
+   locctr += geninstr(findgen($1, ST_SPSH, 0));
+}
+;
+genline: KOC_tfrop  register ',' register {
+   genlocrec(currseg, labelloc);
+   if (($2 & TFR8BIT) == ($4 & TFR8BIT)) {
+      evalr[1].value = $2;
+      evalr[2].value = $4;
+   } else {
+      evalr[1].value = 0;
+      evalr[2].value = 0;
+      fraerror("operands are different sizes");
+   }
+   locctr += geninstr(findgen($1, ST_TFR, 0));
+}
+;
+indexed: expr ',' INDEX {
+   pevalexpr(1, $1);
+   if (evalr[1].seg == SSG_ABS && evalr[1].value >= -128 && evalr[1].value <= 127) {
+      if (evalr[1].value >= -16 && evalr[1].value <= 15) {
+         if (evalr[1].value == 0)
+            $$ = indexgen[IDM104][$3 - TFRX];
+         else
+            $$ = indexgen[IDM000][$3 - TFRX];
+      } else {
+         $$ = indexgen[IDM108][$3 - TFRX];
+      }
+   } else {
+      $$ = indexgen[IDM109][$3 - TFRX];
+   }
+}
 
-	|	ACCUM ',' INDEX
-			{
-		switch($1)
-		{
-		case TFRA:
-			$$ = indexgen [IDM106] [$3 - TFRX];
-			break;
-		case TFRB:
-			$$ = indexgen [IDM105] [$3 - TFRX];
-			break;
-		case TFRD:
-			$$ = indexgen [IDM10B] [$3 - TFRX];
-			break;
-		}
-			}
+| ACCUM ',' INDEX {
+   switch ($1) {
+      case TFRA:
+         $$ = indexgen[IDM106][$3 - TFRX];
+         break;
+      case TFRB:
+         $$ = indexgen[IDM105][$3 - TFRX];
+         break;
+      case TFRD:
+         $$ = indexgen[IDM10B][$3 - TFRX];
+         break;
+   }
+}
 
-	|	',' INDEX
-			{
-		$$ = indexgen [IDM104] [$2 - TFRX];
-			}
+| ',' INDEX {
+   $$ = indexgen[IDM104][$2 - TFRX];
+}
 
-	|	',' INDEX '+'
-			{
-		$$ = indexgen [IDM100] [$2 - TFRX];
-			}
+| ',' INDEX '+' {
+   $$ = indexgen[IDM100][$2 - TFRX];
+}
 
-	|	',' INDEX '+' '+'
-			{
-		$$ = indexgen [IDM101] [$2 - TFRX];
-			}
+| ',' INDEX '+' '+' {
+   $$ = indexgen[IDM101][$2 - TFRX];
+}
 
-	|	',' '-' INDEX
-			{
-		$$ = indexgen [IDM102] [$3 - TFRX];
-			}
+| ',' '-' INDEX {
+   $$ = indexgen[IDM102][$3 - TFRX];
+}
 
-	|	',' '-' '-' INDEX
-			{
-		$$ = indexgen [IDM103] [$4 - TFRX];
-			}
+| ',' '-' '-' INDEX {
+   $$ = indexgen[IDM103][$4 - TFRX];
+}
 
-	|	'[' expr ',' INDEX ']'
-			{
-		pevalexpr(1, $2);
-		if(evalr[1].seg == SSG_ABS
-			&& evalr[1].value >= -128
-			&& evalr[1].value <= 127 )
-		{
-			if(evalr[1].value == 0)
-				$$ = indexgen [IDM114] [$4 - TFRX];
-			else
-				$$ = indexgen [IDM118] [$4 - TFRX];
-		}
-		else
-		{
-			$$ = indexgen [IDM119] [$4 - TFRX];
-		}
-			}
+| '[' expr ',' INDEX ']' {
+   pevalexpr(1, $2);
+   if (evalr[1].seg == SSG_ABS && evalr[1].value >= -128 && evalr[1].value <= 127) {
+      if (evalr[1].value == 0)
+         $$ = indexgen[IDM114][$4 - TFRX];
+      else
+         $$ = indexgen[IDM118][$4 - TFRX];
+   } else {
+      $$ = indexgen[IDM119][$4 - TFRX];
+   }
+}
 
-	|	'[' ACCUM ',' INDEX ']'
-			{
-		switch($2)
-		{
-		case TFRA:
-			$$ = indexgen [IDM116] [$4 - TFRX];
-			break;
-		case TFRB:
-			$$ = indexgen [IDM115] [$4 - TFRX];
-			break;
-		case TFRD:
-			$$ = indexgen [IDM11B] [$4 - TFRX];
-			break;
-		}
-			}
+| '[' ACCUM ',' INDEX ']' {
+   switch ($2) {
+      case TFRA:
+         $$ = indexgen[IDM116][$4 - TFRX];
+         break;
+      case TFRB:
+         $$ = indexgen[IDM115][$4 - TFRX];
+         break;
+      case TFRD:
+         $$ = indexgen[IDM11B][$4 - TFRX];
+         break;
+   }
+}
 
-	|	'[' ',' INDEX ']'
-			{
-		$$ = indexgen [IDM114] [$3 - TFRX];
-			}
+| '[' ',' INDEX ']' {
+   $$ = indexgen[IDM114][$3 - TFRX];
+}
 
-	|	'[' ',' INDEX '+' '+' ']'
-			{
-		$$ = indexgen [IDM111] [$3 - TFRX];
-			}
+| '[' ',' INDEX '+' '+' ']' {
+   $$ = indexgen[IDM111][$3 - TFRX];
+}
 
-	|	'[' ',' '-' '-' INDEX ']'
-			{
-		$$ = indexgen [IDM113] [$5 - TFRX];
-			}
-	;
+| '[' ',' '-' '-' INDEX ']' {
+   $$ = indexgen[IDM113][$5 - TFRX];
+}
+;
 
-regbits :	regbits ',' register
-			{
-		switch($3)
-		{
-		case TFRD:
-			$$ = $1 |  (PPOSTA | PPOSTB);
-			break;
-		case TFRX:
-			$$ = $1 |  PPOSTX;
-			break;
-		case TFRY:
-			$$ = $1 |  PPOSTY;
-			break;
-		case TFRU:
-			$$ = $1 |  PPOSTU;
-			break;
-		case TFRS:
-			$$ = $1 |  PPOSTS;
-			break;
-		case TFRPC:
-			$$ = $1 |  PPOSTPC;
-			break;
-		case TFRA:
-			$$ = $1 |  PPOSTA;
-			break;
-		case TFRB:
-			$$ = $1 |  PPOSTB;
-			break;
-		case TFRCC:
-			$$ = $1 |  PPOSTCC;
-			break;
-		case TFRDP:
-			$$ = $1 |  PPOSTDP;
-			break;
-		}
-			}
-	|	register
-			{
-		switch($1)
-		{
-		case TFRD:
-			$$ = (PPOSTA | PPOSTB);
-			break;
-		case TFRX:
-			$$ = PPOSTX;
-			break;
-		case TFRY:
-			$$ = PPOSTY;
-			break;
-		case TFRU:
-			$$ = PPOSTU;
-			break;
-		case TFRS:
-			$$ = PPOSTS;
-			break;
-		case TFRPC:
-			$$ = PPOSTPC;
-			break;
-		case TFRA:
-			$$ = PPOSTA;
-			break;
-		case TFRB:
-			$$ = PPOSTB;
-			break;
-		case TFRCC:
-			$$ = PPOSTCC;
-			break;
-		case TFRDP:
-			$$ = PPOSTDP;
-			break;
-		}
-			}
-	;
+regbits: regbits ',' register {
+   switch ($3) {
+      case TFRD:
+         $$ = $1 | (PPOSTA | PPOSTB);
+         break;
+      case TFRX:
+         $$ = $1 | PPOSTX;
+         break;
+      case TFRY:
+         $$ = $1 | PPOSTY;
+         break;
+      case TFRU:
+         $$ = $1 | PPOSTU;
+         break;
+      case TFRS:
+         $$ = $1 | PPOSTS;
+         break;
+      case TFRPC:
+         $$ = $1 | PPOSTPC;
+         break;
+      case TFRA:
+         $$ = $1 | PPOSTA;
+         break;
+      case TFRB:
+         $$ = $1 | PPOSTB;
+         break;
+      case TFRCC:
+         $$ = $1 | PPOSTCC;
+         break;
+      case TFRDP:
+         $$ = $1 | PPOSTDP;
+         break;
+   }
+}
+| register {
+   switch ($1) {
+      case TFRD:
+         $$ = (PPOSTA | PPOSTB);
+         break;
+      case TFRX:
+         $$ = PPOSTX;
+         break;
+      case TFRY:
+         $$ = PPOSTY;
+         break;
+      case TFRU:
+         $$ = PPOSTU;
+         break;
+      case TFRS:
+         $$ = PPOSTS;
+         break;
+      case TFRPC:
+         $$ = PPOSTPC;
+         break;
+      case TFRA:
+         $$ = PPOSTA;
+         break;
+      case TFRB:
+         $$ = PPOSTB;
+         break;
+      case TFRCC:
+         $$ = PPOSTCC;
+         break;
+      case TFRDP:
+         $$ = PPOSTDP;
+         break;
+   }
+}
+;
 
-register :	ACCUM
-	|	INDEX
-	|	SPECREG
-	;
-expr	:	'+' expr %prec KEOP_MUN
-			{
-				$$ = $2;
-			}
-	|	'-' expr %prec KEOP_MUN
-			{
-				$$ = exprnode(PCCASE_UN,$2,IFC_NEG,0,0L,
-					SYMNULL);
-			}
-	|	KEOP_NOT expr
-			{
-				$$ = exprnode(PCCASE_UN,$2,IFC_NOT,0,0L,
-					SYMNULL);
-			}
-	|	KEOP_HIGH expr
-			{
-				$$ = exprnode(PCCASE_UN,$2,IFC_HIGH,0,0L,
-					SYMNULL);
-			}
-	|	KEOP_LOW expr
-			{
-				$$ = exprnode(PCCASE_UN,$2,IFC_LOW,0,0L,
-					SYMNULL);
-			}
-	|	expr '*' expr
-			{
-				$$ = exprnode(PCCASE_BIN,$1,IFC_MUL,$3,0L,
-					SYMNULL);
-			}
-	|	expr '/' expr
-			{
-				$$ = exprnode(PCCASE_BIN,$1,IFC_DIV,$3,0L,
-					SYMNULL);
-			}
-	|	expr '+' expr
-			{
-				$$ = exprnode(PCCASE_BIN,$1,IFC_ADD,$3,0L,
-					SYMNULL);
-			}
-	|	expr '-' expr
-			{
-				$$ = exprnode(PCCASE_BIN,$1,IFC_SUB,$3,0L,
-					SYMNULL);
-			}
-	|	expr KEOP_MOD expr
-			{
-				$$ = exprnode(PCCASE_BIN,$1,IFC_MOD,$3,0L,
-					SYMNULL);
-			}
-	|	expr KEOP_SHL expr
-			{
-				$$ = exprnode(PCCASE_BIN,$1,IFC_SHL,$3,0L,
-					SYMNULL);
-			}
-	|	expr KEOP_SHR expr
-			{
-				$$ = exprnode(PCCASE_BIN,$1,IFC_SHR,$3,0L,
-					SYMNULL);
-			}
-	|	expr KEOP_GT expr
-			{
-				$$ = exprnode(PCCASE_BIN,$1,IFC_GT,$3,0L,
-					SYMNULL);
-			}
-	|	expr KEOP_GE expr
-			{
-				$$ = exprnode(PCCASE_BIN,$1,IFC_GE,$3,0L,
-					SYMNULL);
-			}
-	|	expr KEOP_LT expr
-			{
-				$$ = exprnode(PCCASE_BIN,$1,IFC_LT,$3,0L,
-					SYMNULL);
-			}
-	|	expr KEOP_LE expr
-			{
-				$$ = exprnode(PCCASE_BIN,$1,IFC_LE,$3,0L,
-					SYMNULL);
-			}
-	|	expr KEOP_NE expr
-			{
-				$$ = exprnode(PCCASE_BIN,$1,IFC_NE,$3,0L,
-					SYMNULL);
-			}
-	|	expr KEOP_EQ expr
-			{
-				$$ = exprnode(PCCASE_BIN,$1,IFC_EQ,$3,0L,
-					SYMNULL);
-			}
-	|	expr KEOP_AND expr
-			{
-				$$ = exprnode(PCCASE_BIN,$1,IFC_AND,$3,0L,
-					SYMNULL);
-			}
-	|	expr KEOP_OR expr
-			{
-				$$ = exprnode(PCCASE_BIN,$1,IFC_OR,$3,0L,
-					SYMNULL);
-			}
-	|	expr KEOP_XOR expr
-			{
-				$$ = exprnode(PCCASE_BIN,$1,IFC_XOR,$3,0L,
-					SYMNULL);
-			}
-	|	KEOP_DEFINED SYMBOL
-			{
-				$$ = exprnode(PCCASE_DEF,0,IGP_DEFINED,0,0L,$2);
-			}
-	|	SYMBOL
-			{
-				$$ = exprnode(PCCASE_SYMB,0,IFC_SYMB,0,0L,$1);
-			}
-	|	'*'
-			{
-				$$ = exprnode(PCCASE_PROGC,0,IFC_PROGCTR,0,
-					labelloc, SYMNULL);
-			}
-	|	CONSTANT
-			{
-				$$ = exprnode(PCCASE_CONS,0,IGP_CONSTANT,0,$1,
-					SYMNULL);
-			}
-	|	STRING
-			{
-				char *sourcestr = $1;
-				long accval = 0;
+register: ACCUM
 
-				if(strlen($1) > 0)
-				{
-					accval = chtran(&sourcestr);
-					if(*sourcestr != '\0')
-					{
-						accval = (accval << 8) +
-							chtran(&sourcestr);
-					}
+| INDEX
+| SPECREG
+;
+expr: '+' expr %prec KEOP_MUN {
+   $$ = $2;
+}
+| '-' expr %prec KEOP_MUN {
+   $$ = exprnode(PCCASE_UN, $2, IFC_NEG, 0, 0L, SYMNULL);
+}
+| KEOP_NOT expr {
+   $$ = exprnode(PCCASE_UN, $2, IFC_NOT, 0, 0L, SYMNULL);
+}
+| KEOP_HIGH expr {
+   $$ = exprnode(PCCASE_UN, $2, IFC_HIGH, 0, 0L, SYMNULL);
+}
+| KEOP_LOW expr {
+   $$ = exprnode(PCCASE_UN, $2, IFC_LOW, 0, 0L, SYMNULL);
+}
+| expr '*' expr {
+   $$ = exprnode(PCCASE_BIN, $1, IFC_MUL, $3, 0L, SYMNULL);
+}
+| expr '/' expr {
+   $$ = exprnode(PCCASE_BIN, $1, IFC_DIV, $3, 0L, SYMNULL);
+}
+| expr '+' expr {
+   $$ = exprnode(PCCASE_BIN, $1, IFC_ADD, $3, 0L, SYMNULL);
+}
+| expr '-' expr {
+   $$ = exprnode(PCCASE_BIN, $1, IFC_SUB, $3, 0L, SYMNULL);
+}
+| expr KEOP_MOD expr {
+   $$ = exprnode(PCCASE_BIN, $1, IFC_MOD, $3, 0L, SYMNULL);
+}
+| expr KEOP_SHL expr {
+   $$ = exprnode(PCCASE_BIN, $1, IFC_SHL, $3, 0L, SYMNULL);
+}
+| expr KEOP_SHR expr {
+   $$ = exprnode(PCCASE_BIN, $1, IFC_SHR, $3, 0L, SYMNULL);
+}
+| expr KEOP_GT expr {
+   $$ = exprnode(PCCASE_BIN, $1, IFC_GT, $3, 0L, SYMNULL);
+}
+| expr KEOP_GE expr {
+   $$ = exprnode(PCCASE_BIN, $1, IFC_GE, $3, 0L, SYMNULL);
+}
+| expr KEOP_LT expr {
+   $$ = exprnode(PCCASE_BIN, $1, IFC_LT, $3, 0L, SYMNULL);
+}
+| expr KEOP_LE expr {
+   $$ = exprnode(PCCASE_BIN, $1, IFC_LE, $3, 0L, SYMNULL);
+}
+| expr KEOP_NE expr {
+   $$ = exprnode(PCCASE_BIN, $1, IFC_NE, $3, 0L, SYMNULL);
+}
+| expr KEOP_EQ expr {
+   $$ = exprnode(PCCASE_BIN, $1, IFC_EQ, $3, 0L, SYMNULL);
+}
+| expr KEOP_AND expr {
+   $$ = exprnode(PCCASE_BIN, $1, IFC_AND, $3, 0L, SYMNULL);
+}
+| expr KEOP_OR expr {
+   $$ = exprnode(PCCASE_BIN, $1, IFC_OR, $3, 0L, SYMNULL);
+}
+| expr KEOP_XOR expr {
+   $$ = exprnode(PCCASE_BIN, $1, IFC_XOR, $3, 0L, SYMNULL);
+}
+| KEOP_DEFINED SYMBOL {
+   $$ = exprnode(PCCASE_DEF, 0, IGP_DEFINED, 0, 0L, $2);
+}
+| SYMBOL {
+   $$ = exprnode(PCCASE_SYMB, 0, IFC_SYMB, 0, 0L, $1);
+}
+| '*' {
+   $$ = exprnode(PCCASE_PROGC, 0, IFC_PROGCTR, 0, labelloc, SYMNULL);
+}
+| CONSTANT {
+   $$ = exprnode(PCCASE_CONS, 0, IGP_CONSTANT, 0, $1, SYMNULL);
+}
+| STRING {
+   char *sourcestr = $1;
+   long accval = 0;
 
-					if( *sourcestr != '\0')
-					{
-	frawarn("string constant in expression more than 2 characters long");
-					}
-				}
-				$$ = exprnode(PCCASE_CONS, 0, IGP_CONSTANT, 0,
-					accval, SYMNULL);
-			}
-	|	'(' expr ')'
-			{
-				$$ = $2;
-			}
-	;
+   if (strlen($1) > 0) {
+      accval = chtran(&sourcestr);
+      if (*sourcestr != '\0') {
+         accval = (accval << 8) + chtran(&sourcestr);
+      }
+
+      if (*sourcestr != '\0') {
+         frawarn("string constant in expression more than 2 characters long");
+      }
+   }
+   $$ = exprnode(PCCASE_CONS, 0, IGP_CONSTANT, 0, accval, SYMNULL);
+}
+| '(' expr ')' {
+   $$ = $2;
+}
+;
 
 
 
 %%
 
-lexintercept()
-/*
-	description	intercept the call to yylex (the lexical analyzer)
-			and filter out all unnecessary tokens when skipping
-			the input between a failed IF and its matching ENDI or
-			ELSE
-	globals 	fraifskip	the enable flag
-*/
-{
+// Intercept the call to yylex (the lexical analyzer)
+// and filter out all unnecessary tokens when skipping
+// the input between a failed IF and its matching ENDI or
+// ELSE
+// Globals:
+//	fraifskip	the enable flag
+lexintercept() {
 #undef yylex
 
-	int rv;
+   int rv;
 
-	if(fraifskip)
-	{
-		for(;;)
-		{
+   if (fraifskip) {
+      for (;;) {
 
-			switch(rv = yylex())
-
-			{
-			case 0:
-			case KOC_END:
-			case KOC_IF:
-			case KOC_ELSE:
-			case KOC_ENDI:
-			case EOL:
-				return rv;
-			default:
-				break;
-			}
-		}
-	}
-	else
-		return yylex();
+         switch (rv = yylex()) {
+            case 0:
+            case KOC_END:
+            case KOC_IF:
+            case KOC_ELSE:
+            case KOC_ENDI:
+            case EOL:
+               return rv;
+            default:
+               break;
+         }
+      }
+   } else
+      return yylex();
 #define yylex lexintercept
 }
 
+setreserved() {
 
+   reservedsym("and", KEOP_AND, 0);
+   reservedsym("defined", KEOP_DEFINED, 0);
+   reservedsym("eq", KEOP_EQ, 0);
+   reservedsym("ge", KEOP_GE, 0);
+   reservedsym("gt", KEOP_GT, 0);
+   reservedsym("high", KEOP_HIGH, 0);
+   reservedsym("le", KEOP_LE, 0);
+   reservedsym("low", KEOP_LOW, 0);
+   reservedsym("lt", KEOP_LT, 0);
+   reservedsym("mod", KEOP_MOD, 0);
+   reservedsym("ne", KEOP_NE, 0);
+   reservedsym("not", KEOP_NOT, 0);
+   reservedsym("or", KEOP_OR, 0);
+   reservedsym("shl", KEOP_SHL, 0);
+   reservedsym("shr", KEOP_SHR, 0);
+   reservedsym("xor", KEOP_XOR, 0);
+   reservedsym("AND", KEOP_AND, 0);
+   reservedsym("DEFINED", KEOP_DEFINED, 0);
+   reservedsym("EQ", KEOP_EQ, 0);
+   reservedsym("GE", KEOP_GE, 0);
+   reservedsym("GT", KEOP_GT, 0);
+   reservedsym("HIGH", KEOP_HIGH, 0);
+   reservedsym("LE", KEOP_LE, 0);
+   reservedsym("LOW", KEOP_LOW, 0);
+   reservedsym("LT", KEOP_LT, 0);
+   reservedsym("MOD", KEOP_MOD, 0);
+   reservedsym("NE", KEOP_NE, 0);
+   reservedsym("NOT", KEOP_NOT, 0);
+   reservedsym("OR", KEOP_OR, 0);
+   reservedsym("SHL", KEOP_SHL, 0);
+   reservedsym("SHR", KEOP_SHR, 0);
+   reservedsym("XOR", KEOP_XOR, 0);
 
-setreserved()
-{
-
-	reservedsym("and", KEOP_AND, 0);
-	reservedsym("defined", KEOP_DEFINED,0);
-	reservedsym("eq", KEOP_EQ, 0);
-	reservedsym("ge", KEOP_GE, 0);
-	reservedsym("gt", KEOP_GT, 0);
-	reservedsym("high", KEOP_HIGH, 0);
-	reservedsym("le", KEOP_LE, 0);
-	reservedsym("low", KEOP_LOW, 0);
-	reservedsym("lt", KEOP_LT, 0);
-	reservedsym("mod", KEOP_MOD, 0);
-	reservedsym("ne", KEOP_NE, 0);
-	reservedsym("not", KEOP_NOT, 0);
-	reservedsym("or", KEOP_OR, 0);
-	reservedsym("shl", KEOP_SHL, 0);
-	reservedsym("shr", KEOP_SHR, 0);
-	reservedsym("xor", KEOP_XOR, 0);
-	reservedsym("AND", KEOP_AND, 0);
-	reservedsym("DEFINED", KEOP_DEFINED,0);
-	reservedsym("EQ", KEOP_EQ, 0);
-	reservedsym("GE", KEOP_GE, 0);
-	reservedsym("GT", KEOP_GT, 0);
-	reservedsym("HIGH", KEOP_HIGH, 0);
-	reservedsym("LE", KEOP_LE, 0);
-	reservedsym("LOW", KEOP_LOW, 0);
-	reservedsym("LT", KEOP_LT, 0);
-	reservedsym("MOD", KEOP_MOD, 0);
-	reservedsym("NE", KEOP_NE, 0);
-	reservedsym("NOT", KEOP_NOT, 0);
-	reservedsym("OR", KEOP_OR, 0);
-	reservedsym("SHL", KEOP_SHL, 0);
-	reservedsym("SHR", KEOP_SHR, 0);
-	reservedsym("XOR", KEOP_XOR, 0);
-
-	/* machine specific token definitions */
-	reservedsym("a", ACCUM, TFRA);
-	reservedsym("b", ACCUM, TFRB);
-	reservedsym("cc", SPECREG, TFRCC);
-	reservedsym("dp", SPECREG, TFRDP);
-	reservedsym("d", ACCUM, TFRD);
-	reservedsym("x", INDEX, TFRX);
-	reservedsym("y", INDEX, TFRY);
-	reservedsym("u", INDEX, TFRU);
-	reservedsym("s", INDEX, TFRS);
-	reservedsym("pc", SPECREG, TFRPC);
-	reservedsym("pcr", PCRELATIVE, 0);
-	reservedsym("A", ACCUM, TFRA);
-	reservedsym("B", ACCUM, TFRB);
-	reservedsym("CC", SPECREG, TFRCC);
-	reservedsym("DP", SPECREG, TFRDP);
-	reservedsym("D", ACCUM, TFRD);
-	reservedsym("X", INDEX, TFRX);
-	reservedsym("Y", INDEX, TFRY);
-	reservedsym("U", INDEX, TFRU);
-	reservedsym("S", INDEX, TFRS);
-	reservedsym("PC", SPECREG, TFRPC);
-	reservedsym("PCR", PCRELATIVE, 0);
+/* machine specific token definitions */
+   reservedsym("a", ACCUM, TFRA);
+   reservedsym("b", ACCUM, TFRB);
+   reservedsym("cc", SPECREG, TFRCC);
+   reservedsym("dp", SPECREG, TFRDP);
+   reservedsym("d", ACCUM, TFRD);
+   reservedsym("x", INDEX, TFRX);
+   reservedsym("y", INDEX, TFRY);
+   reservedsym("u", INDEX, TFRU);
+   reservedsym("s", INDEX, TFRS);
+   reservedsym("pc", SPECREG, TFRPC);
+   reservedsym("pcr", PCRELATIVE, 0);
+   reservedsym("A", ACCUM, TFRA);
+   reservedsym("B", ACCUM, TFRB);
+   reservedsym("CC", SPECREG, TFRCC);
+   reservedsym("DP", SPECREG, TFRDP);
+   reservedsym("D", ACCUM, TFRD);
+   reservedsym("X", INDEX, TFRX);
+   reservedsym("Y", INDEX, TFRY);
+   reservedsym("U", INDEX, TFRU);
+   reservedsym("S", INDEX, TFRS);
+   reservedsym("PC", SPECREG, TFRPC);
+   reservedsym("PCR", PCRELATIVE, 0);
 }
 
 cpumatch(str)
-	char * str;
+char *str;
 {
-	return TRUE;
+   return TRUE;
 }
 
-/*
-	description	Opcode and Instruction generation tables
-	usage		Unix, framework crossassembler
-	history		September 25, 1987
-*/
-
+// Opcode and Instruction generation tables
 #define NUMOPCODE 163
 int gnumopcode = NUMOPCODE;
 
 int ophashlnk[NUMOPCODE];
 
-struct opsym optab[NUMOPCODE+1]
-	= {
-	{"invalid", KOC_opcode, 2, 0 },
-	{"ABX", KOC_opcode, 1, 2 },
-	{"ADCA", KOC_opcode, 3, 3 },
-	{"ADCB", KOC_opcode, 3, 6 },
-	{"ADDA", KOC_opcode, 3, 9 },
-	{"ADDB", KOC_opcode, 3, 12 },
-	{"ADDD", KOC_opcode, 3, 15 },
-	{"ANDA", KOC_opcode, 3, 18 },
-	{"ANDB", KOC_opcode, 3, 21 },
-	{"ANDCC", KOC_opcode, 1, 24 },
-	{"ASL", KOC_opcode, 2, 25 },
-	{"ASLA", KOC_opcode, 1, 27 },
-	{"ASLB", KOC_opcode, 1, 28 },
-	{"ASR", KOC_opcode, 2, 29 },
-	{"ASRA", KOC_opcode, 1, 31 },
-	{"ASRB", KOC_opcode, 1, 32 },
-	{"BCC", KOC_opcode, 1, 33 },
-	{"BCS", KOC_opcode, 1, 34 },
-	{"BEQ", KOC_opcode, 1, 35 },
-	{"BGE", KOC_opcode, 1, 36 },
-	{"BGT", KOC_opcode, 1, 37 },
-	{"BHI", KOC_opcode, 1, 38 },
-	{"BHS", KOC_opcode, 1, 39 },
-	{"BITA", KOC_opcode, 3, 40 },
-	{"BITB", KOC_opcode, 3, 43 },
-	{"BLE", KOC_opcode, 1, 46 },
-	{"BLO", KOC_opcode, 1, 47 },
-	{"BLS", KOC_opcode, 1, 48 },
-	{"BLT", KOC_opcode, 1, 49 },
-	{"BMI", KOC_opcode, 1, 50 },
-	{"BNE", KOC_opcode, 1, 51 },
-	{"BPL", KOC_opcode, 1, 52 },
-	{"BRA", KOC_opcode, 1, 53 },
-	{"BRN", KOC_opcode, 1, 54 },
-	{"BSR", KOC_opcode, 1, 55 },
-	{"BVC", KOC_opcode, 1, 56 },
-	{"BVS", KOC_opcode, 1, 57 },
-	{"BYTE", KOC_BDEF, 0, 0 },
-	{"CHARDEF", KOC_CHDEF, 0, 0 },
-	{"CHARSET", KOC_CHSET, 0, 0 },
-	{"CHARUSE", KOC_CHUSE, 0, 0 },
-	{"CHD", KOC_CHDEF, 0, 0 },
-	{"CLR", KOC_opcode, 2, 58 },
-	{"CLRA", KOC_opcode, 1, 60 },
-	{"CLRB", KOC_opcode, 1, 61 },
-	{"CMPA", KOC_opcode, 3, 62 },
-	{"CMPB", KOC_opcode, 3, 65 },
-	{"CMPD", KOC_opcode, 3, 68 },
-	{"CMPS", KOC_opcode, 3, 71 },
-	{"CMPU", KOC_opcode, 3, 74 },
-	{"CMPX", KOC_opcode, 3, 77 },
-	{"CMPY", KOC_opcode, 3, 80 },
-	{"COM", KOC_opcode, 2, 83 },
-	{"COMA", KOC_opcode, 1, 85 },
-	{"COMB", KOC_opcode, 1, 86 },
-	{"CWAI", KOC_opcode, 1, 87 },
-	{"DAA", KOC_opcode, 1, 88 },
-	{"DB", KOC_BDEF, 0, 0 },
-	{"DEC", KOC_opcode, 2, 89 },
-	{"DECA", KOC_opcode, 1, 91 },
-	{"DECB", KOC_opcode, 1, 92 },
-	{"DW", KOC_WDEF, 0, 0 },
-	{"ELSE", KOC_ELSE, 0, 0 },
-	{"END", KOC_END, 0, 0 },
-	{"ENDI", KOC_ENDI, 0, 0 },
-	{"EORA", KOC_opcode, 3, 93 },
-	{"EORB", KOC_opcode, 3, 96 },
-	{"EQU", KOC_EQU, 0, 0 },
-	{"EXG", KOC_tfrop, 1, 99 },
-	{"FCB", KOC_BDEF, 0, 0 },
-	{"FCC", KOC_SDEF, 0, 0 },
-	{"FDB", KOC_WDEF, 0, 0 },
-	{"IF", KOC_IF, 0, 0 },
-	{"INC", KOC_opcode, 2, 100 },
-	{"INCA", KOC_opcode, 1, 102 },
-	{"INCB", KOC_opcode, 1, 103 },
-	{"INCL", KOC_INCLUDE, 0, 0 },
-	{"INCLUDE", KOC_INCLUDE, 0, 0 },
-	{"JMP", KOC_opcode, 2, 104 },
-	{"JSR", KOC_opcode, 2, 106 },
-	{"LBCC", KOC_opcode, 1, 108 },
-	{"LBCS", KOC_opcode, 1, 109 },
-	{"LBEQ", KOC_opcode, 1, 110 },
-	{"LBGE", KOC_opcode, 1, 111 },
-	{"LBGT", KOC_opcode, 1, 112 },
-	{"LBHI", KOC_opcode, 1, 113 },
-	{"LBHS", KOC_opcode, 1, 114 },
-	{"LBLE", KOC_opcode, 1, 115 },
-	{"LBLO", KOC_opcode, 1, 116 },
-	{"LBLS", KOC_opcode, 1, 117 },
-	{"LBLT", KOC_opcode, 1, 118 },
-	{"LBMI", KOC_opcode, 1, 119 },
-	{"LBNE", KOC_opcode, 1, 120 },
-	{"LBPL", KOC_opcode, 1, 121 },
-	{"LBRA", KOC_opcode, 1, 122 },
-	{"LBRN", KOC_opcode, 1, 123 },
-	{"LBSR", KOC_opcode, 1, 124 },
-	{"LBVC", KOC_opcode, 1, 125 },
-	{"LBVS", KOC_opcode, 1, 126 },
-	{"LDA", KOC_opcode, 3, 127 },
-	{"LDB", KOC_opcode, 3, 130 },
-	{"LDD", KOC_opcode, 3, 133 },
-	{"LDS", KOC_opcode, 3, 136 },
-	{"LDU", KOC_opcode, 3, 139 },
-	{"LDX", KOC_opcode, 3, 142 },
-	{"LDY", KOC_opcode, 3, 145 },
-	{"LEAS", KOC_opcode, 1, 148 },
-	{"LEAU", KOC_opcode, 1, 149 },
-	{"LEAX", KOC_opcode, 1, 150 },
-	{"LEAY", KOC_opcode, 1, 151 },
-	{"LSL", KOC_opcode, 2, 152 },
-	{"LSLA", KOC_opcode, 1, 154 },
-	{"LSLB", KOC_opcode, 1, 155 },
-	{"LSR", KOC_opcode, 2, 156 },
-	{"LSRA", KOC_opcode, 1, 158 },
-	{"LSRB", KOC_opcode, 1, 159 },
-	{"MUL", KOC_opcode, 1, 160 },
-	{"NEG", KOC_opcode, 2, 161 },
-	{"NEGA", KOC_opcode, 1, 163 },
-	{"NEGB", KOC_opcode, 1, 164 },
-	{"NOP", KOC_opcode, 1, 165 },
-	{"ORA", KOC_opcode, 3, 166 },
-	{"ORB", KOC_opcode, 3, 169 },
-	{"ORCC", KOC_opcode, 1, 172 },
-	{"ORG", KOC_ORG, 0, 0 },
-	{"PSHS", KOC_sstkop, 1, 173 },
-	{"PSHU", KOC_ustkop, 1, 174 },
-	{"PULS", KOC_sstkop, 1, 175 },
-	{"PULU", KOC_ustkop, 1, 176 },
-	{"RESERVE", KOC_RESM, 0, 0 },
-	{"RMB", KOC_RESM, 0, 0 },
-	{"ROL", KOC_opcode, 2, 177 },
-	{"ROLA", KOC_opcode, 1, 179 },
-	{"ROLB", KOC_opcode, 1, 180 },
-	{"ROR", KOC_opcode, 2, 181 },
-	{"RORA", KOC_opcode, 1, 183 },
-	{"RORB", KOC_opcode, 1, 184 },
-	{"RTI", KOC_opcode, 1, 185 },
-	{"RTS", KOC_opcode, 1, 186 },
-	{"SBCA", KOC_opcode, 3, 187 },
-	{"SBCB", KOC_opcode, 3, 190 },
-	{"SET", KOC_SET, 0, 0 },
-	{"SEX", KOC_opcode, 1, 193 },
-	{"STA", KOC_opcode, 2, 194 },
-	{"STB", KOC_opcode, 2, 196 },
-	{"STD", KOC_opcode, 2, 198 },
-	{"STRING", KOC_SDEF, 0, 0 },
-	{"STS", KOC_opcode, 2, 200 },
-	{"STU", KOC_opcode, 2, 202 },
-	{"STX", KOC_opcode, 2, 204 },
-	{"STY", KOC_opcode, 2, 206 },
-	{"SUBA", KOC_opcode, 3, 208 },
-	{"SUBB", KOC_opcode, 3, 211 },
-	{"SUBD", KOC_opcode, 3, 214 },
-	{"SWI2", KOC_opcode, 1, 217 },
-	{"SWI3", KOC_opcode, 1, 218 },
-	{"SWI", KOC_opcode, 1, 219 },
-	{"SYNC", KOC_opcode, 1, 220 },
-	{"TFR", KOC_tfrop, 1, 221 },
-	{"TST", KOC_opcode, 2, 222 },
-	{"TSTA", KOC_opcode, 1, 224 },
-	{"TSTB", KOC_opcode, 1, 225 },
-	{"WORD", KOC_WDEF, 0, 0 },
-	{ "", 0, 0, 0 }};
+struct opsym optab[NUMOPCODE + 1] = {
+   { "invalid", KOC_opcode, 2, 0 },
+   { "ABX", KOC_opcode, 1, 2 },
+   { "ADCA", KOC_opcode, 3, 3 },
+   { "ADCB", KOC_opcode, 3, 6 },
+   { "ADDA", KOC_opcode, 3, 9 },
+   { "ADDB", KOC_opcode, 3, 12 },
+   { "ADDD", KOC_opcode, 3, 15 },
+   { "ANDA", KOC_opcode, 3, 18 },
+   { "ANDB", KOC_opcode, 3, 21 },
+   { "ANDCC", KOC_opcode, 1, 24 },
+   { "ASL", KOC_opcode, 2, 25 },
+   { "ASLA", KOC_opcode, 1, 27 },
+   { "ASLB", KOC_opcode, 1, 28 },
+   { "ASR", KOC_opcode, 2, 29 },
+   { "ASRA", KOC_opcode, 1, 31 },
+   { "ASRB", KOC_opcode, 1, 32 },
+   { "BCC", KOC_opcode, 1, 33 },
+   { "BCS", KOC_opcode, 1, 34 },
+   { "BEQ", KOC_opcode, 1, 35 },
+   { "BGE", KOC_opcode, 1, 36 },
+   { "BGT", KOC_opcode, 1, 37 },
+   { "BHI", KOC_opcode, 1, 38 },
+   { "BHS", KOC_opcode, 1, 39 },
+   { "BITA", KOC_opcode, 3, 40 },
+   { "BITB", KOC_opcode, 3, 43 },
+   { "BLE", KOC_opcode, 1, 46 },
+   { "BLO", KOC_opcode, 1, 47 },
+   { "BLS", KOC_opcode, 1, 48 },
+   { "BLT", KOC_opcode, 1, 49 },
+   { "BMI", KOC_opcode, 1, 50 },
+   { "BNE", KOC_opcode, 1, 51 },
+   { "BPL", KOC_opcode, 1, 52 },
+   { "BRA", KOC_opcode, 1, 53 },
+   { "BRN", KOC_opcode, 1, 54 },
+   { "BSR", KOC_opcode, 1, 55 },
+   { "BVC", KOC_opcode, 1, 56 },
+   { "BVS", KOC_opcode, 1, 57 },
+   { "BYTE", KOC_BDEF, 0, 0 },
+   { "CHARDEF", KOC_CHDEF, 0, 0 },
+   { "CHARSET", KOC_CHSET, 0, 0 },
+   { "CHARUSE", KOC_CHUSE, 0, 0 },
+   { "CHD", KOC_CHDEF, 0, 0 },
+   { "CLR", KOC_opcode, 2, 58 },
+   { "CLRA", KOC_opcode, 1, 60 },
+   { "CLRB", KOC_opcode, 1, 61 },
+   { "CMPA", KOC_opcode, 3, 62 },
+   { "CMPB", KOC_opcode, 3, 65 },
+   { "CMPD", KOC_opcode, 3, 68 },
+   { "CMPS", KOC_opcode, 3, 71 },
+   { "CMPU", KOC_opcode, 3, 74 },
+   { "CMPX", KOC_opcode, 3, 77 },
+   { "CMPY", KOC_opcode, 3, 80 },
+   { "COM", KOC_opcode, 2, 83 },
+   { "COMA", KOC_opcode, 1, 85 },
+   { "COMB", KOC_opcode, 1, 86 },
+   { "CWAI", KOC_opcode, 1, 87 },
+   { "DAA", KOC_opcode, 1, 88 },
+   { "DB", KOC_BDEF, 0, 0 },
+   { "DEC", KOC_opcode, 2, 89 },
+   { "DECA", KOC_opcode, 1, 91 },
+   { "DECB", KOC_opcode, 1, 92 },
+   { "DW", KOC_WDEF, 0, 0 },
+   { "ELSE", KOC_ELSE, 0, 0 },
+   { "END", KOC_END, 0, 0 },
+   { "ENDI", KOC_ENDI, 0, 0 },
+   { "EORA", KOC_opcode, 3, 93 },
+   { "EORB", KOC_opcode, 3, 96 },
+   { "EQU", KOC_EQU, 0, 0 },
+   { "EXG", KOC_tfrop, 1, 99 },
+   { "FCB", KOC_BDEF, 0, 0 },
+   { "FCC", KOC_SDEF, 0, 0 },
+   { "FDB", KOC_WDEF, 0, 0 },
+   { "IF", KOC_IF, 0, 0 },
+   { "INC", KOC_opcode, 2, 100 },
+   { "INCA", KOC_opcode, 1, 102 },
+   { "INCB", KOC_opcode, 1, 103 },
+   { "INCL", KOC_INCLUDE, 0, 0 },
+   { "INCLUDE", KOC_INCLUDE, 0, 0 },
+   { "JMP", KOC_opcode, 2, 104 },
+   { "JSR", KOC_opcode, 2, 106 },
+   { "LBCC", KOC_opcode, 1, 108 },
+   { "LBCS", KOC_opcode, 1, 109 },
+   { "LBEQ", KOC_opcode, 1, 110 },
+   { "LBGE", KOC_opcode, 1, 111 },
+   { "LBGT", KOC_opcode, 1, 112 },
+   { "LBHI", KOC_opcode, 1, 113 },
+   { "LBHS", KOC_opcode, 1, 114 },
+   { "LBLE", KOC_opcode, 1, 115 },
+   { "LBLO", KOC_opcode, 1, 116 },
+   { "LBLS", KOC_opcode, 1, 117 },
+   { "LBLT", KOC_opcode, 1, 118 },
+   { "LBMI", KOC_opcode, 1, 119 },
+   { "LBNE", KOC_opcode, 1, 120 },
+   { "LBPL", KOC_opcode, 1, 121 },
+   { "LBRA", KOC_opcode, 1, 122 },
+   { "LBRN", KOC_opcode, 1, 123 },
+   { "LBSR", KOC_opcode, 1, 124 },
+   { "LBVC", KOC_opcode, 1, 125 },
+   { "LBVS", KOC_opcode, 1, 126 },
+   { "LDA", KOC_opcode, 3, 127 },
+   { "LDB", KOC_opcode, 3, 130 },
+   { "LDD", KOC_opcode, 3, 133 },
+   { "LDS", KOC_opcode, 3, 136 },
+   { "LDU", KOC_opcode, 3, 139 },
+   { "LDX", KOC_opcode, 3, 142 },
+   { "LDY", KOC_opcode, 3, 145 },
+   { "LEAS", KOC_opcode, 1, 148 },
+   { "LEAU", KOC_opcode, 1, 149 },
+   { "LEAX", KOC_opcode, 1, 150 },
+   { "LEAY", KOC_opcode, 1, 151 },
+   { "LSL", KOC_opcode, 2, 152 },
+   { "LSLA", KOC_opcode, 1, 154 },
+   { "LSLB", KOC_opcode, 1, 155 },
+   { "LSR", KOC_opcode, 2, 156 },
+   { "LSRA", KOC_opcode, 1, 158 },
+   { "LSRB", KOC_opcode, 1, 159 },
+   { "MUL", KOC_opcode, 1, 160 },
+   { "NEG", KOC_opcode, 2, 161 },
+   { "NEGA", KOC_opcode, 1, 163 },
+   { "NEGB", KOC_opcode, 1, 164 },
+   { "NOP", KOC_opcode, 1, 165 },
+   { "ORA", KOC_opcode, 3, 166 },
+   { "ORB", KOC_opcode, 3, 169 },
+   { "ORCC", KOC_opcode, 1, 172 },
+   { "ORG", KOC_ORG, 0, 0 },
+   { "PSHS", KOC_sstkop, 1, 173 },
+   { "PSHU", KOC_ustkop, 1, 174 },
+   { "PULS", KOC_sstkop, 1, 175 },
+   { "PULU", KOC_ustkop, 1, 176 },
+   { "RESERVE", KOC_RESM, 0, 0 },
+   { "RMB", KOC_RESM, 0, 0 },
+   { "ROL", KOC_opcode, 2, 177 },
+   { "ROLA", KOC_opcode, 1, 179 },
+   { "ROLB", KOC_opcode, 1, 180 },
+   { "ROR", KOC_opcode, 2, 181 },
+   { "RORA", KOC_opcode, 1, 183 },
+   { "RORB", KOC_opcode, 1, 184 },
+   { "RTI", KOC_opcode, 1, 185 },
+   { "RTS", KOC_opcode, 1, 186 },
+   { "SBCA", KOC_opcode, 3, 187 },
+   { "SBCB", KOC_opcode, 3, 190 },
+   { "SET", KOC_SET, 0, 0 },
+   { "SEX", KOC_opcode, 1, 193 },
+   { "STA", KOC_opcode, 2, 194 },
+   { "STB", KOC_opcode, 2, 196 },
+   { "STD", KOC_opcode, 2, 198 },
+   { "STRING", KOC_SDEF, 0, 0 },
+   { "STS", KOC_opcode, 2, 200 },
+   { "STU", KOC_opcode, 2, 202 },
+   { "STX", KOC_opcode, 2, 204 },
+   { "STY", KOC_opcode, 2, 206 },
+   { "SUBA", KOC_opcode, 3, 208 },
+   { "SUBB", KOC_opcode, 3, 211 },
+   { "SUBD", KOC_opcode, 3, 214 },
+   { "SWI2", KOC_opcode, 1, 217 },
+   { "SWI3", KOC_opcode, 1, 218 },
+   { "SWI", KOC_opcode, 1, 219 },
+   { "SYNC", KOC_opcode, 1, 220 },
+   { "TFR", KOC_tfrop, 1, 221 },
+   { "TST", KOC_opcode, 2, 222 },
+   { "TSTA", KOC_opcode, 1, 224 },
+   { "TSTB", KOC_opcode, 1, 225 },
+   { "WORD", KOC_WDEF, 0, 0 },
+   { "", 0, 0, 0 }
+};
 
 #define NUMSYNBLK 226
-struct opsynt ostab[NUMSYNBLK+1]
-	= {
+struct opsynt ostab[NUMSYNBLK + 1] = {
 /* invalid 0 */ { 0, 1, 0 },
 /* invalid 1 */ { 0xffff, 1, 1 },
 /* ABX 2 */ { ST_INH, 1, 2 },
@@ -1611,568 +1351,290 @@ struct opsynt ostab[NUMSYNBLK+1]
 /* TST 223 */ { ST_IND, 1, 276 },
 /* TSTA 224 */ { ST_INH, 1, 277 },
 /* TSTB 225 */ { ST_INH, 1, 278 },
-	{ 0, 0, 0 } };
+   { 0, 0, 0 }
+};
 
 #define NUMDIFFOP 279
-struct igel igtab[NUMDIFFOP+1]
-	= {
-/* invalid 0 */   { 0 , 0,
-		"[Xnullentry" },
-/* invalid 1 */   { 0 , 0,
-		"[Xinvalid opcode" },
-/* ABX 2 */   { 0 , 0,
-		"3a;" },
-/* ADCA 3 */   { ADDR , DIRECT,
-		"99;[1=];" },
-/* ADCA 4 */   { ADDR , EXTENDED,
-		"b9;[1=]x" },
-/* ADCA 5 */   { 0 , 0,
-		"89;[1=];" },
-/* ADCA 6 */   { 0 , 0,
-		"a9;" },
-/* ADCB 7 */   { ADDR , DIRECT,
-		"d9;[1=];" },
-/* ADCB 8 */   { ADDR , EXTENDED,
-		"f9;[1=]x" },
-/* ADCB 9 */   { 0 , 0,
-		"c9;[1=];" },
-/* ADCB 10 */   { 0 , 0,
-		"e9;" },
-/* ADDA 11 */   { ADDR , DIRECT,
-		"9b;[1=];" },
-/* ADDA 12 */   { ADDR , EXTENDED,
-		"bb;[1=]x" },
-/* ADDA 13 */   { 0 , 0,
-		"8b;[1=];" },
-/* ADDA 14 */   { 0 , 0,
-		"ab;" },
-/* ADDB 15 */   { ADDR , DIRECT,
-		"db;[1=];" },
-/* ADDB 16 */   { ADDR , EXTENDED,
-		"fb;[1=]x" },
-/* ADDB 17 */   { 0 , 0,
-		"cb;[1=];" },
-/* ADDB 18 */   { 0 , 0,
-		"eb;" },
-/* ADDD 19 */   { ADDR , DIRECT,
-		"d3;[1=];" },
-/* ADDD 20 */   { ADDR , EXTENDED,
-		"f3;[1=]x" },
-/* ADDD 21 */   { 0 , 0,
-		"c3;[1=]x" },
-/* ADDD 22 */   { 0 , 0,
-		"e3;" },
-/* ANDA 23 */   { ADDR , DIRECT,
-		"94;[1=];" },
-/* ANDA 24 */   { ADDR , EXTENDED,
-		"b4;[1=]x" },
-/* ANDA 25 */   { 0 , 0,
-		"84;[1=];" },
-/* ANDA 26 */   { 0 , 0,
-		"a4;" },
-/* ANDB 27 */   { ADDR , DIRECT,
-		"d4;[1=];" },
-/* ANDB 28 */   { ADDR , EXTENDED,
-		"f4;[1=]x" },
-/* ANDB 29 */   { 0 , 0,
-		"c4;[1=];" },
-/* ANDB 30 */   { 0 , 0,
-		"e4;" },
-/* ANDCC 31 */   { 0 , 0,
-		"1c;[1=];" },
-/* ASL 32 */   { ADDR , DIRECT,
-		"08;[1=];" },
-/* ASL 33 */   { ADDR , EXTENDED,
-		"78;[1=]x" },
-/* ASL 34 */   { 0 , 0,
-		"68;" },
-/* ASLA 35 */   { 0 , 0,
-		"48;" },
-/* ASLB 36 */   { 0 , 0,
-		"58;" },
-/* ASR 37 */   { ADDR , DIRECT,
-		"07;[1=];" },
-/* ASR 38 */   { ADDR , EXTENDED,
-		"77;[1=]x" },
-/* ASR 39 */   { 0 , 0,
-		"67;" },
-/* ASRA 40 */   { 0 , 0,
-		"47;" },
-/* ASRB 41 */   { 0 , 0,
-		"57;" },
-/* BCC 42 */   { 0 , 0,
-		"24;[1=].Q.1+-r" },
-/* BCS 43 */   { 0 , 0,
-		"25;[1=].Q.1+-r" },
-/* BEQ 44 */   { 0 , 0,
-		"27;[1=].Q.1+-r" },
-/* BGE 45 */   { 0 , 0,
-		"2c;[1=].Q.1+-r" },
-/* BGT 46 */   { 0 , 0,
-		"2e;[1=].Q.1+-r" },
-/* BHI 47 */   { 0 , 0,
-		"22;[1=].Q.1+-r" },
-/* BHS 48 */   { 0 , 0,
-		"24;[1=].Q.1+-r" },
-/* BITA 49 */   { ADDR , DIRECT,
-		"95;[1=];" },
-/* BITA 50 */   { ADDR , EXTENDED,
-		"b5;[1=]x" },
-/* BITA 51 */   { 0 , 0,
-		"85;[1=];" },
-/* BITA 52 */   { 0 , 0,
-		"a5;" },
-/* BITB 53 */   { ADDR , DIRECT,
-		"d5;[1=];" },
-/* BITB 54 */   { ADDR , EXTENDED,
-		"f5;[1=]x" },
-/* BITB 55 */   { 0 , 0,
-		"c5;[1=];" },
-/* BITB 56 */   { 0 , 0,
-		"e5;" },
-/* BLE 57 */   { 0 , 0,
-		"2f;[1=].Q.1+-r" },
-/* BLO 58 */   { 0 , 0,
-		"25;[1=].Q.1+-r" },
-/* BLS 59 */   { 0 , 0,
-		"23;[1=].Q.1+-r" },
-/* BLT 60 */   { 0 , 0,
-		"2d;[1=].Q.1+-r" },
-/* BMI 61 */   { 0 , 0,
-		"2b;[1=].Q.1+-r" },
-/* BNE 62 */   { 0 , 0,
-		"26;[1=].Q.1+-r" },
-/* BPL 63 */   { 0 , 0,
-		"2a;[1=].Q.1+-r" },
-/* BRA 64 */   { 0 , 0,
-		"20;[1=].Q.1+-r" },
-/* BRN 65 */   { 0 , 0,
-		"21;[1=].Q.1+-r" },
-/* BSR 66 */   { 0 , 0,
-		"8d;[1=].Q.1+-r" },
-/* BVC 67 */   { 0 , 0,
-		"28;[1=].Q.1+-r" },
-/* BVS 68 */   { 0 , 0,
-		"29;[1=].Q.1+-r" },
-/* CLR 69 */   { ADDR , DIRECT,
-		"0f;[1=];" },
-/* CLR 70 */   { ADDR , EXTENDED,
-		"7f;[1=]x" },
-/* CLR 71 */   { 0 , 0,
-		"6f;" },
-/* CLRA 72 */   { 0 , 0,
-		"4f;" },
-/* CLRB 73 */   { 0 , 0,
-		"5f;" },
-/* CMPA 74 */   { ADDR , DIRECT,
-		"91;[1=];" },
-/* CMPA 75 */   { ADDR , EXTENDED,
-		"b1;[1=]x" },
-/* CMPA 76 */   { 0 , 0,
-		"81;[1=];" },
-/* CMPA 77 */   { 0 , 0,
-		"a1;" },
-/* CMPB 78 */   { ADDR , DIRECT,
-		"d1;[1=];" },
-/* CMPB 79 */   { ADDR , EXTENDED,
-		"f1;[1=]x" },
-/* CMPB 80 */   { 0 , 0,
-		"c1;[1=];" },
-/* CMPB 81 */   { 0 , 0,
-		"e1;" },
-/* CMPD 82 */   { ADDR , DIRECT,
-		"10;93;[1=];" },
-/* CMPD 83 */   { ADDR , EXTENDED,
-		"10;b3;[1=]x" },
-/* CMPD 84 */   { 0 , 0,
-		"10;83;[1=]x" },
-/* CMPD 85 */   { 0 , 0,
-		"10;a3;" },
-/* CMPS 86 */   { ADDR , DIRECT,
-		"11;9c;[1=];" },
-/* CMPS 87 */   { ADDR , EXTENDED,
-		"11;bc;[1=]x" },
-/* CMPS 88 */   { 0 , 0,
-		"11;8c;[1=]x" },
-/* CMPS 89 */   { 0 , 0,
-		"11;ac;" },
-/* CMPU 90 */   { ADDR , DIRECT,
-		"11;93;[1=];" },
-/* CMPU 91 */   { ADDR , EXTENDED,
-		"11;b3;[1=]x" },
-/* CMPU 92 */   { 0 , 0,
-		"11;83;[1=]x" },
-/* CMPU 93 */   { 0 , 0,
-		"11;a3;" },
-/* CMPX 94 */   { ADDR , DIRECT,
-		"9c;[1=];" },
-/* CMPX 95 */   { ADDR , EXTENDED,
-		"bc;[1=]x" },
-/* CMPX 96 */   { 0 , 0,
-		"8c;[1=]x" },
-/* CMPX 97 */   { 0 , 0,
-		"ac;" },
-/* CMPY 98 */   { ADDR , DIRECT,
-		"10;9c;[1=];" },
-/* CMPY 99 */   { ADDR , EXTENDED,
-		"10;bc;[1=]x" },
-/* CMPY 100 */   { 0 , 0,
-		"10;8c;[1=]x" },
-/* CMPY 101 */   { 0 , 0,
-		"10;ac;" },
-/* COM 102 */   { ADDR , DIRECT,
-		"03;[1=];" },
-/* COM 103 */   { ADDR , EXTENDED,
-		"73;[1=]x" },
-/* COM 104 */   { 0 , 0,
-		"63;" },
-/* COMA 105 */   { 0 , 0,
-		"43;" },
-/* COMB 106 */   { 0 , 0,
-		"53;" },
-/* CWAI 107 */   { 0 , 0,
-		"3c;[1=];" },
-/* DAA 108 */   { 0 , 0,
-		"19;" },
-/* DEC 109 */   { ADDR , DIRECT,
-		"0a;[1=];" },
-/* DEC 110 */   { ADDR , EXTENDED,
-		"7a;[1=]x" },
-/* DEC 111 */   { 0 , 0,
-		"6a;" },
-/* DECA 112 */   { 0 , 0,
-		"4a;" },
-/* DECB 113 */   { 0 , 0,
-		"5a;" },
-/* EORA 114 */   { ADDR , DIRECT,
-		"98;[1=];" },
-/* EORA 115 */   { ADDR , EXTENDED,
-		"b8;[1=]x" },
-/* EORA 116 */   { 0 , 0,
-		"88;[1=];" },
-/* EORA 117 */   { 0 , 0,
-		"a8;" },
-/* EORB 118 */   { ADDR , DIRECT,
-		"d8;[1=];" },
-/* EORB 119 */   { ADDR , EXTENDED,
-		"f8;[1=]x" },
-/* EORB 120 */   { 0 , 0,
-		"c8;[1=];" },
-/* EORB 121 */   { 0 , 0,
-		"e8;" },
-/* EXG 122 */   { 0 , 0,
-		"1e;[1#2#];" },
-/* INC 123 */   { ADDR , DIRECT,
-		"0c;[1=];" },
-/* INC 124 */   { ADDR , EXTENDED,
-		"7c;[1=]x" },
-/* INC 125 */   { 0 , 0,
-		"6c;" },
-/* INCA 126 */   { 0 , 0,
-		"4c;" },
-/* INCB 127 */   { 0 , 0,
-		"5c;" },
-/* JMP 128 */   { ADDR , DIRECT,
-		"0e;[1=];" },
-/* JMP 129 */   { ADDR , EXTENDED,
-		"7e;[1=]x" },
-/* JMP 130 */   { 0 , 0,
-		"6e;" },
-/* JSR 131 */   { ADDR , DIRECT,
-		"9d;[1=];" },
-/* JSR 132 */   { ADDR , EXTENDED,
-		"bd;[1=]x" },
-/* JSR 133 */   { 0 , 0,
-		"ad;" },
-/* LBCC 134 */   { 0 , 0,
-		"10;24;[1=].Q.2+-.ffff&x" },
-/* LBCS 135 */   { 0 , 0,
-		"10;25;[1=].Q.2+-.ffff&x" },
-/* LBEQ 136 */   { 0 , 0,
-		"10;27;[1=].Q.2+-.ffff&x" },
-/* LBGE 137 */   { 0 , 0,
-		"10;2c;[1=].Q.2+-.ffff&x" },
-/* LBGT 138 */   { 0 , 0,
-		"10;2e;[1=].Q.2+-.ffff&x" },
-/* LBHI 139 */   { 0 , 0,
-		"10;22;[1=].Q.2+-.ffff&x" },
-/* LBHS 140 */   { 0 , 0,
-		"10;24;[1=].Q.2+-.ffff&x" },
-/* LBLE 141 */   { 0 , 0,
-		"10;2f;[1=].Q.2+-.ffff&x" },
-/* LBLO 142 */   { 0 , 0,
-		"10;25;[1=].Q.2+-.ffff&x" },
-/* LBLS 143 */   { 0 , 0,
-		"10;23;[1=].Q.2+-.ffff&x" },
-/* LBLT 144 */   { 0 , 0,
-		"10;2d;[1=].Q.2+-.ffff&x" },
-/* LBMI 145 */   { 0 , 0,
-		"10;2b;[1=].Q.2+-.ffff&x" },
-/* LBNE 146 */   { 0 , 0,
-		"10;26;[1=].Q.2+-.ffff&x" },
-/* LBPL 147 */   { 0 , 0,
-		"10;2a;[1=].Q.2+-.ffff&x" },
-/* LBRA 148 */   { 0 , 0,
-		"16;[1=].Q.2+-.ffff&x" },
-/* LBRN 149 */   { 0 , 0,
-		"10;21;[1=].Q.2+-.ffff&x" },
-/* LBSR 150 */   { 0 , 0,
-		"17;[1=].Q.2+-.ffff&x" },
-/* LBVC 151 */   { 0 , 0,
-		"10;28;[1=].Q.2+-.ffff&x" },
-/* LBVS 152 */   { 0 , 0,
-		"10;29;[1=].Q.2+-.ffff&x" },
-/* LDA 153 */   { ADDR , DIRECT,
-		"96;[1=];" },
-/* LDA 154 */   { ADDR , EXTENDED,
-		"b6;[1=]x" },
-/* LDA 155 */   { 0 , 0,
-		"86;[1=];" },
-/* LDA 156 */   { 0 , 0,
-		"a6;" },
-/* LDB 157 */   { ADDR , DIRECT,
-		"d6;[1=];" },
-/* LDB 158 */   { ADDR , EXTENDED,
-		"f6;[1=]x" },
-/* LDB 159 */   { 0 , 0,
-		"c6;[1=];" },
-/* LDB 160 */   { 0 , 0,
-		"e6;" },
-/* LDD 161 */   { ADDR , DIRECT,
-		"dc;[1=];" },
-/* LDD 162 */   { ADDR , EXTENDED,
-		"fc;[1=]x" },
-/* LDD 163 */   { 0 , 0,
-		"cc;[1=]x" },
-/* LDD 164 */   { 0 , 0,
-		"ec;" },
-/* LDS 165 */   { ADDR , DIRECT,
-		"10;de;[1=];" },
-/* LDS 166 */   { ADDR , EXTENDED,
-		"10;fe;[1=]x" },
-/* LDS 167 */   { 0 , 0,
-		"10;ce;[1=]x" },
-/* LDS 168 */   { 0 , 0,
-		"10;ee;" },
-/* LDU 169 */   { ADDR , DIRECT,
-		"de;[1=];" },
-/* LDU 170 */   { ADDR , EXTENDED,
-		"fe;[1=]x" },
-/* LDU 171 */   { 0 , 0,
-		"ce;[1=]x" },
-/* LDU 172 */   { 0 , 0,
-		"ee;" },
-/* LDX 173 */   { ADDR , DIRECT,
-		"9e;[1=];" },
-/* LDX 174 */   { ADDR , EXTENDED,
-		"be;[1=]x" },
-/* LDX 175 */   { 0 , 0,
-		"8e;[1=]x" },
-/* LDX 176 */   { 0 , 0,
-		"ae;" },
-/* LDY 177 */   { ADDR , DIRECT,
-		"10;9e;[1=];" },
-/* LDY 178 */   { ADDR , EXTENDED,
-		"10;be;[1=]x" },
-/* LDY 179 */   { 0 , 0,
-		"10;8e;[1=]x" },
-/* LDY 180 */   { 0 , 0,
-		"10;ae;" },
-/* LEAS 181 */   { 0 , 0,
-		"32;" },
-/* LEAU 182 */   { 0 , 0,
-		"33;" },
-/* LEAX 183 */   { 0 , 0,
-		"30;" },
-/* LEAY 184 */   { 0 , 0,
-		"31;" },
-/* LSL 185 */   { ADDR , DIRECT,
-		"08;[1=];" },
-/* LSL 186 */   { ADDR , EXTENDED,
-		"78;[1=]x" },
-/* LSL 187 */   { 0 , 0,
-		"68;" },
-/* LSLA 188 */   { 0 , 0,
-		"48;" },
-/* LSLB 189 */   { 0 , 0,
-		"58;" },
-/* LSR 190 */   { ADDR , DIRECT,
-		"04;[1=];" },
-/* LSR 191 */   { ADDR , EXTENDED,
-		"74;[1=]x" },
-/* LSR 192 */   { 0 , 0,
-		"64;" },
-/* LSRA 193 */   { 0 , 0,
-		"44;" },
-/* LSRB 194 */   { 0 , 0,
-		"54;" },
-/* MUL 195 */   { 0 , 0,
-		"3d;" },
-/* NEG 196 */   { ADDR , DIRECT,
-		"00;[1=];" },
-/* NEG 197 */   { ADDR , EXTENDED,
-		"70;[1=]x" },
-/* NEG 198 */   { 0 , 0,
-		"60;" },
-/* NEGA 199 */   { 0 , 0,
-		"40;" },
-/* NEGB 200 */   { 0 , 0,
-		"50;" },
-/* NOP 201 */   { 0 , 0,
-		"12;" },
-/* ORA 202 */   { ADDR , DIRECT,
-		"9a;[1=];" },
-/* ORA 203 */   { ADDR , EXTENDED,
-		"ba;[1=]x" },
-/* ORA 204 */   { 0 , 0,
-		"8a;[1=];" },
-/* ORA 205 */   { 0 , 0,
-		"aa;" },
-/* ORB 206 */   { ADDR , DIRECT,
-		"da;[1=];" },
-/* ORB 207 */   { ADDR , EXTENDED,
-		"fa;[1=]x" },
-/* ORB 208 */   { 0 , 0,
-		"ca;[1=];" },
-/* ORB 209 */   { 0 , 0,
-		"ea;" },
-/* ORCC 210 */   { 0 , 0,
-		"1a;[1=];" },
-/* PSHS 211 */   { 0 , 0,
-		"34;[1#];" },
-/* PSHU 212 */   { 0 , 0,
-		"36;[1#];" },
-/* PULS 213 */   { 0 , 0,
-		"35;[1#];" },
-/* PULU 214 */   { 0 , 0,
-		"37;[1#];" },
-/* ROL 215 */   { ADDR , DIRECT,
-		"09;[1=];" },
-/* ROL 216 */   { ADDR , EXTENDED,
-		"79;[1=]x" },
-/* ROL 217 */   { 0 , 0,
-		"69;" },
-/* ROLA 218 */   { 0 , 0,
-		"49;" },
-/* ROLB 219 */   { 0 , 0,
-		"59;" },
-/* ROR 220 */   { ADDR , DIRECT,
-		"06;[1=];" },
-/* ROR 221 */   { ADDR , EXTENDED,
-		"76;[1=]x" },
-/* ROR 222 */   { 0 , 0,
-		"66;" },
-/* RORA 223 */   { 0 , 0,
-		"46;" },
-/* RORB 224 */   { 0 , 0,
-		"56;" },
-/* RTI 225 */   { 0 , 0,
-		"3b;" },
-/* RTS 226 */   { 0 , 0,
-		"39;" },
-/* SBCA 227 */   { ADDR , DIRECT,
-		"92;[1=];" },
-/* SBCA 228 */   { ADDR , EXTENDED,
-		"b2;[1=]x" },
-/* SBCA 229 */   { 0 , 0,
-		"82;[1=];" },
-/* SBCA 230 */   { 0 , 0,
-		"a2;" },
-/* SBCB 231 */   { ADDR , DIRECT,
-		"d2;[1=];" },
-/* SBCB 232 */   { ADDR , EXTENDED,
-		"f2;[1=]x" },
-/* SBCB 233 */   { 0 , 0,
-		"c2;[1=];" },
-/* SBCB 234 */   { 0 , 0,
-		"e2;" },
-/* SEX 235 */   { 0 , 0,
-		"1d;" },
-/* STA 236 */   { ADDR , DIRECT,
-		"97;[1=];" },
-/* STA 237 */   { ADDR , EXTENDED,
-		"b7;[1=]x" },
-/* STA 238 */   { 0 , 0,
-		"a7;" },
-/* STB 239 */   { ADDR , DIRECT,
-		"d7;[1=];" },
-/* STB 240 */   { ADDR , EXTENDED,
-		"f7;[1=]x" },
-/* STB 241 */   { 0 , 0,
-		"e7;" },
-/* STD 242 */   { ADDR , DIRECT,
-		"dd;[1=];" },
-/* STD 243 */   { ADDR , EXTENDED,
-		"fd;[1=]x" },
-/* STD 244 */   { 0 , 0,
-		"ed;" },
-/* STS 245 */   { ADDR , DIRECT,
-		"10;df;[1=];" },
-/* STS 246 */   { ADDR , EXTENDED,
-		"10;ff;[1=]x" },
-/* STS 247 */   { 0 , 0,
-		"10;ef;" },
-/* STU 248 */   { ADDR , DIRECT,
-		"df;[1=];" },
-/* STU 249 */   { ADDR , EXTENDED,
-		"ff;[1=]x" },
-/* STU 250 */   { 0 , 0,
-		"ef;" },
-/* STX 251 */   { ADDR , DIRECT,
-		"9f;[1=];" },
-/* STX 252 */   { ADDR , EXTENDED,
-		"bf;[1=]x" },
-/* STX 253 */   { 0 , 0,
-		"af;" },
-/* STY 254 */   { ADDR , DIRECT,
-		"10;9f;[1=];" },
-/* STY 255 */   { ADDR , EXTENDED,
-		"10;bf;[1=]x" },
-/* STY 256 */   { 0 , 0,
-		"10;af;" },
-/* SUBA 257 */   { ADDR , DIRECT,
-		"90;[1=];" },
-/* SUBA 258 */   { ADDR , EXTENDED,
-		"b0;[1=]x" },
-/* SUBA 259 */   { 0 , 0,
-		"80;[1=];" },
-/* SUBA 260 */   { 0 , 0,
-		"a0;" },
-/* SUBB 261 */   { ADDR , DIRECT,
-		"d0;[1=];" },
-/* SUBB 262 */   { ADDR , EXTENDED,
-		"f0;[1=]x" },
-/* SUBB 263 */   { 0 , 0,
-		"c0;[1=];" },
-/* SUBB 264 */   { 0 , 0,
-		"e0;" },
-/* SUBD 265 */   { ADDR , DIRECT,
-		"93;[1=];" },
-/* SUBD 266 */   { ADDR , EXTENDED,
-		"b3;[1=]x" },
-/* SUBD 267 */   { 0 , 0,
-		"83;[1=]x" },
-/* SUBD 268 */   { 0 , 0,
-		"a3;" },
-/* SWI2 269 */   { 0 , 0,
-		"10;3f;" },
-/* SWI3 270 */   { 0 , 0,
-		"11;3f;" },
-/* SWI 271 */   { 0 , 0,
-		"3f;" },
-/* SYNC 272 */   { 0 , 0,
-		"13;" },
-/* TFR 273 */   { 0 , 0,
-		"1f;[1#2#];" },
-/* TST 274 */   { ADDR , DIRECT,
-		"0d;[1=];" },
-/* TST 275 */   { ADDR , EXTENDED,
-		"7d;[1=]x" },
-/* TST 276 */   { 0 , 0,
-		"6d;" },
-/* TSTA 277 */   { 0 , 0,
-		"4d;" },
-/* TSTB 278 */   { 0 , 0,
-		"5d;" },
-	{ 0,0,""} };
+struct igel igtab[NUMDIFFOP + 1] = {
+/* invalid 0 */ { 0, 0, "[Xnullentry" },
+/* invalid 1 */ { 0, 0, "[Xinvalid opcode" },
+/* ABX 2 */ { 0, 0, "3a;" },
+/* ADCA 3 */ { ADDR, DIRECT, "99;[1=];" },
+/* ADCA 4 */ { ADDR, EXTENDED, "b9;[1=]x" },
+/* ADCA 5 */ { 0, 0, "89;[1=];" },
+/* ADCA 6 */ { 0, 0, "a9;" },
+/* ADCB 7 */ { ADDR, DIRECT, "d9;[1=];" },
+/* ADCB 8 */ { ADDR, EXTENDED, "f9;[1=]x" },
+/* ADCB 9 */ { 0, 0, "c9;[1=];" },
+/* ADCB 10 */ { 0, 0, "e9;" },
+/* ADDA 11 */ { ADDR, DIRECT, "9b;[1=];" },
+/* ADDA 12 */ { ADDR, EXTENDED, "bb;[1=]x" },
+/* ADDA 13 */ { 0, 0, "8b;[1=];" },
+/* ADDA 14 */ { 0, 0, "ab;" },
+/* ADDB 15 */ { ADDR, DIRECT, "db;[1=];" },
+/* ADDB 16 */ { ADDR, EXTENDED, "fb;[1=]x" },
+/* ADDB 17 */ { 0, 0, "cb;[1=];" },
+/* ADDB 18 */ { 0, 0, "eb;" },
+/* ADDD 19 */ { ADDR, DIRECT, "d3;[1=];" },
+/* ADDD 20 */ { ADDR, EXTENDED, "f3;[1=]x" },
+/* ADDD 21 */ { 0, 0, "c3;[1=]x" },
+/* ADDD 22 */ { 0, 0, "e3;" },
+/* ANDA 23 */ { ADDR, DIRECT, "94;[1=];" },
+/* ANDA 24 */ { ADDR, EXTENDED, "b4;[1=]x" },
+/* ANDA 25 */ { 0, 0, "84;[1=];" },
+/* ANDA 26 */ { 0, 0, "a4;" },
+/* ANDB 27 */ { ADDR, DIRECT, "d4;[1=];" },
+/* ANDB 28 */ { ADDR, EXTENDED, "f4;[1=]x" },
+/* ANDB 29 */ { 0, 0, "c4;[1=];" },
+/* ANDB 30 */ { 0, 0, "e4;" },
+/* ANDCC 31 */ { 0, 0, "1c;[1=];" },
+/* ASL 32 */ { ADDR, DIRECT, "08;[1=];" },
+/* ASL 33 */ { ADDR, EXTENDED, "78;[1=]x" },
+/* ASL 34 */ { 0, 0, "68;" },
+/* ASLA 35 */ { 0, 0, "48;" },
+/* ASLB 36 */ { 0, 0, "58;" },
+/* ASR 37 */ { ADDR, DIRECT, "07;[1=];" },
+/* ASR 38 */ { ADDR, EXTENDED, "77;[1=]x" },
+/* ASR 39 */ { 0, 0, "67;" },
+/* ASRA 40 */ { 0, 0, "47;" },
+/* ASRB 41 */ { 0, 0, "57;" },
+/* BCC 42 */ { 0, 0, "24;[1=].Q.1+-r" },
+/* BCS 43 */ { 0, 0, "25;[1=].Q.1+-r" },
+/* BEQ 44 */ { 0, 0, "27;[1=].Q.1+-r" },
+/* BGE 45 */ { 0, 0, "2c;[1=].Q.1+-r" },
+/* BGT 46 */ { 0, 0, "2e;[1=].Q.1+-r" },
+/* BHI 47 */ { 0, 0, "22;[1=].Q.1+-r" },
+/* BHS 48 */ { 0, 0, "24;[1=].Q.1+-r" },
+/* BITA 49 */ { ADDR, DIRECT, "95;[1=];" },
+/* BITA 50 */ { ADDR, EXTENDED, "b5;[1=]x" },
+/* BITA 51 */ { 0, 0, "85;[1=];" },
+/* BITA 52 */ { 0, 0, "a5;" },
+/* BITB 53 */ { ADDR, DIRECT, "d5;[1=];" },
+/* BITB 54 */ { ADDR, EXTENDED, "f5;[1=]x" },
+/* BITB 55 */ { 0, 0, "c5;[1=];" },
+/* BITB 56 */ { 0, 0, "e5;" },
+/* BLE 57 */ { 0, 0, "2f;[1=].Q.1+-r" },
+/* BLO 58 */ { 0, 0, "25;[1=].Q.1+-r" },
+/* BLS 59 */ { 0, 0, "23;[1=].Q.1+-r" },
+/* BLT 60 */ { 0, 0, "2d;[1=].Q.1+-r" },
+/* BMI 61 */ { 0, 0, "2b;[1=].Q.1+-r" },
+/* BNE 62 */ { 0, 0, "26;[1=].Q.1+-r" },
+/* BPL 63 */ { 0, 0, "2a;[1=].Q.1+-r" },
+/* BRA 64 */ { 0, 0, "20;[1=].Q.1+-r" },
+/* BRN 65 */ { 0, 0, "21;[1=].Q.1+-r" },
+/* BSR 66 */ { 0, 0, "8d;[1=].Q.1+-r" },
+/* BVC 67 */ { 0, 0, "28;[1=].Q.1+-r" },
+/* BVS 68 */ { 0, 0, "29;[1=].Q.1+-r" },
+/* CLR 69 */ { ADDR, DIRECT, "0f;[1=];" },
+/* CLR 70 */ { ADDR, EXTENDED, "7f;[1=]x" },
+/* CLR 71 */ { 0, 0, "6f;" },
+/* CLRA 72 */ { 0, 0, "4f;" },
+/* CLRB 73 */ { 0, 0, "5f;" },
+/* CMPA 74 */ { ADDR, DIRECT, "91;[1=];" },
+/* CMPA 75 */ { ADDR, EXTENDED, "b1;[1=]x" },
+/* CMPA 76 */ { 0, 0, "81;[1=];" },
+/* CMPA 77 */ { 0, 0, "a1;" },
+/* CMPB 78 */ { ADDR, DIRECT, "d1;[1=];" },
+/* CMPB 79 */ { ADDR, EXTENDED, "f1;[1=]x" },
+/* CMPB 80 */ { 0, 0, "c1;[1=];" },
+/* CMPB 81 */ { 0, 0, "e1;" },
+/* CMPD 82 */ { ADDR, DIRECT, "10;93;[1=];" },
+/* CMPD 83 */ { ADDR, EXTENDED, "10;b3;[1=]x" },
+/* CMPD 84 */ { 0, 0, "10;83;[1=]x" },
+/* CMPD 85 */ { 0, 0, "10;a3;" },
+/* CMPS 86 */ { ADDR, DIRECT, "11;9c;[1=];" },
+/* CMPS 87 */ { ADDR, EXTENDED, "11;bc;[1=]x" },
+/* CMPS 88 */ { 0, 0, "11;8c;[1=]x" },
+/* CMPS 89 */ { 0, 0, "11;ac;" },
+/* CMPU 90 */ { ADDR, DIRECT, "11;93;[1=];" },
+/* CMPU 91 */ { ADDR, EXTENDED, "11;b3;[1=]x" },
+/* CMPU 92 */ { 0, 0, "11;83;[1=]x" },
+/* CMPU 93 */ { 0, 0, "11;a3;" },
+/* CMPX 94 */ { ADDR, DIRECT, "9c;[1=];" },
+/* CMPX 95 */ { ADDR, EXTENDED, "bc;[1=]x" },
+/* CMPX 96 */ { 0, 0, "8c;[1=]x" },
+/* CMPX 97 */ { 0, 0, "ac;" },
+/* CMPY 98 */ { ADDR, DIRECT, "10;9c;[1=];" },
+/* CMPY 99 */ { ADDR, EXTENDED, "10;bc;[1=]x" },
+/* CMPY 100 */ { 0, 0, "10;8c;[1=]x" },
+/* CMPY 101 */ { 0, 0, "10;ac;" },
+/* COM 102 */ { ADDR, DIRECT, "03;[1=];" },
+/* COM 103 */ { ADDR, EXTENDED, "73;[1=]x" },
+/* COM 104 */ { 0, 0, "63;" },
+/* COMA 105 */ { 0, 0, "43;" },
+/* COMB 106 */ { 0, 0, "53;" },
+/* CWAI 107 */ { 0, 0, "3c;[1=];" },
+/* DAA 108 */ { 0, 0, "19;" },
+/* DEC 109 */ { ADDR, DIRECT, "0a;[1=];" },
+/* DEC 110 */ { ADDR, EXTENDED, "7a;[1=]x" },
+/* DEC 111 */ { 0, 0, "6a;" },
+/* DECA 112 */ { 0, 0, "4a;" },
+/* DECB 113 */ { 0, 0, "5a;" },
+/* EORA 114 */ { ADDR, DIRECT, "98;[1=];" },
+/* EORA 115 */ { ADDR, EXTENDED, "b8;[1=]x" },
+/* EORA 116 */ { 0, 0, "88;[1=];" },
+/* EORA 117 */ { 0, 0, "a8;" },
+/* EORB 118 */ { ADDR, DIRECT, "d8;[1=];" },
+/* EORB 119 */ { ADDR, EXTENDED, "f8;[1=]x" },
+/* EORB 120 */ { 0, 0, "c8;[1=];" },
+/* EORB 121 */ { 0, 0, "e8;" },
+/* EXG 122 */ { 0, 0, "1e;[1#2#];" },
+/* INC 123 */ { ADDR, DIRECT, "0c;[1=];" },
+/* INC 124 */ { ADDR, EXTENDED, "7c;[1=]x" },
+/* INC 125 */ { 0, 0, "6c;" },
+/* INCA 126 */ { 0, 0, "4c;" },
+/* INCB 127 */ { 0, 0, "5c;" },
+/* JMP 128 */ { ADDR, DIRECT, "0e;[1=];" },
+/* JMP 129 */ { ADDR, EXTENDED, "7e;[1=]x" },
+/* JMP 130 */ { 0, 0, "6e;" },
+/* JSR 131 */ { ADDR, DIRECT, "9d;[1=];" },
+/* JSR 132 */ { ADDR, EXTENDED, "bd;[1=]x" },
+/* JSR 133 */ { 0, 0, "ad;" },
+/* LBCC 134 */ { 0, 0, "10;24;[1=].Q.2+-.ffff&x" },
+/* LBCS 135 */ { 0, 0, "10;25;[1=].Q.2+-.ffff&x" },
+/* LBEQ 136 */ { 0, 0, "10;27;[1=].Q.2+-.ffff&x" },
+/* LBGE 137 */ { 0, 0, "10;2c;[1=].Q.2+-.ffff&x" },
+/* LBGT 138 */ { 0, 0, "10;2e;[1=].Q.2+-.ffff&x" },
+/* LBHI 139 */ { 0, 0, "10;22;[1=].Q.2+-.ffff&x" },
+/* LBHS 140 */ { 0, 0, "10;24;[1=].Q.2+-.ffff&x" },
+/* LBLE 141 */ { 0, 0, "10;2f;[1=].Q.2+-.ffff&x" },
+/* LBLO 142 */ { 0, 0, "10;25;[1=].Q.2+-.ffff&x" },
+/* LBLS 143 */ { 0, 0, "10;23;[1=].Q.2+-.ffff&x" },
+/* LBLT 144 */ { 0, 0, "10;2d;[1=].Q.2+-.ffff&x" },
+/* LBMI 145 */ { 0, 0, "10;2b;[1=].Q.2+-.ffff&x" },
+/* LBNE 146 */ { 0, 0, "10;26;[1=].Q.2+-.ffff&x" },
+/* LBPL 147 */ { 0, 0, "10;2a;[1=].Q.2+-.ffff&x" },
+/* LBRA 148 */ { 0, 0, "16;[1=].Q.2+-.ffff&x" },
+/* LBRN 149 */ { 0, 0, "10;21;[1=].Q.2+-.ffff&x" },
+/* LBSR 150 */ { 0, 0, "17;[1=].Q.2+-.ffff&x" },
+/* LBVC 151 */ { 0, 0, "10;28;[1=].Q.2+-.ffff&x" },
+/* LBVS 152 */ { 0, 0, "10;29;[1=].Q.2+-.ffff&x" },
+/* LDA 153 */ { ADDR, DIRECT, "96;[1=];" },
+/* LDA 154 */ { ADDR, EXTENDED, "b6;[1=]x" },
+/* LDA 155 */ { 0, 0, "86;[1=];" },
+/* LDA 156 */ { 0, 0, "a6;" },
+/* LDB 157 */ { ADDR, DIRECT, "d6;[1=];" },
+/* LDB 158 */ { ADDR, EXTENDED, "f6;[1=]x" },
+/* LDB 159 */ { 0, 0, "c6;[1=];" },
+/* LDB 160 */ { 0, 0, "e6;" },
+/* LDD 161 */ { ADDR, DIRECT, "dc;[1=];" },
+/* LDD 162 */ { ADDR, EXTENDED, "fc;[1=]x" },
+/* LDD 163 */ { 0, 0, "cc;[1=]x" },
+/* LDD 164 */ { 0, 0, "ec;" },
+/* LDS 165 */ { ADDR, DIRECT, "10;de;[1=];" },
+/* LDS 166 */ { ADDR, EXTENDED, "10;fe;[1=]x" },
+/* LDS 167 */ { 0, 0, "10;ce;[1=]x" },
+/* LDS 168 */ { 0, 0, "10;ee;" },
+/* LDU 169 */ { ADDR, DIRECT, "de;[1=];" },
+/* LDU 170 */ { ADDR, EXTENDED, "fe;[1=]x" },
+/* LDU 171 */ { 0, 0, "ce;[1=]x" },
+/* LDU 172 */ { 0, 0, "ee;" },
+/* LDX 173 */ { ADDR, DIRECT, "9e;[1=];" },
+/* LDX 174 */ { ADDR, EXTENDED, "be;[1=]x" },
+/* LDX 175 */ { 0, 0, "8e;[1=]x" },
+/* LDX 176 */ { 0, 0, "ae;" },
+/* LDY 177 */ { ADDR, DIRECT, "10;9e;[1=];" },
+/* LDY 178 */ { ADDR, EXTENDED, "10;be;[1=]x" },
+/* LDY 179 */ { 0, 0, "10;8e;[1=]x" },
+/* LDY 180 */ { 0, 0, "10;ae;" },
+/* LEAS 181 */ { 0, 0, "32;" },
+/* LEAU 182 */ { 0, 0, "33;" },
+/* LEAX 183 */ { 0, 0, "30;" },
+/* LEAY 184 */ { 0, 0, "31;" },
+/* LSL 185 */ { ADDR, DIRECT, "08;[1=];" },
+/* LSL 186 */ { ADDR, EXTENDED, "78;[1=]x" },
+/* LSL 187 */ { 0, 0, "68;" },
+/* LSLA 188 */ { 0, 0, "48;" },
+/* LSLB 189 */ { 0, 0, "58;" },
+/* LSR 190 */ { ADDR, DIRECT, "04;[1=];" },
+/* LSR 191 */ { ADDR, EXTENDED, "74;[1=]x" },
+/* LSR 192 */ { 0, 0, "64;" },
+/* LSRA 193 */ { 0, 0, "44;" },
+/* LSRB 194 */ { 0, 0, "54;" },
+/* MUL 195 */ { 0, 0, "3d;" },
+/* NEG 196 */ { ADDR, DIRECT, "00;[1=];" },
+/* NEG 197 */ { ADDR, EXTENDED, "70;[1=]x" },
+/* NEG 198 */ { 0, 0, "60;" },
+/* NEGA 199 */ { 0, 0, "40;" },
+/* NEGB 200 */ { 0, 0, "50;" },
+/* NOP 201 */ { 0, 0, "12;" },
+/* ORA 202 */ { ADDR, DIRECT, "9a;[1=];" },
+/* ORA 203 */ { ADDR, EXTENDED, "ba;[1=]x" },
+/* ORA 204 */ { 0, 0, "8a;[1=];" },
+/* ORA 205 */ { 0, 0, "aa;" },
+/* ORB 206 */ { ADDR, DIRECT, "da;[1=];" },
+/* ORB 207 */ { ADDR, EXTENDED, "fa;[1=]x" },
+/* ORB 208 */ { 0, 0, "ca;[1=];" },
+/* ORB 209 */ { 0, 0, "ea;" },
+/* ORCC 210 */ { 0, 0, "1a;[1=];" },
+/* PSHS 211 */ { 0, 0, "34;[1#];" },
+/* PSHU 212 */ { 0, 0, "36;[1#];" },
+/* PULS 213 */ { 0, 0, "35;[1#];" },
+/* PULU 214 */ { 0, 0, "37;[1#];" },
+/* ROL 215 */ { ADDR, DIRECT, "09;[1=];" },
+/* ROL 216 */ { ADDR, EXTENDED, "79;[1=]x" },
+/* ROL 217 */ { 0, 0, "69;" },
+/* ROLA 218 */ { 0, 0, "49;" },
+/* ROLB 219 */ { 0, 0, "59;" },
+/* ROR 220 */ { ADDR, DIRECT, "06;[1=];" },
+/* ROR 221 */ { ADDR, EXTENDED, "76;[1=]x" },
+/* ROR 222 */ { 0, 0, "66;" },
+/* RORA 223 */ { 0, 0, "46;" },
+/* RORB 224 */ { 0, 0, "56;" },
+/* RTI 225 */ { 0, 0, "3b;" },
+/* RTS 226 */ { 0, 0, "39;" },
+/* SBCA 227 */ { ADDR, DIRECT, "92;[1=];" },
+/* SBCA 228 */ { ADDR, EXTENDED, "b2;[1=]x" },
+/* SBCA 229 */ { 0, 0, "82;[1=];" },
+/* SBCA 230 */ { 0, 0, "a2;" },
+/* SBCB 231 */ { ADDR, DIRECT, "d2;[1=];" },
+/* SBCB 232 */ { ADDR, EXTENDED, "f2;[1=]x" },
+/* SBCB 233 */ { 0, 0, "c2;[1=];" },
+/* SBCB 234 */ { 0, 0, "e2;" },
+/* SEX 235 */ { 0, 0, "1d;" },
+/* STA 236 */ { ADDR, DIRECT, "97;[1=];" },
+/* STA 237 */ { ADDR, EXTENDED, "b7;[1=]x" },
+/* STA 238 */ { 0, 0, "a7;" },
+/* STB 239 */ { ADDR, DIRECT, "d7;[1=];" },
+/* STB 240 */ { ADDR, EXTENDED, "f7;[1=]x" },
+/* STB 241 */ { 0, 0, "e7;" },
+/* STD 242 */ { ADDR, DIRECT, "dd;[1=];" },
+/* STD 243 */ { ADDR, EXTENDED, "fd;[1=]x" },
+/* STD 244 */ { 0, 0, "ed;" },
+/* STS 245 */ { ADDR, DIRECT, "10;df;[1=];" },
+/* STS 246 */ { ADDR, EXTENDED, "10;ff;[1=]x" },
+/* STS 247 */ { 0, 0, "10;ef;" },
+/* STU 248 */ { ADDR, DIRECT, "df;[1=];" },
+/* STU 249 */ { ADDR, EXTENDED, "ff;[1=]x" },
+/* STU 250 */ { 0, 0, "ef;" },
+/* STX 251 */ { ADDR, DIRECT, "9f;[1=];" },
+/* STX 252 */ { ADDR, EXTENDED, "bf;[1=]x" },
+/* STX 253 */ { 0, 0, "af;" },
+/* STY 254 */ { ADDR, DIRECT, "10;9f;[1=];" },
+/* STY 255 */ { ADDR, EXTENDED, "10;bf;[1=]x" },
+/* STY 256 */ { 0, 0, "10;af;" },
+/* SUBA 257 */ { ADDR, DIRECT, "90;[1=];" },
+/* SUBA 258 */ { ADDR, EXTENDED, "b0;[1=]x" },
+/* SUBA 259 */ { 0, 0, "80;[1=];" },
+/* SUBA 260 */ { 0, 0, "a0;" },
+/* SUBB 261 */ { ADDR, DIRECT, "d0;[1=];" },
+/* SUBB 262 */ { ADDR, EXTENDED, "f0;[1=]x" },
+/* SUBB 263 */ { 0, 0, "c0;[1=];" },
+/* SUBB 264 */ { 0, 0, "e0;" },
+/* SUBD 265 */ { ADDR, DIRECT, "93;[1=];" },
+/* SUBD 266 */ { ADDR, EXTENDED, "b3;[1=]x" },
+/* SUBD 267 */ { 0, 0, "83;[1=]x" },
+/* SUBD 268 */ { 0, 0, "a3;" },
+/* SWI2 269 */ { 0, 0, "10;3f;" },
+/* SWI3 270 */ { 0, 0, "11;3f;" },
+/* SWI 271 */ { 0, 0, "3f;" },
+/* SYNC 272 */ { 0, 0, "13;" },
+/* TFR 273 */ { 0, 0, "1f;[1#2#];" },
+/* TST 274 */ { ADDR, DIRECT, "0d;[1=];" },
+/* TST 275 */ { ADDR, EXTENDED, "7d;[1=]x" },
+/* TST 276 */ { 0, 0, "6d;" },
+/* TSTA 277 */ { 0, 0, "4d;" },
+/* TSTB 278 */ { 0, 0, "5d;" },
+   { 0, 0, "" }
+};
 /* end fraptabdef.c */

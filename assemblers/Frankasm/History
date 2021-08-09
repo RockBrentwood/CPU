@@ -69,6 +69,7 @@ History:
 		There is an (as-yet-unresolved) mismatch in the 6809 test output.
 2021/07/28:	Source files normalized:
 		∙	layout regularized,
-		∙	excess spaces trimmed.
+		∙	excess spaces trimmed,
+		∙	all history-related comments have been collated and moved to the file ‟History”.
 2021/07/28:	Toplogical sorting of routines.
 2021/08/04:	Recovered Frankasm/As630102 and as6301.y.
