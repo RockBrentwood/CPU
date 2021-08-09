@@ -2,20 +2,21 @@
 // Original author: Mark Zenier.
 // Main file.
 #include <stdio.h>
-#include <unistd.h> // For unlink(), which should be replaced by remove(), which is already declared in <stdio.h>.
 #define	Global
 #include "frasmdat.h"
 #ifdef NOGETOPT
 #   include "getopt.h"
+#else
+#   include <getopt.h>
 #endif
 
 FILE *intermedf = (FILE *) NULL;
 #if defined DOSTMP
-char interfn[] = "frtXXXXXX";
+static char interfn[] = "frtXXXXXX";
 #elif defined AMIGA
-static char LogFile[] = "T:frtXXXXXX";
+static char interfn[] = "T:frtXXXXXX";
 #else
-char interfn[] = "/usr/tmp/frtXXXXXX";
+static char interfn[] = "/usr/tmp/frtXXXXXX";
 #endif
 char *hexfn, *loutfn;
 int errorcnt = 0, warncnt = 0;
@@ -61,7 +62,7 @@ void frafatal(char *str) {
    if (intermedf != (FILE *) NULL) {
       fclose(intermedf);
       if (!debugmode)
-         unlink(interfn);
+         remove(interfn);
    }
 
    exit(2);
@@ -298,12 +299,12 @@ int main(int argc, char *argv[]) {
    if (hexflag) {
       fclose(hexoutf);
       if (!hexvalid)
-         unlink(hexfn);
+         remove(hexfn);
    }
 
    fclose(intermedf);
    if (!debugmode)
-      unlink(interfn);
+      remove(interfn);
    else
       abort();
 
