@@ -49,7 +49,7 @@ char ignosel[] = "[Xinvalid operands";
 #define	IDM118	16
 #define	IDM119	17
 #define	IDM11B	18
-char *(indexgen[][4]) = {
+char *indexgen[][4] = {
 /*IDM000;*/ { "[1=].5R.00|;", "[1=].5R.20|;", "[1=].5R.40|;", "[1=].5R.60|;" },
 /*IDM100;*/ { "80;", "a0;", "c0;", "e0;" },
 /*IDM101;*/ { "81;", "a1;", "c1;", "e1;" },
@@ -859,7 +859,7 @@ expr: '+' expr %prec KEOP_MUN {
 // ELSE
 // Globals:
 //	fraifskip	the enable flag
-lexintercept() {
+int lexintercept(void) {
 #undef yylex
 
    int rv;
@@ -884,7 +884,7 @@ lexintercept() {
 #define yylex lexintercept
 }
 
-setreserved() {
+void setreserved(void) {
 
    reservedsym("and", KEOP_AND, 0);
    reservedsym("defined", KEOP_DEFINED, 0);
@@ -944,9 +944,7 @@ setreserved() {
    reservedsym("PCR", PCRELATIVE, 0);
 }
 
-cpumatch(str)
-char *str;
-{
+int cpumatch(char *str) {
    return TRUE;
 }
 

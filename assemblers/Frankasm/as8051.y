@@ -865,7 +865,7 @@ expr: '+' expr %prec KEOP_MUN {
 // ELSE
 // Globals:
 //	fraifskip	the enable flag
-lexintercept() {
+int lexintercept(void) {
 #undef yylex
 
    int rv;
@@ -890,7 +890,7 @@ lexintercept() {
 #define yylex lexintercept
 }
 
-setreserved() {
+void setreserved(void) {
 
    reservedsym("and", KEOP_AND, 0);
    reservedsym("defined", KEOP_DEFINED, 0);
@@ -956,9 +956,7 @@ setreserved() {
 
 }
 
-cpumatch(str)
-char *str;
-{
+int cpumatch(char *str) {
    return TRUE;
 }
 

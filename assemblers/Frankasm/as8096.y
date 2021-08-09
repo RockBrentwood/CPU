@@ -729,7 +729,7 @@ expr: '+' expr %prec KEOP_MUN {
 // ELSE
 // Globals:
 //	fraifskip	the enable flag
-lexintercept() {
+int lexintercept(void) {
 #undef yylex
 
    int rv;
@@ -754,7 +754,7 @@ lexintercept() {
 #define yylex lexintercept
 }
 
-setreserved() {
+void setreserved(void) {
 
    reservedsym("and", KEOP_AND, 0);
    reservedsym("defined", KEOP_DEFINED, 0);
@@ -791,9 +791,7 @@ setreserved() {
 
 }
 
-strcontains(s1, sm)
-char *s1, *sm;
-{
+static int strcontains(char *s1, char *sm) {
    int l1 = strlen(s1), lm = strlen(sm);
 
    for (; l1 >= lm; l1--, s1++) {
@@ -804,9 +802,7 @@ char *s1, *sm;
    return FALSE;
 }
 
-cpumatch(str)
-char *str;
-{
+int cpumatch(char *str) {
    int msub;
 
    static struct {

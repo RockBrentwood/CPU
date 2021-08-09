@@ -25,7 +25,7 @@ enum readacts nextreadact = Nra_normal;
 // stack.
 // return	FALSE	got a line
 //		TRUE	end of input
-frareadrec() {
+static int frareadrec(void) {
    while (fgets(&finbuff[2], INBUFFSZ - 2, yyin) == (char *)NULL) {
       if (currfstk == 0) {
          return TRUE;
@@ -499,9 +499,7 @@ static struct {
 #define YEXL 32
 static char yytext[YEXL];
 
-static char *erryytextex(type)
-int type;
-{
+static char *erryytextex(int type) {
    char *strptr, *endptr;
    int charcnt;
 
@@ -520,10 +518,10 @@ int type;
    yytext[charcnt] = '\0';
 }
 
-int yylex() {
+int yylex(void) {
    int scanstate;
    char *thistokstart;
-   register char nextchar;
+   char nextchar;
    int charset;
    long consaccum, consbase;
 
@@ -648,8 +646,8 @@ int yylex() {
 
                case 7: /* process symbol */
                {
-                  register struct symel *symp;
-                  register char *ytp;
+                  struct symel *symp;
+                  char *ytp;
                   int tempov;
 
                   *tptrstr++ = '\0';
@@ -911,9 +909,7 @@ int yylex() {
 }
 
 // First pass - output a parser error to intermediate file
-yyerror(str)
-char *str;
-{
+void yyerror(char *str) {
    char *taglab;
 
    switch (lasttokfetch->errtype) {

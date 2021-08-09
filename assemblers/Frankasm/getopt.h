@@ -30,13 +30,9 @@ int optind = 1; /* index into argv vector       */
 int optopt; /* char checked for validity    */
 char *optarg; /* arg associated with option   */
 
-getopt(nargc, nargv, ostr)
-int nargc;
-char **nargv;
-char *ostr;
-{
+int getopt(int nargc, char **nargv, char *ostr) {
    static char *place = EMSG; /* option letter processing     */
-   register char *oli; /* option letter list index     */
+   char *oli; /* option letter list index     */
 
    if (!*place) { /* update scanning pointer        */
       if (optind >= nargc || *(place = nargv[optind]) != '-' || !*++place)

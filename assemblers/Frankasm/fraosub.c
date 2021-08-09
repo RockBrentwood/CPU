@@ -55,7 +55,7 @@ static long widthmask[MAXIMPWID + 1] = {
 //	oeptr, the output expression pointer
 // Return:
 //	the value
-static long dgethex() {
+static long dgethex(void) {
    long rv = 0;
 
    while (*oeptr != '\0') {
@@ -103,7 +103,7 @@ static long dgethex() {
 
 // Flush listing line buffer before an error for
 // that line is printed
-flushsourceline() {
+static void flushsourceline(void) {
    if (listflag && lineLflag) {
       fputs("\t\t\t", loutf);
       fputs(&lineLbuff[2], loutf);
@@ -119,9 +119,7 @@ flushsourceline() {
 //	a pointer to a symbol table element
 // Globals:
 //	the count of errors
-frp2undef(symp)
-struct symel *symp;
-{
+static void frp2undef(struct symel *symp) {
    if (listflag) {
       flushsourceline();
       fprintf(loutf, " ERROR -  undefined symbol %s\n", symp->symstr);
@@ -136,9 +134,7 @@ struct symel *symp;
 //	the message
 // Globals:
 //	the count of warnings
-frp2warn(str)
-char *str;
-{
+static void frp2warn(char *str) {
    if (listflag) {
       flushsourceline();
       fprintf(loutf, " WARNING - %s\n", str);
@@ -152,9 +148,7 @@ char *str;
 //	message
 // Globals:
 //	count of errors
-frp2error(str)
-char *str;
-{
+static void frp2error(char *str) {
    if (listflag) {
       flushsourceline();
       fprintf(loutf, " ERROR - %s\n", str);
@@ -171,9 +165,9 @@ static unsigned char listbuffhex[NUMHEXPERL];
 // Print a line of hexidecimal on the listing
 // Globals:
 //	the hex listing buffer
-listouthex() {
-   register int cn;
-   register int tc;
+static void listouthex(void) {
+   int cn;
+   int tc;
 
    if (lhnext > 0) {
       fputc(hexch((int)lhaddr >> 12), loutf);
@@ -225,7 +219,7 @@ listouthex() {
 // the previous assembler statement.
 // Globals:
 //	the new hex list flag
-flushlisthex() {
+static void flushlisthex(void) {
    listouthex();
    lhnew = TRUE;
 }
@@ -236,10 +230,10 @@ flushlisthex() {
 // Globals:
 //	the output expression pointer
 //	the output result array
-outeval() {
-   register long etop = 0;
+static void outeval(void) {
+   long etop = 0;
 
-   register struct evstkel *estkm1p = &estk[0];
+   struct evstkel *estkm1p = &estk[0];
 
    while (*oeptr != '\0') {
       switch (*oeptr) {
@@ -432,13 +426,8 @@ static char hlinebuff[INTELLEN];
 // file
 // Parameters:
 //	see manual for record description
-intelout(type, addr, count, data)
-int type;
-long addr;
-int count;
-char data[];
-{
-   register int temp, checksum;
+static void intelout(int type, long addr, int count, char data[]) {
+   int temp, checksum;
 
    fputc(':', hexoutf);
    fputc(hexch(count >> 4), hexoutf);
@@ -470,7 +459,7 @@ char data[];
 // Globals:
 //	the output result array
 //	the intel hex line buffer
-outhexblock() {
+static void outhexblock(void) {
    long inbuffaddr = resultloc;
    static int first = TRUE;
 
@@ -500,9 +489,9 @@ outhexblock() {
 // Globals:
 //	The output result array and count
 //	the hex line buffer and counts
-listhex() {
-   register int cht;
-   register long inhaddr = resultloc;
+static void listhex(void) {
+   int cht;
+   long inhaddr = resultloc;
 
    if (lhnew) {
       lhaddr = lhnextaddr = resultloc;
@@ -524,7 +513,7 @@ listhex() {
 // the second pass
 // Globals:
 //	the intel hex line buffer
-flushhex() {
+static void flushhex(void) {
    if (hnextsub > 0)
       intelout(0, blockaddr, hnextsub, hlinebuff);
    if (endsymbol != SYMNULL && endsymbol->seg > 0)
@@ -541,7 +530,7 @@ flushhex() {
 //	line number
 //	file name
 //	the binary output array and counts
-outphase() {
+void outphase(void) {
    int firstchar;
 
    for (;;) {

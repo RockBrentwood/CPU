@@ -7,7 +7,7 @@
 
 #define STRALLOCSZ 4096
 
-local char *currstr;
+static char *currstr;
 
 // Save a character string in permanent (interpass) memory
 // Parameters:
@@ -16,10 +16,7 @@ local char *currstr;
 //	the string pool
 // Return:
 //	a pointer to the saved string
-char *savestring(stx, len)
-char *stx;
-int len;
-{
+char *savestring(char *stx, int len) {
    char *rv;
    static int savestrleft = 0;
 
@@ -54,7 +51,7 @@ struct etelem {
 #define NUMENODE INBUFFSZ
 struct etelem enode[NUMENODE];
 
-local int nextenode = 1;
+static int nextenode = 1;
 
 /* non general, one exprlist or stringlist per line */
 int nextexprs = 0;
@@ -64,7 +61,7 @@ int nextstrs = 0;
 //	the temporary string pool
 //	the expression tree storage pool
 //	the string and expression lists
-clrexpr() {
+void clrexpr(void) {
    nextenode = 1;
    nextexprs = nextstrs = 0;
 }
@@ -83,11 +80,7 @@ clrexpr() {
 //	the next available table element
 // Return:
 //	the subscript of the expression node
-exprnode(swact, left, op, right, value, symbol)
-int swact, left, op, right;
-long value;
-struct symel *symbol;
-{
+int exprnode(int swact, int left, int op, int right, long value, struct symel *symbol) {
    if (nextenode >= NUMENODE) {
       frafatal("excessive number of subexpressions");
    }
@@ -104,9 +97,9 @@ struct symel *symbol;
 
 int nextsymnum = 1;
 
-local struct symel *syallob;
+static struct symel *syallob;
 #define SYELPB 512
-local int nxtsyel = SYELPB;
+static int nxtsyel = SYELPB;
 
 // Allocate a symbol table element, and allocate
 // a block if the current one is empty.  A fatal
@@ -116,7 +109,7 @@ local int nxtsyel = SYELPB;
 //	the count of elements used in the block
 // Return:
 //	a pointer to the symbol table element
-struct symel *allocsym() {
+static struct symel *allocsym(void) {
 
    if (nxtsyel >= SYELPB) {
       if ((syallob = (struct symel *)calloc(SYELPB, sizeof(struct symel)))
@@ -139,12 +132,10 @@ struct symel *allocsym() {
 //	a character string
 // Return:
 //	an integer related in some way to the character string
-int syhash(str)
-register char *str;
-{
+static int syhash(char *str) {
    unsigned rv = 0;
-   register int offset = 1;
-   register int c;
+   int offset = 1;
+   int c;
 
    while ((c = *(str++)) > 0) {
       rv += (c - ' ') * offset;
@@ -154,7 +145,7 @@ register char *str;
    return rv % SYHASHSZ;
 }
 
-local struct symel *(shashtab[SYHASHSZ]);
+static struct symel *shashtab[SYHASHSZ];
 
 // Find an existing symbol in the symbol table, or
 // allocate an new element if the symbol doen't exist.
@@ -177,9 +168,7 @@ local struct symel *(shashtab[SYHASHSZ]);
 // Return:
 //	a pointer to the symbol table element for this
 //	character string
-static struct symel *getsymslot(str)
-char *str;
-{
+static struct symel *getsymslot(char *str) {
    struct symel *currel, *prevel;
    int hv;
 
@@ -219,10 +208,7 @@ char *str;
 //	the symbol table in all its messy glory
 // Return:
 //	a pointer to the symbol table element
-struct symel *symbentry(str, toktyp)
-char *str;
-int toktyp;
-{
+struct symel *symbentry(char *str, int toktyp) {
    struct symel *rv;
 
    rv = getsymslot(str);
@@ -242,11 +228,7 @@ int toktyp;
 //	the symbol table does not copy it, only point to it.
 //	The syntactic token value.
 //	The associated value of the symbol.
-void reservedsym(str, tok, value)
-char *str;
-int tok;
-int value;
-{
+void reservedsym(char *str, int tok, int value) {
    struct symel *tv;
 
    tv = getsymslot(str);
@@ -268,7 +250,7 @@ int value;
 // pass.
 // Globals:
 //	the symbol table
-buildsymbolindex() {
+void buildsymbolindex(void) {
    int hi;
    struct symel *curr;
 
@@ -293,14 +275,12 @@ buildsymbolindex() {
 #define OPHASHOFF 13
 #define OPHASHSZ 1023
 
-local int ohashtab[OPHASHSZ];
+static int ohashtab[OPHASHSZ];
 
 // Hash a character string
 // Return:
 //	an integer related somehow to the character string
-int opcodehash(str)
-char *str;
-{
+static int opcodehash(char *str) {
    unsigned rv = 0;
    int offset = 1, c;
 
@@ -317,7 +297,7 @@ char *str;
 // Globals:
 //	the opcode hash table
 //	the opcode table
-setophash() {
+void setophash(void) {
    int opn, pl, hv;
 
 /* optab[0] is reserved for the "invalid" entry */
@@ -347,9 +327,7 @@ setophash() {
 // Return:
 //	0 if not found
 //	the subscript of the matching element if found
-int findop(str)
-char *str;
-{
+int findop(char *str) {
    int ts;
 
    if ((ts = ohashtab[opcodehash(str)]) == 0) {
@@ -390,9 +368,7 @@ char *str;
 //	a pointer to a character string, either a
 //	error message, or the generation string for the
 //	instruction
-char *findgen(op, syntax, crit)
-int op, syntax, crit;
-{
+char *findgen(int op, int syntax, int crit) {
    int sys = optab[op].subsyn, stc, gsub = 0, dctr;
 
    for (stc = optab[op].numsyn; stc > 0; stc--) {
@@ -420,22 +396,17 @@ int op, syntax, crit;
 // Output to the intermediate file, a 'P' record
 // giving the current location counter.  Segment
 // is not used at this time.
-genlocrec(seg, loc)
-int seg;
-long loc;
-{
+void genlocrec(int seg, long loc) {
    fprintf(intermedf, "P:%x:%lx\n", seg, loc);
 }
 
-local char *goutptr, goutbuff[INBUFFSZ] = "D:";
+static char *goutptr, goutbuff[INBUFFSZ] = "D:";
 
 // Put a character in the intermediate file buffer
 // for 'D' data records
 // Globals:
 //	the buffer, its current position pointer
-void goutch(ch)
-char ch;
-{
+static void goutch(char ch) {
    if (goutptr < &goutbuff[INBUFFSZ - 1]) {
       *goutptr++ = ch;
    } else {
@@ -446,18 +417,14 @@ char ch;
 }
 
 // Output to the 'D' buffer, a byte in ascii hexidecimal
-gout2hex(inv)
-int inv;
-{
+static void gout2hex(int inv) {
    goutch(hexch(inv >> 4));
    goutch(hexch(inv));
 }
 
 // Output to the 'D' record buffer a long integer in
 // hexidecimal
-goutxnum(num)
-unsigned long num;
-{
+static void goutxnum(unsigned long num) {
    if (num > 15)
       goutxnum(num >> 4);
    goutch(hexch((int)num));
@@ -482,14 +449,12 @@ unsigned long num;
 //			the output phase.
 // Return:
 //	the length of the instruction (machine code bytes)
-int geninstr(str)
-register char *str;
-{
+int geninstr(char *str) {
    int len = 0;
    int state = GSTR_PASS;
    int innum = 0;
 
-   register char *exp;
+   char *exp;
 
    goutptr = &goutbuff[2];
 
@@ -596,7 +561,7 @@ int chtnxalph = 1, *chtcpoint = (int *)NULL, *chtnpoint = (int *)NULL;
 // Return:
 //	0 for error, subscript into chtatab to pointer
 //	to the allocated block
-int chtcreate() {
+int chtcreate(void) {
    int *trantab, cnt;
 
    if (chtnxalph >= NUM_CHTA)
@@ -621,12 +586,7 @@ int chtcreate() {
 //	pointer to numeric return
 // Return:
 //	status of search
-int chtcfind(chtab, sourcepnt, tabpnt, numret)
-int *chtab;
-char **sourcepnt;
-int **tabpnt;
-int *numret;
-{
+int chtcfind(int *chtab, char **sourcepnt, int **tabpnt, int *numret) {
    int numval, *valaddr;
    char *sptr, cv;
 
@@ -788,9 +748,7 @@ int *numret;
    }
 }
 
-int chtran(sourceptr)
-char **sourceptr;
-{
+int chtran(char **sourceptr) {
    int numval;
    int *retptr;
    char *beforeptr = *sourceptr;
@@ -823,9 +781,7 @@ char **sourceptr;
 //	a character string
 // Return:
 //	the length of the string total (machine code bytes)
-int genstring(str)
-char *str;
-{
+int genstring(char *str) {
 #define STCHPERLINE 20
    int rvlen = 0, linecount;
 
@@ -856,9 +812,7 @@ static int etopseg;
 // Output a character to a evar[?].exprstr array
 // Globals:
 //	parser expression to polish pointer pepolptr
-polout(ch)
-char ch;
-{
+static void polout(char ch) {
    if (pepolcnt > 1) {
       *pepolptr++ = ch;
       pepolcnt--;
@@ -869,9 +823,7 @@ char ch;
 }
 
 // Output a long constant to a polish expression
-polnumout(inv)
-unsigned long inv;
-{
+static void polnumout(unsigned long inv) {
    if (inv > 15)
       polnumout(inv >> 4);
    polout(hexch((int)inv));
@@ -892,9 +844,7 @@ unsigned long inv;
 //	which are propgated along as numeric operators are
 //	evaluated.  Undefined references result in an
 //	undefined result.
-pepolcon(esub)
-int esub;
-{
+static int pepolcon(int esub) {
    switch (enode[esub].evs) {
       case PCCASE_UN:
       {
@@ -993,9 +943,7 @@ int esub;
 //	in evalr[sub].seg == SSG_UNDEF if the polish expression
 //	conversion overflowed, or any undefined symbols were
 //	referenced.
-pevalexpr(sub, exn)
-int sub, exn;
-{
+void pevalexpr(int sub, int exn) {
    etop = 0;
    etopseg = SSG_UNUSED;
    estkm1p = &estk[0];

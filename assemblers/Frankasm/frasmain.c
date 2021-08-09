@@ -32,9 +32,7 @@ char hexcva[17] = "0123456789abcdef";
 //	message
 // Globals:
 //	the count of warnings
-frawarn(str)
-char *str;
-{
+void frawarn(char *str) {
    fprintf(intermedf, "E: WARNING - %s\n", str);
    warncnt++;
 }
@@ -45,9 +43,7 @@ char *str;
 //	message
 // Globals:
 //	count of errors
-fraerror(str)
-char *str;
-{
+void fraerror(char *str) {
    fprintf(intermedf, "E: ERROR - %s\n", str);
    errorcnt++;
 }
@@ -59,9 +55,7 @@ char *str;
 //	if debug mode is true, save intermediate file
 // Return:
 //	exit(2)
-frafatal(str)
-char *str;
-{
+void frafatal(char *str) {
    fprintf(stderr, "Fatal error - %s\n", str);
 
    if (intermedf != (FILE *) NULL) {
@@ -81,9 +75,7 @@ char *str;
 //	pointer after bad definition
 // Globals:
 //	count of errors
-fracherror(str, start, beyond)
-char *str, *start, *beyond;
-{
+void fracherror(char *str, char *start, char *beyond) {
    char bcbuff[8];
    int cnt;
 
@@ -100,10 +92,7 @@ char *str, *start, *beyond;
 // for the value in a set, equate, or org statement, etc...
 // Parameters:
 //	format string and a long integer value
-prtequvalue(fstr, lv)
-char *fstr;
-long lv;
-{
+void prtequvalue(char *fstr, long lv) {
    fprintf(intermedf, fstr, lv);
 }
 
@@ -115,7 +104,7 @@ long lv;
 // not assigned symbol numbers and thus are not printed.
 // Globals:
 //	the symbol index array and the symbol table elements.
-printsymbols() {
+static void printsymbols(void) {
    int syn, npl = 0;
    struct symel *syp;
 
@@ -143,7 +132,7 @@ printsymbols() {
 // Print the symbols to the symbol table file
 // Globals:
 //	the symbol index array and the symbol table elements.
-filesymbols() {
+static void filesymbols(void) {
    int syn;
    struct symel *syp;
 
@@ -167,10 +156,7 @@ filesymbols() {
 // close down and delete the outputs if any errors
 // Return:
 //	exit(2) for error, exit(0) for OK
-main(argc, argv)
-int argc;
-char *(argv[]);
-{
+int main(int argc, char *argv[]) {
    extern char *optarg;
    extern int optind;
    int grv;
@@ -216,12 +202,12 @@ char *(argv[]);
       } else {
          if ((yyin = fopen(argv[optind], "r")) == (FILE *) NULL) {
             fprintf(stderr, "%s: cannot open input file %s\n", argv[0], argv[optind]);
-            exit(1);
+            return 1;
          }
       }
    } else {
       fprintf(stderr, "%s: no input file\n", argv[0]);
-      exit(1);
+      return 1;
    }
 
    if (listflag) {
@@ -238,10 +224,10 @@ char *(argv[]);
       loutf = stdout;
    }
 
-   mktemp(interfn);
+   mkstemp(interfn);
    if ((intermedf = fopen(interfn, "w")) == (FILE *) NULL) {
       fprintf(stderr, "%s: cannot open temp file %s\n", argv[0], interfn);
-      exit(1);
+      return 1;
    }
 
    setophash();
@@ -276,7 +262,7 @@ char *(argv[]);
    fclose(intermedf);
    if ((intermedf = fopen(interfn, "r")) == (FILE *) NULL) {
       fprintf(stderr, "%s: cannot open temp file %s\n", argv[0], interfn);
-      exit(1);
+      return 1;
    }
 
    if (errorcnt > 0)
@@ -321,5 +307,5 @@ char *(argv[]);
    else
       abort();
 
-   exit(errorcnt > 0 ? 2 : 0);
+   return errorcnt > 0 ? 2 : 0;
 }

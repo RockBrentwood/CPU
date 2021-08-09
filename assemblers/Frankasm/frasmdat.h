@@ -3,26 +3,13 @@
 // The structures and data used in parser and output phases.
 #include <ctype.h>
 #include <stdlib.h>
+#include <string.h>
+
 #define PRINTCTRL(char) ((char)+'@')
 
 #ifndef Global
 #   define	Global	extern
 #endif
-
-#ifdef USEINDEX
-#   define strchr index
-#endif
-
-#ifdef NOSTRING
-extern char *strncpy();
-extern char *strchr();
-extern int strcmp();
-extern int strlen();
-#else
-#   include <string.h>
-#endif
-
-#define local
 
 #define TRUE 1
 #define FALSE 0
@@ -48,7 +35,6 @@ struct symel {
 #define SSG_SET 3
 
 #define SYMNULL (struct symel *) NULL
-struct symel *symbentry();
 
 /* opcode symbol table element */
 
@@ -147,21 +133,55 @@ enum readacts {
 
 extern enum readacts nextreadact;
 
-char *savestring(), *findgen();
-long strtol();
-void reservedsym();
-
 extern struct symel *endsymbol;
 extern char ignosyn[];
 extern char ignosel[];
 
 #define NUM_CHTA 6
 extern int chtnxalph, *chtcpoint, *chtnpoint;
-Global int *(chtatab[NUM_CHTA]);
-int chtcreate(), chtcfind(), chtran();
+Global int *chtatab[NUM_CHTA];
 
 #define CF_END		-2
 #define CF_INVALID 	-1
 #define CF_UNDEF 	0
 #define CF_CHAR 	1
 #define CF_NUMBER 	2
+
+// frasmain.c:
+void frawarn(char *str);
+void fraerror(char *str);
+void frafatal(char *str);
+void fracherror(char *str, char *start, char *beyond);
+void prtequvalue(char *fstr, long lv);
+int main(int argc, char *argv[]);
+
+// fryylex.c:
+int yylex(void);
+void yyerror(char *str);
+
+// as*.y:
+int yyparse(void);
+int lexintercept(void);
+void setreserved(void);
+int cpumatch(char *str);
+
+// frapsub.c:
+char *savestring(char *stx, int len);
+void clrexpr(void);
+int exprnode(int swact, int left, int op, int right, long value, struct symel *symbol);
+struct symel *symbentry(char *str, int toktyp);
+void reservedsym(char *str, int tok, int value);
+void buildsymbolindex(void);
+void setophash(void);
+int findop(char *str);
+char *findgen(int op, int syntax, int crit);
+void genlocrec(int seg, long loc);
+int geninstr(char *str);
+int chtcreate(void);
+int chtcfind(int *chtab, char **sourcepnt, int **tabpnt, int *numret);
+int chtran(char **sourceptr);
+int genstring(char *str);
+void pevalexpr(int sub, int exn);
+
+// fraosub.c:
+void outphase(void);
