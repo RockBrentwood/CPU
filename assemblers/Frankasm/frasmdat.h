@@ -4,8 +4,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
-
-typedef enum { false, true } bool;
+#include <stdbool.h>
 
 #ifndef Global
 #   define	Global	extern
