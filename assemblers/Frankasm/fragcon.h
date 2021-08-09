@@ -1,4 +1,4 @@
-// Frankenstain Cross-Assemblers, version 2.0.
+// Frankenstein Cross-Assemblers, version 2.0.
 // Original author: Mark Zenier.
 // The constants used in intermediate file code generation
 // as the expression node operation value and the polish expression operation

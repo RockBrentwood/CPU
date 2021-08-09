@@ -1,4 +1,4 @@
-// Frankenstain Cross-Assemblers, version 2.0.
+// Frankenstein Cross-Assemblers, version 2.0.
 // Original authors: Keith Bostic, Rich $alz.
 // Adapted by Mark Zenier.
 // This is some ancient code I found on a version 7 system when I was running the original port.

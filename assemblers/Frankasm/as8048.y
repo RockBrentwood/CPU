@@ -1,5 +1,5 @@
 %{
-// Frankenstain Cross-Assemblers, version 2.0.
+// Frankenstein Cross-Assemblers, version 2.0.
 // Original author: Mark Zenier.
 // 8048  et al  instruction generation file.
 

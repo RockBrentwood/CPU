@@ -1,4 +1,4 @@
-// Frankenstain Cross-Assemblers, version 2.0.
+// Frankenstein Cross-Assemblers, version 2.0.
 // Original author: Mark Zenier.
 // Lexical analyzer for framework cross assembler.
 #include <stdio.h>

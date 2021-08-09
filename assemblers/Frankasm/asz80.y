@@ -1,5 +1,5 @@
 %{
-// Frankenstain Cross-Assemblers, version 2.0.
+// Frankenstein Cross-Assemblers, version 2.0.
 // Original author: Mark Zenier.
 // Framework crossassembler for z80 + and minus.
 

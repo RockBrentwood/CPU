@@ -1,4 +1,4 @@
-// Frankenstain Cross-Assemblers, version 2.0.
+// Frankenstein Cross-Assemblers, version 2.0.
 // Original author: Mark Zenier.
 // Switch case actions for binary operators for both the parse and output phase expression evaluators.
 case IFC_MUL:
