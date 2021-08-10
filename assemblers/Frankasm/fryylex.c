@@ -19,7 +19,7 @@ char finbuff[INBUFFSZ] = "L:";
                 /* initialization nonreusable, wiped out by pass 2 */
 static char *frainptr = &finbuff[2];
                 /* point to null byte after L: on start up */
-enum readacts nextreadact = Nra_normal;
+readacts nextreadact = Nra_normal;
 
 // Read a line, on end of file, pop the include file
 // stack.
@@ -51,67 +51,31 @@ static struct {
 static char tempstrpool[2 * INBUFFSZ];
 static char *tptrstr;
 
-#define	 CXC00_SKIP	0
-#define	 CXC01_SPACE	1
-#define	 CXC02_NL	2
-#define	 CXC03_LETTER	3
-#define	 CXC04_QUOTE	4
-#define	 CXC05_OTHER	5
-#define	 CXC06_DOLLAR	6
-#define	 CXC07_PERCENT	7
-#define	 CXC08_APP	8
-#define	 CXC09_BIN	9
-#define	 CXC10_OCT	10
-#define	 CXC11_DEC	11
-#define	 CXC12_SEMIC	12
-#define	 CXC13_LT	13
-#define	 CXC14_EQ	14
-#define	 CXC15_GT	15
-#define	 CXC16_AT	16
-#define	 CXC17_HEXU	17
-#define	 CXC18_B	18
-#define	 CXC19_D	19
-#define	 CXC20_H	20
-#define	 CXC21_OQ	21
-#define	 CXC22_HEXL	22
-#define	 CXC23_BL	23
-#define	 CXC24_DL	24
-#define	 CXC25_BSLASH	25
-#define  NUMCHARSETS	26
+typedef enum char_t {
+// Control Space   '\n'    Alpha    '"'     Etc     '$'     '%'     '\''    0-1     2-7     8-9     ';'
+// '<'     '='     '>'     '@'      ACEF    'B'     'D'     Hh      OoQq    acef    'b'     'd'     '\\'
+   SkipX = 0, SpaceX, NlX, AlphaX, Quote2X, EtcX, DollarX, PercentX, Quote1X, BinX, OctX, DecX, SemiX,
+   LtX, EqX, GtX, AtX, HexX, BX, DX, HX, OoQqX, hexX, bX, dX, BackX,
+   CharXs
+} char_t;
 
-static char chartrantab[128] = {
-/* 00 nul soh stx etx*/ CXC00_SKIP, CXC00_SKIP, CXC00_SKIP, CXC00_SKIP,
-/* 04 eot enq ack bel*/ CXC00_SKIP, CXC00_SKIP, CXC00_SKIP, CXC00_SKIP,
-/* 08 bs  ht  nl  vt */ CXC00_SKIP, CXC01_SPACE, CXC02_NL, CXC00_SKIP,
-/* 0c np  cr  so  si */ CXC00_SKIP, CXC00_SKIP, CXC00_SKIP, CXC00_SKIP,
-/* 10 dle dc1 dc2 dc3*/ CXC00_SKIP, CXC00_SKIP, CXC00_SKIP, CXC00_SKIP,
-/* 14 dc4 nak syn etb*/ CXC00_SKIP, CXC00_SKIP, CXC00_SKIP, CXC00_SKIP,
-/* 18 can em  sub esc*/ CXC00_SKIP, CXC00_SKIP, CXC00_SKIP, CXC00_SKIP,
-/* 1c fs  gs  rs  us */ CXC00_SKIP, CXC00_SKIP, CXC00_SKIP, CXC00_SKIP,
-/* 20 sp  !  "  # */ CXC01_SPACE, CXC03_LETTER, CXC04_QUOTE, CXC05_OTHER,
-/* 24  $  %  &  ' */ CXC06_DOLLAR, CXC07_PERCENT, CXC03_LETTER, CXC08_APP,
-/* 28  (  )  *  + */ CXC05_OTHER, CXC05_OTHER, CXC05_OTHER, CXC05_OTHER,
-/* 2c  ,  -  .  / */ CXC05_OTHER, CXC05_OTHER, CXC05_OTHER, CXC05_OTHER,
-/* 30  0  1  2  3 */ CXC09_BIN, CXC09_BIN, CXC10_OCT, CXC10_OCT,
-/* 34  4  5  6  7 */ CXC10_OCT, CXC10_OCT, CXC10_OCT, CXC10_OCT,
-/* 38  8  9  :  ; */ CXC11_DEC, CXC11_DEC, CXC05_OTHER, CXC12_SEMIC,
-/* 3c  <  =  >  ? */ CXC13_LT, CXC14_EQ, CXC15_GT, CXC05_OTHER,
-/* 40  @  A  B  C */ CXC16_AT, CXC17_HEXU, CXC18_B, CXC17_HEXU,
-/* 44  D  E  F  G */ CXC19_D, CXC17_HEXU, CXC17_HEXU, CXC03_LETTER,
-/* 48  H  I  J  K */ CXC20_H, CXC03_LETTER, CXC03_LETTER, CXC03_LETTER,
-/* 4c  L  M  N  O */ CXC03_LETTER, CXC03_LETTER, CXC03_LETTER, CXC21_OQ,
-/* 50  P  Q  R  S */ CXC03_LETTER, CXC21_OQ, CXC03_LETTER, CXC03_LETTER,
-/* 54  T  U  V  W */ CXC03_LETTER, CXC03_LETTER, CXC03_LETTER, CXC03_LETTER,
-/* 58  X  Y  Z  [ */ CXC03_LETTER, CXC03_LETTER, CXC03_LETTER, CXC05_OTHER,
-/* 5c  \  ]  ^  _ */ CXC25_BSLASH, CXC05_OTHER, CXC03_LETTER, CXC03_LETTER,
-/* 60  `  a  b  c */ CXC05_OTHER, CXC22_HEXL, CXC23_BL, CXC22_HEXL,
-/* 64  d  e  f  g */ CXC24_DL, CXC22_HEXL, CXC22_HEXL, CXC03_LETTER,
-/* 68  h  i  j  k */ CXC20_H, CXC03_LETTER, CXC03_LETTER, CXC03_LETTER,
-/* 6c  l  m  n  o */ CXC03_LETTER, CXC03_LETTER, CXC03_LETTER, CXC21_OQ,
-/* 70  p  q  r  s */ CXC03_LETTER, CXC21_OQ, CXC03_LETTER, CXC03_LETTER,
-/* 74  t  u  v  w */ CXC03_LETTER, CXC03_LETTER, CXC03_LETTER, CXC03_LETTER,
-/* 78  x  y  z  { */ CXC03_LETTER, CXC03_LETTER, CXC03_LETTER, CXC05_OTHER,
-/* 7c vb  }  ~  del*/ CXC05_OTHER, CXC05_OTHER, CXC03_LETTER, CXC00_SKIP
+static char_t chartrantab[0x80] = {
+// nul soh stx etx eot enq ack bel bs  ht  nl  vt  np  cr  so  si
+   SkipX, SkipX, SkipX, SkipX, SkipX, SkipX, SkipX, SkipX, SkipX, SpaceX, NlX, SkipX, SkipX, SkipX, SkipX, SkipX,
+// dle dc1 dc2 dc3 dc4 nak syn etb can em  sub esc fs  gs  rs  us
+   SkipX, SkipX, SkipX, SkipX, SkipX, SkipX, SkipX, SkipX, SkipX, SkipX, SkipX, SkipX, SkipX, SkipX, SkipX, SkipX,
+// sp  !   "   #   $   %   &   '   (   )   *   +   ,   -   .   /
+   SpaceX, AlphaX, Quote2X, EtcX, DollarX, PercentX, AlphaX, Quote1X, EtcX, EtcX, EtcX, EtcX, EtcX, EtcX, EtcX, EtcX,
+// 0   1   2   3   4   5   6   7   8   9   :   ;   <   =   >   ?
+   BinX, BinX, OctX, OctX, OctX, OctX, OctX, OctX, DecX, DecX, EtcX, SemiX, LtX, EqX, GtX, EtcX,
+// @   A   B   C   D   E   F   G   H   I   J   K   L   M   N   O
+   AtX, HexX, BX, HexX, DX, HexX, HexX, AlphaX, HX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, OoQqX,
+// P   Q   R   S   T   U   V   W   X   Y   Z   [   \   ]   ^   _
+   AlphaX, OoQqX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, EtcX, BackX, EtcX, AlphaX, AlphaX,
+// `   a   b   c   d   e   f   g   h   i   j   k   l   m   n   o
+   EtcX, hexX, bX, hexX, dX, hexX, hexX, AlphaX, HX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, OoQqX,
+// p   q   r   s   t   u   v   w   x   y   z   {   vb  }   ~   del
+   AlphaX, OoQqX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, EtcX, EtcX, EtcX, AlphaX, SkipX
 };
 
 #if DEBUG
@@ -187,7 +151,7 @@ static struct {
    char action;
    char nextstate;
    bool contin;
-} *thisact, characttab[23][NUMCHARSETS] = {
+} *thisact, characttab[23][CharXs] = {
      // Control    Space      '\n'       Letter     '"'        Other      '$'        '%'
      // '\''       0-1        2-7        8-9        ';'        '<'        '='        '>'
      // '@'        ACEF       'B'        'D'        Hh         OoQq       acef       'b'
@@ -241,14 +205,14 @@ static struct {
       {13, 3,oo}, {11, 6,XX}, {11, 6,XX}, {11, 6,XX}, {13, 3,oo}, {13, 3,oo}, {12, 6,XX}, {12, 6,XX},
       {12, 6,XX}, {13, 3,oo}
    },
-// 7:  
+// 7: @
    {
       { 0, 7,XX}, {14, 3,XX}, {14, 3,oo}, {14, 3,oo}, {14, 3,oo}, {14, 3,oo}, {14, 3,oo}, {14, 3,oo},
       {14, 3,oo}, {15, 8,oo}, {15, 8,oo}, {14, 3,oo}, {14, 1,XX}, {14,14,XX}, {14, 3,oo}, {14,13,XX},
       {14, 3,oo}, {14, 3,oo}, {14, 3,oo}, {14, 3,oo}, {14, 3,oo}, {14, 3,oo}, {14, 3,oo}, {14, 3,oo},
       {14, 3,oo}, {14, 3,oo}
    },
-// 8:   [0-7]*
+// 8: @ [0-7]*
    {
       { 0, 8,XX}, {13, 3,XX}, {13, 3,oo}, {13, 3,oo}, {13, 3,oo}, {13, 3,oo}, {13, 3,oo}, {13, 3,oo},
       {13, 3,oo}, {10, 8,XX}, {10, 8,XX}, {13, 3,oo}, {13, 1,XX}, {13,14,XX}, {13, 3,oo}, {13,13,XX},
@@ -297,7 +261,7 @@ static struct {
       {23, 3,oo}, {23, 3,oo}, {23, 3,oo}, {23, 3,oo}, {23, 3,oo}, {23, 3,oo}, {23, 3,oo}, {23, 3,oo},
       {23, 3,oo}, {23, 3,oo}
     },
-// 15: Base 2; or maybe  8,10 or 16
+// 15: Base 2; or maybe 8, 10 or 16
    {
       { 0,15,XX}, {29, 3,XX}, {29, 3,oo}, {29, 3,oo}, {29, 3,oo}, {29, 3,oo}, {29, 3,oo}, {29, 3,oo},
       {29, 3,oo}, {24,15,XX}, {24,16,XX}, {24,17,XX}, {29, 1,XX}, {29,14,XX}, {29, 3,oo}, {29,13,XX},
@@ -377,13 +341,13 @@ static char *erryytextex(int type) {
    yytext[charcnt] = '\0';
 }
 
-int yylex(void) {
+int scan(void) {
    bool havesym = false; // true: symbol, false: opcode
    char *thistokstart;
    long consaccum, consbase;
    int scanstate;
    char nextchar;
-   int charset;
+   char_t charset;
    if (currtok >= intokcnt) {
       switch (nextreadact) {
          case Nra_new: /* access next file */
@@ -557,7 +521,7 @@ int yylex(void) {
                      + (nextchar - '0');
                   break;
 
-               case 11: /* accumulate A-F constant  */
+               case 11: /* accumulate A-F constant */
                   consaccum = (consaccum * consbase)
                      + (nextchar - 'A' + 10);
                   break;

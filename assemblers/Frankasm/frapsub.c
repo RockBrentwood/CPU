@@ -41,7 +41,7 @@ char *savestring(char *stx, int len) {
 
 /* expression tree element */
 struct etelem {
-   int evs;
+   extag evs;
    int op;
    int left, right;
    long val;
@@ -80,7 +80,7 @@ void clrexpr(void) {
 //	the next available table element
 // Return:
 //	the subscript of the expression node
-int exprnode(int swact, int left, int op, int right, long value, struct symel *symbol) {
+int exprnode(extag swact, int left, int op, int right, long value, struct symel *symbol) {
    if (nextenode >= NUMENODE) {
       frafatal("excessive number of subexpressions");
    }
@@ -586,7 +586,7 @@ int chtcreate(void) {
 //	pointer to numeric return
 // Return:
 //	status of search
-int chtcfind(int *chtab, char **sourcepnt, int **tabpnt, int *numret) {
+char_tx chtcfind(int *chtab, char **sourcepnt, int **tabpnt, int *numret) {
    int numval, *valaddr;
    char *sptr, cv;
 
@@ -806,7 +806,7 @@ int genstring(char *str) {
 static char *pepolptr;
 static int pepolcnt;
 static long etop;
-static int etopseg;
+static seg_t etopseg;
 #define STACKALLOWANCE 4 /* number of level used outside polish expr */
 
 // Output a character to a evar[?].exprstr array
@@ -891,7 +891,7 @@ static bool pepolcon(int esub) {
          break;
 
       case PCCASE_DEF:
-         if (enode[esub].sym->seg > 0) {
+         if (seg_valued(enode[esub].sym->seg)) {
             polnumout(1L);
             etop = 1;
             etopseg = SSG_ABS;

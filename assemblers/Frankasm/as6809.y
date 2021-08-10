@@ -9,9 +9,7 @@
 #include "frasmdat.h"
 #include "fragcon.h"
 
-#define yylex lexintercept
-
-        /* select criteria for ST_EXP  0000.0000.0000.00xx */
+        /* select criteria for ST_EXP 0000.0000.0000.00xx */
 #define	ADDR	0x3
 #define	DIRECT	0x1
 #define	EXTENDED	0x2
@@ -119,7 +117,7 @@ struct symel *endsymbol = SYMNULL;
 %token <intv> ACCUM
 %token <intv> INDEX
 %token <intv> SPECREG
-%token  PCRELATIVE
+%token PCRELATIVE
 %type <intv> regbits register
 %type <strng> indexed
 %token <intv> KOC_BDEF
@@ -177,715 +175,406 @@ struct symel *endsymbol = SYMNULL;
 %left	'*' '/' KEOP_MOD KEOP_SHL KEOP_SHR
 %right	KEOP_MUN
 
-
 %type <intv> expr exprlist stringlist
 
 %start file
-
 %%
+file: file allline | allline;
+allline: line EOL { clrexpr(); };
+allline: EOL;
+allline: error EOL { clrexpr(); yyerrok; };
 
-file: file allline
-| allline
-;
-
-allline: line EOL {
-   clrexpr();
-}
-| EOL
-
-| error EOL {
-   clrexpr();
-   yyerrok;
-}
-;
-
-line: LABEL KOC_END {
-   endsymbol = $1;
-   nextreadact = Nra_end;
-}
-| KOC_END {
-   nextreadact = Nra_end;
-}
-| KOC_INCLUDE STRING {
-   if (nextfstk >= FILESTKDPTH) {
+line: LABEL KOC_END { endsymbol = $1, nextreadact = Nra_end; };
+line: KOC_END { nextreadact = Nra_end; };
+line: KOC_INCLUDE STRING {
+   if (nextfstk >= FILESTKDPTH)
       fraerror("include file nesting limit exceeded");
-   } else {
+   else {
       infilestk[nextfstk].fnm = savestring($2, strlen($2));
-      if ((infilestk[nextfstk].fpt = fopen($2, "r"))
-         == (FILE *) NULL) {
+      if ((infilestk[nextfstk].fpt = fopen($2, "r")) == NULL)
          fraerror("cannot open include file");
-      } else {
+      else
          nextreadact = Nra_new;
-      }
    }
-}
-| LABEL KOC_EQU expr {
-   if ($1->seg == SSG_UNDEF) {
-      pevalexpr(0, $3);
-      if (evalr[0].seg == SSG_ABS) {
-         $1->seg = SSG_EQU;
-         $1->value = evalr[0].value;
-         prtequvalue("C: 0x%lx\n", evalr[0].value);
-      } else {
-         fraerror("noncomputable expression for EQU");
-      }
-   } else {
+};
+line: LABEL KOC_EQU expr {
+   if ($1->seg != SSG_UNDEF)
       fraerror("cannot change symbol value with EQU");
-   }
-}
-| LABEL KOC_SET expr {
-   if ($1->seg == SSG_UNDEF || $1->seg == SSG_SET) {
+   else {
       pevalexpr(0, $3);
-      if (evalr[0].seg == SSG_ABS) {
-         $1->seg = SSG_SET;
-         $1->value = evalr[0].value;
-         prtequvalue("C: 0x%lx\n", evalr[0].value);
-      } else {
-         fraerror("noncomputable expression for SET");
-      }
-   } else {
+      if (evalr[0].seg != SSG_ABS)
+         fraerror("noncomputable expression for EQU");
+      else
+         $1->seg = SSG_EQU, $1->value = evalr[0].value, prtequvalue("C: 0x%lx\n", evalr[0].value);
+   }
+};
+line: LABEL KOC_SET expr {
+   if ($1->seg != SSG_UNDEF && $1->seg != SSG_SET)
       fraerror("cannot change symbol value with SET");
+   else {
+      pevalexpr(0, $3);
+      if (evalr[0].seg != SSG_ABS)
+         fraerror("noncomputable expression for SET");
+      else
+         $1->seg = SSG_SET, $1->value = evalr[0].value, prtequvalue("C: 0x%lx\n", evalr[0].value);
    }
-}
-| KOC_IF expr {
-   if ((++ifstkpt) < IFSTKDEPTH) {
-      pevalexpr(0, $2);
-      if (evalr[0].seg == SSG_ABS) {
-         if (evalr[0].value != 0) {
-            elseifstk[ifstkpt] = If_Skip;
-            endifstk[ifstkpt] = If_Active;
-         } else {
-            fraifskip = true;
-            elseifstk[ifstkpt] = If_Active;
-            endifstk[ifstkpt] = If_Active;
-         }
-      } else {
-         fraifskip = true;
-         elseifstk[ifstkpt] = If_Active;
-         endifstk[ifstkpt] = If_Active;
-      }
-   } else {
+};
+line: KOC_IF expr {
+   if (++ifstkpt >= IFSTKDEPTH)
       fraerror("IF stack overflow");
+   else {
+      pevalexpr(0, $2);
+      if (evalr[0].seg != SSG_ABS)
+         fraifskip = true, ifstk[ifstkpt].Else = If_Active, ifstk[ifstkpt].EndIf = If_Active;
+      else if (evalr[0].value != 0)
+         ifstk[ifstkpt].Else = If_Skip, ifstk[ifstkpt].EndIf = If_Active;
+      else
+         fraifskip = true, ifstk[ifstkpt].Else = If_Active, ifstk[ifstkpt].EndIf = If_Active;
    }
-}
-
-| KOC_IF {
-   if (fraifskip) {
-      if ((++ifstkpt) < IFSTKDEPTH) {
-         elseifstk[ifstkpt] = If_Skip;
-         endifstk[ifstkpt] = If_Skip;
-      } else {
-         fraerror("IF stack overflow");
-      }
-   } else {
+};
+line: KOC_IF {
+   if (!fraifskip) {
       yyerror("syntax error");
       YYERROR;
+   } else if (++ifstkpt >= IFSTKDEPTH)
+      fraerror("IF stack overflow");
+   else
+      ifstk[ifstkpt].Else = If_Skip, ifstk[ifstkpt].EndIf = If_Skip;
+};
+line: KOC_ELSE {
+   switch (ifstk[ifstkpt].Else) {
+      case If_Active: fraifskip = false; break;
+      case If_Skip: fraifskip = true; break;
+      case If_Err: fraerror("ELSE with no matching if"); break;
    }
-}
-
-| KOC_ELSE {
-   switch (elseifstk[ifstkpt]) {
-      case If_Active:
-         fraifskip = false;
-         break;
-
-      case If_Skip:
-         fraifskip = true;
-         break;
-
-      case If_Err:
-         fraerror("ELSE with no matching if");
-         break;
+};
+line: KOC_ENDI {
+   switch (ifstk[ifstkpt].EndIf) {
+      case If_Active: fraifskip = false, ifstkpt--; break;
+      case If_Skip: fraifskip = true, ifstkpt--; break;
+      case If_Err: fraerror("ENDI with no matching if"); break;
    }
-}
-
-| KOC_ENDI {
-   switch (endifstk[ifstkpt]) {
-      case If_Active:
-         fraifskip = false;
-         ifstkpt--;
-         break;
-
-      case If_Skip:
-         fraifskip = true;
-         ifstkpt--;
-         break;
-
-      case If_Err:
-         fraerror("ENDI with no matching if");
-         break;
-   }
-}
-| LABEL KOC_ORG expr {
+};
+line: LABEL KOC_ORG expr {
    pevalexpr(0, $3);
-   if (evalr[0].seg == SSG_ABS) {
+   if (evalr[0].seg != SSG_ABS)
+      fraerror("noncomputable expression for ORG");
+   else {
       locctr = labelloc = evalr[0].value;
-      if ($1->seg == SSG_UNDEF) {
-         $1->seg = SSG_ABS;
-         $1->value = labelloc;
-      } else
+      if ($1->seg != SSG_UNDEF)
          fraerror("multiple definition of label");
+      else
+         $1->seg = SSG_ABS, $1->value = labelloc;
       prtequvalue("C: 0x%lx\n", evalr[0].value);
-   } else {
-      fraerror("noncomputable expression for ORG");
    }
-}
-| KOC_ORG expr {
+};
+line: KOC_ORG expr {
    pevalexpr(0, $2);
-   if (evalr[0].seg == SSG_ABS) {
-      locctr = labelloc = evalr[0].value;
-      prtequvalue("C: 0x%lx\n", evalr[0].value);
-   } else {
+   if (evalr[0].seg != SSG_ABS)
       fraerror("noncomputable expression for ORG");
-   }
-}
-| LABEL KOC_CHSET {
-   if ($1->seg == SSG_UNDEF) {
-      $1->seg = SSG_EQU;
-      if (($1->value = chtcreate()) <= 0) {
-         fraerror("cannot create character translation table");
-      }
-      prtequvalue("C: 0x%lx\n", $1->value);
-   } else {
+   else
+      locctr = labelloc = evalr[0].value, prtequvalue("C: 0x%lx\n", evalr[0].value);
+};
+line: LABEL KOC_CHSET {
+   if ($1->seg != SSG_UNDEF)
       fraerror("multiple definition of label");
+   else {
+      $1->seg = SSG_EQU;
+      if (($1->value = chtcreate()) <= 0)
+         fraerror("cannot create character translation table");
+      prtequvalue("C: 0x%lx\n", $1->value);
    }
-}
-| KOC_CHUSE {
-   chtcpoint = (int *)NULL;
-   prtequvalue("C: 0x%lx\n", 0L);
-}
-| KOC_CHUSE expr {
+};
+line: KOC_CHUSE { chtcpoint = NULL, prtequvalue("C: 0x%lx\n", 0L); };
+line: KOC_CHUSE expr {
    pevalexpr(0, $2);
-   if (evalr[0].seg == SSG_ABS) {
-      if (evalr[0].value == 0) {
-         chtcpoint = (int *)NULL;
-         prtequvalue("C: 0x%lx\n", 0L);
-      } else if (evalr[0].value < chtnxalph) {
-         chtcpoint = chtatab[evalr[0].value];
-         prtequvalue("C: 0x%lx\n", evalr[0].value);
-      } else {
-         fraerror("nonexistent character translation table");
-      }
-   } else {
+   if (evalr[0].seg != SSG_ABS)
       fraerror("noncomputable expression");
-   }
-}
-| KOC_CHDEF STRING ',' exprlist {
-   int findrv, numret, *charaddr;
-   char *sourcestr = $2, *before;
-
-   if (chtnpoint != (int *)NULL) {
+   else if (evalr[0].value == 0)
+      chtcpoint = NULL, prtequvalue("C: 0x%lx\n", 0L);
+   else if (evalr[0].value < chtnxalph)
+      chtcpoint = chtatab[evalr[0].value], prtequvalue("C: 0x%lx\n", evalr[0].value);
+   else
+      fraerror("nonexistent character translation table");
+};
+line: KOC_CHDEF STRING ',' exprlist {
+   char *sourcestr = $2;
+   if (chtnpoint == NULL)
+      fraerror("no CHARSET statement active");
+   else {
       for (satsub = 0; satsub < $4; satsub++) {
-         before = sourcestr;
-
+         char *before = sourcestr;
          pevalexpr(0, exprlist[satsub]);
-         findrv = chtcfind(chtnpoint, &sourcestr, &charaddr, &numret);
+         int *charaddr, numret;
+         char_tx findrv = chtcfind(chtnpoint, &sourcestr, &charaddr, &numret);
          if (findrv == CF_END) {
             fraerror("more expressions than characters");
             break;
          }
-
-         if (evalr[0].seg == SSG_ABS) {
-            switch (findrv) {
-               case CF_UNDEF:
-               {
-                  if (evalr[0].value < 0 || evalr[0].value > 255) {
-                     frawarn("character translation value truncated");
-                  }
-                  *charaddr = evalr[0].value & 0xff;
-                  prtequvalue("C: 0x%lx\n", evalr[0].value);
-               }
-                  break;
-
-               case CF_INVALID:
-               case CF_NUMBER:
-                  fracherror("invalid character to define", before, sourcestr);
-                  break;
-
-               case CF_CHAR:
-                  fracherror("character already defined", before, sourcestr);
-                  break;
-            }
-         } else {
+         if (evalr[0].seg != SSG_ABS)
             fraerror("noncomputable expression");
+         else switch (findrv) {
+            case CF_UNDEF:
+               if (evalr[0].value < 0 || evalr[0].value > 255)
+                  frawarn("character translation value truncated");
+               *charaddr = evalr[0].value & 0xff;
+               prtequvalue("C: 0x%lx\n", evalr[0].value);
+            break;
+            case CF_INVALID: case CF_NUMBER:
+               fracherror("invalid character to define", before, sourcestr);
+            break;
+            case CF_CHAR:
+               fracherror("character already defined", before, sourcestr);
+            break;
          }
       }
-
-      if (*sourcestr != '\0') {
+      if (*sourcestr != '\0')
          fraerror("more characters than expressions");
-      }
-   } else {
-      fraerror("no CHARSET statement active");
    }
-
-}
-| LABEL {
-   if ($1->seg == SSG_UNDEF) {
-      $1->seg = SSG_ABS;
-      $1->value = labelloc;
-      prtequvalue("C: 0x%lx\n", labelloc);
-
-   } else
+};
+line: LABEL {
+   if ($1->seg != SSG_UNDEF)
       fraerror("multiple definition of label");
-}
-| labeledline
-
-;
-
-labeledline: LABEL genline {
-   if ($1->seg == SSG_UNDEF) {
-      $1->seg = SSG_ABS;
-      $1->value = labelloc;
-   } else
+   else
+      $1->seg = SSG_ABS, $1->value = labelloc, prtequvalue("C: 0x%lx\n", labelloc);
+};
+line: LABEL genline {
+   if ($1->seg != SSG_UNDEF)
       fraerror("multiple definition of label");
+   else
+      $1->seg = SSG_ABS, $1->value = labelloc;
    labelloc = locctr;
-}
+};
+line: genline { labelloc = locctr; };
 
-| genline {
-   labelloc = locctr;
-}
-;
-
-genline: KOC_BDEF	exprlist {
+genline: KOC_BDEF exprlist {
    genlocrec(currseg, labelloc);
-   for (satsub = 0; satsub < $2; satsub++) {
-      pevalexpr(1, exprlist[satsub]);
-      locctr += geninstr(genbdef);
-   }
-}
-| KOC_SDEF stringlist {
+   for (satsub = 0; satsub < $2; satsub++)
+      pevalexpr(1, exprlist[satsub]), locctr += geninstr(genbdef);
+};
+genline: KOC_SDEF stringlist {
    genlocrec(currseg, labelloc);
-   for (satsub = 0; satsub < $2; satsub++) {
+   for (satsub = 0; satsub < $2; satsub++)
       locctr += genstring(stringlist[satsub]);
-   }
-}
-| KOC_WDEF exprlist {
+};
+genline: KOC_WDEF exprlist {
    genlocrec(currseg, labelloc);
-   for (satsub = 0; satsub < $2; satsub++) {
-      pevalexpr(1, exprlist[satsub]);
-      locctr += geninstr(genwdef);
-   }
-}
-| KOC_RESM expr {
+   for (satsub = 0; satsub < $2; satsub++)
+      pevalexpr(1, exprlist[satsub]), locctr += geninstr(genwdef);
+};
+genline: KOC_RESM expr {
    pevalexpr(0, $2);
-   if (evalr[0].seg == SSG_ABS) {
-      locctr = labelloc + evalr[0].value;
-      prtequvalue("C: 0x%lx\n", labelloc);
-   } else {
+   if (evalr[0].seg != SSG_ABS)
       fraerror("noncomputable result for RMB expression");
-   }
-}
-;
+   else
+      locctr = labelloc + evalr[0].value, prtequvalue("C: 0x%lx\n", labelloc);
+};
 
-exprlist: exprlist ',' expr {
-   exprlist[nextexprs++] = $3;
-   $$ = nextexprs;
-}
-| expr {
-   nextexprs = 0;
-   exprlist[nextexprs++] = $1;
-   $$ = nextexprs;
-}
-;
+exprlist: exprlist ',' expr { exprlist[nextexprs++] = $3, $$ = nextexprs; };
+exprlist: expr { nextexprs = 0, exprlist[nextexprs++] = $1, $$ = nextexprs; };
 
-stringlist: stringlist ',' STRING {
-   stringlist[nextstrs++] = $3;
-   $$ = nextstrs;
-}
-| STRING {
-   nextstrs = 0;
-   stringlist[nextstrs++] = $1;
-   $$ = nextstrs;
-}
-;
-
+stringlist: stringlist ',' STRING { stringlist[nextstrs++] = $3, $$ = nextstrs; };
+stringlist: STRING { nextstrs = 0, stringlist[nextstrs++] = $1, $$ = nextstrs; };
 
 genline: KOC_opcode {
    genlocrec(currseg, labelloc);
    locctr += geninstr(findgen($1, ST_INH, 0));
-}
-;
-genline: KOC_opcode  '#' expr {
+};
+genline: KOC_opcode '#' expr {
    pevalexpr(1, $3);
    genlocrec(currseg, labelloc);
    locctr += geninstr(findgen($1, ST_IMM, 0));
-}
-;
-genline: KOC_opcode  expr {
+};
+genline: KOC_opcode expr {
    genlocrec(currseg, labelloc);
    pevalexpr(1, $2);
-   locctr += geninstr(findgen($1, ST_EXP, ((evalr[1].seg == SSG_ABS && evalr[1].value >= 0 && evalr[1].value <= 255)
-            ? DIRECT : EXTENDED))
-      );
-}
-;
-genline: KOC_opcode  indexed {
+   locctr += geninstr(findgen($1, ST_EXP, ((evalr[1].seg == SSG_ABS && evalr[1].value >= 0 && evalr[1].value <= 255) ? DIRECT : EXTENDED)));
+};
+genline: KOC_opcode indexed {
    genlocrec(currseg, labelloc);
    locctr += geninstr(findgen($1, ST_IND, 0));
    locctr += geninstr($2);
-}
-;
-genline: KOC_opcode  expr ',' PCRELATIVE {
+};
+genline: KOC_opcode expr ',' PCRELATIVE {
    genlocrec(currseg, labelloc);
    pevalexpr(1, $2);
    locctr += geninstr(findgen($1, ST_IND, 0));
-   if (evalr[1].seg == SSG_ABS && (evalr[1].value - locctr) >= PCRNEG8M && (evalr[1].value - locctr) <= PCRPLUS8M) {
+   if (evalr[1].seg == SSG_ABS && (evalr[1].value - locctr) >= PCRNEG8M && (evalr[1].value - locctr) <= PCRPLUS8M)
       locctr += geninstr(PCR8STR);
-   } else {
+   else
       locctr += geninstr(PCR16STR);
-   }
-}
-;
-genline: KOC_opcode  '[' expr ',' PCRELATIVE ']' {
+};
+genline: KOC_opcode '[' expr ',' PCRELATIVE ']' {
    genlocrec(currseg, labelloc);
    pevalexpr(1, $3);
    locctr += geninstr(findgen($1, ST_IND, 0));
-   if (evalr[1].seg == SSG_ABS && (evalr[1].value - locctr) >= PCRNEG8M && (evalr[1].value - locctr) <= PCRPLUS8M) {
+   if (evalr[1].seg == SSG_ABS && (evalr[1].value - locctr) >= PCRNEG8M && (evalr[1].value - locctr) <= PCRPLUS8M)
       locctr += geninstr(IPCR8STR);
-   } else {
+   else
       locctr += geninstr(IPCR16STR);
-   }
-}
-;
-genline: KOC_opcode  '[' expr ']' {
+};
+genline: KOC_opcode '[' expr ']' {
    genlocrec(currseg, labelloc);
    pevalexpr(1, $3);
    locctr += geninstr(findgen($1, ST_IND, 0));
    locctr += geninstr(IEXPSTR);
-}
-;
-genline: KOC_sstkop  regbits {
+};
+genline: KOC_sstkop regbits {
    genlocrec(currseg, labelloc);
-   if ($2 & REGBSSTK) {
-      fraerror("push/pop of system stack register");
-      evalr[1].value = 0;
-   } else {
+   if ($2 & REGBSSTK)
+      fraerror("push/pop of system stack register"), evalr[1].value = 0;
+   else
       evalr[1].value = $2 & 0xff;
-   }
    locctr += geninstr(findgen($1, ST_SPSH, 0));
-}
-;
-genline: KOC_ustkop  regbits {
+};
+genline: KOC_ustkop regbits {
    genlocrec(currseg, labelloc);
-   if ($2 & REGBUSTK) {
-      fraerror("push/pop of user stack register");
-      evalr[1].value = 0;
-   } else {
+   if ($2 & REGBUSTK)
+      fraerror("push/pop of user stack register"), evalr[1].value = 0;
+   else
       evalr[1].value = $2 & 0xff;
-   }
    locctr += geninstr(findgen($1, ST_SPSH, 0));
-}
-;
-genline: KOC_tfrop  register ',' register {
+};
+genline: KOC_tfrop register ',' register {
    genlocrec(currseg, labelloc);
-   if (($2 & TFR8BIT) == ($4 & TFR8BIT)) {
-      evalr[1].value = $2;
-      evalr[2].value = $4;
-   } else {
-      evalr[1].value = 0;
-      evalr[2].value = 0;
-      fraerror("operands are different sizes");
-   }
+   if (($2 & TFR8BIT) == ($4 & TFR8BIT))
+      evalr[1].value = $2, evalr[2].value = $4;
+   else
+      evalr[1].value = 0, evalr[2].value = 0, fraerror("operands are different sizes");
    locctr += geninstr(findgen($1, ST_TFR, 0));
-}
-;
+};
+
 indexed: expr ',' INDEX {
    pevalexpr(1, $1);
-   if (evalr[1].seg == SSG_ABS && evalr[1].value >= -128 && evalr[1].value <= 127) {
-      if (evalr[1].value >= -16 && evalr[1].value <= 15) {
-         if (evalr[1].value == 0)
-            $$ = indexgen[IDM104][$3 - TFRX];
-         else
-            $$ = indexgen[IDM000][$3 - TFRX];
-      } else {
-         $$ = indexgen[IDM108][$3 - TFRX];
-      }
-   } else {
+   if (evalr[1].seg != SSG_ABS || evalr[1].value < -128 || evalr[1].value > 127)
       $$ = indexgen[IDM109][$3 - TFRX];
-   }
-}
-
-| ACCUM ',' INDEX {
+   else if (evalr[1].value < -16 || evalr[1].value > 15)
+      $$ = indexgen[IDM108][$3 - TFRX];
+   else if (evalr[1].value == 0)
+      $$ = indexgen[IDM104][$3 - TFRX];
+   else
+      $$ = indexgen[IDM000][$3 - TFRX];
+};
+indexed: ACCUM ',' INDEX {
    switch ($1) {
-      case TFRA:
-         $$ = indexgen[IDM106][$3 - TFRX];
-         break;
-      case TFRB:
-         $$ = indexgen[IDM105][$3 - TFRX];
-         break;
-      case TFRD:
-         $$ = indexgen[IDM10B][$3 - TFRX];
-         break;
+      case TFRA: $$ = indexgen[IDM106][$3 - TFRX]; break;
+      case TFRB: $$ = indexgen[IDM105][$3 - TFRX]; break;
+      case TFRD: $$ = indexgen[IDM10B][$3 - TFRX]; break;
    }
-}
-
-| ',' INDEX {
-   $$ = indexgen[IDM104][$2 - TFRX];
-}
-
-| ',' INDEX '+' {
-   $$ = indexgen[IDM100][$2 - TFRX];
-}
-
-| ',' INDEX '+' '+' {
-   $$ = indexgen[IDM101][$2 - TFRX];
-}
-
-| ',' '-' INDEX {
-   $$ = indexgen[IDM102][$3 - TFRX];
-}
-
-| ',' '-' '-' INDEX {
-   $$ = indexgen[IDM103][$4 - TFRX];
-}
-
-| '[' expr ',' INDEX ']' {
+};
+indexed: ',' INDEX { $$ = indexgen[IDM104][$2 - TFRX]; };
+indexed: ',' INDEX '+' { $$ = indexgen[IDM100][$2 - TFRX]; };
+indexed: ',' INDEX '+' '+' { $$ = indexgen[IDM101][$2 - TFRX]; };
+indexed: ',' '-' INDEX { $$ = indexgen[IDM102][$3 - TFRX]; };
+indexed: ',' '-' '-' INDEX { $$ = indexgen[IDM103][$4 - TFRX]; };
+indexed: '[' expr ',' INDEX ']' {
    pevalexpr(1, $2);
-   if (evalr[1].seg == SSG_ABS && evalr[1].value >= -128 && evalr[1].value <= 127) {
-      if (evalr[1].value == 0)
-         $$ = indexgen[IDM114][$4 - TFRX];
-      else
-         $$ = indexgen[IDM118][$4 - TFRX];
-   } else {
+   if (evalr[1].seg != SSG_ABS || evalr[1].value < -128 || evalr[1].value > 127)
       $$ = indexgen[IDM119][$4 - TFRX];
-   }
-}
-
-| '[' ACCUM ',' INDEX ']' {
+   else if (evalr[1].value == 0)
+      $$ = indexgen[IDM114][$4 - TFRX];
+   else
+      $$ = indexgen[IDM118][$4 - TFRX];
+};
+indexed: '[' ACCUM ',' INDEX ']' {
    switch ($2) {
-      case TFRA:
-         $$ = indexgen[IDM116][$4 - TFRX];
-         break;
-      case TFRB:
-         $$ = indexgen[IDM115][$4 - TFRX];
-         break;
-      case TFRD:
-         $$ = indexgen[IDM11B][$4 - TFRX];
-         break;
+      case TFRA: $$ = indexgen[IDM116][$4 - TFRX]; break;
+      case TFRB: $$ = indexgen[IDM115][$4 - TFRX]; break;
+      case TFRD: $$ = indexgen[IDM11B][$4 - TFRX]; break;
    }
-}
-
-| '[' ',' INDEX ']' {
-   $$ = indexgen[IDM114][$3 - TFRX];
-}
-
-| '[' ',' INDEX '+' '+' ']' {
-   $$ = indexgen[IDM111][$3 - TFRX];
-}
-
-| '[' ',' '-' '-' INDEX ']' {
-   $$ = indexgen[IDM113][$5 - TFRX];
-}
-;
+};
+indexed: '[' ',' INDEX ']' { $$ = indexgen[IDM114][$3 - TFRX]; };
+indexed: '[' ',' INDEX '+' '+' ']' { $$ = indexgen[IDM111][$3 - TFRX]; };
+indexed: '[' ',' '-' '-' INDEX ']' { $$ = indexgen[IDM113][$5 - TFRX]; };
 
 regbits: regbits ',' register {
    switch ($3) {
-      case TFRD:
-         $$ = $1 | (PPOSTA | PPOSTB);
-         break;
-      case TFRX:
-         $$ = $1 | PPOSTX;
-         break;
-      case TFRY:
-         $$ = $1 | PPOSTY;
-         break;
-      case TFRU:
-         $$ = $1 | PPOSTU;
-         break;
-      case TFRS:
-         $$ = $1 | PPOSTS;
-         break;
-      case TFRPC:
-         $$ = $1 | PPOSTPC;
-         break;
-      case TFRA:
-         $$ = $1 | PPOSTA;
-         break;
-      case TFRB:
-         $$ = $1 | PPOSTB;
-         break;
-      case TFRCC:
-         $$ = $1 | PPOSTCC;
-         break;
-      case TFRDP:
-         $$ = $1 | PPOSTDP;
-         break;
+      case TFRD: $$ = $1 | (PPOSTA | PPOSTB); break;
+      case TFRX: $$ = $1 | PPOSTX; break;
+      case TFRY: $$ = $1 | PPOSTY; break;
+      case TFRU: $$ = $1 | PPOSTU; break;
+      case TFRS: $$ = $1 | PPOSTS; break;
+      case TFRPC: $$ = $1 | PPOSTPC; break;
+      case TFRA: $$ = $1 | PPOSTA; break;
+      case TFRB: $$ = $1 | PPOSTB; break;
+      case TFRCC: $$ = $1 | PPOSTCC; break;
+      case TFRDP: $$ = $1 | PPOSTDP; break;
    }
-}
-| register {
+};
+regbits: register {
    switch ($1) {
-      case TFRD:
-         $$ = (PPOSTA | PPOSTB);
-         break;
-      case TFRX:
-         $$ = PPOSTX;
-         break;
-      case TFRY:
-         $$ = PPOSTY;
-         break;
-      case TFRU:
-         $$ = PPOSTU;
-         break;
-      case TFRS:
-         $$ = PPOSTS;
-         break;
-      case TFRPC:
-         $$ = PPOSTPC;
-         break;
-      case TFRA:
-         $$ = PPOSTA;
-         break;
-      case TFRB:
-         $$ = PPOSTB;
-         break;
-      case TFRCC:
-         $$ = PPOSTCC;
-         break;
-      case TFRDP:
-         $$ = PPOSTDP;
-         break;
+      case TFRD: $$ = (PPOSTA | PPOSTB); break;
+      case TFRX: $$ = PPOSTX; break;
+      case TFRY: $$ = PPOSTY; break;
+      case TFRU: $$ = PPOSTU; break;
+      case TFRS: $$ = PPOSTS; break;
+      case TFRPC: $$ = PPOSTPC; break;
+      case TFRA: $$ = PPOSTA; break;
+      case TFRB: $$ = PPOSTB; break;
+      case TFRCC: $$ = PPOSTCC; break;
+      case TFRDP: $$ = PPOSTDP; break;
    }
-}
-;
+};
 
-register: ACCUM
+register: ACCUM | INDEX | SPECREG;
 
-| INDEX
-| SPECREG
-;
-expr: '+' expr %prec KEOP_MUN {
-   $$ = $2;
-}
-| '-' expr %prec KEOP_MUN {
-   $$ = exprnode(PCCASE_UN, $2, IFC_NEG, 0, 0L, SYMNULL);
-}
-| KEOP_NOT expr {
-   $$ = exprnode(PCCASE_UN, $2, IFC_NOT, 0, 0L, SYMNULL);
-}
-| KEOP_HIGH expr {
-   $$ = exprnode(PCCASE_UN, $2, IFC_HIGH, 0, 0L, SYMNULL);
-}
-| KEOP_LOW expr {
-   $$ = exprnode(PCCASE_UN, $2, IFC_LOW, 0, 0L, SYMNULL);
-}
-| expr '*' expr {
-   $$ = exprnode(PCCASE_BIN, $1, IFC_MUL, $3, 0L, SYMNULL);
-}
-| expr '/' expr {
-   $$ = exprnode(PCCASE_BIN, $1, IFC_DIV, $3, 0L, SYMNULL);
-}
-| expr '+' expr {
-   $$ = exprnode(PCCASE_BIN, $1, IFC_ADD, $3, 0L, SYMNULL);
-}
-| expr '-' expr {
-   $$ = exprnode(PCCASE_BIN, $1, IFC_SUB, $3, 0L, SYMNULL);
-}
-| expr KEOP_MOD expr {
-   $$ = exprnode(PCCASE_BIN, $1, IFC_MOD, $3, 0L, SYMNULL);
-}
-| expr KEOP_SHL expr {
-   $$ = exprnode(PCCASE_BIN, $1, IFC_SHL, $3, 0L, SYMNULL);
-}
-| expr KEOP_SHR expr {
-   $$ = exprnode(PCCASE_BIN, $1, IFC_SHR, $3, 0L, SYMNULL);
-}
-| expr KEOP_GT expr {
-   $$ = exprnode(PCCASE_BIN, $1, IFC_GT, $3, 0L, SYMNULL);
-}
-| expr KEOP_GE expr {
-   $$ = exprnode(PCCASE_BIN, $1, IFC_GE, $3, 0L, SYMNULL);
-}
-| expr KEOP_LT expr {
-   $$ = exprnode(PCCASE_BIN, $1, IFC_LT, $3, 0L, SYMNULL);
-}
-| expr KEOP_LE expr {
-   $$ = exprnode(PCCASE_BIN, $1, IFC_LE, $3, 0L, SYMNULL);
-}
-| expr KEOP_NE expr {
-   $$ = exprnode(PCCASE_BIN, $1, IFC_NE, $3, 0L, SYMNULL);
-}
-| expr KEOP_EQ expr {
-   $$ = exprnode(PCCASE_BIN, $1, IFC_EQ, $3, 0L, SYMNULL);
-}
-| expr KEOP_AND expr {
-   $$ = exprnode(PCCASE_BIN, $1, IFC_AND, $3, 0L, SYMNULL);
-}
-| expr KEOP_OR expr {
-   $$ = exprnode(PCCASE_BIN, $1, IFC_OR, $3, 0L, SYMNULL);
-}
-| expr KEOP_XOR expr {
-   $$ = exprnode(PCCASE_BIN, $1, IFC_XOR, $3, 0L, SYMNULL);
-}
-| KEOP_DEFINED SYMBOL {
-   $$ = exprnode(PCCASE_DEF, 0, IGP_DEFINED, 0, 0L, $2);
-}
-| SYMBOL {
-   $$ = exprnode(PCCASE_SYMB, 0, IFC_SYMB, 0, 0L, $1);
-}
-| '*' {
-   $$ = exprnode(PCCASE_PROGC, 0, IFC_PROGCTR, 0, labelloc, SYMNULL);
-}
-| CONSTANT {
-   $$ = exprnode(PCCASE_CONS, 0, IGP_CONSTANT, 0, $1, SYMNULL);
-}
-| STRING {
+expr: '+' expr %prec KEOP_MUN { $$ = $2; };
+expr: '-' expr %prec KEOP_MUN { $$ = exprnode(PCCASE_UN, $2, IFC_NEG, 0, 0L, SYMNULL); };
+expr: KEOP_NOT expr { $$ = exprnode(PCCASE_UN, $2, IFC_NOT, 0, 0L, SYMNULL); };
+expr: KEOP_HIGH expr { $$ = exprnode(PCCASE_UN, $2, IFC_HIGH, 0, 0L, SYMNULL); };
+expr: KEOP_LOW expr { $$ = exprnode(PCCASE_UN, $2, IFC_LOW, 0, 0L, SYMNULL); };
+expr: expr '*' expr { $$ = exprnode(PCCASE_BIN, $1, IFC_MUL, $3, 0L, SYMNULL); };
+expr: expr '/' expr { $$ = exprnode(PCCASE_BIN, $1, IFC_DIV, $3, 0L, SYMNULL); };
+expr: expr '+' expr { $$ = exprnode(PCCASE_BIN, $1, IFC_ADD, $3, 0L, SYMNULL); };
+expr: expr '-' expr { $$ = exprnode(PCCASE_BIN, $1, IFC_SUB, $3, 0L, SYMNULL); };
+expr: expr KEOP_MOD expr { $$ = exprnode(PCCASE_BIN, $1, IFC_MOD, $3, 0L, SYMNULL); };
+expr: expr KEOP_SHL expr { $$ = exprnode(PCCASE_BIN, $1, IFC_SHL, $3, 0L, SYMNULL); };
+expr: expr KEOP_SHR expr { $$ = exprnode(PCCASE_BIN, $1, IFC_SHR, $3, 0L, SYMNULL); };
+expr: expr KEOP_GT expr { $$ = exprnode(PCCASE_BIN, $1, IFC_GT, $3, 0L, SYMNULL); };
+expr: expr KEOP_GE expr { $$ = exprnode(PCCASE_BIN, $1, IFC_GE, $3, 0L, SYMNULL); };
+expr: expr KEOP_LT expr { $$ = exprnode(PCCASE_BIN, $1, IFC_LT, $3, 0L, SYMNULL); };
+expr: expr KEOP_LE expr { $$ = exprnode(PCCASE_BIN, $1, IFC_LE, $3, 0L, SYMNULL); };
+expr: expr KEOP_NE expr { $$ = exprnode(PCCASE_BIN, $1, IFC_NE, $3, 0L, SYMNULL); };
+expr: expr KEOP_EQ expr { $$ = exprnode(PCCASE_BIN, $1, IFC_EQ, $3, 0L, SYMNULL); };
+expr: expr KEOP_AND expr { $$ = exprnode(PCCASE_BIN, $1, IFC_AND, $3, 0L, SYMNULL); };
+expr: expr KEOP_OR expr { $$ = exprnode(PCCASE_BIN, $1, IFC_OR, $3, 0L, SYMNULL); };
+expr: expr KEOP_XOR expr { $$ = exprnode(PCCASE_BIN, $1, IFC_XOR, $3, 0L, SYMNULL); };
+expr: KEOP_DEFINED SYMBOL { $$ = exprnode(PCCASE_DEF, 0, IGP_DEFINED, 0, 0L, $2); };
+expr: SYMBOL { $$ = exprnode(PCCASE_SYMB, 0, IFC_SYMB, 0, 0L, $1); };
+expr: '*' { $$ = exprnode(PCCASE_PROGC, 0, IFC_PROGCTR, 0, labelloc, SYMNULL); };
+expr: CONSTANT { $$ = exprnode(PCCASE_CONS, 0, IGP_CONSTANT, 0, $1, SYMNULL); };
+expr: STRING {
    char *sourcestr = $1;
    long accval = 0;
-
    if (strlen($1) > 0) {
       accval = chtran(&sourcestr);
-      if (*sourcestr != '\0') {
+      if (*sourcestr != '\0')
          accval = (accval << 8) + chtran(&sourcestr);
-      }
-
-      if (*sourcestr != '\0') {
+      if (*sourcestr != '\0')
          frawarn("string constant in expression more than 2 characters long");
-      }
    }
    $$ = exprnode(PCCASE_CONS, 0, IGP_CONSTANT, 0, accval, SYMNULL);
-}
-| '(' expr ')' {
-   $$ = $2;
-}
-;
-
-
-
+};
+expr: '(' expr ')' { $$ = $2; };
 %%
-
-// Intercept the call to yylex (the lexical analyzer)
-// and filter out all unnecessary tokens when skipping
-// the input between a failed IF and its matching ENDI or
-// ELSE
+// Intercept the call to scan() (the lexical analyzer)
+// and filter out all unnecessary tokens when skipping the input between a failed IF and its matching ENDI or ELSE.
 // Globals:
 //	fraifskip	the enable flag
-int lexintercept(void) {
-#undef yylex
-
-   int rv;
-
-   if (fraifskip) {
-      while (true) {
-
-         switch (rv = yylex()) {
-            case 0:
-            case KOC_END:
-            case KOC_IF:
-            case KOC_ELSE:
-            case KOC_ENDI:
-            case EOL:
-               return rv;
-            default:
-               break;
-         }
+int yylex(void) {
+   if (!fraifskip)
+      return scan();
+   else while (true) {
+      int rv = scan();
+      switch (rv) {
+         case 0: case KOC_END: case KOC_IF: case KOC_ELSE: case KOC_ENDI: case EOL: return rv;
+         default: break;
       }
-   } else
-      return yylex();
-#define yylex lexintercept
+   }
 }
 
 void setreserved(void) {
-
+// Generic:
    reservedsym("and", KEOP_AND, 0);
    reservedsym("defined", KEOP_DEFINED, 0);
    reservedsym("eq", KEOP_EQ, 0);
@@ -918,8 +607,7 @@ void setreserved(void) {
    reservedsym("SHL", KEOP_SHL, 0);
    reservedsym("SHR", KEOP_SHR, 0);
    reservedsym("XOR", KEOP_XOR, 0);
-
-/* machine specific token definitions */
+// CPU-Specific token definitions:
    reservedsym("a", ACCUM, TFRA);
    reservedsym("b", ACCUM, TFRB);
    reservedsym("cc", SPECREG, TFRCC);
@@ -1121,8 +809,7 @@ struct opsym optab[NUMOPCODE + 1] = {
    { "", 0, 0, 0 }
 };
 
-#define NUMSYNBLK 226
-struct opsynt ostab[NUMSYNBLK + 1] = {
+struct opsynt ostab[] = {
 /* invalid 0 */ { 0, 1, 0 },
 /* invalid 1 */ { 0xffff, 1, 1 },
 /* ABX 2 */ { ST_INH, 1, 2 },
@@ -1352,8 +1039,7 @@ struct opsynt ostab[NUMSYNBLK + 1] = {
    { 0, 0, 0 }
 };
 
-#define NUMDIFFOP 279
-struct igel igtab[NUMDIFFOP + 1] = {
+struct igel igtab[] = {
 /* invalid 0 */ { 0, 0, "[Xnullentry" },
 /* invalid 1 */ { 0, 0, "[Xinvalid opcode" },
 /* ABX 2 */ { 0, 0, "3a;" },
@@ -1635,4 +1321,3 @@ struct igel igtab[NUMDIFFOP + 1] = {
 /* TSTB 278 */ { 0, 0, "5d;" },
    { 0, 0, "" }
 };
-/* end fraptabdef.c */

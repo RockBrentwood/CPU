@@ -5,12 +5,12 @@
 // Asking for help from the original authors is not advised.
 // (Especially after the hack job I did on it.  Mark Zenier.)
 
-//  This is a public domain version of getopt(3).
-//  Bugs, fixes to:
+// This is a public domain version of getopt(3).
+// Bugs, fixes to:
 //		Keith Bostic
 //			ARPA: keith@seismo
 //			UUCP: seismo!keith
-//  Added NO_STDIO, opterr handling, Rich $alz (mirror!rs).
+// Added NO_STDIO, opterr handling, Rich $alz (mirror!rs).
 
 // Framework Cross Assembler
 //	use strchr
@@ -21,23 +21,23 @@
 // The (undocumented?) variable opterr tells us whether or not
 // to print errors.
 #define tell(s) \
-   if (opterr) (void)fputs(*nargv, stderr), (void)fputs(s,stderr), (void)fputc(optopt, stderr), (void)fputc('\n', stderr)
+   if (opterr) (void)fputs(*nargv, stderr), (void)fputs(s, stderr), (void)fputc(optopt, stderr), (void)fputc('\n', stderr)
 
 /* Global variables. */
 static char EMSG[] = "";
 bool opterr = true; /* undocumented error-suppressor */
-int optind = 1; /* index into argv vector       */
-int optopt; /* char checked for validity    */
-char *optarg; /* arg associated with option   */
+int optind = 1; /* index into argv vector */
+int optopt; /* char checked for validity */
+char *optarg; /* arg associated with option */
 
 int getopt(int nargc, char **nargv, char *ostr) {
-   static char *place = EMSG; /* option letter processing     */
-   char *oli; /* option letter list index     */
+   static char *place = EMSG; /* option letter processing */
+   char *oli; /* option letter list index */
 
-   if (!*place) { /* update scanning pointer        */
+   if (!*place) { /* update scanning pointer */
       if (optind >= nargc || *(place = nargv[optind]) != '-' || !*++place)
          return (EOF);
-      if (*place == '-') { /* found "--"                     */
+      if (*place == '-') { /* found "--" */
          optind++;
          return (EOF);
       }
@@ -49,23 +49,23 @@ int getopt(int nargc, char **nargv, char *ostr) {
       tell(": illegal option -- ");
       goto Bad;
    }
-   if (*++oli != ':') { /* don't need argument            */
+   if (*++oli != ':') { /* don't need argument */
       optarg = NULL;
       if (!*place)
          optind++;
-   } else { /* need an argument               */
+   } else { /* need an argument */
    if (*place)
-      optarg = place; /* no white space               */
+      optarg = place; /* no white space */
    else if (nargc <= ++optind) {
       place = EMSG;
       tell(": option requires an argument -- ");
       goto Bad;
    } else
-      optarg = nargv[optind]; /* white space                  */
+      optarg = nargv[optind]; /* white space */
    place = EMSG;
    optind++;
    }
-   return (optopt); /* dump back option letter      */
+   return (optopt); /* dump back option letter */
 Bad:
    return ('?');
 }

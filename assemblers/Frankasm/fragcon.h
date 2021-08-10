@@ -47,10 +47,3 @@
 #define IFC_SWIDTH	'R'
 #define IFC_IWIDTH	'I'
 #define IFC_TESTERR	'T'
-
-#define PCCASE_BIN	1
-#define PCCASE_UN	2
-#define PCCASE_DEF	3
-#define PCCASE_SYMB	4
-#define PCCASE_CONS	5
-#define PCCASE_PROGC	6

@@ -22,7 +22,7 @@ extern bool hexvalid, hexflag;
 
 #define IFSTKDEPTH 32
 extern int ifstkpt;
-Global enum { If_Active, If_Skip, If_Err } elseifstk[IFSTKDEPTH], endifstk[IFSTKDEPTH];
+Global struct ifstack_t { enum { If_Active, If_Skip, If_Err } Else, EndIf; } ifstk[IFSTKDEPTH];
 
 Global FILE *hexoutf, *loutf;
 
@@ -46,14 +46,10 @@ extern char finbuff[INBUFFSZ];
 
 extern FILE *yyin;
 
-enum readacts {
-   Nra_normal,
-   Nra_new,
-   Nra_end
-};
-extern enum readacts nextreadact;
+typedef enum readacts { Nra_normal, Nra_new, Nra_end } readacts;
+extern readacts nextreadact;
 
-int yylex(void);
+int scan(void);
 void yyerror(char *str);
 
 // as*.y:
@@ -92,21 +88,16 @@ bool cpumatch(char *str);
 
 // frapsub.c:
 /* symbol table element */
+typedef enum seg_t { SSG_RESV = -2, SSG_UNDEF = -1, SSG_UNUSED = 0, SSG_EQU = 2, SSG_SET = 3, SSG_ABS = 8 } seg_t;
+#define seg_valued(seg) ((seg) > 0)
 struct symel {
    char *symstr;
    int tok;
-   int seg;
+   seg_t seg;
    long value;
    struct symel *nextsym;
    int symnum;
 };
-
-#define SSG_UNUSED 0
-#define SSG_UNDEF -1
-#define SSG_ABS 8
-#define SSG_RESV -2
-#define SSG_EQU 2
-#define SSG_SET 3
 
 #define SYMNULL (struct symel *) NULL
 #define EXPRLSIZE (INBUFFSZ/2)
@@ -120,7 +111,7 @@ Global char *stringlist[STRLSIZE];
 
 #define PPEXPRLEN 256
 struct evalrel {
-   int seg;
+   seg_t seg;
    long value;
    char exprstr[PPEXPRLEN];
 };
@@ -132,19 +123,17 @@ Global struct evalrel evalr[NUMPEXP];
 extern int chtnxalph, *chtcpoint, *chtnpoint;
 Global int *chtatab[NUM_CHTA];
 
-#define CF_END		-2
-#define CF_INVALID 	-1
-#define CF_UNDEF 	0
-#define CF_CHAR 	1
-#define CF_NUMBER 	2
+typedef enum char_tx { CF_END = -2, CF_INVALID, CF_UNDEF, CF_CHAR, CF_NUMBER } char_tx;
 
 extern int nextsymnum;
 Global struct symel **symbindex;
 extern struct symel *endsymbol;
 
+typedef enum { PCCASE_BIN = 1, PCCASE_UN, PCCASE_DEF, PCCASE_SYMB, PCCASE_CONS, PCCASE_PROGC } extag;
+
 char *savestring(char *stx, int len);
 void clrexpr(void);
-int exprnode(int swact, int left, int op, int right, long value, struct symel *symbol);
+int exprnode(extag swact, int left, int op, int right, long value, struct symel *symbol);
 struct symel *symbentry(char *str, int toktyp);
 void reservedsym(char *str, int tok, int value);
 void buildsymbolindex(void);
@@ -154,7 +143,7 @@ char *findgen(int op, int syntax, int crit);
 void genlocrec(int seg, long loc);
 int geninstr(char *str);
 int chtcreate(void);
-int chtcfind(int *chtab, char **sourcepnt, int **tabpnt, int *numret);
+char_tx chtcfind(int *chtab, char **sourcepnt, int **tabpnt, int *numret);
 int chtran(char **sourceptr);
 int genstring(char *str);
 void pevalexpr(int sub, int exn);
@@ -163,7 +152,7 @@ void pevalexpr(int sub, int exn);
 #define PESTKDEPTH 32
 struct evstkel {
    long v;
-   int s;
+   seg_t s;
 };
 Global struct evstkel estk[PESTKDEPTH], *estkm1p;
 

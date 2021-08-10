@@ -233,7 +233,7 @@ int main(int argc, char *argv[]) {
 
    setophash();
    setreserved();
-   elseifstk[0] = endifstk[0] = If_Err;
+   ifstk[0].Else = ifstk[0].EndIf = If_Err;
    fprintf(intermedf, "F:%s\n", argv[optind]);
    infilestk[0].fpt = yyin;
    infilestk[0].fnm = argv[optind];

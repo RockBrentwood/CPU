@@ -277,7 +277,7 @@ static void outeval(void) {
             struct symel *tsy;
 
             tsy = symbindex[etop];
-            if (tsy->seg <= 0) {
+            if (!seg_valued(tsy->seg)) {
                frp2undef(tsy);
                etop = 0;
             } else {
@@ -518,7 +518,7 @@ static void listhex(void) {
 static void flushhex(void) {
    if (hnextsub > 0)
       intelout(0, blockaddr, hnextsub, hlinebuff);
-   if (endsymbol != SYMNULL && endsymbol->seg > 0)
+   if (endsymbol != SYMNULL && seg_valued(endsymbol->seg))
       intelout(1, endsymbol->value, 0, "");
    else
       intelout(1, 0L, 0, "");
