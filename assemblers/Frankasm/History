@@ -75,6 +75,7 @@ History:
 		Added function declarations frasmdat.h.
 		Regularized the source file layout.
 2021/07/28:	Upgrading to C99: made <string.h> and <stdlib.h> mandatory.
+		Documentation and test files placed, respectively, in Doc and Test subdirectories and the Makefile was updated.
 		Took out NOSTRING - this breaks support for legacy V7; but V7's compiler "pcc" has been rewritten to support C99.
 		Remade the build process and Makefiles.
 2021/07/29:	Added ‟bool” as ‟typedef enum { false, true } bool;”, for now.

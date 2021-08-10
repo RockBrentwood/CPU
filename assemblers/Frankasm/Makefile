@@ -98,8 +98,8 @@ newmachine:
 	$(RM) as$W.c
 	$(RM) as$W.h
 #test: # as$(CPU)
-#	./as$(CPU) -l as.ex as$(CPU).tst
-#	$(DIFF) as.ex as$(CPU).tut
+#	./as$(CPU) -l as.ex Test/as$(CPU).tst
+#	$(DIFF) as.ex Test/as$(CPU).tut
 
 as$(CPU): frasmain$O frapsub$O fryylex$O as$(CPU)$O fraosub$O
 	$(CC) $(CFLAGS) -o as$(CPU) frasmain$O frapsub$O fraosub$O fryylex$O as$(CPU)$O $(YACCLEXLIB)
