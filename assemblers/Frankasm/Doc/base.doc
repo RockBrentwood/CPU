@@ -653,7 +653,7 @@ sets the translation to the set defined in the respective CHARSET.
 .DS I N
 Example
 .SP
-ascii	charset
+ASCII	charset
 	chardef	" !\e"#$%&\e'",$20,$21,$22,$23,$24,$25,$26,$27
 	chardef	"()*+,-./",$28,$29,$2a,$2b,$2c,$2d,$2e,$2f
 	chardef	"01234567",$30,$31,$32,$33,$34,$35,$36,$37
@@ -669,7 +669,7 @@ ascii	charset
 	chardef	'"', $22 ; not the same table entry as '\e"'
 	chardef	"'", $27 ;
 	chardef	"\en\et\ev\eb\er\ef\ea", $0a,$09,$0b,$08,$0d,$0c,$07
-	charuse ascii
+	charuse ASCII
 .DE
 .H 2 "Machine Instructions"
 .DS I N
@@ -997,11 +997,11 @@ Record Layout
 .LI ':'
 indicator character
 .LI cc
-ascii-hex representation of an 8 bit count of data characters
+ASCII-hex representation of an 8 bit count of data characters
 .LI aaaa
-ascii-hex representation of 16 bit address
+ASCII-hex representation of 16 bit address
 .LI tt
-ascii-hex representation of an 8 bit type
+ASCII-hex representation of an 8 bit type
 .VL +10
 .LI 00 is a data record
 the address is the first location to store the data
@@ -1010,10 +1010,10 @@ the address is the location to start execution, the
 count is 00, no data is present.
 .LE
 .LI dd...
-ascii-hex representation of the data, two characters per byte.
+ASCII-hex representation of the data, two characters per byte.
 The number of 8 bit bytes is given by the count field.
 .LI kk
-ascii-hex representation of an 8 bit checksum.  The sum of the
+ASCII-hex representation of an 8 bit checksum.  The sum of the
 binary representation, modulo 256, of the count, the high half
 of the address, the low half of the address, the type, all the
 data bytes, and the checksum must be zero.
