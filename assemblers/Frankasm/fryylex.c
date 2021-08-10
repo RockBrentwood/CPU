@@ -3,7 +3,7 @@
 // Lexical analyzer for framework cross assembler.
 #include <stdio.h>
 #include "frasmdat.h"
-#include "fraytok.h"
+#include "Token.h"
 
 #define PRINTCTRL(char) ((char)+'@')
 

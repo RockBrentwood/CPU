@@ -87,36 +87,39 @@ MAINDEPENDS =
 all: as$(CPU)
 clean:
 	$(RM) $W$O
-	$(RM) fraytok.h
+	$(RM) Token.h
 	$(RM) y.tab.[ch]
-	$(RM) as$W.c
-	$(RM) as$W.h
+	$(RM) Syn$W.c
+	$(RM) Syn$W.h
 newmachine:
 	$(RM) fryylex$O
-	$(RM) as$W$O
-	$(RM) fraytok.h
-	$(RM) as$W.c
-	$(RM) as$W.h
+	$(RM) Syn$W$O
+	$(RM) Token.h
+	$(RM) y.tab.[ch]
+	$(RM) Syn$W.c
+	$(RM) Syn$W.h
+clobber: clean
+	$(RM) as*
 #test: # as$(CPU)
 #	./as$(CPU) -l as.ex Test/as$(CPU).tst
 #	$(DIFF) as.ex Test/as$(CPU).tut
 
-as$(CPU): frasmain$O frapsub$O fryylex$O as$(CPU)$O fraosub$O
-	$(CC) $(CFLAGS) -o as$(CPU) frasmain$O frapsub$O fraosub$O fryylex$O as$(CPU)$O $(YACCLEXLIB)
-	$(RM) fraytok.h
+as$(CPU): frasmain$O frapsub$O fryylex$O Syn$(CPU)$O fraosub$O
+	$(CC) $(CFLAGS) -o as$(CPU) frasmain$O frapsub$O fraosub$O fryylex$O Syn$(CPU)$O $(YACCLEXLIB)
+	$(RM) Token.h
 frasmain$O: frasmain.c frasmdat.h $(MAINDEPENDS)
 	$(CC) $(CFLAGS) $(MAINNEEDS) -c frasmain.c
-fraytok.h: as$(CPU).h
-	$(CP) as$(CPU).h fraytok.h
-fryylex$O: fryylex.c frasmdat.h fraytok.h
+Token.h: Syn$(CPU).h
+	$(CP) Syn$(CPU).h Token.h
+fryylex$O: fryylex.c frasmdat.h Token.h
 	$(CC) $(CFLAGS) $(LEXNEEDS) -c fryylex.c
-as$(CPU).c as$(CPU).h: as$(CPU).y
-	$(YACC) -d as$(CPU).y
-	$(MV) y.tab.c as$(CPU).c
-	$(MV) y.tab.h as$(CPU).h
-	$(RM) fraytok.h
-as$(CPU)$O: as$(CPU).c frasmdat.h fragcon.h
-	$(CC) $(CFLAGS) -c as$(CPU).c
+Syn$(CPU).c Syn$(CPU).h: Syn$(CPU).y
+	$(YACC) -d Syn$(CPU).y
+	$(MV) y.tab.c Syn$(CPU).c
+	$(MV) y.tab.h Syn$(CPU).h
+	$(RM) Token.h
+Syn$(CPU)$O: Syn$(CPU).c frasmdat.h fragcon.h
+	$(CC) $(CFLAGS) -c Syn$(CPU).c
 frapsub$O: frapsub.c fragcon.h frasmdat.h fraeuni.h fraebin.h
 	$(CC) $(CFLAGS) -c frapsub.c
 fraosub$O: fraosub.c frasmdat.h fragcon.h fraeuni.h fraebin.h

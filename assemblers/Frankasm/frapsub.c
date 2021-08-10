@@ -416,7 +416,7 @@ static void goutch(char ch) {
    }
 }
 
-// Output to the 'D' buffer, a byte in ascii hexidecimal
+// Output to the 'D' buffer, a byte in ASCII hexidecimal
 static void gout2hex(int inv) {
    goutch(hexch(inv >> 4));
    goutch(hexch(inv));
@@ -774,7 +774,7 @@ int chtran(char **sourceptr) {
    }
 }
 
-// Produce 'D' records for a ascii string constant
+// Produce 'D' records for a ASCII string constant
 // by chopping it up into lengths that will fit
 // in the intermediate file
 // Parameters:

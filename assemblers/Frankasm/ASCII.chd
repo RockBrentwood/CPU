@@ -1,4 +1,4 @@
-ascii	charset
+ASCII	charset
 	chardef	" !\"#$%&\'",$20,$21,$22,$23,$24,$25,$26,$27
 	chardef	"()*+,-./",$28,$29,$2a,$2b,$2c,$2d,$2e,$2f
 	chardef	"01234567",$30,$31,$32,$33,$34,$35,$36,$37
@@ -14,4 +14,4 @@ ascii	charset
 	chardef	'"', $22 ; not the same table entry as '\"'
 	chardef	"'", $27 ;
 	chardef	"\n\t\v\b\r\f\a", $0a,$09,$0b,$08,$0d,$0c,$07
-	charuse ascii
+	charuse ASCII

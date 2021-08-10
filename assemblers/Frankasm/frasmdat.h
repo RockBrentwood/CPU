@@ -52,7 +52,7 @@ extern readacts nextreadact;
 int scan(void);
 void yyerror(char *str);
 
-// as*.y:
+// Syn*.y:
 extern char ignosyn[];
 extern char ignosel[];
 
