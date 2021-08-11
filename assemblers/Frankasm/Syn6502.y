@@ -405,15 +405,15 @@ topexpr: STRING {
 expr: '(' topexpr ')' { $$ = $2; };
 expr: topexpr;
 %%
-// Intercept the call to scan() (the lexical analyzer)
+// Intercept the call to Scan() (the lexical analyzer)
 // and filter out all unnecessary tokens when skipping the input between a failed IF and its matching ENDI or ELSE.
 // Globals:
 //	fraifskip	the enable flag
 int yylex(void) {
    if (!fraifskip)
-      return scan();
+      return Scan();
    else while (true) {
-      int rv = scan();
+      int rv = Scan();
       switch (rv) {
          case 0: case KOC_END: case KOC_IF: case KOC_ELSE: case KOC_ENDI: case EOL: return rv;
          default: break;

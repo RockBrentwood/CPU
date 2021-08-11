@@ -853,9 +853,7 @@ static bool pepolcon(int esub) {
 
          polout(enode[esub].op);
 
-         switch (enode[esub].op) {
-#include "fraeuni.h"
-         }
+         etop = EvalUnOp(enode[esub].op, etop);
       }
          break;
 
@@ -884,9 +882,7 @@ static bool pepolcon(int esub) {
          if (estkm1p->s != SSG_ABS)
             etopseg = estkm1p->s;
 
-         switch (enode[esub].op) {
-#include "fraebin.h"
-         }
+         etop = EvalBinOp(enode[esub].op, (estkm1p--)->v, etop);
       }
          break;
 

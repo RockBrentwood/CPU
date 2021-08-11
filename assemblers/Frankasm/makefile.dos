@@ -20,7 +20,7 @@
 ##	make CPU=6502
 ## Conditional Compilation Flags:
 ##	DOSTMP		use the current directory for temporary intermediate file.
-##	NOGETOPT	use the getopt.h file
+##	NOGETOPT	define GetOpt() internally, otherwise define it as the library function getopt().
 
 ## Utilities:
 #RM=rm -f
@@ -80,20 +80,19 @@ CFLAGS =
 ## For DOS cross-compiled on Xenix and DOS hosts:
 MAINNEEDS = -DNOGETOPT -DDOSTMP
 
-## For Linux, Amiga, SunOS 4.1, MicroPort and Xenix:
-#MAINDEPENDS =
-## For V7 and DOS cross-compiled on Xenix and DOS hosts:
-MAINDEPENDS = getopt.h
-
 all: as$(CPU)
 ## clean:
 ## test:
 
-as$(CPU): frasmain$O frapsub$O fryylex$O Syn$(CPU)$O fraosub$O
-	$(CC) $(CFLAGS) -eas$(CPU) frasmain$O frapsub$O fraosub$O fryylex$O Syn$(CPU)$O $(YACCLEXLIB)
+as$(CPU): GetOpt$O frasmain$O ExOp$O frapsub$O fryylex$O Syn$(CPU)$O fraosub$O
+	$(CC) $(CFLAGS) -eas$(CPU) GetOpt$O frasmain$O ExOp$O frapsub$O fraosub$O fryylex$O Syn$(CPU)$O $(YACCLEXLIB)
 	$(RM) Token.h
-frasmain$O: frasmain.c frasmdat.h $(MAINDEPENDS)
+GetOpt$O: GetOpt.c
+	$(CC) $(CFLAGS) $(MAINNEEDS) -c GetOpt.c
+frasmain$O: frasmain.c frasmdat.h
 	$(CC) $(CFLAGS) $(MAINNEEDS) -c frasmain.c
+ExOp$O: ExOp.c fragcon.h
+	$(CC) $(CFLAGS) -c ExOp.c
 Token.h: Syn$(CPU).h
 	$(CP) Syn$(CPU).h Token.h
 fryylex$O: fryylex.c frasmdat.h Token.h

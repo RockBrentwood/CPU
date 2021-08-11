@@ -79,6 +79,8 @@ History:
 		―	Syntax files renamed as«cpu».y → Syn«CPU».y, with «cpu»={z8,z80} → «CPU»={Z8,Z80}.
 		―	The history and documentation were retrofitted with the new names.
 		―	fraytok.h → Token.h
+                ―       {fraeuni,fraebin,getopt}.h → {CasesUn,CasesBin,GetOpt}.c
+                Converted the conditional module GetOpt.c into a module for a ‟fall-back” GetOpt() to getopt().
 		Upgrading to C99: made <string.h> and <stdlib.h> mandatory.
 		Documentation and test files placed, respectively, in Doc and Test subdirectories and the Makefile was updated.
 		Took out NOSTRING - this breaks support for legacy V7; but V7's compiler "pcc" has been rewritten to support C99.
@@ -90,6 +92,7 @@ History:
 		Used <stdlib.h> in place of explicit declarations of functions that declared there in C99.
 2021/07/30:	Established operational baseline in C99.
 2021/08/01:	Cleaned up the syntax files.
+		Added make test and make clobber.
 		Regularized the makefiles.
 2021/08/02:	Replaced most sizeof-related manifest constants by constants or eliminated them.
 2021/08/03:	Replaced mktemp() by mkstemp().
@@ -99,3 +102,7 @@ History:
 2021/08/09:	Further cleanup of the makefiles; bringing the DOS and non-DOS versions into line.
 		Removed the ‟register” keyword.
 		Replaced typedef ‟bool” by <stdbool.h>.
+2021/08/11:	Removed the ‟add-on” includes; replacing them by modules.
+                Converted the ‟add-on” include GetOpt.c into a separately-compiled file.
+                Took back out the ‟add-on” includes Cases{Un,Bin}.h and combined them into a separately-compiled file: ExOp.c.
+                Make corresponding changes to other files to reflect the changes.

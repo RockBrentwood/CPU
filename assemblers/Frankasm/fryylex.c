@@ -341,7 +341,7 @@ static char *erryytextex(int type) {
    yytext[charcnt] = '\0';
 }
 
-int scan(void) {
+int Scan(void) {
    bool havesym = false; // true: symbol, false: opcode
    char *thistokstart;
    long consaccum, consbase;

@@ -4,11 +4,6 @@
 #include <stdio.h>
 #define	Global
 #include "frasmdat.h"
-#ifdef NOGETOPT
-#   include "getopt.h"
-#else
-#   include <getopt.h>
-#endif
 
 FILE *intermedf = (FILE *) NULL;
 #if defined DOSTMP

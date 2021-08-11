@@ -270,8 +270,18 @@ static void outeval(void) {
             etop = (etop << 4) + ((*oeptr) - 'A' + 10);
             break;
 
-#include "fraeuni.h"
-#include "fraebin.h"
+      // {-,~,high,low} x:
+         case IFC_NEG: case IFC_NOT: case IFC_HIGH: case IFC_LOW:
+            etop = EvalUnOp(*oeptr, etop);
+         break;
+
+      // x {+,-,*,/,%,<<,>>,|,^,&,>,>=,<,<=,!=,==} y:
+         case IFC_ADD: case IFC_SUB: case IFC_MUL: case IFC_DIV: case IFC_MOD:
+         case IFC_SHL: case IFC_SHR: case IFC_OR: case IFC_XOR: case IFC_AND:
+         case IFC_GT: case IFC_GE: case IFC_LT: case IFC_LE: case IFC_NE: case IFC_EQ:
+            etop = EvalBinOp(*oeptr, (estkm1p--)->v, etop);
+         break;
+
          case IFC_SYMB:
          {
             struct symel *tsy;

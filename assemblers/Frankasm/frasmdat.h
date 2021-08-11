@@ -10,6 +10,15 @@
 #   define	Global	extern
 #endif
 
+// GetOpt.c:
+#if !defined NOGETOPT
+#   include <getopt.h>
+#else
+extern int optind;
+extern char *optarg;
+#endif
+int GetOpt(int AC, char **AV, char *OptStr);
+
 // frasmain.c:
 #define hexch(cv) (hexcva[(cv)&0xf])
 extern char hexcva[];
@@ -38,7 +47,6 @@ void fraerror(char *str);
 void frafatal(char *str);
 void fracherror(char *str, char *start, char *beyond);
 void prtequvalue(char *fstr, long lv);
-int main(int argc, char *argv[]);
 
 // fryylex.c:
 #define INBUFFSZ 258
@@ -49,7 +57,7 @@ extern FILE *yyin;
 typedef enum readacts { Nra_normal, Nra_new, Nra_end } readacts;
 extern readacts nextreadact;
 
-int scan(void);
+int Scan(void);
 void yyerror(char *str);
 
 // Syn*.y:
@@ -85,6 +93,10 @@ int yyparse(void);
 int lexintercept(void);
 void setreserved(void);
 bool cpumatch(char *str);
+
+// ExOp.c:
+long EvalUnOp(char Op, long A);
+long EvalBinOp(char Op, long A, long B);
 
 // frapsub.c:
 /* symbol table element */
