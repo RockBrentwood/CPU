@@ -1,3 +1,3 @@
-make -DTARGET=%1
-%1 -l test.out %1.tst
-fc test.out %1.tut
+make -DCPU=%1
+%1 -l as.ex as%1.tst
+fc as.ex as%1.tut
