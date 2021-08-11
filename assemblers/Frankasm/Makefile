@@ -119,7 +119,7 @@ Syn$(CPU).c Syn$(CPU).h: Syn$(CPU).y
 	$(RM) Token.h
 Syn$(CPU)$O: Syn$(CPU).c frasmdat.h fragcon.h
 	$(CC) $(CFLAGS) -c Syn$(CPU).c
-frapsub$O: frapsub.c fragcon.h frasmdat.h fraeuni.h fraebin.h
+frapsub$O: frapsub.c fragcon.h frasmdat.h
 	$(CC) $(CFLAGS) -c frapsub.c
-fraosub$O: fraosub.c frasmdat.h fragcon.h fraeuni.h fraebin.h
+fraosub$O: fraosub.c frasmdat.h fragcon.h
 	$(CC) $(CFLAGS) -c fraosub.c
