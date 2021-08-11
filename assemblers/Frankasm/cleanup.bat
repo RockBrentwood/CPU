@@ -1,3 +1,4 @@
 del *.obj
-del as*.c
-del as*.h
+del Token.h
+del Syn*.c
+del Syn*.h
