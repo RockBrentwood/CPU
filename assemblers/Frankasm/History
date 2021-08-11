@@ -95,6 +95,7 @@ History:
 2021/08/01:	Cleaned up the syntax files.
 		Added make test and make clobber.
 		Regularized the makefiles.
+		cleanup.bat, makeone.bat integrated into Makefile.dos
 2021/08/02:	Replaced most sizeof-related manifest constants by constants or eliminated them.
 2021/08/03:	Replaced mktemp() by mkstemp().
 2021/08/04:	Replaced index() by strchr(), which is now C99, and took out USEINDEX.
