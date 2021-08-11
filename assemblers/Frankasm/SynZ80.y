@@ -130,25 +130,20 @@
 #define ST_R01 0x1
 
 unsigned int cpuselect = CPU64180;
-static char genbdef[] = "[1=];";
-static char genwdef[] = "[1=]y";
-char ignosyn[] = "[Xinvalid syntax for instruction";
-char ignosel[] = "[Xinvalid operands/illegal instruction for cpu";
-
+static char *genbdef = "[1=];";
+static char *genwdef = "[1=]y";
+char *ignosyn = "[Xinvalid syntax for instruction";
+char *ignosel = "[Xinvalid operands/illegal instruction for cpu";
 long labelloc;
 static int satsub;
-int ifstkpt = 0;
 static bool fraifskip = false;
-
-struct symel *endsymbol = SYMNULL;
-
 %}
 %union {
-	int	intv;
-	long 	longv;
-	char	*strng;
-	struct symel *symb;
-	struct { int indsel, exp; } indexstruc;
+   int intv;
+   long longv;
+   char *strng;
+   struct symel *symb;
+   struct { int indsel, exp; } indexstruc;
 }
 %token <intv> SREGI
 %token <intv> SREGR
@@ -709,30 +704,30 @@ index: '(' ixoriy '+' expr ')' { $$.exp = $4, $$.indsel = $2; };
 ixoriy: DREGIX | DREGIY;
 
 topexpr: '+' expr %prec KEOP_MUN { $$ = $2; };
-topexpr: '-' expr %prec KEOP_MUN { $$ = exprnode(PCCASE_UN, $2, IFC_NEG, 0, 0L, SYMNULL); };
-topexpr: KEOP_NOT expr { $$ = exprnode(PCCASE_UN, $2, IFC_NOT, 0, 0L, SYMNULL); };
-topexpr: KEOP_HIGH expr { $$ = exprnode(PCCASE_UN, $2, IFC_HIGH, 0, 0L, SYMNULL); };
-topexpr: KEOP_LOW expr { $$ = exprnode(PCCASE_UN, $2, IFC_LOW, 0, 0L, SYMNULL); };
-topexpr: expr '*' expr { $$ = exprnode(PCCASE_BIN, $1, IFC_MUL, $3, 0L, SYMNULL); };
-topexpr: expr '/' expr { $$ = exprnode(PCCASE_BIN, $1, IFC_DIV, $3, 0L, SYMNULL); };
-topexpr: expr '+' expr { $$ = exprnode(PCCASE_BIN, $1, IFC_ADD, $3, 0L, SYMNULL); };
-topexpr: expr '-' expr { $$ = exprnode(PCCASE_BIN, $1, IFC_SUB, $3, 0L, SYMNULL); };
-topexpr: expr KEOP_MOD expr { $$ = exprnode(PCCASE_BIN, $1, IFC_MOD, $3, 0L, SYMNULL); };
-topexpr: expr KEOP_SHL expr { $$ = exprnode(PCCASE_BIN, $1, IFC_SHL, $3, 0L, SYMNULL); };
-topexpr: expr KEOP_SHR expr { $$ = exprnode(PCCASE_BIN, $1, IFC_SHR, $3, 0L, SYMNULL); };
-topexpr: expr KEOP_GT expr { $$ = exprnode(PCCASE_BIN, $1, IFC_GT, $3, 0L, SYMNULL); };
-topexpr: expr KEOP_GE expr { $$ = exprnode(PCCASE_BIN, $1, IFC_GE, $3, 0L, SYMNULL); };
-topexpr: expr KEOP_LT expr { $$ = exprnode(PCCASE_BIN, $1, IFC_LT, $3, 0L, SYMNULL); };
-topexpr: expr KEOP_LE expr { $$ = exprnode(PCCASE_BIN, $1, IFC_LE, $3, 0L, SYMNULL); };
-topexpr: expr KEOP_NE expr { $$ = exprnode(PCCASE_BIN, $1, IFC_NE, $3, 0L, SYMNULL); };
-topexpr: expr KEOP_EQ expr { $$ = exprnode(PCCASE_BIN, $1, IFC_EQ, $3, 0L, SYMNULL); };
-topexpr: expr KEOP_AND expr { $$ = exprnode(PCCASE_BIN, $1, IFC_AND, $3, 0L, SYMNULL); };
-topexpr: expr KEOP_OR expr { $$ = exprnode(PCCASE_BIN, $1, IFC_OR, $3, 0L, SYMNULL); };
-topexpr: expr KEOP_XOR expr { $$ = exprnode(PCCASE_BIN, $1, IFC_XOR, $3, 0L, SYMNULL); };
+topexpr: '-' expr %prec KEOP_MUN { $$ = exprnode(PCCASE_UN, $2, IFC_NEG, 0, 0L, NULL); };
+topexpr: KEOP_NOT expr { $$ = exprnode(PCCASE_UN, $2, IFC_NOT, 0, 0L, NULL); };
+topexpr: KEOP_HIGH expr { $$ = exprnode(PCCASE_UN, $2, IFC_HIGH, 0, 0L, NULL); };
+topexpr: KEOP_LOW expr { $$ = exprnode(PCCASE_UN, $2, IFC_LOW, 0, 0L, NULL); };
+topexpr: expr '*' expr { $$ = exprnode(PCCASE_BIN, $1, IFC_MUL, $3, 0L, NULL); };
+topexpr: expr '/' expr { $$ = exprnode(PCCASE_BIN, $1, IFC_DIV, $3, 0L, NULL); };
+topexpr: expr '+' expr { $$ = exprnode(PCCASE_BIN, $1, IFC_ADD, $3, 0L, NULL); };
+topexpr: expr '-' expr { $$ = exprnode(PCCASE_BIN, $1, IFC_SUB, $3, 0L, NULL); };
+topexpr: expr KEOP_MOD expr { $$ = exprnode(PCCASE_BIN, $1, IFC_MOD, $3, 0L, NULL); };
+topexpr: expr KEOP_SHL expr { $$ = exprnode(PCCASE_BIN, $1, IFC_SHL, $3, 0L, NULL); };
+topexpr: expr KEOP_SHR expr { $$ = exprnode(PCCASE_BIN, $1, IFC_SHR, $3, 0L, NULL); };
+topexpr: expr KEOP_GT expr { $$ = exprnode(PCCASE_BIN, $1, IFC_GT, $3, 0L, NULL); };
+topexpr: expr KEOP_GE expr { $$ = exprnode(PCCASE_BIN, $1, IFC_GE, $3, 0L, NULL); };
+topexpr: expr KEOP_LT expr { $$ = exprnode(PCCASE_BIN, $1, IFC_LT, $3, 0L, NULL); };
+topexpr: expr KEOP_LE expr { $$ = exprnode(PCCASE_BIN, $1, IFC_LE, $3, 0L, NULL); };
+topexpr: expr KEOP_NE expr { $$ = exprnode(PCCASE_BIN, $1, IFC_NE, $3, 0L, NULL); };
+topexpr: expr KEOP_EQ expr { $$ = exprnode(PCCASE_BIN, $1, IFC_EQ, $3, 0L, NULL); };
+topexpr: expr KEOP_AND expr { $$ = exprnode(PCCASE_BIN, $1, IFC_AND, $3, 0L, NULL); };
+topexpr: expr KEOP_OR expr { $$ = exprnode(PCCASE_BIN, $1, IFC_OR, $3, 0L, NULL); };
+topexpr: expr KEOP_XOR expr { $$ = exprnode(PCCASE_BIN, $1, IFC_XOR, $3, 0L, NULL); };
 topexpr: KEOP_DEFINED SYMBOL { $$ = exprnode(PCCASE_DEF, 0, IGP_DEFINED, 0, 0L, $2); };
 topexpr: SYMBOL { $$ = exprnode(PCCASE_SYMB, 0, IFC_SYMB, 0, 0L, $1); };
-topexpr: '*' { $$ = exprnode(PCCASE_PROGC, 0, IFC_PROGCTR, 0, labelloc, SYMNULL); };
-topexpr: CONSTANT { $$ = exprnode(PCCASE_CONS, 0, IGP_CONSTANT, 0, $1, SYMNULL); };
+topexpr: '*' { $$ = exprnode(PCCASE_PROGC, 0, IFC_PROGCTR, 0, labelloc, NULL); };
+topexpr: CONSTANT { $$ = exprnode(PCCASE_CONS, 0, IGP_CONSTANT, 0, $1, NULL); };
 topexpr: STRING {
    char *sourcestr = $1;
    long accval = 0;
@@ -743,7 +738,7 @@ topexpr: STRING {
       if (*sourcestr != '\0')
          frawarn("string constant in expression more than 2 characters long");
    }
-   $$ = exprnode(PCCASE_CONS, 0, IGP_CONSTANT, 0, accval, SYMNULL);
+   $$ = exprnode(PCCASE_CONS, 0, IGP_CONSTANT, 0, accval, NULL);
 };
 
 expr: '(' topexpr ')' { $$ = $2; };

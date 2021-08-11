@@ -5,10 +5,6 @@
 #include "fragcon.h"
 #include "frasmdat.h"
 
-#define STRALLOCSZ 4096
-
-static char *currstr;
-
 // Save a character string in permanent (interpass) memory
 // Parameters:
 //	the string and its length
@@ -17,6 +13,8 @@ static char *currstr;
 // Return:
 //	a pointer to the saved string
 char *savestring(char *stx, int len) {
+   const size_t STRALLOCSZ = 0x1000;
+   static char *currstr;
    char *rv;
    static int savestrleft = 0;
 
@@ -48,14 +46,17 @@ struct etelem {
    struct symel *sym;
 };
 
-#define NUMENODE INBUFFSZ
-struct etelem enode[NUMENODE];
+struct etelem enode[INBUFFSZ];
+static const size_t NUMENODE = sizeof enode/sizeof enode[0];
 
 static int nextenode = 1;
 
 /* non general, one exprlist or stringlist per line */
 int nextexprs = 0;
+int exprlist[INBUFFSZ/2];
+
 int nextstrs = 0;
+char *stringlist[INBUFFSZ/2];
 
 // Clear out the stuff used for each line
 //	the temporary string pool
@@ -95,10 +96,11 @@ int exprnode(extag swact, int left, int op, int right, long value, struct symel 
    return nextenode++;
 }
 
+struct symel **symbindex, *endsymbol;
 int nextsymnum = 1;
 
 static struct symel *syallob;
-#define SYELPB 512
+static const size_t SYELPB = 0x200;
 static int nxtsyel = SYELPB;
 
 // Allocate a symbol table element, and allocate
@@ -124,7 +126,8 @@ static struct symel *allocsym(void) {
 }
 
 #define SYHASHOFF 13
-#define SYHASHSZ 1023
+#define SYHASHSZ 0x3ff
+static struct symel *shashtab[SYHASHSZ];
 
 // Produce a hash index from a character string for
 // the symbol table.
@@ -144,8 +147,6 @@ static int syhash(char *str) {
 
    return rv % SYHASHSZ;
 }
-
-static struct symel *shashtab[SYHASHSZ];
 
 // Find an existing symbol in the symbol table, or
 // allocate an new element if the symbol doen't exist.
@@ -259,28 +260,26 @@ void buildsymbolindex(void) {
    }
 
    for (hi = 0; hi < SYHASHSZ; hi++) {
-      if ((curr = shashtab[hi]) != SYMNULL) {
+      if ((curr = shashtab[hi]) != NULL) {
          do {
             if (curr->symnum)
                symbindex[curr->symnum] = curr;
 
             curr = curr->nextsym;
-         } while (curr != SYMNULL);
+         } while (curr != NULL);
       }
    }
 }
 
 /* opcode symbol table */
-
-#define OPHASHOFF 13
-#define OPHASHSZ 1023
-
-static int ohashtab[OPHASHSZ];
+static int ohashtab[0x3ff];
+static const size_t OPHASHSZ = sizeof ohashtab/sizeof ohashtab[0];
 
 // Hash a character string
 // Return:
 //	an integer related somehow to the character string
 static int opcodehash(char *str) {
+   const int OPHASHOFF = 13;
    unsigned rv = 0;
    int offset = 1, c;
 
@@ -401,17 +400,18 @@ void genlocrec(int seg, long loc) {
 }
 
 static char *goutptr, goutbuff[INBUFFSZ] = "D:";
+static char *goutend = goutbuff + sizeof goutbuff/sizeof goutbuff[0] - 1;
 
 // Put a character in the intermediate file buffer
 // for 'D' data records
 // Globals:
 //	the buffer, its current position pointer
 static void goutch(char ch) {
-   if (goutptr < &goutbuff[INBUFFSZ - 1]) {
+   if (goutptr < goutend) {
       *goutptr++ = ch;
    } else {
-      goutbuff[INBUFFSZ - 1] = '\0';
-      goutptr = &goutbuff[INBUFFSZ];
+      *goutend = '\0';
+      goutptr = goutend + 1;
       fraerror("overflow in instruction generation");
    }
 }
@@ -430,8 +430,7 @@ static void goutxnum(unsigned long num) {
    goutch(hexch((int)num));
 }
 
-#define GSTR_PASS 0
-#define GSTR_PROCESS 1
+struct evalrel evalr[6];
 
 // Process an instruction generation string, from
 // the parser, into a polish form expression line
@@ -450,8 +449,9 @@ static void goutxnum(unsigned long num) {
 // Return:
 //	the length of the instruction (machine code bytes)
 int geninstr(char *str) {
+   const bool GSTR_PASS = false, GSTR_PROCESS = true;
    int len = 0;
-   int state = GSTR_PASS;
+   bool state = GSTR_PASS;
    int innum = 0;
 
    char *exp;
@@ -554,7 +554,8 @@ int geninstr(char *str) {
    return len;
 }
 
-int chtnxalph = 1, *chtcpoint = (int *)NULL, *chtnpoint = (int *)NULL;
+int chtnxalph = 1, *chtcpoint = NULL, *chtnpoint = NULL;
+int *chtatab[6];
 
 // Allocate and initialize a character translate
 // table
@@ -562,6 +563,7 @@ int chtnxalph = 1, *chtcpoint = (int *)NULL, *chtnpoint = (int *)NULL;
 //	0 for error, subscript into chtatab to pointer
 //	to the allocated block
 int chtcreate(void) {
+   const size_t NUM_CHTA = sizeof chtatab/sizeof chtatab[0];
    int *trantab, cnt;
 
    if (chtnxalph >= NUM_CHTA)
@@ -807,7 +809,7 @@ static char *pepolptr;
 static int pepolcnt;
 static long etop;
 static seg_t etopseg;
-#define STACKALLOWANCE 4 /* number of level used outside polish expr */
+static const size_t STACKALLOWANCE = 4; /* number of level used outside polish expr */
 
 // Output a character to a evar[?].exprstr array
 // Globals:

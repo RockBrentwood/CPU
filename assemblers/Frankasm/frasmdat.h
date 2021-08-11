@@ -6,10 +6,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-#ifndef Global
-#   define	Global	extern
-#endif
-
 // GetOpt.c:
 #if !defined NOGETOPT
 #   include <getopt.h>
@@ -20,27 +16,20 @@ extern char *optarg;
 int GetOpt(int AC, char **AV, char *OptStr);
 
 // frasmain.c:
-#define hexch(cv) (hexcva[(cv)&0xf])
-extern char hexcva[];
+extern struct ifstack_t { enum { If_Active, If_Skip, If_Err } Else, EndIf; } ifstk[];
+extern int ifstkpt;
+extern const size_t IFSTKDEPTH;
+
+extern struct fstkel { char *fnm; FILE *fpt; int line; } infilestk[];
+extern const size_t FILESTKDPTH;
 
 extern FILE *intermedf;
+extern FILE *hexoutf, *loutf;
 extern int errorcnt, warncnt;
+extern bool hexflag, listflag;
 
-extern bool listflag;
-extern bool hexvalid, hexflag;
-
-#define IFSTKDEPTH 32
-extern int ifstkpt;
-Global struct ifstack_t { enum { If_Active, If_Skip, If_Err } Else, EndIf; } ifstk[IFSTKDEPTH];
-
-Global FILE *hexoutf, *loutf;
-
-#define FILESTKDPTH 20
-Global struct fstkel {
-   char *fnm;
-   FILE *fpt;
-} infilestk[FILESTKDPTH];
-Global int lnumstk[FILESTKDPTH];
+extern char hexcva[];
+#define hexch(cv) (hexcva[(cv)&0xf])
 
 void frawarn(char *str);
 void fraerror(char *str);
@@ -49,7 +38,7 @@ void fracherror(char *str, char *start, char *beyond);
 void prtequvalue(char *fstr, long lv);
 
 // fryylex.c:
-#define INBUFFSZ 258
+#define INBUFFSZ 0x102
 extern char finbuff[INBUFFSZ];
 
 extern FILE *yyin;
@@ -61,8 +50,7 @@ int Scan(void);
 void yyerror(char *str);
 
 // Syn*.y:
-extern char ignosyn[];
-extern char ignosel[];
+extern char *ignosyn, *ignosel;
 
 /* opcode symbol table element */
 struct opsym {
@@ -90,7 +78,6 @@ struct igel {
 extern struct igel igtab[];
 
 int yyparse(void);
-int lexintercept(void);
 void setreserved(void);
 bool cpumatch(char *str);
 
@@ -99,6 +86,12 @@ long EvalUnOp(char Op, long A);
 long EvalBinOp(char Op, long A, long B);
 
 // frapsub.c:
+extern int nextexprs;
+extern int exprlist[];
+
+extern int nextstrs;
+extern char *stringlist[];
+
 /* symbol table element */
 typedef enum seg_t { SSG_RESV = -2, SSG_UNDEF = -1, SSG_UNUSED = 0, SSG_EQU = 2, SSG_SET = 3, SSG_ABS = 8 } seg_t;
 #define seg_valued(seg) ((seg) > 0)
@@ -110,36 +103,20 @@ struct symel {
    struct symel *nextsym;
    int symnum;
 };
+extern struct symel **symbindex, *endsymbol;
+extern int nextsymnum;
 
-#define SYMNULL (struct symel *) NULL
-#define EXPRLSIZE (INBUFFSZ/2)
-
-extern int nextexprs;
-Global int exprlist[EXPRLSIZE];
-
-#define STRLSIZE (INBUFFSZ/2)
-extern int nextstrs;
-Global char *stringlist[STRLSIZE];
-
-#define PPEXPRLEN 256
+#define PPEXPRLEN 0x100
 struct evalrel {
    seg_t seg;
    long value;
    char exprstr[PPEXPRLEN];
 };
+extern struct evalrel evalr[];
 
-#define NUMPEXP 6
-Global struct evalrel evalr[NUMPEXP];
-
-#define NUM_CHTA 6
 extern int chtnxalph, *chtcpoint, *chtnpoint;
-Global int *chtatab[NUM_CHTA];
-
+extern int *chtatab[];
 typedef enum char_tx { CF_END = -2, CF_INVALID, CF_UNDEF, CF_CHAR, CF_NUMBER } char_tx;
-
-extern int nextsymnum;
-Global struct symel **symbindex;
-extern struct symel *endsymbol;
 
 typedef enum { PCCASE_BIN = 1, PCCASE_UN, PCCASE_DEF, PCCASE_SYMB, PCCASE_CONS, PCCASE_PROGC } extag;
 
@@ -161,17 +138,17 @@ int genstring(char *str);
 void pevalexpr(int sub, int exn);
 
 // fraosub.c:
-#define PESTKDEPTH 32
 struct evstkel {
    long v;
    seg_t s;
 };
-Global struct evstkel estk[PESTKDEPTH], *estkm1p;
+extern struct evstkel estk[], *estkm1p;
+extern const size_t PESTKDEPTH;
 
-Global int currfstk;
+extern int currfstk;
 #define nextfstk (currfstk+1)
 
-Global int currseg;
-Global long locctr;
+extern int currseg;
+extern long locctr;
 
 void outphase(void);

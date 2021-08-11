@@ -89,13 +89,13 @@ History:
 2021/07/29:	Added ‟bool” as ‟typedef enum { false, true } bool;”, for now.
 		Lifted boolean-valued integer variables and routines to the type bool.
 		Sorted out the globals in frasmdat.h.
-		Localization of ‟global” routines and variables that are actually local.
+		Removed Global, localized ‟global” routines and variables that are actually local and sorted out the rest.
 		Used <stdlib.h> in place of explicit declarations of functions that declared there in C99.
 2021/07/30:	Established operational baseline in C99.
 2021/08/01:	Cleaned up the syntax files.
 		Added make test and make clobber.
 		Regularized the makefiles.
-		cleanup.bat, makeone.bat integrated into Makefile.dos
+		Integrated the ‟cleanup.bat” and ‟makeone.bat” scripts into the DOS makefile.
 2021/08/02:	Replaced most sizeof-related manifest constants by constants or eliminated them.
 2021/08/03:	Replaced mktemp() by mkstemp().
 2021/08/04:	Replaced index() by strchr(), which is now C99, and took out USEINDEX.

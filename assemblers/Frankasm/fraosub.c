@@ -5,24 +5,24 @@
 #include "frasmdat.h"
 #include "fragcon.h"
 
-#define SOURCEOFFSET 24
-#define NUMHEXSOURCE 6
+const int SOURCEOFFSET = 24, NUMHEXSOURCE = 6;
+
+struct evstkel estk[0x20], *estkm1p;
+const size_t PESTKDEPTH = sizeof estk/sizeof estk[0];
+int currfstk, currseg;
+long locctr;
 
 static char currentfnm[100];
 static int linenumber = 0;
 static char lineLbuff[INBUFFSZ];
 static bool lineLflag = false;
 
-#define OUTRESULTLEN 256
-static unsigned char outresult[OUTRESULTLEN];
+static unsigned char outresult[0x100];
 static int nextresult;
 static long genlocctr, resultloc;
-
 static char *oeptr;
 
-#define	MAXIMPWID	24
-
-static long widthmask[MAXIMPWID + 1] = {
+static long widthmask[] = {
 /* 0 */ 1L,
 /* 1 */ 1L,
 /* 2 */ (1L << 2) - 1,
@@ -49,6 +49,7 @@ static long widthmask[MAXIMPWID + 1] = {
 /* 23 */ (1L << 23) - 1,
 /* 24 */ (1L << 24) - 1
 };
+static const size_t maskmax = sizeof widthmask/sizeof widthmask[0];
 
 // Convert the character string pointed to by
 // the output expression pointer to a long integer
@@ -344,7 +345,7 @@ static void outeval(void) {
             break;
 
          case IFC_SWIDTH:
-            if (etop > 0 && etop <= MAXIMPWID) {
+            if (etop > 0 && etop < maskmax) {
                if (estkm1p->v < -(widthmask[etop - 1] + 1) || estkm1p->v > widthmask[etop - 1]) {
                   frp2error("expression exceeds available field width");
                }
@@ -354,7 +355,7 @@ static void outeval(void) {
             break;
 
          case IFC_WIDTH:
-            if (etop > 0 && etop <= MAXIMPWID) {
+            if (etop > 0 && etop < maskmax) {
                if (estkm1p->v < -(widthmask[etop - 1] + 1) || estkm1p->v > widthmask[etop]) {
                   frp2error("expression exceeds available field width");
                }
@@ -364,7 +365,7 @@ static void outeval(void) {
             break;
 
          case IFC_IWIDTH:
-            if (etop > 0 && etop <= MAXIMPWID) {
+            if (etop > 0 && etop < maskmax) {
                if (estkm1p->v < 0 || estkm1p->v > widthmask[etop]) {
                   frp2error("expression exceeds available field width");
                }
@@ -528,7 +529,7 @@ static void listhex(void) {
 static void flushhex(void) {
    if (hnextsub > 0)
       intelout(0, blockaddr, hnextsub, hlinebuff);
-   if (endsymbol != SYMNULL && seg_valued(endsymbol->seg))
+   if (endsymbol != NULL && seg_valued(endsymbol->seg))
       intelout(1, endsymbol->value, 0, "");
    else
       intelout(1, 0L, 0, "");
@@ -626,7 +627,7 @@ void outphase(void) {
             strncpy(currentfnm, &finbuff[2], 100);
             currentfnm[99] = '\0';
          }
-            lnumstk[currfstk++] = linenumber;
+            infilestk[currfstk++].line = linenumber;
             linenumber = 0;
             break;
 
@@ -638,7 +639,7 @@ void outphase(void) {
             strncpy(currentfnm, &finbuff[2], 100);
             currentfnm[99] = '\0';
          }
-            linenumber = lnumstk[--currfstk];
+            linenumber = infilestk[--currfstk].line;
             break;
 
          default:

@@ -2,10 +2,16 @@
 // Original author: Mark Zenier.
 // Main file.
 #include <stdio.h>
-#define	Global
 #include "frasmdat.h"
 
-FILE *intermedf = (FILE *) NULL;
+struct ifstack_t ifstk[0x20];
+int ifstkpt = 0;
+const size_t IFSTKDEPTH = sizeof ifstk/sizeof ifstk[0];
+
+struct fstkel infilestk[20];
+const size_t FILESTKDPTH = sizeof infilestk/sizeof infilestk[0];
+
+FILE *intermedf = NULL;
 #if defined DOSTMP
 static char interfn[] = "frtXXXXXX";
 #elif defined AMIGA
@@ -13,9 +19,10 @@ static char interfn[] = "T:frtXXXXXX";
 #else
 static char interfn[] = "/usr/tmp/frtXXXXXX";
 #endif
-char *hexfn, *loutfn;
+FILE *hexoutf, *loutf;
+static char *hexfn, *loutfn;
 int errorcnt = 0, warncnt = 0;
-bool listflag = false, hexflag = false, hexvalid = false;
+bool listflag = false, hexflag = false;
 static bool debugmode = false;
 static FILE *symbf;
 static char *symbfn;
@@ -153,8 +160,6 @@ static void filesymbols(void) {
 // Return:
 //	exit(2) for error, exit(0) for OK
 int main(int argc, char *argv[]) {
-   extern char *optarg;
-   extern int optind;
    int grv;
 
    grv = cpumatch(argv[0]);
@@ -164,7 +169,7 @@ int main(int argc, char *argv[]) {
          case 'o':
          case 'h':
             hexfn = optarg;
-            hexflag = hexvalid = true;
+            hexflag = true;
             break;
 
          case 'l':
@@ -277,15 +282,19 @@ int main(int argc, char *argv[]) {
    currfstk = 0;
    outphase();
 
-   if (errorcnt > 0)
-      hexvalid = false;
-
-   fprintf(loutf, " ERROR SUMMARY - ERRORS DETECTED %d\n", errorcnt);
-   fprintf(loutf, "               -  WARNINGS       %d\n", warncnt);
-
-   if (listflag) {
-      fprintf(stderr, " ERROR SUMMARY - ERRORS DETECTED %d\n", errorcnt);
-      fprintf(stderr, "               -  WARNINGS       %d\n", warncnt);
+   if (errorcnt > 0 || warncnt > 0) {
+      fprintf(loutf, " Error Summary:");
+      if (errorcnt > 0) fprintf(loutf, " %d error(s)", errorcnt);
+      if (errorcnt > 0 && warncnt > 0) fputc(',', loutf);
+      if (warncnt > 0) fprintf(loutf, " %d warning(s)", warncnt);
+      fprintf(loutf, ".\n");
+      if (listflag) {
+         fprintf(stderr, " Error Summary:");
+         if (errorcnt > 0) fprintf(stderr, " %d error(s)", errorcnt);
+         if (errorcnt > 0 && warncnt > 0) fputc(',', stderr);
+         if (warncnt > 0) fprintf(stderr, " %d warning(s)", warncnt);
+         fprintf(stderr, ".\n");
+      }
    }
 
    if (listflag)
@@ -293,7 +302,7 @@ int main(int argc, char *argv[]) {
 
    if (hexflag) {
       fclose(hexoutf);
-      if (!hexvalid)
+      if (errorcnt > 0)
          remove(hexfn);
    }
 
