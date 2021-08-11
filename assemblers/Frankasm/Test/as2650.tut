@@ -569,5 +569,4 @@
 055e 9b 23 			zbrr  23h
 0560 bb a3 			zbsr  *23h
 0562 bb 23 			zbsr  23h
- ERROR SUMMARY - ERRORS DETECTED 0
-               -  WARNINGS       1
+ Error Summary: 1 warning(s).

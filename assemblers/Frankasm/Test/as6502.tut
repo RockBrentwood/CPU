@@ -219,5 +219,4 @@
 01ca 8a 			txa
 01cb 9a 			txs
 01cc 98 			tya
- ERROR SUMMARY - ERRORS DETECTED 1
-               -  WARNINGS       0
+ Error Summary: 1 error(s).

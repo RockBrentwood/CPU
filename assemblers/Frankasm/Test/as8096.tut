@@ -384,5 +384,3 @@
 0561 97 39 54 76 30 		xorb	dstreg, longoff [ srcreg ]
 0566 97 38 33 30 		xorb	dstreg, shortoff [ srcreg ]
 056a 94 38 30 			xorb	dstreg, srcreg
- ERROR SUMMARY - ERRORS DETECTED 0
-               -  WARNINGS       0

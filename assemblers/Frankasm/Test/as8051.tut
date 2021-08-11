@@ -259,5 +259,3 @@
 0183 6f 			xrl	a, r7
 0184 63 44 55 			xrl	direct, # immed
 0187 62 44 			xrl	direct, a
- ERROR SUMMARY - ERRORS DETECTED 0
-               -  WARNINGS       0

@@ -402,5 +402,3 @@
 25a8 68 0a 			 xie
 25aa f3 			 xor
 25ab fb 55 			 xri # immed
- ERROR SUMMARY - ERRORS DETECTED 0
-               -  WARNINGS       0

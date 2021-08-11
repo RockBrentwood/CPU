@@ -235,5 +235,3 @@
 0127 dd 			xrl	a, r5
 0128 de 			xrl	a, r6
 0129 df 			xrl	a, r7
- ERROR SUMMARY - ERRORS DETECTED 0
-               -  WARNINGS       0

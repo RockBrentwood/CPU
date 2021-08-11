@@ -239,5 +239,3 @@
 01c4 85 02 		    xorp    a,port
 01c6 95 02 		    xorp    b,port
 01c8 a5 55 02 		    xorp   #imm,port
- ERROR SUMMARY - ERRORS DETECTED 0
-               -  WARNINGS       0

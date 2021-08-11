@@ -226,5 +226,3 @@
 011f dd 			xrl	a, r5
 0120 de 			xrl	a, r6
 0121 df 			xrl	a, r7
- ERROR SUMMARY - ERRORS DETECTED 0
-               -  WARNINGS       0

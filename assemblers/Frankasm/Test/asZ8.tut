@@ -244,5 +244,3 @@
 0204 b5 1c 2d 			xor	xdest, @ xsrc
 0207 b4 1c 2d 			xor	xdest, xsrc
  0x20a                  jmpdst
- ERROR SUMMARY - ERRORS DETECTED 0
-               -  WARNINGS       0

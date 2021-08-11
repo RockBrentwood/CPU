@@ -736,5 +736,3 @@
 05df ac 			xor h
 05e0 ee 4d 			xor immed
 05e2 ad 			xor l
- ERROR SUMMARY - ERRORS DETECTED 0
-               -  WARNINGS       0
