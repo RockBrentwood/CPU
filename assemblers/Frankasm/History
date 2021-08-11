@@ -80,6 +80,7 @@ History:
 		―	The history and documentation were retrofitted with the new names.
 		―	fraytok.h → Token.h
                 ―       {fraeuni,fraebin,getopt}.h → {CasesUn,CasesBin,GetOpt}.c
+		―	makefile.dos → Makefile.dos
                 Converted the conditional module GetOpt.c into a module for a ‟fall-back” GetOpt() to getopt().
 		Upgrading to C99: made <string.h> and <stdlib.h> mandatory.
 		Documentation and test files placed, respectively, in Doc and Test subdirectories and the Makefile was updated.
