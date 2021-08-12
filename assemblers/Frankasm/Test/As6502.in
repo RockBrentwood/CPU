@@ -129,7 +129,7 @@ jmpdst	bcc	jmpdst
 	lsr	direct,x
 	lsr	extend
 	lsr	extend,x
-	mul
+;;	mul
 	nop
 	ora	# immed
 	ora	( direct, x )

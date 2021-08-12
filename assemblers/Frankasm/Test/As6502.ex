@@ -131,8 +131,7 @@
 011c 56 44 			lsr	direct,x
 011e 4e 34 12 			lsr	extend
 0121 5e 34 12 			lsr	extend,x
-				mul
- ERROR - invalid operands/illegal instruction for cpu
+			;;	mul
 0124 ea 			nop
 0125 09 55 			ora	# immed
 0127 01 44 			ora	( direct, x )
@@ -219,4 +218,3 @@
 01ca 8a 			txa
 01cb 9a 			txs
 01cc 98 			tya
- Error Summary: 1 error(s).
