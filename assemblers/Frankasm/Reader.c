@@ -2,8 +2,8 @@
 // Original author: Mark Zenier.
 // Parser phase utility routines.
 #include <stdio.h>
-#include "Constants.h"
 #include "Extern.h"
+#include "Constants.h"
 
 // Save a character string in permanent (interpass) memory
 // Parameters:
@@ -15,7 +15,6 @@
 char *savestring(char *stx, int len) {
    const size_t STRALLOCSZ = 0x1000;
    static char *currstr;
-   char *rv;
    static int savestrleft = 0;
 
    if (savestrleft < (len + 1)) {
@@ -27,7 +26,7 @@ char *savestring(char *stx, int len) {
 
    savestrleft -= (len + 1);
 
-   rv = currstr;
+   char *rv = currstr;
    for (; len > 0; len--)
       *currstr++ = *stx++;
    *currstr++ = '\0';
@@ -138,9 +137,8 @@ static struct symel *shashtab[SYHASHSZ];
 static int syhash(char *str) {
    unsigned rv = 0;
    int offset = 1;
-   int c;
 
-   while ((c = *(str++)) > 0) {
+   for (int c; (c = *(str++)) > 0; ) {
       rv += (c - ' ') * offset;
       offset *= SYHASHOFF;
    }
@@ -170,13 +168,13 @@ static int syhash(char *str) {
 //	a pointer to the symbol table element for this
 //	character string
 static struct symel *getsymslot(char *str) {
-   struct symel *currel, *prevel;
-   int hv;
-
-   if ((currel = shashtab[hv = syhash(str)])
-      == (struct symel *)NULL) {
+   int hv = syhash(str);
+   struct symel *currel = shashtab[hv];
+   if (currel == (struct symel *)NULL) {
       shashtab[hv] = currel = allocsym();
    } else {
+      struct symel *prevel;
+
       do {
          if (strcmp(currel->symstr, str) == 0) {
             return currel;
@@ -210,9 +208,7 @@ static struct symel *getsymslot(char *str) {
 // Return:
 //	a pointer to the symbol table element
 struct symel *symbentry(char *str, int toktyp) {
-   struct symel *rv;
-
-   rv = getsymslot(str);
+   struct symel *rv = getsymslot(str);
 
    if (rv->seg == SSG_UNUSED) {
       rv->tok = toktyp;
@@ -230,9 +226,7 @@ struct symel *symbentry(char *str, int toktyp) {
 //	The syntactic token value.
 //	The associated value of the symbol.
 void reservedsym(char *str, int tok, int value) {
-   struct symel *tv;
-
-   tv = getsymslot(str);
+   struct symel *tv = getsymslot(str);
 
    if (tv->seg != SSG_UNUSED) {
       frafatal("cannot redefine reserved symbol");
@@ -252,15 +246,13 @@ void reservedsym(char *str, int tok, int value) {
 // Globals:
 //	the symbol table
 void buildsymbolindex(void) {
-   int hi;
-   struct symel *curr;
-
    if ((symbindex = (struct symel **)calloc((unsigned)nextsymnum, sizeof(struct symel *))) == (struct symel **)NULL) {
       frafatal(" unable to allocate symbol index");
    }
 
-   for (hi = 0; hi < SYHASHSZ; hi++) {
-      if ((curr = shashtab[hi]) != NULL) {
+   for (int hi = 0; hi < SYHASHSZ; hi++) {
+      struct symel *curr = shashtab[hi];
+      if (curr != NULL) {
          do {
             if (curr->symnum)
                symbindex[curr->symnum] = curr;
@@ -281,9 +273,9 @@ static const size_t OPHASHSZ = sizeof ohashtab/sizeof ohashtab[0];
 static int opcodehash(char *str) {
    const int OPHASHOFF = 13;
    unsigned rv = 0;
-   int offset = 1, c;
+   int offset = 1;
 
-   while ((c = *(str++)) > 0) {
+   for (int c; (c = *(str++)) > 0; ) {
       rv += (c - ' ') * offset;
       offset *= OPHASHOFF;
    }
@@ -297,14 +289,13 @@ static int opcodehash(char *str) {
 //	the opcode hash table
 //	the opcode table
 void setophash(void) {
-   int opn, pl, hv;
-
 /* optab[0] is reserved for the "invalid" entry */
 /*  opcode subscripts range from 0 to numopcode - 1 */
-   for (opn = 1; opn < gnumopcode; opn++) {
-      hv = opcodehash(optab[opn].opstr);
+   for (int opn = 1; opn < gnumopcode; opn++) {
+      int hv = opcodehash(optab[opn].opstr);
 
-      if ((pl = ohashtab[hv]) == 0) {
+      int pl = ohashtab[hv];
+      if (pl == 0) {
          ohashtab[hv] = opn;
       } else {
          while (ophashlnk[pl] != 0) {
@@ -327,9 +318,8 @@ void setophash(void) {
 //	0 if not found
 //	the subscript of the matching element if found
 int findop(char *str) {
-   int ts;
-
-   if ((ts = ohashtab[opcodehash(str)]) == 0) {
+   int ts = ohashtab[opcodehash(str)];
+   if (ts == 0) {
       return 0;
    }
 
@@ -368,9 +358,9 @@ int findop(char *str) {
 //	error message, or the generation string for the
 //	instruction
 char *findgen(int op, int syntax, int crit) {
-   int sys = optab[op].subsyn, stc, gsub = 0, dctr;
+   int sys = optab[op].subsyn, gsub = 0;
 
-   for (stc = optab[op].numsyn; stc > 0; stc--) {
+   for (int stc = optab[op].numsyn; stc > 0; stc--) {
       if ((ostab[sys].syntaxgrp & syntax) != 0) {
          gsub = ostab[sys].gentabsub;
          break;
@@ -381,7 +371,7 @@ char *findgen(int op, int syntax, int crit) {
    if (gsub == 0)
       return ignosyn;
 
-   for (dctr = ostab[sys].elcnt; dctr > 0; dctr--) {
+   for (int dctr = ostab[sys].elcnt; dctr > 0; dctr--) {
       if ((igtab[gsub].selmask & crit) == igtab[gsub].criteria) {
          return igtab[gsub].genstr;
       } else {
@@ -454,8 +444,6 @@ int geninstr(char *str) {
    bool state = GSTR_PASS;
    int innum = 0;
 
-   char *exp;
-
    goutptr = &goutbuff[2];
 
    while (*str != '\0') {
@@ -527,12 +515,13 @@ int geninstr(char *str) {
                str++;
                break;
 
-            case IG_CPEXPR:
-               exp = &evalr[innum].exprstr[0];
+            case IG_CPEXPR: {
+               char *exp = &evalr[innum].exprstr[0];
                innum = 0;
                while (*exp != '\0')
                   goutch(*exp++);
                str++;
+            }
                break;
 
             case IG_ERROR:
@@ -564,15 +553,15 @@ int *chtatab[6];
 //	to the allocated block
 int chtcreate(void) {
    const size_t NUM_CHTA = sizeof chtatab/sizeof chtatab[0];
-   int *trantab, cnt;
 
    if (chtnxalph >= NUM_CHTA)
       return 0; /* too many */
 
-   if ((trantab = (int *)calloc(512, sizeof(int))) == (int *)NULL)
+   int *trantab = (int *)calloc(512, sizeof(int));
+   if (trantab == (int *)NULL)
       return 0;
 
-   for (cnt = 0; cnt < 512; cnt++)
+   for (int cnt = 0; cnt < 512; cnt++)
       trantab[cnt] = -1;
 
    chtatab[chtnxalph] = chtnpoint = trantab;
@@ -589,12 +578,10 @@ int chtcreate(void) {
 // Return:
 //	status of search
 char_tx chtcfind(int *chtab, char **sourcepnt, int **tabpnt, int *numret) {
-   int numval, *valaddr;
-   char *sptr, cv;
+   char *sptr = *sourcepnt;
 
-   sptr = *sourcepnt;
-
-   switch (cv = *sptr) {
+   char cv = *sptr;
+   switch (cv) {
       case '\0':
          return CF_END;
 
@@ -604,7 +591,7 @@ char_tx chtcfind(int *chtab, char **sourcepnt, int **tabpnt, int *numret) {
             *sourcepnt = ++sptr;
             return CF_NUMBER;
          } else {
-            valaddr = &(chtab[cv & 0xff]);
+            int *valaddr = &(chtab[cv & 0xff]);
             *sourcepnt = ++sptr;
             *tabpnt = valaddr;
             return (*valaddr == -1) ? CF_UNDEF : CF_CHAR;
@@ -624,7 +611,7 @@ char_tx chtcfind(int *chtab, char **sourcepnt, int **tabpnt, int *numret) {
                   *sourcepnt = ++sptr;
                   return CF_NUMBER;
                } else {
-                  valaddr = &(chtab[(cv & 0xff) + 256]);
+                  int *valaddr = &(chtab[(cv & 0xff) + 256]);
                   *sourcepnt = ++sptr;
                   *tabpnt = valaddr;
                   return (*valaddr == -1) ? CF_UNDEF : CF_CHAR;
@@ -635,7 +622,7 @@ char_tx chtcfind(int *chtab, char **sourcepnt, int **tabpnt, int *numret) {
                   *sourcepnt = ++sptr;
                   return CF_INVALID;
                } else {
-                  valaddr = &(chtab[(cv & 0xff) + 256]);
+                  int *valaddr = &(chtab[(cv & 0xff) + 256]);
                   *sourcepnt = ++sptr;
                   *tabpnt = valaddr;
                   return (*valaddr == -1) ? CF_UNDEF : CF_CHAR;
@@ -650,7 +637,7 @@ char_tx chtcfind(int *chtab, char **sourcepnt, int **tabpnt, int *numret) {
             case '6':
             case '7':
             {
-               numval = cv - '0';
+               int numval = cv - '0';
                cv = *(++sptr);
                if (cv >= '0' && cv <= '7') {
                   numval = numval * 8 + cv - '0';
@@ -666,8 +653,9 @@ char_tx chtcfind(int *chtab, char **sourcepnt, int **tabpnt, int *numret) {
                return CF_NUMBER;
             }
 
-            case 'x':
-               switch (cv = *(++sptr)) {
+            case 'x': {
+               int numval = cv = *(++sptr);
+               switch (cv) {
                   case '0':
                   case '1':
                   case '2':
@@ -678,7 +666,7 @@ char_tx chtcfind(int *chtab, char **sourcepnt, int **tabpnt, int *numret) {
                   case '7':
                   case '8':
                   case '9':
-                     numval = cv - '0';
+                     numval -= '0';
                      break;
 
                   case 'a':
@@ -687,7 +675,7 @@ char_tx chtcfind(int *chtab, char **sourcepnt, int **tabpnt, int *numret) {
                   case 'd':
                   case 'e':
                   case 'f':
-                     numval = cv - 'a' + 10;
+                     numval -= 'a' - 10;
                      break;
 
                   case 'A':
@@ -696,7 +684,7 @@ char_tx chtcfind(int *chtab, char **sourcepnt, int **tabpnt, int *numret) {
                   case 'D':
                   case 'E':
                   case 'F':
-                     numval = cv - 'A' + 10;
+                     numval -= 'A' - 10;
                      break;
 
                   default:
@@ -746,15 +734,15 @@ char_tx chtcfind(int *chtab, char **sourcepnt, int **tabpnt, int *numret) {
                *sourcepnt = sptr;
                *numret = numval;
                return CF_NUMBER;
+            }
          }
    }
 }
 
 int chtran(char **sourceptr) {
-   int numval;
-   int *retptr;
    char *beforeptr = *sourceptr;
 
+   int *retptr, numval;
    switch (chtcfind(chtcpoint, sourceptr, &retptr, &numval)) {
       case CF_END:
       default:
@@ -784,13 +772,13 @@ int chtran(char **sourceptr) {
 // Return:
 //	the length of the string total (machine code bytes)
 int genstring(char *str) {
-#define STCHPERLINE 20
-   int rvlen = 0, linecount;
+   const int STCHPERLINE = 20;
+   int rvlen = 0;
 
    while (*str != '\0') {
       goutptr = &goutbuff[2];
 
-      for (linecount = 0; linecount < STCHPERLINE && *str != '\0'; linecount++) {
+      for (int linecount = 0; linecount < STCHPERLINE && *str != '\0'; linecount++) {
          gout2hex(chtran(&str));
          goutch(IFC_EMU8);
          rvlen++;

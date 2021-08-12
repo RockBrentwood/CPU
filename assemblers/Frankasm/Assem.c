@@ -80,9 +80,9 @@ void frafatal(char *str) {
 //	count of errors
 void fracherror(char *str, char *start, char *beyond) {
    char bcbuff[8];
-   int cnt;
+   int cnt = 0;
 
-   for (cnt = 0; start < beyond && *start != '\0' && cnt < 7; cnt++) {
+   for (; start < beyond && *start != '\0' && cnt < 7; cnt++) {
       bcbuff[cnt] = *start++;
    }
    bcbuff[cnt] = '\0';
@@ -108,16 +108,15 @@ void prtequvalue(char *fstr, long lv) {
 // Globals:
 //	the symbol index array and the symbol table elements.
 static void printsymbols(void) {
-   int syn, npl = 0;
-   struct symel *syp;
+   int npl = 0;
 
-   for (syn = 1; syn < nextsymnum; syn++) {
+   for (int syn = 1; syn < nextsymnum; syn++) {
       if (npl >= SYMPERLINE) {
          fputc('\n', loutf);
          npl = 0;
       }
 
-      syp = symbindex[syn];
+      struct symel *syp = symbindex[syn];
 
       if (syp->seg != SSG_UNDEF)
          fprintf(loutf, "%8.8lx %-15.15s  ", syp->value, syp->symstr);
@@ -136,11 +135,8 @@ static void printsymbols(void) {
 // Globals:
 //	the symbol index array and the symbol table elements.
 static void filesymbols(void) {
-   int syn;
-   struct symel *syp;
-
-   for (syn = 1; syn < nextsymnum; syn++) {
-      syp = symbindex[syn];
+   for (int syn = 1; syn < nextsymnum; syn++) {
+      struct symel *syp = symbindex[syn];
 
       if (syp->seg != SSG_UNDEF)
          fprintf(symbf, "%8.8lx %s\n", syp->value, syp->symstr);
@@ -160,11 +156,7 @@ static void filesymbols(void) {
 // Return:
 //	exit(2) for error, exit(0) for OK
 int main(int argc, char *argv[]) {
-   int grv;
-
-   grv = cpumatch(argv[0]);
-
-   while ((grv = getopt(argc, argv, "dh:o:l:s:p:")) != EOF) {
+   for (int grv = cpumatch(argv[0]); (grv = getopt(argc, argv, "dh:o:l:s:p:")) != EOF; ) {
       switch (grv) {
          case 'o':
          case 'h':

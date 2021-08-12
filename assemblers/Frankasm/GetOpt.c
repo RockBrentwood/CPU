@@ -36,7 +36,6 @@ char *optarg;
 
 int GetOpt(int AC, char **AV, char *OptStr) {
    static char *place = EMSG; /* option letter processing */
-   char *oli; /* option letter list index */
 
    if (!*place) { /* update scanning pointer */
       if (optind >= AC || *(place = AV[optind]) != '-' || !*++place)
@@ -47,6 +46,7 @@ int GetOpt(int AC, char **AV, char *OptStr) {
       }
    }
 /* option letter okay? */
+   char *oli; /* option letter list index */
    if ((optopt = *place++) == ':' || (oli = strchr(OptStr, optopt)) == NULL) {
       if (!*place)
          optind++;

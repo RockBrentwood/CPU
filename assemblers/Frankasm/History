@@ -96,6 +96,7 @@ History:
 		Sorted out the globals in Extern.h.
 		Removed Global, localized ‟global” routines and variables that are actually local and sorted out the rest.
 		Used <stdlib.h> in place of explicit declarations of functions that declared there in C99.
+		Normalized local variable declarations to initialized declarations at point-of-first-use with maximum locality.
 2021/07/30:	Established operational baseline in C99.
 2021/08/01:	Cleaned up the syntax files.
 		Added make test and make clobber.

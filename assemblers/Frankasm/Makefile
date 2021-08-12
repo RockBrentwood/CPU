@@ -65,7 +65,7 @@ CFLAGS = -g -std=gnu99
 ## For Amiga:
 #CFLAGS = -O2 -Wno-unused #-m68030 -m68881
 ## For SunOS 4.1 and V7 and DOS hosts (V7's native compiler, "pcc", now supports C99):
-CFLAGS =
+#CFLAGS =
 ## For MicroPort and Xenix:
 #CFLAGS = -Ml -g
 ## For DOS cross-compiled on Xenix:
@@ -86,6 +86,7 @@ clean:
 	$(RM) y.tab.[ch]
 	$(RM) Syn$W.c
 	$(RM) Syn$W.h
+	$(RM) As.ex
 cleancpu:
 	$(RM) Scan$O
 	$(RM) Syn$W$O
@@ -93,8 +94,9 @@ cleancpu:
 	$(RM) y.tab.[ch]
 	$(RM) Syn$W.c
 	$(RM) Syn$W.h
+	$(RM) As.ex
 clobber: clean
-	$(RM) Asm*
+	$(RM) Asm$W
 test: # Asm$(CPU)
 	./Asm$(CPU) -l As.ex Test/As$(CPU).in
 	$(DIFF) As.ex Test/As$(CPU).ex
@@ -117,7 +119,7 @@ Syn$(CPU).c Syn$(CPU).h: Syn$(CPU).y
 	$(MV) y.tab.h Syn$(CPU).h
 Syn$(CPU)$O: Syn$(CPU).c Extern.h Constants.h
 	$(CC) $(CFLAGS) -c Syn$(CPU).c
-Reader$O: Reader.c Constants.h Extern.h
+Reader$O: Reader.c Extern.h Constants.h
 	$(CC) $(CFLAGS) -c Reader.c
 Writer$O: Writer.c Extern.h Constants.h
 	$(CC) $(CFLAGS) -c Writer.c

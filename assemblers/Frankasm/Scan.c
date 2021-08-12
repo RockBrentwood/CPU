@@ -342,12 +342,6 @@ static char *erryytextex(int type) {
 }
 
 int Scan(void) {
-   bool havesym = false; // true: symbol, false: opcode
-   char *thistokstart;
-   long consaccum, consbase;
-   int scanstate;
-   char nextchar;
-   char_t charset;
    if (currtok >= intokcnt) {
       switch (nextreadact) {
          case Nra_new: /* access next file */
@@ -393,11 +387,13 @@ int Scan(void) {
       nexttokload = &scanqueue[0];
 
       tptrstr = &tempstrpool[0];
-      scanstate = 0;
-      havesym = false;
+      int scanstate = 0;
+      bool havesym = false; // true: symbol, false: opcode
+      char *thistokstart;
+      long consaccum, consbase;
 
-      while ((nextchar = *frainptr++) != '\0') {
-         charset = chartrantab[nextchar & 0x7f];
+      for (char nextchar; (nextchar = *frainptr++) != '\0'; ) {
+         char_t charset = chartrantab[nextchar & 0x7f];
          do {
             thisact = &characttab[scanstate][charset];
 
@@ -733,8 +729,6 @@ int Scan(void) {
 
 // First pass - output a parser error to intermediate file
 void yyerror(char *str) {
-   char *taglab;
-
    switch (lasttokfetch->errtype) {
       case Yetprint:
          if (!isprint(lasttokfetch->tokv)) {
@@ -762,7 +756,9 @@ void yyerror(char *str) {
          fprintf(intermedf, "E: ERROR - %s at/before string %s \n", str, yytext);
          break;
 
-      case Yetunprint:
+      case Yetunprint: {
+         char *taglab;
+
          switch (lasttokfetch->tokv) {
             case EOL:
                taglab = "End of Line";
@@ -790,6 +786,7 @@ void yyerror(char *str) {
                break;
          }
          fprintf(intermedf, "E: ERROR - %s at/before %s\n", str, taglab);
+      }
          break;
 
       default:

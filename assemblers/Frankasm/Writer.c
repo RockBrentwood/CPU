@@ -169,9 +169,6 @@ static unsigned char listbuffhex[NUMHEXPERL];
 // Globals:
 //	the hex listing buffer
 static void listouthex(void) {
-   int cn;
-   int tc;
-
    if (lhnext > 0) {
       fputc(hexch((int)lhaddr >> 12), loutf);
       fputc(hexch((int)lhaddr >> 8), loutf);
@@ -179,8 +176,9 @@ static void listouthex(void) {
       fputc(hexch((int)lhaddr), loutf);
       fputc(' ', loutf);
 
-      for (cn = 0; cn < lhnext; cn++) {
-         fputc(hexch((int)(tc = listbuffhex[cn]) >> 4), loutf);
+      for (int cn = 0; cn < lhnext; cn++) {
+         int tc = listbuffhex[cn];
+         fputc(hexch((int)tc >> 4), loutf);
          fputc(hexch(tc), loutf);
          fputc(' ', loutf);
       }
@@ -440,8 +438,6 @@ static char hlinebuff[INTELLEN];
 // Parameters:
 //	see manual for record description
 static void intelout(int type, long addr, int count, char data[]) {
-   int temp, checksum;
-
    fputc(':', hexoutf);
    fputc(hexch(count >> 4), hexoutf);
    fputc(hexch(count), hexoutf);
@@ -452,10 +448,10 @@ static void intelout(int type, long addr, int count, char data[]) {
    fputc(hexch(type >> 4), hexoutf);
    fputc(hexch(type), hexoutf);
 
-   checksum = ((addr >> 8) & 0xff) + (addr & 0xff) + (count & 0xff);
+   int checksum = ((addr >> 8) & 0xff) + (addr & 0xff) + (count & 0xff);
    checksum += type & 0xff;
 
-   for (temp = 0; temp < count; temp++) {
+   for (int temp = 0; temp < count; temp++) {
       checksum += data[temp] & 0xff;
       fputc(hexch(data[temp] >> 4), hexoutf);
       fputc(hexch(data[temp]), hexoutf);
@@ -476,7 +472,6 @@ static void outhexblock(void) {
    long inbuffaddr = resultloc;
    static bool first = true;
 
-   int loopc;
 
    if (first) {
       nextoutaddr = blockaddr = resultloc;
@@ -484,7 +479,7 @@ static void outhexblock(void) {
       first = false;
    }
 
-   for (loopc = 0; loopc < nextresult; loopc++) {
+   for (int loopc = 0; loopc < nextresult; loopc++) {
       if (nextoutaddr != inbuffaddr || hnextsub >= INTELLEN) {
          intelout(0, blockaddr, hnextsub, hlinebuff);
          blockaddr = nextoutaddr = inbuffaddr;
@@ -503,7 +498,6 @@ static void outhexblock(void) {
 //	The output result array and count
 //	the hex line buffer and counts
 static void listhex(void) {
-   int cht;
    long inhaddr = resultloc;
 
    if (lhnew) {
@@ -511,7 +505,7 @@ static void listhex(void) {
       lhnew = false;
    }
 
-   for (cht = 0; cht < nextresult; cht++) {
+   for (int cht = 0; cht < nextresult; cht++) {
       if (lhnextaddr != inhaddr || lhnext >= (lineLflag ? NUMHEXSOURCE : NUMHEXPERL)) {
          listouthex();
          lhaddr = lhnextaddr = inhaddr;
@@ -544,10 +538,9 @@ static void flushhex(void) {
 //	file name
 //	the binary output array and counts
 void outphase(void) {
-   int firstchar;
-
    while (true) {
-      if ((firstchar = fgetc(intermedf)) == EOF)
+      int firstchar = fgetc(intermedf);
+      if (firstchar == EOF)
          break;
 
       if (firstchar == 'L') {
