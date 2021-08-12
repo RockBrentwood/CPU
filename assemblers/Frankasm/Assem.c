@@ -2,7 +2,7 @@
 // Original author: Mark Zenier.
 // Main file.
 #include <stdio.h>
-#include "frasmdat.h"
+#include "Extern.h"
 
 struct ifstack_t ifstk[0x20];
 int ifstkpt = 0;

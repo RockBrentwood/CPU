@@ -17,10 +17,10 @@ The author takes no responsibility for the consequences of its use.
 Mark Zenier
 
 History:
-1987/09:	frapsub.c:	As part of the Framework Cross-Assembler for UNIX.
-1987/09/13:	fryylex.c:	As part of the Framework Cross-Assembler for UNIX.
-1987/09/14:	fryylex.c:	DOS'ify, 6 char unique names.
-1987/09/15:	frasmdat.h
+1987/09:	Reader.c:	As part of the Framework Cross-Assembler for UNIX.
+1987/09/13:	Scan.c:		As part of the Framework Cross-Assembler for UNIX.
+1987/09/14:	Scan.c:		DOS'ify, 6 char unique names.
+1987/09/15:	Extern.h
 1987/09/19:	Framework cross-assembler syntax files.
 		Usage: framework cross-assembler, UNIX.
 		Mark Zenier
@@ -31,11 +31,11 @@ History:
 				Selection criteria and token values for the 6805 framework assembler.
 		Syn6811.y:	Originally in fraselcrit.h.
 				Selection criteria and token values for the 6811 framework assembler.
-1987/09/25:	frasmain.c
+1987/09/25:	Assem.c
 1987/09/25:	Syn*.y:		Opcode and Instruction generation tables (fraptabdef.c):
 				As part of the Framework Cross-Assembler for UNIX.
 				CodeTab[], ModeTab[] and AddrTab[] were originally in fraptabdef.c.
-1987/09/27:	fraosub.c
+1987/09/27:	Writer.c
 1987/10/02:	Syn6805.y:	Revision, no description provided.
 				Possibly, the separation of fraselcrit.h into crit{6301,6805,6811}.h.
 1987/10/28:	SynZ8.y:	Originally critz8.h.
@@ -44,18 +44,18 @@ History:
 				Selection criteria and syntax type defines for the Z80 frasm (framework cross assembler).
 1988/02/02:	Syn*.y:		Frame work parser description for framework cross assemblers.
 				Possibly, the generation of or splitting into separate YACC source files from a common source.
-1988/03/15:	fraosub.c:	Release 1.1 WIDTH.
-1988/08/03:	frasmain.c:	version 1.4
-		frasmdat.h:	Global
+1988/03/15:	Writer.c:	Release 1.1 WIDTH.
+1988/08/03:	Assem.c:	version 1.4
+		Extern.h:	Global
 1989/06/07:	Syn6805.y:	Fix relative addressing (BRset/clr).
 1990/01/30:	Version 2.0 ported to the Amiga, compiled with gcc 2.7.0.
 		Ruediger Deppe.
 1990/09/11:	Syn*.y:		Merge table definition.
 1990/09/12:	Syn*.y:		Short file names.
-1990/09/14:	{frasmain,frapsub,fraosub}.c, frasmdat.h:	version 1.5, DOS'ified 6-character unique, portable variable names.
+1990/09/14:	{Assem,Reader,Writer}.c, Extern.h:	version 1.5, DOS'ified 6-character unique, portable variable names.
 1990/09/14:	Syn*.y:		Short variable names.
 1990/09/17:	Syn*.y:		Use external lexer Scan() in yylex().
-1990/10:	fryylex.c:	Hand-carved scanner.
+1990/10:	Scan.c:		Hand-carved scanner.
 1990/11/17:	Syn*.y:		Character set support (explicitly stated as such, only in Syn1805.y).
 1990/12/04-06:	Posted to alt.sources.
 		See Cover.txt for the article headers.
@@ -72,28 +72,34 @@ History:
 2021/07/28:	Toplogical sorting of routines.
 		Pre-C90 function definition headers were made C90 function prototypes.
 		Remade non-typed routines void or int.
-		Added function declarations frasmdat.h.
+		Added function declarations Extern.h.
 		Regularized the source file names and layout (partly to set up and/or clean up "make clean/clobber/test"):
 		―	Test files to Test/
 		―	Documentation files to Doc/
 		―	Syntax files renamed as«cpu».y → Syn«CPU».y, with «cpu»={z8,z80} → «CPU»={Z8,Z80}.
-		―	The history and documentation were retrofitted with the new names.
-		―	fraytok.h → Token.h
-                ―       {fraeuni,fraebin,getopt}.h → {CasesUn,CasesBin,GetOpt}.c
-		―	makefile.dos → Makefile.dos
-                Converted the conditional module GetOpt.c into a module for a ‟fall-back” GetOpt() to getopt().
+		―	Test files renamed as«cpu».{tst,tut} → As«CPU».{in,ex}.
+		┈	Documentation files renamed as«cpu»{.1,.doc} → Asm«CPU»{.1,A.1}.
+		―	{devnotes,filelist} → {Notes,Manifest}.txt.
+		―	makefile.dos → Makefile.dos.
+		―	fraytok.h → Token.h.
+		―	{fraecon,frasmdat}.h → {Constants,Extern}.h.
+		―       {fraeuni,fraebin,getopt}.h → {CasesUn,CasesBin,GetOpt}.c.
+		―	{frasmain,fryylex,frapsub,fraosub}.c → {Assem,Scan,Reader,Writer}.c.
+		―	The history, manifest and documentation were retrofitted with the new names.
+		Converted the conditional module GetOpt.c into a module for a ‟fall-back” GetOpt() to getopt().
 		Upgrading to C99: made <string.h> and <stdlib.h> mandatory.
 		Documentation and test files placed, respectively, in Doc and Test subdirectories and the Makefile was updated.
 		Took out NOSTRING - this breaks support for legacy V7; but V7's compiler "pcc" has been rewritten to support C99.
 		Remade the build process and Makefiles.
 2021/07/29:	Added ‟bool” as ‟typedef enum { false, true } bool;”, for now.
 		Lifted boolean-valued integer variables and routines to the type bool.
-		Sorted out the globals in frasmdat.h.
+		Sorted out the globals in Extern.h.
 		Removed Global, localized ‟global” routines and variables that are actually local and sorted out the rest.
 		Used <stdlib.h> in place of explicit declarations of functions that declared there in C99.
 2021/07/30:	Established operational baseline in C99.
 2021/08/01:	Cleaned up the syntax files.
 		Added make test and make clobber.
+		Renamed make newmachine as make cleancpu and cleaned it up.
 		Regularized the makefiles.
 		Integrated the ‟cleanup.bat” and ‟makeone.bat” scripts into the DOS makefile.
 2021/08/02:	Replaced most sizeof-related manifest constants by constants or eliminated them.
@@ -108,3 +114,4 @@ History:
                 Converted the ‟add-on” include GetOpt.c into a separately-compiled file.
                 Took back out the ‟add-on” includes Cases{Un,Bin}.h and combined them into a separately-compiled file: ExOp.c.
                 Make corresponding changes to other files to reflect the changes.
+2021/08/12:	Minor fixes to the Makefiles to remove redundant builds.

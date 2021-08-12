@@ -15,7 +15,7 @@ extern char *optarg;
 #endif
 int GetOpt(int AC, char **AV, char *OptStr);
 
-// frasmain.c:
+// Assem.c:
 extern struct ifstack_t { enum { If_Active, If_Skip, If_Err } Else, EndIf; } ifstk[];
 extern int ifstkpt;
 extern const size_t IFSTKDEPTH;
@@ -37,7 +37,7 @@ void frafatal(char *str);
 void fracherror(char *str, char *start, char *beyond);
 void prtequvalue(char *fstr, long lv);
 
-// fryylex.c:
+// Scan.c:
 #define INBUFFSZ 0x102
 extern char finbuff[INBUFFSZ];
 
@@ -85,7 +85,7 @@ bool cpumatch(char *str);
 long EvalUnOp(char Op, long A);
 long EvalBinOp(char Op, long A, long B);
 
-// frapsub.c:
+// Reader.c:
 extern int nextexprs;
 extern int exprlist[];
 
@@ -137,7 +137,7 @@ int chtran(char **sourceptr);
 int genstring(char *str);
 void pevalexpr(int sub, int exn);
 
-// fraosub.c:
+// Writer.c:
 struct evstkel {
    long v;
    seg_t s;

@@ -6,8 +6,8 @@
 // Frame work parser description for framework cross
 // assemblers
 #include <stdio.h>
-#include "frasmdat.h"
-#include "fragcon.h"
+#include "Extern.h"
+#include "Constants.h"
 
         /* select criteria for ST_EXP 0000.0000.0000.00xx */
 #define	ADDR	0x3

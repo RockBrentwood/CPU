@@ -2,8 +2,8 @@
 // Original author: Mark Zenier.
 // Parser phase utility routines.
 #include <stdio.h>
-#include "fragcon.h"
-#include "frasmdat.h"
+#include "Constants.h"
+#include "Extern.h"
 
 // Save a character string in permanent (interpass) memory
 // Parameters:

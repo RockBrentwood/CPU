@@ -6,8 +6,8 @@
 // Frame work parser description for framework cross
 // assemblers
 #include <stdio.h>
-#include "frasmdat.h"
-#include "fragcon.h"
+#include "Extern.h"
+#include "Constants.h"
 
 // Selection criteria and token values for 6301
 // framework assembler

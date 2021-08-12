@@ -6,8 +6,8 @@
 // Frame work parser description for framework cross
 // assemblers
 #include <stdio.h>
-#include "frasmdat.h"
-#include "fragcon.h"
+#include "Extern.h"
+#include "Constants.h"
 
 /* 0000.0000.0000.0xxx register value */
 #define REGVALMASK	0x7

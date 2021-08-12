@@ -2,8 +2,8 @@
 // Original author: Mark Zenier.
 // Output pass utility routines.
 #include <stdio.h>
-#include "frasmdat.h"
-#include "fragcon.h"
+#include "Extern.h"
+#include "Constants.h"
 
 const int SOURCEOFFSET = 24, NUMHEXSOURCE = 6;
 

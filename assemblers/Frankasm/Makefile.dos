@@ -13,7 +13,7 @@
 ## Usage:
 ##	make CPU=cpu	compile the assembler for the given cpu target.
 ##	make clean	clean out for the release distribution.
-##	make newmachine	clean out CPU-dependent generated files only.
+##	make cleancpu	clean out CPU-dependent generated files only.
 ## Supported values for CPU:
 ##	1805, 2650, 6502, 6805, 6809, 6811, 7000, 8048, 8051, 8096, Z80, Z8
 ## Example:
@@ -80,15 +80,15 @@ CFLAGS =
 ## For DOS cross-compiled on Xenix and DOS hosts:
 MAINNEEDS = -DNOGETOPT -DDOSTMP
 
-all: as$(CPU)
+all: Asm$(CPU)
 clean:
 	$(RM) $W$O
 	$(RM) Token.h
 ##	$(RM) y.tab.[ch]
 	$(RM) Syn$W.c
 	$(RM) Syn$W.h
-newmachine:
-	$(RM) fryylex$O
+cleancpu:
+	$(RM) Scan$O
 	$(RM) Syn$W$O
 	$(RM) Token.h
 ##	$(RM) y.tab.[ch]
@@ -96,31 +96,29 @@ newmachine:
 	$(RM) Syn$W.h
 clobber: clean
 	$(RM) as*
-#test: # as$(CPU)
-#	./as$(CPU) -l as.ex Test/as$(CPU).tst
-#	$(DIFF) as.ex Test/as$(CPU).tut
+test: # Asm$(CPU)
+	./Asm$(CPU) -l As.ex Test/As$(CPU).in
+	$(DIFF) As.ex Test/As$(CPU).ex
 
-as$(CPU): GetOpt$O frasmain$O ExOp$O frapsub$O fryylex$O Syn$(CPU)$O fraosub$O
-	$(CC) $(CFLAGS) -eas$(CPU) GetOpt$O frasmain$O ExOp$O frapsub$O fraosub$O fryylex$O Syn$(CPU)$O $(YACCLEXLIB)
-	$(RM) Token.h
+Asm(CPU): GetOpt$O Assem$O ExOp$O Scan$O Syn$(CPU)$O Reader$O Writer$O
+	$(CC) $(CFLAGS) -eAsm(CPU) GetOpt$O Assem$O ExOp$O Scan$O Syn$(CPU)$O Reader$O Writer$O $(YACCLEXLIB)
 GetOpt$O: GetOpt.c
 	$(CC) $(CFLAGS) $(MAINNEEDS) -c GetOpt.c
-frasmain$O: frasmain.c frasmdat.h
-	$(CC) $(CFLAGS) $(MAINNEEDS) -c frasmain.c
-ExOp$O: ExOp.c fragcon.h
+Assem$O: Assem.c Extern.h
+	$(CC) $(CFLAGS) $(MAINNEEDS) -c Assem.c
+ExOp$O: ExOp.c Constants.h
 	$(CC) $(CFLAGS) -c ExOp.c
 Token.h: Syn$(CPU).h
 	$(CP) Syn$(CPU).h Token.h
-fryylex$O: fryylex.c frasmdat.h Token.h
-	$(CC) $(CFLAGS) $(LEXNEEDS) -c fryylex.c
+Scan$O: Scan.c Extern.h Token.h
+	$(CC) $(CFLAGS) $(LEXNEEDS) -c Scan.c
 Syn$(CPU).c Syn$(CPU).h: Syn$(CPU).y
 	$(YACC) -d Syn$(CPU).y
 ##	$(MV) y.tab.c Syn$(CPU).c
 ##	$(MV) y.tab.h Syn$(CPU).h
-##	$(RM) Token.h
-Syn$(CPU)$O: Syn$(CPU).c frasmdat.h fragcon.h
+Syn$(CPU)$O: Syn$(CPU).c Extern.h Constants.h
 	$(CC) $(CFLAGS) -c Syn$(CPU).c
-frapsub$O: frapsub.c fragcon.h frasmdat.h
-	$(CC) $(CFLAGS) -c frapsub.c
-fraosub$O: fraosub.c frasmdat.h fragcon.h
-	$(CC) $(CFLAGS) -c fraosub.c
+Reader$O: Reader.c Constants.h Extern.h
+	$(CC) $(CFLAGS) -c Reader.c
+Writer$O: Writer.c Extern.h Constants.h
+	$(CC) $(CFLAGS) -c Writer.c

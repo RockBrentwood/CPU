@@ -6,8 +6,8 @@
 // Frame work parser description for framework cross
 // assemblers
 #include <stdio.h>
-#include "frasmdat.h"
-#include "fragcon.h"
+#include "Extern.h"
+#include "Constants.h"
 
 // Selection critera and syntax type defines for
 // the z80 frasm (framework cross assembler)

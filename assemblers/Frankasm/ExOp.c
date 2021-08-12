@@ -1,6 +1,6 @@
 // Frankenstein Cross-Assemblers, version 2.0.
 // Original author: Mark Zenier.
-#include "fragcon.h"
+#include "Constants.h"
 
 #define high(A) (((A) >> 8) & 0xff)
 #define low(A) ((A) & 0xff)

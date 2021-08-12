@@ -2,7 +2,7 @@
 // Original author: Mark Zenier.
 // Lexical analyzer for framework cross assembler.
 #include <stdio.h>
-#include "frasmdat.h"
+#include "Extern.h"
 #include "Token.h"
 
 #define PRINTCTRL(char) ((char)+'@')
