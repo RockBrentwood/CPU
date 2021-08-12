@@ -95,7 +95,7 @@ cleancpu:
 	$(RM) Syn$W.c
 	$(RM) Syn$W.h
 clobber: clean
-	$(RM) as*
+	$(RM) Asm*
 test: # Asm$(CPU)
 	./Asm$(CPU) -l As.ex Test/As$(CPU).in
 	$(DIFF) As.ex Test/As$(CPU).ex
