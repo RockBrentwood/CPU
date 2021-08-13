@@ -3,8 +3,8 @@
 ;******************************************
 ; Test file for the 6502 assembler - as6502
 ; assemble as
-;     as6502 -nsv assmtest
-; and compare output with assmtest.l
+;     as6502 -nsv AssmTest.in
+; and compare output with AssmTest.ex
 ;******************************************
 ;; comment treatment
 ;******************************************

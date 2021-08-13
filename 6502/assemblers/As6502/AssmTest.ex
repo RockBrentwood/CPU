@@ -5,8 +5,8 @@ Line      Location     Label Opcode Operand  Comment   Sat Apr 25 07:49:36 1987
    3                   ;******************************************
    4                   ; Test file for the 6502 assembler - as6502
    5                   ; assemble as
-   6                   ;     as6502 -nsv assmtest
-   7                   ; and compare output with assmtest.l
+   6                   ;     as6502 -nsv AssmTest.in
+   7                   ; and compare output with AssmTest.ex
    8                   ;******************************************
    9                   ;                      ; comment treatment
   10                   ;******************************************

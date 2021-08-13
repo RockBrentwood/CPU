@@ -1,9 +1,8 @@
 /*    As6502 main routine: assm1.c     */
-
-#include "stdio.h"
-#include "ctype.h"
-#include "assm.d1"
-#include "assm.d2"
+#include <stdio.h>
+#include <ctype.h>
+#include "Assm1.h"
+#include "Assm2.h"
 #include <time.h>
 
 #define CPMEOF EOF

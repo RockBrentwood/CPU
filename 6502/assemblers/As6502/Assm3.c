@@ -1,7 +1,7 @@
-#include "stdio.h"
-#include "assm.d1"
-#include "assm.d2"
-#include "ctype.h"
+#include <stdio.h>
+#include "Assm1.h"
+#include "Assm2.h"
+#include <ctype.h>
 
 /* class 1 machine operations processor - 1 byte, no operand field */
 

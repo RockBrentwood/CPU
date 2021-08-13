@@ -1,6 +1,6 @@
-#include "stdio.h"
-#include "assm.d1"
-#include "ctype.h"
+#include <stdio.h>
+#include <ctype.h>
+#include "Assm1.h"
 
 /*  Assembler for the MOS Technology 650X series of microprocessors
  *  Written by J. H. Van Ornum (201) 949-1781

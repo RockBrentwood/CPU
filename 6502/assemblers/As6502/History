@@ -1,0 +1,13 @@
+2021/08/13	Archive unpacked
+		Makefile repaired.
+		Operational baseline for pre-C90 established.
+2021/08/13	Files renamed (to contemporary standards; i.e. *.h for header files).
+		―	assm{0,1,2,3}.c → Assm{0,1,2,3}.c
+		―	assm.d{1,2} → Assm{1,2}.h
+		―	assmtest,assmtest.l → AssmTest.{in,ex}
+		―	makefile,readme → Makefile,README
+		―	as6502.notes,bootSA.note → {Assm6502,BootSA}.txt
+		―	bootSA.asm → BootSA.s
+		―	{as6502.1,user.nr} → {As6502,User}.1
+		References to filenames in the code and documentation adjusted accordingly.
+		History file and output for BootSA.s added.
