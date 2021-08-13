@@ -11,3 +11,5 @@
 		―	{as6502.1,user.nr} → {As6502,User}.1
 		References to filenames in the code and documentation adjusted accordingly.
 		History file and output for BootSA.s added.
+2021/08/13	Normalize #define's in Assm0.c.
+		Normalize layout in *.c and *.h.
