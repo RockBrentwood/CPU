@@ -281,7 +281,7 @@ static void intelout(int type, long addr, int count, char data[]) {
 // Address:
    fputc(hexch((int)addr >> 12), hexoutf), fputc(hexch((int)addr >> 8), hexoutf);
    fputc(hexch((int)addr >> 4), hexoutf), fputc(hexch((int)addr), hexoutf);
-// type:
+// Type:
    fputc(hexch(type >> 4), hexoutf), fputc(hexch(type), hexoutf);
 // Line:
    int checksum = ((addr >> 8)&0xff) + (addr&0xff) + (count&0xff) + (type&0xff);

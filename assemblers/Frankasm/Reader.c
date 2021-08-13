@@ -63,10 +63,10 @@ void clrexpr(void) { nextenode = 1, nextexprs = nextstrs = 0; }
 // ∙	op:		the operation to preform,
 // ∙	value:		a constant value (maybe),
 // ∙	symbol:		a pointer to a symbol element (maybe).
-// Globals:
-//	the next available table element.
+// Global:
+// ∙	the next available table element.
 // Return:
-//	the subscript of the expression node.
+// ∙	the subscript of the expression node.
 int exprnode(extag swact, int left, int op, int right, long value, struct symel *symbol) {
    if (nextenode >= NUMENODE) frafatal("excessive number of subexpressions");
    enode[nextenode].evs = swact, enode[nextenode].left = left, enode[nextenode].op = op;
@@ -421,7 +421,7 @@ char_tx chtcfind(int *chtab, char **sourcepnt, int **tabpnt, int *numret) {
                   numval = 0x10*numval + cv - '0', ++sptr;
                break;
                case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': numval = 0x10*numval + cv - 'a' + 10, ++sptr; break;
-               case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': numval = 0x10*numval+ cv - 'A' + 10, ++sptr; break;
+               case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': numval = 0x10*numval + cv - 'A' + 10, ++sptr; break;
                default: break;
             }
             *sourcepnt = sptr, *numret = numval;

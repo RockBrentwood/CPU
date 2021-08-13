@@ -555,7 +555,7 @@ int Scan(void) {
             scanstate = thisact->nextstate;
          } while (thisact->contin);
       }
-   // If no tokens were in in line (comment or whitespace overlength).
+   // If no tokens were in the line (comment or whitespace overlength).
       if (intokcnt <= 0) scanqueue[0].tokv = EOL, scanqueue[0].errtype = Yetunprint, scanqueue[0].lvalv.longv = 0, intokcnt = 1;
    // If there was no '\n'.
       if (scanstate != 0) fraerror("Overlength/Unterminated Line");
