@@ -1,0 +1,185 @@
+.TH AS6502 5 3/1/87
+.SH NAME
+as6502 \- assembler for MOS Technology 650X microprocessors
+.SH SYNOPSIS
+.B as6502
+[ option ] [ parameters] file ...
+.SH DESCRIPTION
+.I As6502
+assembles the named files and produces
+a listing on the standard output.
+Available options are:
+.TP 4
+.B \-i
+ignore .nlst pseudo ops in the source file.
+.TP
+.B \-l
+produce only an error listing on the standard output.
+.TP
+.B \-n
+print address in normal <high byte><low byte> format,
+rather than split <low byte>:<high byte> format.
+.TP
+.B \-o
+generate the ASCII object file
+.B "6502.out."
+The per-line format of that file is:
+.br
+    ;<address low byte><address high byte><data>...
+.TP
+.B \-s
+print symbol table at the end of the assembly listing.
+.TP
+.B \-m
+Causes the object file to be output in standard MOS Technology format.
+This option implys -o.
+.TP
+Parameters:
+Parameters consist of an option character followed by a value.
+The value may follow with or without whitespace.
+All values are decimal numbers.
+Available parameters are:
+.TP
+.B \-t
+Specify the size of the symbol table.
+The default is 20000 bytes.
+Values less than 1000 are not accepted.
+.TP
+.B \-p
+Specify the number of lines per page. 
+This does not include the heading.
+The heading uses an additional 4 lines.
+The default is 60, which gives 3 blank lines between pages on a 66 line page (1 line at the top and 2 lines at the bottom).
+A form feed precedes the headings.
+Specifying 0 for page size results in no heading at all.
+.TP
+.B \-w
+Specify the number of characters per line on the listing file.
+The default is 132.
+The minimum allowed is 80 and the maximum is 133.
+.TP
+Symbol conventions:
+.br
+.tr ~|
+Up to 19 alphanumeric (a-z ~ A-Z ~ 0-9 ~ . ~ _) characters,
+.tr ~~
+with initial character non-numeric.
+.sp
+Asterisk (*) is symbolic name of the location counter.
+.TP
+Op code mnemonics (upper and/or lower case):
+.br
+ADC   BIT   BVS   CPX   INC   LDX   PHP   RTI   SEI  TAY
+.br
+AND   BMI   CLC   CPY   INX   LDY   PLA   RTS   STA  TSX
+.br
+ASL   BNE   CLD   DEC   INY   LSR   PLP   SBC   STX  TXA
+.br
+BCC   BPL   CLI   DEX   JMP   NOP   ROL   SEC   STY  TXS
+.br
+BCS   BRK   CLV   DEY   JSR   ORA   ROR   SED   TAX  TYA
+.br
+BEQ   BVC   CMP   EOR   LDA   PHA
+.TP
+Pseudo op mnemonics:
+.br
+=      equate label to operand value.
+.br
+*=     equate location counter to operand value.
+.br
+ .WORD  assign 16 bit operand value to next 2 locations.
+.br
+ .DBYT  assign 16 bit value to next 2 locations, reverse.
+.br
+ .BYTE  assign 8 bit operand value to next location.
+.br
+ .NLST  turn listing mode off.
+.br
+ .LIST  turn listing mode on.
+.br
+ .PAGE  start a new listing page.
+A title enclosed in "" is optional.
+The title must be small enough to fit in the heading line.
+.TP
+Constant types:
+.br
+%       binary number prefix.
+.br
+@ or 0  octal number prefix.
+.br
+$       hexadecimal number prefix.
+.br
+ '       ASCII character prefix.
+.br
+ "       ASCII character string prefix and suffix.
+.br
+default (leading digit 1 through 9)  decimal number.
+.TP
+Operand field operators:
+.br
++     addition               ^     logical exclusive OR
+.br
+-     subtraction            ~     logical 1's complement
+.br
+/     integer division       $     logical AND
+.br
+.tr ||
+*     multiplication         |     logical OR
+.br
+%     modulo                 <     low byte
+.br
+                             >     high byte
+.SH FILES
+.PD 0
+.TP
+/BIN/as6502   the assembler
+.TP
+6502.out      object (with -o option)
+.SH "SEE ALSO"
+.TP
+J. H. Van Ornum, "as6502 User Notes"
+.SH DIAGNOSTICS
+.in 0
+File handling diagnostics:
+.in 15
+.ti 5
+Invalid argument count - as6502 invoked without a source file or
+with too many source files.
+.ti 5
+Open error for file <name> - as6502 cannot open source file.
+.ti 5
+Create error (6502.out) - as6502 cannot create object file.
+.ti 5
+Close error - as6502 cannot close the source file.
+.ti 5
+Close error (6502.out) - as6502 cannot close object file.
+.in 0
+Assembly error diagnostics:
+.in 15
+.ti 5
+Symbol table full - symbol table overflowed allotted space.
+Number of symbols is a function of symbol sizes.
+.ti 5
+Label multiply defined - symbol defined more than once.
+.ti 5
+Sync error - the pass 2 value of symbol in the label field is different
+than the pass 1 value.
+.ti 5
+Invalid operation code - op code mnemonic is invalid.
+.ti 5
+Operand field missing - the op code mnemonic requires an operand, and none was
+found.
+.ti 5
+Invalid operand field - operand field contains an operator which is not
+recognized by as6502.
+.ti 5
+Invalid branch address - branch instruction to a location which is out of range.
+.ti 5
+Invalid addressing mode - tried to use an addressing mode which is not
+available to the operation code.
+.ti 5
+Operand field size error - operand is larger than hex FF.
+.ti 5
+Undefined symbol in operand field - a symbol in the operand field never
+appeared in the label field.
+.SH BUGS

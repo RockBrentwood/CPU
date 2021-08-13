@@ -1,0 +1,15 @@
+This is a sample of a program to run on a 6502 and load MOS Technology
+format object code that is output by As6502.
+Connect the Amiga Parallel port to the VIC user port as follows:
+
+Signal      Amiga Pin#      VIC User port pin
+ DRDY           1               B
+ d0             2               C
+ d1             3               D
+ d2             4               E
+ d3             5               F
+ d4             6               H
+ d5             7               J
+ d6             8               K
+ d7             9               L
+ ACK           10               M

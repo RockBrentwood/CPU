@@ -1,0 +1,198 @@
+
+
+
+AS6502(5)           UNIX Programmer's Manual            AS6502(5)
+
+
+
+NNNNNNAAAAAAMMMMMMEEEEEE
+     as6502 - assembler for MOS Technology 650X microprocessors
+
+SSSSSSYYYYYYNNNNNNOOOOOOPPPPPPSSSSSSIIIIIISSSSSS
+     aaaaaassssss666666555555000000222222 [ option ] [ parameters] file ...
+
+DDDDDDEEEEEESSSSSSCCCCCCRRRRRRIIIIIIPPPPPPTTTTTTIIIIIIOOOOOONNNNNN
+     _A_s_6_5_0_2 assembles the named files and produces a listing on
+     the standard output.  Available options are:
+
+     ------iiiiii  ignore .nlst pseudo ops in the source file.
+
+     ------llllll  produce only an error listing on the standard output.
+
+     ------nnnnnn  print address in normal <high byte><low byte> format,
+         rather than split <low byte>:<high byte> format.
+
+     ------oooooo  generate the ASCII object file 666666555555000000222222......oooooouuuuuutttttt...... The per-line
+         format of that file is:
+             ;<address low byte><address high byte><data>...
+
+     ------ssssss  print symbol table at the end of the assembly listing.
+
+     ------mmmmmm  Causes the object file to be output in standard MOS
+         Technology format.  This option implys -o.
+
+     Parameters:
+         Parameters consist of an option character followed by a
+         value.  The value may follow with or without whitespace.
+         All values are decimal numbers.  Available parameters
+         are:
+
+     ------tttttt  Specify the size of the symbol table.  The default is
+         20000 bytes.  Values less than 1000 are not accepted.
+
+     ------pppppp  Specify the number of lines per page. This does not
+         include the heading.  The heading uses an additional 4
+         lines.  The default is 60, which gives 3 blank lines
+         between pages on a 66 line page (1 line at the top and 2
+         lines at the bottom).  A form feed precedes the head-
+         ings.  Specifying 0 for page size results in no heading
+         at all.
+
+     ------wwwwww  Specify the number of characters per line on the listing
+         file.  The default is 132.  The minimum allowed is 80
+         and the maximum is 133.
+
+     Symbol conventions:
+         Up to 19 alphanumeric (a-z | A-Z | 0-9 | . | _) charac-
+         ters, with initial character non-numeric.
+
+         Asterisk (*) is symbolic name of the location counter.
+
+
+
+Printed 12/18/86            12/11/86                            1
+
+
+
+
+
+
+AS6502(5)           UNIX Programmer's Manual            AS6502(5)
+
+
+
+     Op code mnemonics (upper and/or lower case):
+         ADC   BIT   BVS   CPX   INC   LDX   PHP   RTI   SEI  TAY
+         AND   BMI   CLC   CPY   INX   LDY   PLA   RTS   STA  TSX
+         ASL   BNE   CLD   DEC   INY   LSR   PLP   SBC   STX  TXA
+         BCC   BPL   CLI   DEX   JMP   NOP   ROL   SEC   STY  TXS
+         BCS   BRK   CLV   DEY   JSR   ORA   ROR   SED   TAX  TYA
+         BEQ   BVC   CMP   EOR   LDA   PHA
+
+     Pseudo op mnemonics:
+         =      equate label to operand value.
+         *=     equate location counter to operand value.
+         .WORD  assign 16 bit operand value to next 2 locations.
+         .DBYT  assign 16 bit value to next 2 locations, reverse.
+         .BYTE  assign 8 bit operand value to next location.
+         .NLST  turn listing mode off.
+         .LIST  turn listing mode on.
+         .PAGE  start a new listing page.  A title enclosed in ""
+         is optional.  The title must be small enough to fit in
+         the heading line.
+
+     Constant types:
+         %       binary number prefix.
+         @ or 0  octal number prefix.
+         $       hexadecimal number prefix.
+         '       ASCII character prefix.
+         "       ASCII character string prefix and suffix.
+         default (leading digit 1 through 9)  decimal number.
+
+     Operand field operators:
+         +     addition               ^     logical exclusive OR
+         -     subtraction            ~     logical 1's comple-
+         ment
+         /     integer division       $     logical AND
+         *     multiplication         |     logical OR
+         %     modulo                 <     low byte
+                                      >     high byte
+
+FFFFFFIIIIIILLLLLLEEEEEESSSSSS
+     /BIN/as6502   the assembler
+     6502.out      object (with -o option)
+SSSSSSEEEEEEEEEEEE AAAAAALLLLLLSSSSSSOOOOOO
+     J. H. Van Ornum, "as6502 User Notes"
+DDDDDDIIIIIIAAAAAAGGGGGGNNNNNNOOOOOOSSSSSSTTTTTTIIIIIICCCCCCSSSSSS
+File handling diagnostics:
+     Invalid argument count - as6502 invoked without a source
+               file or with too many source files.
+     Open error for file <name> - as6502 cannot open source file.
+     Create error (6502.out) - as6502 cannot create object file.
+     Close error - as6502 cannot close the source file.
+     Close error (6502.out) - as6502 cannot close object file.
+Assembly error diagnostics:
+     Symbol table full - symbol table overflowed allotted space.
+
+
+
+Printed 12/18/86            12/11/86                            2
+
+
+
+
+
+
+AS6502(5)           UNIX Programmer's Manual            AS6502(5)
+
+
+
+               Number of symbols is a function of symbol sizes.
+     Label multiply defined - symbol defined more than once.
+     Sync error - the pass 2 value of symbol in the label field
+               is different than the pass 1 value.
+     Invalid operation code - op code mnemonic is invalid.
+     Operand field missing - the op code mnemonic requires an
+               operand, and none was found.
+     Invalid operand field - operand field contains an operator
+               which is not recognized by as6502.
+     Invalid branch address - branch instruction to a location
+               which is out of range.
+     Invalid addressing mode - tried to use an addressing mode
+               which is not available to the operation code.
+     Operand field size error - operand is larger than hex FF.
+     Undefined symbol in operand field - a symbol in the operand
+               field never appeared in the label field.
+BBBBBBUUUUUUGGGGGGSSSSSS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 12/18/86            12/11/86                            3
+
+
+
+
+
+
