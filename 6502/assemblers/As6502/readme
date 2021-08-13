@@ -1,16 +1,24 @@
-  This directory contains the source for a portable 6502 assembler
-written in C. I captured it from the net and improved it and ported
-it to the Amiga. I compiled it under Manx. The port required only 
-minor changes. There are 2 documentation files - as6502.man and
-as6502.notes.  The source in UNIX nroff format for these files are
-as6502.1 (use -man) and user.nr respectively. A test source file,
-assmtest, and the resulting listing file, assmtest.l, are included.
-These can be used to check functions after compiling. Type the 
-following:
-as6502 -nsv assmtest >temp
-then compare temp to assmtest.l. They should be the same except for
-the dates in the headings.
+Update Note (2021/08/11) ― archive editor:
+──────────────────────────────────────────
+This is the 6502 assembler, being updated to C99, originally posted by Joel Swank in 1987
+The original file manifest is in Manifest.txt.
 
+The original readme (modulo changes in layout) is below and is subject to future revision, as changes are made to this code.
+
+────────────────────────────────────────────────────────────────
+
+This directory contains the source for a portable 6502 assembler written in C.
+I captured it from the net and improved it and ported it to the Amiga.
+I compiled it under Manx.
+The port required only minor changes.
+There are 2 documentation files - as6502.man and as6502.notes.
+The source in UNIX nroff format for these files are as6502.1 (use -man) and user.nr respectively.
+A test source file, assmtest, and the resulting listing file, assmtest.l, are included.
+These can be used to check functions after compiling.
+Type the following:
+	as6502 -nsv assmtest >temp
+then compare temp to assmtest.l.
+They should be the same except for the dates in the headings.
 
 Joel Swank
 Tektronix, Redmond, Oregon
