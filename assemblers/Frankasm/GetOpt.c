@@ -12,16 +12,13 @@ int GetOpt(int AC, char **AV, char *OptStr) { return getopt(AC, AV, OptStr); }
 // (Especially after the hack job I did on it.  Mark Zenier.)
 
 // This is a public domain version of getopt(3).
-// Bugs, fixes to:
-//		Keith Bostic
-//			ARPA: keith@seismo
-//			UUCP: seismo!keith
+// (Formerly ― bugs, fixes went to: Keith Bostic, but he's ... preoccupied now.)
 // Added NO_STDIO, opterr handling, Rich $alz (mirror!rs).
 
-// Framework Cross Assembler
-//	use strchr
-//	remove NO_STDIO code
-//	Mark Zenier 	Specialized Systems Consultants, Inc.
+// Framework Cross-Assembler
+// ∙	use strchr,
+// ∙	remove NO_STDIO code.
+// Mark Zenier, Specialized Systems Consultants, Inc.
 
 // Global variables.
 static char EMSG[] = "";
@@ -35,42 +32,36 @@ static int optopt;
 char *optarg;
 
 int GetOpt(int AC, char **AV, char *OptStr) {
-   static char *place = EMSG; /* option letter processing */
-
-   if (!*place) { /* update scanning pointer */
-      if (optind >= AC || *(place = AV[optind]) != '-' || !*++place)
-         return (EOF);
-      if (*place == '-') { /* found "--" */
+   static char *place = EMSG; // Option letter processing.
+   if (*place == '\0') { // Update the scanning pointer.
+      if (optind >= AC || *(place = AV[optind]) != '-' || *++place == '\0') return EOF;
+      if (*place == '-') { // Found "--"
          optind++;
-         return (EOF);
+         return EOF;
       }
    }
-/* option letter okay? */
-   char *oli; /* option letter list index */
+// Is the option letter okay?
+   char *oli; // The option letter list index.
    if ((optopt = *place++) == ':' || (oli = strchr(OptStr, optopt)) == NULL) {
-      if (!*place)
-         optind++;
+      if (*place == '\0') optind++;
       if (opterr) fprintf(stderr, "%s: illegal option -- %c\n", *AV, optopt);
       goto Bad;
    }
-   if (*++oli != ':') { /* don't need argument */
+   if (*++oli != ':') { // We don't need an argument.
       optarg = NULL;
-      if (!*place)
-         optind++;
-   } else { /* need an argument */
-   if (*place)
-      optarg = place; /* no white space */
-   else if (AC <= ++optind) {
-      place = EMSG;
-      if (opterr) fprintf(stderr, "%s: option requires an argument -- %c\n", *AV, optopt);
-      goto Bad;
-   } else
-      optarg = AV[optind]; /* white space */
-   place = EMSG;
-   optind++;
+      if (*place == '\0') optind++;
+   } else { // We do need an argument.
+      if (place != '\0') optarg = place; // No white space.
+      else if (AC > ++optind) optarg = AV[optind]; // Yes white space.
+      else {
+         place = EMSG;
+         if (opterr) fprintf(stderr, "%s: option requires an argument -- %c\n", *AV, optopt);
+         goto Bad;
+      }
+      place = EMSG, optind++;
    }
-   return (optopt); /* dump back option letter */
+   return optopt; // Dump back the option letter.
 Bad:
-   return ('?');
+   return '?';
 }
 #endif

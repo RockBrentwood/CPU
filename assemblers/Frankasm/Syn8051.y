@@ -3,15 +3,14 @@
 // Original author: Mark Zenier.
 // 8051 structured generation file.
 
-// Frame work parser description for framework cross
-// assemblers
+// Frame work parser description for framework cross-assemblers.
 #include <stdio.h>
 #include "Extern.h"
 #include "Constants.h"
 
-/* 0000.0000.0000.0xxx register value */
+// 0000.0000.0000.0xxx:	register value.
 #define REGVALMASK	0x7
-/* 0xxx.xxxx.0000.0000 register and special select bits */
+// 0xxx.xxxx.0000.0000:	register and special select bits.
 #define REGSEL_ALL	0x7f00
 #define REG2NDSHFT	8
 #define REGSEL_ACC	0x100
@@ -64,7 +63,7 @@
 #define ST_CJNE3 0x4
 
 static char *genbdef = "[1=];";
-static char *genwdef = "[1=]y"; /* x for normal, y for byte rev */
+static char *genwdef = "[1=]y"; // x for normal, y for byte rev.
 char *ignosyn = "[Xinvalid syntax for instruction";
 char *ignosel = "[Xinvalid operands";
 long labelloc;
@@ -274,9 +273,9 @@ line: KOC_CHDEF STRING ',' exprlist {
             fraerror("noncomputable expression");
          else switch (findrv) {
             case CF_UNDEF:
-               if (evalr[0].value < 0 || evalr[0].value > 255)
+               if (evalr[0].value < 0 || evalr[0].value > 0xff)
                   frawarn("character translation value truncated");
-               *charaddr = evalr[0].value & 0xff;
+               *charaddr = evalr[0].value&0xff;
                prtequvalue("C: 0x%lx\n", evalr[0].value);
             break;
             case CF_INVALID: case CF_NUMBER:
@@ -341,13 +340,13 @@ genline: KOC_opcode {
 };
 genline: KOC_opcode '@' REG {
    genlocrec(currseg, labelloc);
-   evalr[1].value = ($3 & REGVALMASK);
-   locctr += geninstr(findgen($1, ST_UOP01, ($3 & REGSEL_ALL)));
+   evalr[1].value = ($3&REGVALMASK);
+   locctr += geninstr(findgen($1, ST_UOP01, ($3&REGSEL_ALL)));
 };
 genline: KOC_opcode REG {
    genlocrec(currseg, labelloc);
-   evalr[1].value = ($2 & REGVALMASK);
-   locctr += geninstr(findgen($1, ST_UOP02, ($2 & REGSEL_ALL)));
+   evalr[1].value = ($2&REGVALMASK);
+   locctr += geninstr(findgen($1, ST_UOP02, ($2&REGSEL_ALL)));
 };
 genline: KOC_opcode bit {
    genlocrec(currseg, labelloc);
@@ -361,49 +360,49 @@ genline: KOC_opcode expr {
 };
 genline: KOC_opcode '@' REG '+' REG {
    genlocrec(currseg, labelloc);
-   locctr += geninstr(findgen($1, ST_UOP05, ($3 & REGSEL_ALL) | (($5 & REGSEL_ALL) >> REG2NDSHFT)));
+   locctr += geninstr(findgen($1, ST_UOP05, ($3&REGSEL_ALL) | (($5&REGSEL_ALL) >> REG2NDSHFT)));
 };
 genline: KOC_aluop REG ',' '#' expr {
    genlocrec(currseg, labelloc);
-   evalr[1].value = ($2 & REGVALMASK);
+   evalr[1].value = ($2&REGVALMASK);
    pevalexpr(2, $5);
-   locctr += geninstr(findgen($1, ST_ALU01, ($2 & REGSEL_ALL)));
+   locctr += geninstr(findgen($1, ST_ALU01, ($2&REGSEL_ALL)));
 };
 genline: KOC_aluop REG ',' '/' bit {
    genlocrec(currseg, labelloc);
-   evalr[1].value = ($2 & REGVALMASK);
+   evalr[1].value = ($2&REGVALMASK);
    evalr[2].value = $5;
-   locctr += geninstr(findgen($1, ST_ALU02, ($2 & REGSEL_ALL)));
+   locctr += geninstr(findgen($1, ST_ALU02, ($2&REGSEL_ALL)));
 };
 genline: KOC_aluop REG ',' '/' expr {
    genlocrec(currseg, labelloc);
-   evalr[1].value = ($2 & REGVALMASK);
+   evalr[1].value = ($2&REGVALMASK);
    pevalexpr(2, $5);
-   locctr += geninstr(findgen($1, ST_ALU02E, ($2 & REGSEL_ALL)));
+   locctr += geninstr(findgen($1, ST_ALU02E, ($2&REGSEL_ALL)));
 };
 genline: KOC_aluop REG ',' '@' REG {
    genlocrec(currseg, labelloc);
-   evalr[1].value = ($2 & REGVALMASK);
-   evalr[2].value = ($5 & REGVALMASK);
-   locctr += geninstr(findgen($1, ST_ALU03, ($2 & REGSEL_ALL) | (($5 & REGSEL_ALL) >> REG2NDSHFT)));
+   evalr[1].value = ($2&REGVALMASK);
+   evalr[2].value = ($5&REGVALMASK);
+   locctr += geninstr(findgen($1, ST_ALU03, ($2&REGSEL_ALL) | (($5&REGSEL_ALL) >> REG2NDSHFT)));
 };
 genline: KOC_aluop REG ',' REG {
    genlocrec(currseg, labelloc);
-   evalr[1].value = ($2 & REGVALMASK);
-   evalr[2].value = ($4 & REGVALMASK);
-   locctr += geninstr(findgen($1, ST_ALU04, ($2 & REGSEL_ALL) | (($4 & REGSEL_ALL) >> REG2NDSHFT)));
+   evalr[1].value = ($2&REGVALMASK);
+   evalr[2].value = ($4&REGVALMASK);
+   locctr += geninstr(findgen($1, ST_ALU04, ($2&REGSEL_ALL) | (($4&REGSEL_ALL) >> REG2NDSHFT)));
 };
 genline: KOC_aluop REG ',' bit {
    genlocrec(currseg, labelloc);
-   evalr[1].value = ($2 & REGVALMASK);
+   evalr[1].value = ($2&REGVALMASK);
    evalr[2].value = $4;
-   locctr += geninstr(findgen($1, ST_ALU05, ($2 & REGSEL_ALL)));
+   locctr += geninstr(findgen($1, ST_ALU05, ($2&REGSEL_ALL)));
 };
 genline: KOC_aluop REG ',' expr {
    genlocrec(currseg, labelloc);
-   evalr[1].value = ($2 & REGVALMASK);
+   evalr[1].value = ($2&REGVALMASK);
    pevalexpr(2, $4);
-   locctr += geninstr(findgen($1, ST_ALU06, ($2 & REGSEL_ALL)));
+   locctr += geninstr(findgen($1, ST_ALU06, ($2&REGSEL_ALL)));
 };
 genline: KOC_aluop bit ',' expr {
    genlocrec(currseg, labelloc);
@@ -420,8 +419,8 @@ genline: KOC_aluop expr ',' '#' expr {
 genline: KOC_aluop expr ',' REG {
    genlocrec(currseg, labelloc);
    pevalexpr(1, $2);
-   evalr[2].value = ($4 & REGVALMASK);
-   locctr += geninstr(findgen($1, ST_ALU09, ($4 & REGSEL_ALL)));
+   evalr[2].value = ($4&REGVALMASK);
+   locctr += geninstr(findgen($1, ST_ALU09, ($4&REGSEL_ALL)));
 };
 genline: KOC_aluop expr ',' expr {
    genlocrec(currseg, labelloc);
@@ -431,61 +430,61 @@ genline: KOC_aluop expr ',' expr {
 };
 genline: KOC_mov '@' REG ',' '#' expr {
    genlocrec(currseg, labelloc);
-   evalr[1].value = ($3 & REGVALMASK);
+   evalr[1].value = ($3&REGVALMASK);
    pevalexpr(2, $6);
-   locctr += geninstr(findgen($1, ST_MOV01, ($3 & REGSEL_ALL)));
+   locctr += geninstr(findgen($1, ST_MOV01, ($3&REGSEL_ALL)));
 };
 genline: KOC_mov '@' REG ',' REG {
    genlocrec(currseg, labelloc);
-   evalr[1].value = ($3 & REGVALMASK);
-   evalr[2].value = ($5 & REGVALMASK);
-   locctr += geninstr(findgen($1, ST_MOV02, ($3 & REGSEL_ALL) | (($5 & REGSEL_ALL) >> REG2NDSHFT)));
+   evalr[1].value = ($3&REGVALMASK);
+   evalr[2].value = ($5&REGVALMASK);
+   locctr += geninstr(findgen($1, ST_MOV02, ($3&REGSEL_ALL) | (($5&REGSEL_ALL) >> REG2NDSHFT)));
 };
 genline: KOC_mov '@' REG ',' expr {
    genlocrec(currseg, labelloc);
-   evalr[1].value = ($3 & REGVALMASK);
+   evalr[1].value = ($3&REGVALMASK);
    pevalexpr(2, $5);
-   locctr += geninstr(findgen($1, ST_MOV03, ($3 & REGSEL_ALL)));
+   locctr += geninstr(findgen($1, ST_MOV03, ($3&REGSEL_ALL)));
 };
 genline: KOC_mov REG ',' '#' expr {
    genlocrec(currseg, labelloc);
-   evalr[1].value = ($2 & REGVALMASK);
+   evalr[1].value = ($2&REGVALMASK);
    pevalexpr(2, $5);
-   locctr += geninstr(findgen($1, ST_MOV04, ($2 & REGSEL_ALL)));
+   locctr += geninstr(findgen($1, ST_MOV04, ($2&REGSEL_ALL)));
 };
 genline: KOC_mov REG ',' '@' REG {
    genlocrec(currseg, labelloc);
-   evalr[1].value = ($2 & REGVALMASK);
-   evalr[2].value = ($5 & REGVALMASK);
-   locctr += geninstr(findgen($1, ST_MOV05, ($2 & REGSEL_ALL) | (($5 & REGSEL_ALL) >> REG2NDSHFT)));
+   evalr[1].value = ($2&REGVALMASK);
+   evalr[2].value = ($5&REGVALMASK);
+   locctr += geninstr(findgen($1, ST_MOV05, ($2&REGSEL_ALL) | (($5&REGSEL_ALL) >> REG2NDSHFT)));
 };
 genline: KOC_mov REG ',' '@' REG '+' REG {
    genlocrec(currseg, labelloc);
-   locctr += geninstr(findgen($1, ST_MOV06, (($2 & $5) & REGSEL_ALL) | (($7 & REGSEL_ALL) >> REG2NDSHFT)));
+   locctr += geninstr(findgen($1, ST_MOV06, (($2&$5)&REGSEL_ALL) | (($7&REGSEL_ALL) >> REG2NDSHFT)));
 };
 genline: KOC_mov REG ',' REG {
    genlocrec(currseg, labelloc);
-   evalr[1].value = ($2 & REGVALMASK);
-   evalr[2].value = ($4 & REGVALMASK);
-   locctr += geninstr(findgen($1, ST_MOV07, ($2 & REGSEL_ALL) | (($4 & REGSEL_ALL) >> REG2NDSHFT)));
+   evalr[1].value = ($2&REGVALMASK);
+   evalr[2].value = ($4&REGVALMASK);
+   locctr += geninstr(findgen($1, ST_MOV07, ($2&REGSEL_ALL) | (($4&REGSEL_ALL) >> REG2NDSHFT)));
 };
 genline: KOC_mov REG ',' bit {
    genlocrec(currseg, labelloc);
-   evalr[1].value = ($2 & REGVALMASK);
+   evalr[1].value = ($2&REGVALMASK);
    evalr[2].value = $4;
-   locctr += geninstr(findgen($1, ST_MOV08, ($2 & REGSEL_ALL)));
+   locctr += geninstr(findgen($1, ST_MOV08, ($2&REGSEL_ALL)));
 };
 genline: KOC_mov REG ',' expr {
    genlocrec(currseg, labelloc);
-   evalr[1].value = ($2 & REGVALMASK);
+   evalr[1].value = ($2&REGVALMASK);
    pevalexpr(2, $4);
-   locctr += geninstr(findgen($1, ST_MOV09, ($2 & REGSEL_ALL)));
+   locctr += geninstr(findgen($1, ST_MOV09, ($2&REGSEL_ALL)));
 };
 genline: KOC_mov bit ',' REG {
    genlocrec(currseg, labelloc);
    evalr[1].value = $2;
-   evalr[2].value = ($4 & REGVALMASK);
-   locctr += geninstr(findgen($1, ST_MOV10, ($4 & REGSEL_ALL)));
+   evalr[2].value = ($4&REGVALMASK);
+   locctr += geninstr(findgen($1, ST_MOV10, ($4&REGSEL_ALL)));
 };
 genline: KOC_mov expr ',' '#' expr {
    genlocrec(currseg, labelloc);
@@ -496,14 +495,14 @@ genline: KOC_mov expr ',' '#' expr {
 genline: KOC_mov expr ',' '@' REG {
    genlocrec(currseg, labelloc);
    pevalexpr(1, $2);
-   evalr[2].value = ($5 & REGVALMASK);
-   locctr += geninstr(findgen($1, ST_MOV12, ($5 & REGSEL_ALL)));
+   evalr[2].value = ($5&REGVALMASK);
+   locctr += geninstr(findgen($1, ST_MOV12, ($5&REGSEL_ALL)));
 };
 genline: KOC_mov expr ',' REG {
    genlocrec(currseg, labelloc);
    pevalexpr(1, $2);
-   evalr[2].value = ($4 & REGVALMASK);
-   locctr += geninstr(findgen($1, ST_MOV13, ($4 & REGSEL_ALL)));
+   evalr[2].value = ($4&REGVALMASK);
+   locctr += geninstr(findgen($1, ST_MOV13, ($4&REGSEL_ALL)));
 };
 genline: KOC_mov expr ',' expr {
    genlocrec(currseg, labelloc);
@@ -513,24 +512,24 @@ genline: KOC_mov expr ',' expr {
 };
 genline: KOC_cjne REG ',' expr ',' expr {
    genlocrec(currseg, labelloc);
-   evalr[1].value = ($2 & REGVALMASK);
+   evalr[1].value = ($2&REGVALMASK);
    pevalexpr(2, $4);
    pevalexpr(3, $6);
-   locctr += geninstr(findgen($1, ST_CJNE1, ($2 & REGSEL_ALL)));
+   locctr += geninstr(findgen($1, ST_CJNE1, ($2&REGSEL_ALL)));
 };
 genline: KOC_cjne REG ',' '#' expr ',' expr {
    genlocrec(currseg, labelloc);
-   evalr[1].value = ($2 & REGVALMASK);
+   evalr[1].value = ($2&REGVALMASK);
    pevalexpr(2, $5);
    pevalexpr(3, $7);
-   locctr += geninstr(findgen($1, ST_CJNE2, ($2 & REGSEL_ALL)));
+   locctr += geninstr(findgen($1, ST_CJNE2, ($2&REGSEL_ALL)));
 };
 genline: KOC_cjne '@' REG ',' '#' expr ',' expr {
    genlocrec(currseg, labelloc);
-   evalr[1].value = ($3 & REGVALMASK);
+   evalr[1].value = ($3&REGVALMASK);
    pevalexpr(2, $6);
    pevalexpr(3, $8);
-   locctr += geninstr(findgen($1, ST_CJNE3, ($3 & REGSEL_ALL)));
+   locctr += geninstr(findgen($1, ST_CJNE3, ($3&REGSEL_ALL)));
 } ;
 
 bit: expr '.' CONSTANT {

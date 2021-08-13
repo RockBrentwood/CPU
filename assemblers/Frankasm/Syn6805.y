@@ -3,35 +3,27 @@
 // Original author: Mark Zenier.
 // 6805 instruction generation file.
 
-// Frame work parser description for framework cross
-// assemblers
+// Frame work parser description for framework cross-assemblers.
 #include <stdio.h>
 #include "Extern.h"
 #include "Constants.h"
 
-// Selection criteria and token values for 6805
-// framework assembler
-
-        /* selectors for the ST_EXP address */
-        /* 0000 0000 0000 00xx */
+// Selection criteria and token values for 6805 framework assembler.
+// 0000 0000 0000 00xx:	selectors for the ST_EXP address.
 #define ADDR		0x3
 #define DIRECT		0x1
 #define EXTENDED	0x2
-
-        /* selectors for the ST_IND offset */
-        /* 0000 0000 000x xx00 */
+// 0000 0000 000x xx00:	selectors for the ST_IND offset.
 #define INDEXLEN	0x1C
 #define INDEX0		0x4
 #define INDEX1		0x8
 #define INDEX2		0x10
-
-        /* selectors for instruction set extensions */
-        /* 0000 0000 xxx0 0000 */
+// 0000 0000 xxx0 0000:	selectors for instruction set extensions.
 #define INSTSTWA	0x20
 #define INSTMUL	0x40
 #define INSTDAA	0x80
 
-        /* cpu instruction extensions */
+// CPU instruction extensions.
 #define CPU6805	0
 #define CPU146805	INSTSTWA
 #define CPU68HC05	(INSTSTWA | INSTMUL)
@@ -254,9 +246,9 @@ line: KOC_CHDEF STRING ',' exprlist {
             fraerror("noncomputable expression");
          else switch (findrv) {
             case CF_UNDEF:
-               if (evalr[0].value < 0 || evalr[0].value > 255)
+               if (evalr[0].value < 0 || evalr[0].value > 0xff)
                   frawarn("character translation value truncated");
-               *charaddr = evalr[0].value & 0xff;
+               *charaddr = evalr[0].value&0xff;
                prtequvalue("C: 0x%lx\n", evalr[0].value);
             break;
             case CF_INVALID: case CF_NUMBER:
@@ -344,7 +336,7 @@ genline: KOC_opcode expr ',' expr {
 genline: KOC_opcode expr {
    pevalexpr(1, $2);
    genlocrec(currseg, labelloc);
-   locctr += geninstr(findgen($1, ST_EXP, ((evalr[1].seg == SSG_ABS && evalr[1].value >= 0 && evalr[1].value <= 255) ? DIRECT : EXTENDED)));
+   locctr += geninstr(findgen($1, ST_EXP, (evalr[1].seg == SSG_ABS && evalr[1].value >= 0 && evalr[1].value <= 0xff? DIRECT: EXTENDED)));
 };
 genline: KOC_opcode '#' expr {
    pevalexpr(1, $3);
@@ -357,7 +349,7 @@ genline: KOC_opcode indexed {
    if (evalr[1].seg == SSG_ABS) {
       if (evalr[1].value == 0)
          selcrit = INDEX0;
-      else if (evalr[1].value > 0 && evalr[1].value <= 255)
+      else if (evalr[1].value > 0 && evalr[1].value <= 0xff)
          selcrit = INDEX1;
    }
    genlocrec(currseg, labelloc);

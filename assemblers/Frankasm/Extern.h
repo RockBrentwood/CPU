@@ -142,7 +142,7 @@ struct evstkel {
    long v;
    seg_t s;
 };
-extern struct evstkel estk[], *estkm1p;
+extern struct evstkel estk[];
 extern const size_t PESTKDEPTH;
 
 extern int currfstk;

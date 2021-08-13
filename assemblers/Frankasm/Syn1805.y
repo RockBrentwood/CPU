@@ -3,8 +3,7 @@
 // Original author: Mark Zenier.
 // RCA 1802 instruction generation file.
 
-// Frame work parser description for framework cross
-// assemblers
+// Frame work parser description for framework cross-assemblers.
 #include <stdio.h>
 #include "Extern.h"
 #include "Constants.h"
@@ -12,8 +11,8 @@
 #define CPUMASK		0xc000
 #define CPU1802		0x4000
 #define CPU1805		0xc000
-#define TS1802PLUS	0x4000 /* mask and match values in table */
-#define TS1805	0x8000 /* if select value & mask == mask */
+#define TS1802PLUS	0x4000 // Mask and match values in table.
+#define TS1805	0x8000 // If select value&mask == mask.
 #define ST_INH 0x1
 #define ST_IMM 0x2
 #define ST_EXP 0x4
@@ -25,7 +24,7 @@
 
 int cpuselect = CPU1805;
 static char *genbdef = "[1=];";
-static char *genwdef = "[1=]x"; /* x for normal, y for byte rev */
+static char *genwdef = "[1=]x"; // x for normal, y for byte rev.
 char *ignosyn = "[Xinvalid syntax for instruction";
 char *ignosel = "[Xinvalid operands/illegal instruction for cpu";
 long labelloc;
@@ -234,9 +233,9 @@ line: KOC_CHDEF STRING ',' exprlist {
             fraerror("noncomputable expression");
          else switch (findrv) {
             case CF_UNDEF:
-               if (evalr[0].value < 0 || evalr[0].value > 255)
+               if (evalr[0].value < 0 || evalr[0].value > 0xff)
                   frawarn("character translation value truncated");
-               *charaddr = evalr[0].value & 0xff;
+               *charaddr = evalr[0].value&0xff;
                prtequvalue("C: 0x%lx\n", evalr[0].value);
             break;
             case CF_INVALID: case CF_NUMBER:

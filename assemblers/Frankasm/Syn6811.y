@@ -3,35 +3,30 @@
 // Original author: Mark Zenier.
 // 6811 instruction generation file.
 
-// Frame work parser description for framework cross
-// assemblers
+// Frame work parser description for framework cross-assemblers.
 #include <stdio.h>
 #include "Extern.h"
 #include "Constants.h"
 
-// Selection criteria and token values for 6811
-// framework assembler
-
-                /* 000000xxxx */
+// Selection criteria and token values for 6811 framework assembler.
+// 000000xxxx.
 #define CPUMASK		0xf
-#define CPU6800		0x1 /* cpuselect value in parser */
+#define CPU6800		0x1 // cpuselect value in parser.
 #define CPU6801		0x3
 #define CPU6811		0x7
-#define TS6800PLUS	0x1 /* mask and match values in table */
-#define TS6801PLUS	0x2 /* if select value & mask == mask */
+#define TS6800PLUS	0x1 // mask and match values in table.
+#define TS6801PLUS	0x2 // if select value&mask == mask.
 #define TS6811		0x4
 
-                /* 0000xx0000 */
+// 0000xx0000.
 #define ACCREG		0x30
 #define REGA		0x10
 #define REGB		0x20
-
-                /* 00xx000000 */
+// 00xx000000.
 #define INDREG		0xc0
 #define REGX		0x40
 #define REGY		0x80
-
-                /* xx00000000 */
+// xx00000000.
 #define ADDR		0x300
 #define DIRECT		0x100
 #define EXTENDED	0x200
@@ -263,9 +258,9 @@ line: KOC_CHDEF STRING ',' exprlist {
             fraerror("noncomputable expression");
          else switch (findrv) {
             case CF_UNDEF:
-               if (evalr[0].value < 0 || evalr[0].value > 255)
+               if (evalr[0].value < 0 || evalr[0].value > 0xff)
                   frawarn("character translation value truncated");
-               *charaddr = evalr[0].value & 0xff;
+               *charaddr = evalr[0].value&0xff;
                prtequvalue("C: 0x%lx\n", evalr[0].value);
             break;
             case CF_INVALID: case CF_NUMBER:
@@ -336,7 +331,7 @@ genline: KOC_opcode ACCUM {
 genline: KOC_opcode ACCUM expr {
    pevalexpr(1, $3);
    genlocrec(currseg, labelloc);
-   locctr += geninstr(findgen($1, ST_AEXP, cpuselect + $2 + ((evalr[1].seg == SSG_ABS && evalr[1].value >= 0 && evalr[1].value <= 255) ? DIRECT : EXTENDED)));
+   locctr += geninstr(findgen($1, ST_AEXP, cpuselect + $2 + (evalr[1].seg == SSG_ABS && evalr[1].value >= 0 && evalr[1].value <= 0xff? DIRECT: EXTENDED)));
 };
 genline: KOC_opcode ACCUM '#' expr {
    pevalexpr(1, $4);
@@ -364,7 +359,7 @@ genline: KOC_opcode expr ',' expr {
 genline: KOC_opcode expr {
    pevalexpr(1, $2);
    genlocrec(currseg, labelloc);
-   locctr += geninstr(findgen($1, ST_EXP, cpuselect + ((evalr[1].seg == SSG_ABS && evalr[1].value >= 0 && evalr[1].value <= 255) ? DIRECT : EXTENDED)));
+   locctr += geninstr(findgen($1, ST_EXP, cpuselect + (evalr[1].seg == SSG_ABS && evalr[1].value >= 0 && evalr[1].value <= 0xff? DIRECT: EXTENDED)));
 };
 genline: KOC_opcode indexed ',' expr ',' expr {
    pevalexpr(1, $2.ex);

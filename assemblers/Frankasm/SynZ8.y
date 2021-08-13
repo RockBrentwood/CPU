@@ -3,28 +3,23 @@
 // Original author: Mark Zenier.
 // z8 instruction generation file.
 
-// Frame work parser description for framework cross
-// assemblers
+// Frame work parser description for framework cross-assemblers.
 #include <stdio.h>
 #include "Extern.h"
 #include "Constants.h"
 
-// Selection criteria and syntax type constants for
-// the z8 framework assembler
+// Selection criteria and syntax type constants for the Z8 framework assembler.
 
-/* 0000.0000.0000.000x destination register is in working set */
+// 0000.0000.0000.000x:	destination register is in working set.
 #define	DSTWORK	0x1
-
-/* 0000.0000.0000.00x0 destination is double register */
+// 0000.0000.0000.00x0:	destination is double register.
 #define DSTDBL	0x2
-
-/* 0000.0000.0000.0x00 source register is in working set */
+// 0000.0000.0000.0x00:	source register is in working set.
 #define SRCWORK	0x4
-
-/* 0000.0000.0000.x000 source is double register */
+// 0000.0000.0000.x000:	source is double register.
 #define SRCDBL	0x8
 
-/* type flags for symbol table value for registers */
+// Type flags for symbol table value for registers.
 #define REGFLGSHFT	8
 #define REGDFLGSH	REGFLGSHFT
 #define REGSFLGSH	(REGFLGSHFT -2)
@@ -34,8 +29,8 @@
 #define REGBITS		0xff
 #define REGWORKBITS	0xf
 
-#define CPU8600	1 /* use z8 register set */
-#define CPU8090	2 /* use UPC register set */
+#define CPU8600	1 // use Z8 register set.
+#define CPU8090	2 // use UPC register set.
 #define ST_CEXP 0x1
 #define ST_EXP 0x2
 #define ST_INH 0x4
@@ -270,9 +265,9 @@ line: KOC_CHDEF STRING ',' exprlist {
             fraerror("noncomputable expression");
          else switch (findrv) {
             case CF_UNDEF:
-               if (evalr[0].value < 0 || evalr[0].value > 255)
+               if (evalr[0].value < 0 || evalr[0].value > 0xff)
                   frawarn("character translation value truncated");
-               *charaddr = evalr[0].value & 0xff;
+               *charaddr = evalr[0].value&0xff;
                prtequvalue("C: 0x%lx\n", evalr[0].value);
             break;
             case CF_INVALID: case CF_NUMBER:
@@ -335,26 +330,26 @@ line: LABEL regdefop regoperand {
    if ($1->seg != SSG_UNDEF)
       fraerror("multiple definition of label");
    else {
-      $1->value = ($3 & REGBITS) | ( $3 & REGDEFWRK ) | ($2 == 2 ? REGDEFDBL : 0);
+      $1->value = $3&REGBITS | $3&REGDEFWRK | ($2 == 2? REGDEFDBL: 0);
       $1->seg = SSG_RESV;
       $1->tok = REGISTER;
       if (!($3&REGDEFWRK)) switch (cpuselect) {
          case CPU8600:
-            if (($3 & REGBITS) > 0x7f && ($3 & REGBITS) < 0xf0)
+            if (($3&REGBITS) > 0x7f && ($3&REGBITS) < 0xf0)
                fraerror("unimplemented register address");
          break;
          case CPU8090:
-            if (($3 & REGBITS) > 0xdf && ($3 & REGBITS) < 0xf0)
+            if (($3&REGBITS) > 0xdf && ($3&REGBITS) < 0xf0)
                fraerror("unimplemented register address");
          break;
-      } else if (($3 & 0xf0) != 0xe0)
+      } else if (($3&0xf0) != 0xe0)
          fraerror("invalid working register address");
-      if (($1->value & REGDEFDBL) && ($1->value & 1))
+      if (($1->value&REGDEFDBL) && ($1->value&1))
          fraerror("double register not on even boundry");
-      prtequvalue("C: 0x%x\n", REGBITS & ((int)$1->value));
+      prtequvalue("C: 0x%x\n", REGBITS&((int)$1->value));
    }
-   prevregwork = $3 & REGDEFWRK;
-   regloccnt = ($3 & REGBITS) + $2;
+   prevregwork = $3&REGDEFWRK;
+   regloccnt = ($3&REGBITS) + $2;
 };
 
 regdefop: KOC_REG { $$ = 1; };
@@ -366,13 +361,13 @@ regoperand: expr {
    pevalexpr(0, $1);
    if (evalr[0].seg != SSG_ABS)
       fraerror("noncomputable value for REG");
-   else if (evalr[0].value < 0 || evalr[0].value > 255)
+   else if (evalr[0].value < 0 || evalr[0].value > 0xff)
       fraerror("value out of range");
    else
       $$ = evalr[0].value;
 };
 regoperand: {
-   if (regloccnt > 255)
+   if (regloccnt > 0xff)
       $$ = 0, fraerror("register location counter out of range");
    else
       $$ = regloccnt | prevregwork;
@@ -400,88 +395,88 @@ genline: KOC_opcode {
 };
 genline: KOC_opcode '@' REGISTER {
    genlocrec(currseg, labelloc);
-   evalr[1].value = $3 & REGBITS;
-   evalr[2].value = $3 & REGWORKBITS;
-   locctr += geninstr(findgen($1, ST_IR1, ($3 & REGFLGS) >> REGDFLGSH));
+   evalr[1].value = $3&REGBITS;
+   evalr[2].value = $3&REGWORKBITS;
+   locctr += geninstr(findgen($1, ST_IR1, ($3&REGFLGS) >> REGDFLGSH));
 };
 genline: KOC_opcode '@' REGISTER ',' '#' expr {
    genlocrec(currseg, labelloc);
-   evalr[1].value = $3 & REGBITS;
-   evalr[3].value = $3 & REGWORKBITS;
+   evalr[1].value = $3&REGBITS;
+   evalr[3].value = $3&REGWORKBITS;
    pevalexpr(2, $6);
-   locctr += geninstr(findgen($1, ST_IRIM, ($3 & REGFLGS) >> REGDFLGSH));
+   locctr += geninstr(findgen($1, ST_IRIM, ($3&REGFLGS) >> REGDFLGSH));
 };
 genline: KOC_opcode '@' REGISTER ',' '@' REGISTER {
    genlocrec(currseg, labelloc);
-   evalr[1].value = $3 & REGBITS;
-   evalr[2].value = $3 & REGWORKBITS;
-   evalr[3].value = $6 & REGBITS;
-   evalr[4].value = $6 & REGWORKBITS;
-   locctr += geninstr(findgen($1, ST_IRIR, (($3 & REGFLGS) >> REGDFLGSH) | (($6 & REGFLGS) >> REGSFLGSH)));
+   evalr[1].value = $3&REGBITS;
+   evalr[2].value = $3&REGWORKBITS;
+   evalr[3].value = $6&REGBITS;
+   evalr[4].value = $6&REGWORKBITS;
+   locctr += geninstr(findgen($1, ST_IRIR, (($3&REGFLGS) >> REGDFLGSH) | (($6&REGFLGS) >> REGSFLGSH)));
 };
 genline: KOC_opcode '@' REGISTER ',' REGISTER {
    genlocrec(currseg, labelloc);
-   evalr[1].value = $3 & REGBITS;
-   evalr[2].value = $3 & REGWORKBITS;
-   evalr[3].value = $5 & REGBITS;
-   evalr[4].value = $5 & REGWORKBITS;
-   locctr += geninstr(findgen($1, ST_IRR, (($3 & REGFLGS) >> REGDFLGSH) | (($5 & REGFLGS) >> REGSFLGSH)));
+   evalr[1].value = $3&REGBITS;
+   evalr[2].value = $3&REGWORKBITS;
+   evalr[3].value = $5&REGBITS;
+   evalr[4].value = $5&REGWORKBITS;
+   locctr += geninstr(findgen($1, ST_IRR, (($3&REGFLGS) >> REGDFLGSH) | (($5&REGFLGS) >> REGSFLGSH)));
 };
 genline: KOC_opcode REGISTER {
    genlocrec(currseg, labelloc);
-   evalr[1].value = $2 & REGBITS;
-   evalr[2].value = $2 & REGWORKBITS;
-   locctr += geninstr(findgen($1, ST_R1, ($2 & REGFLGS) >> REGDFLGSH));
+   evalr[1].value = $2&REGBITS;
+   evalr[2].value = $2&REGWORKBITS;
+   locctr += geninstr(findgen($1, ST_R1, ($2&REGFLGS) >> REGDFLGSH));
 };
 genline: KOC_opcode REGISTER ',' REGISTER {
    genlocrec(currseg, labelloc);
-   evalr[1].value = $2 & REGBITS;
-   evalr[2].value = $2 & REGWORKBITS;
-   evalr[3].value = $4 & REGBITS;
-   evalr[4].value = $4 & REGWORKBITS;
-   locctr += geninstr(findgen($1, ST_R2, (($2 & REGFLGS) >> REGDFLGSH) | (($4 & REGFLGS) >> REGSFLGSH)));
+   evalr[1].value = $2&REGBITS;
+   evalr[2].value = $2&REGWORKBITS;
+   evalr[3].value = $4&REGBITS;
+   evalr[4].value = $4&REGWORKBITS;
+   locctr += geninstr(findgen($1, ST_R2, (($2&REGFLGS) >> REGDFLGSH) | (($4&REGFLGS) >> REGSFLGSH)));
 };
 genline: KOC_opcode REGISTER ',' expr {
    genlocrec(currseg, labelloc);
-   evalr[1].value = $2 & REGBITS;
+   evalr[1].value = $2&REGBITS;
    pevalexpr(2, $4);
-   evalr[3].value = $2 & REGWORKBITS;
-   locctr += geninstr(findgen($1, ST_REXP, ($2 & REGFLGS) >> REGDFLGSH));
+   evalr[3].value = $2&REGWORKBITS;
+   locctr += geninstr(findgen($1, ST_REXP, ($2&REGFLGS) >> REGDFLGSH));
 };
 genline: KOC_opcode REGISTER ',' '#' expr {
    genlocrec(currseg, labelloc);
-   evalr[1].value = $2 & REGBITS;
-   evalr[3].value = $2 & REGWORKBITS;
+   evalr[1].value = $2&REGBITS;
+   evalr[3].value = $2&REGWORKBITS;
    pevalexpr(2, $5);
-   locctr += geninstr(findgen($1, ST_RIMM, ($2 & REGFLGS) >> REGDFLGSH));
+   locctr += geninstr(findgen($1, ST_RIMM, ($2&REGFLGS) >> REGDFLGSH));
 };
 genline: KOC_opcode REGISTER ',' '@' REGISTER {
    genlocrec(currseg, labelloc);
-   evalr[1].value = $2 & REGBITS;
-   evalr[2].value = $2 & REGWORKBITS;
-   evalr[3].value = $5 & REGBITS;
-   evalr[4].value = $5 & REGWORKBITS;
-   locctr += geninstr(findgen($1, ST_RIR, (($2 & REGFLGS) >> REGDFLGSH) | (($5 & REGFLGS) >> REGSFLGSH)));
+   evalr[1].value = $2&REGBITS;
+   evalr[2].value = $2&REGWORKBITS;
+   evalr[3].value = $5&REGBITS;
+   evalr[4].value = $5&REGWORKBITS;
+   locctr += geninstr(findgen($1, ST_RIR, (($2&REGFLGS) >> REGDFLGSH) | (($5&REGFLGS) >> REGSFLGSH)));
 };
 genline: KOC_opcode REGISTER ',' expr '(' REGISTER ')' {
    genlocrec(currseg, labelloc);
-   evalr[1].value = $2 & REGWORKBITS;
+   evalr[1].value = $2&REGWORKBITS;
    pevalexpr(2, $4);
-   evalr[3].value = $6 & REGWORKBITS;
-   locctr += geninstr(findgen($1, ST_RX, (($2 & REGFLGS) >> REGDFLGSH) | (($6 & REGFLGS) >> REGSFLGSH)));
+   evalr[3].value = $6&REGWORKBITS;
+   locctr += geninstr(findgen($1, ST_RX, (($2&REGFLGS) >> REGDFLGSH) | (($6&REGFLGS) >> REGSFLGSH)));
 };
 genline: KOC_opcode expr '(' REGISTER ')' ',' REGISTER {
    genlocrec(currseg, labelloc);
    pevalexpr(1, $2);
-   evalr[2].value = $4 & REGWORKBITS;
-   evalr[3].value = $7 & REGWORKBITS;
-   locctr += geninstr(findgen($1, ST_XR, (($4 & REGFLGS) >> REGDFLGSH) | (($7 & REGFLGS) >> REGSFLGSH)));
+   evalr[2].value = $4&REGWORKBITS;
+   evalr[3].value = $7&REGWORKBITS;
+   locctr += geninstr(findgen($1, ST_XR, (($4&REGFLGS) >> REGDFLGSH) | (($7&REGFLGS) >> REGSFLGSH)));
 };
 genline: KOC_srp '#' expr {
    pevalexpr(1, $3);
    if (evalr[1].seg != SSG_ABS)
       fraerror("noncomputable value for SRP");
-   else switch (((int)evalr[1].value) & REGBITS) {
+   else switch (((int)evalr[1].value)&REGBITS) {
       case 0x80: case 0x90: case 0xa0: case 0xb0: case 0xc0: case 0xd0:
          if (cpuselect == CPU8600) {
             fraerror("invalid value for SRP");
@@ -533,7 +528,7 @@ expr: STRING {
    $$ = exprnode(PCCASE_CONS, 0, IGP_CONSTANT, 0, accval, NULL);
 };
 expr: '(' expr ')' { $$ = $2; };
-expr: '(' REGISTER ')' { $$ = exprnode(PCCASE_CONS, 0, IGP_CONSTANT, 0, (long)(REGBITS & $2), NULL); };
+expr: '(' REGISTER ')' { $$ = exprnode(PCCASE_CONS, 0, IGP_CONSTANT, 0, (long)(REGBITS&$2), NULL); };
 %%
 // Intercept the call to Scan() (the lexical analyzer)
 // and filter out all unnecessary tokens when skipping the input between a failed IF and its matching ENDI or ELSE.

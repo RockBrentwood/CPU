@@ -3,13 +3,12 @@
 // Original author: Mark Zenier.
 // 6809 instruction generation file.
 
-// Frame work parser description for framework cross
-// assemblers
+// Frame work parser description for framework cross-assemblers.
 #include <stdio.h>
 #include "Extern.h"
 #include "Constants.h"
 
-        /* select criteria for ST_EXP 0000.0000.0000.00xx */
+// 0000.0000.0000.00xx:	select criteria for ST_EXP.
 #define	ADDR	0x3
 #define	DIRECT	0x1
 #define	EXTENDED	0x2
@@ -25,7 +24,7 @@
 #define ST_TFR 0x1
 
 static char *genbdef = "[1=];";
-static char *genwdef = "[1=]x"; /* x for normal, y for byte rev */
+static char *genwdef = "[1=]x"; // x for normal, y for byte rev.
 char *ignosyn = "[Xinvalid syntax for instruction";
 char *ignosel = "[Xinvalid operands";
 #define	IDM000	0
@@ -306,14 +305,13 @@ line: KOC_CHDEF STRING ',' exprlist {
          if (findrv == CF_END) {
             fraerror("more expressions than characters");
             break;
-         }
-         if (evalr[0].seg != SSG_ABS)
+         } else if (evalr[0].seg != SSG_ABS)
             fraerror("noncomputable expression");
          else switch (findrv) {
             case CF_UNDEF:
-               if (evalr[0].value < 0 || evalr[0].value > 255)
+               if (evalr[0].value < 0 || evalr[0].value > 0xff)
                   frawarn("character translation value truncated");
-               *charaddr = evalr[0].value & 0xff;
+               *charaddr = evalr[0].value&0xff;
                prtequvalue("C: 0x%lx\n", evalr[0].value);
             break;
             case CF_INVALID: case CF_NUMBER:
@@ -384,7 +382,7 @@ genline: KOC_opcode '#' expr {
 genline: KOC_opcode expr {
    genlocrec(currseg, labelloc);
    pevalexpr(1, $2);
-   locctr += geninstr(findgen($1, ST_EXP, ((evalr[1].seg == SSG_ABS && evalr[1].value >= 0 && evalr[1].value <= 255) ? DIRECT : EXTENDED)));
+   locctr += geninstr(findgen($1, ST_EXP, (evalr[1].seg == SSG_ABS && evalr[1].value >= 0 && evalr[1].value <= 0xff? DIRECT: EXTENDED)));
 };
 genline: KOC_opcode indexed {
    genlocrec(currseg, labelloc);
@@ -417,23 +415,23 @@ genline: KOC_opcode '[' expr ']' {
 };
 genline: KOC_sstkop regbits {
    genlocrec(currseg, labelloc);
-   if ($2 & REGBSSTK)
+   if ($2&REGBSSTK)
       fraerror("push/pop of system stack register"), evalr[1].value = 0;
    else
-      evalr[1].value = $2 & 0xff;
+      evalr[1].value = $2&0xff;
    locctr += geninstr(findgen($1, ST_SPSH, 0));
 };
 genline: KOC_ustkop regbits {
    genlocrec(currseg, labelloc);
-   if ($2 & REGBUSTK)
+   if ($2&REGBUSTK)
       fraerror("push/pop of user stack register"), evalr[1].value = 0;
    else
-      evalr[1].value = $2 & 0xff;
+      evalr[1].value = $2&0xff;
    locctr += geninstr(findgen($1, ST_SPSH, 0));
 };
 genline: KOC_tfrop register ',' register {
    genlocrec(currseg, labelloc);
-   if (($2 & TFR8BIT) == ($4 & TFR8BIT))
+   if (($2&TFR8BIT) == ($4&TFR8BIT))
       evalr[1].value = $2, evalr[2].value = $4;
    else
       evalr[1].value = 0, evalr[2].value = 0, fraerror("operands are different sizes");
@@ -442,7 +440,7 @@ genline: KOC_tfrop register ',' register {
 
 indexed: expr ',' INDEX {
    pevalexpr(1, $1);
-   if (evalr[1].seg != SSG_ABS || evalr[1].value < -128 || evalr[1].value > 127)
+   if (evalr[1].seg != SSG_ABS || evalr[1].value < -0x80 || evalr[1].value > 0x7f)
       $$ = indexgen[IDM109][$3 - TFRX];
    else if (evalr[1].value < -16 || evalr[1].value > 15)
       $$ = indexgen[IDM108][$3 - TFRX];
@@ -465,7 +463,7 @@ indexed: ',' '-' INDEX { $$ = indexgen[IDM102][$3 - TFRX]; };
 indexed: ',' '-' '-' INDEX { $$ = indexgen[IDM103][$4 - TFRX]; };
 indexed: '[' expr ',' INDEX ']' {
    pevalexpr(1, $2);
-   if (evalr[1].seg != SSG_ABS || evalr[1].value < -128 || evalr[1].value > 127)
+   if (evalr[1].seg != SSG_ABS || evalr[1].value < -0x80 || evalr[1].value > 0x7f)
       $$ = indexgen[IDM119][$4 - TFRX];
    else if (evalr[1].value == 0)
       $$ = indexgen[IDM114][$4 - TFRX];

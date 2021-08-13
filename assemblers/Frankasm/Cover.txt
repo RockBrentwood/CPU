@@ -1,6 +1,10 @@
 This file is cited in the file "History" under 1990/12/04-06.
 The original links are listed under Shars/README.
 
+Note: a second path is also listed as this in another archived version:
+	From alt.sources Thu Dec  6 09:16:10 1990
+	Path: pcsbst!unido!mcsun!uunet!pilchuck!ssc!markz
+
 === Base01 ===
 Path: hydra!news.funet.fi!sunic!mcsun!uunet!pilchuck!ssc!markz
 From: markz@ssc.UUCP (Mark Zenier)
@@ -11,6 +15,7 @@ Message-ID: <592@ssc.UUCP>
 Date: 4 Dec 90 07:46:53 GMT
 Organization: SSC, Inc., Seattle, WA
 Lines: 1707
+Posted: Tue Dec  4 08:46:53 1990
 Archive-name: Frankasm/Base01
 Submitted-by: markz@ssc.uucp
 

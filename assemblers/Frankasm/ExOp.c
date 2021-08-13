@@ -2,8 +2,8 @@
 // Original author: Mark Zenier.
 #include "Constants.h"
 
-#define high(A) (((A) >> 8) & 0xff)
-#define low(A) ((A) & 0xff)
+#define high(A) (((A) >> 8)&0xff)
+#define low(A) ((A)&0xff)
 
 long EvalUnOp(char Op, long A) {
 // Switch case actions for unary operators for both the parse and output phase expression evaluators.
@@ -22,14 +22,14 @@ long EvalBinOp(char Op, long A, long B) {
    switch (Op) {
       case IFC_ADD: return A + B;
       case IFC_SUB: return A - B;
-      case IFC_MUL: return A * B;
-      case IFC_DIV: return A / B;
-      case IFC_MOD: return A % B;
+      case IFC_MUL: return A*B;
+      case IFC_DIV: return A/B;
+      case IFC_MOD: return A%B;
       case IFC_SHL: return A << B;
       case IFC_SHR: return A >> B;
       case IFC_OR: return A | B;
       case IFC_XOR: return A ^ B;
-      case IFC_AND: return A & B;
+      case IFC_AND: return A&B;
       case IFC_GT: return A > B;
       case IFC_GE: return A >= B;
       case IFC_LT: return A < B;

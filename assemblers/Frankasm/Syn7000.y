@@ -3,17 +3,16 @@
 // Original author: Mark Zenier.
 // TMS7000 instruction generation file.
 
-// Frame work parser description for framework cross
-// assemblers
+// Frame work parser description for framework cross-assemblers.
 #include <stdio.h>
 #include "Extern.h"
 #include "Constants.h"
 
-/* 0000.0000.0000.00xx */
+// 0000.0000.0000.00xx.
 #define	DSTMASK		0x3
 #define	DSTA		0x1
 #define	DSTB		0x2
-/* 0000.0000.0000.xx00 */
+// 0000.0000.0000.xx00.
 #define	SRCMASK		0xc
 #define	SRCA		0x4
 #define	SRCB		0x8
@@ -30,7 +29,7 @@
 
 static int operselbits;
 static char *genbdef = "[1=];";
-static char *genwdef = "[1=]x"; /* x for normal, y for byte rev */
+static char *genwdef = "[1=]x"; // x for normal, y for byte rev.
 char *ignosyn = "[Xinvalid syntax for instruction";
 char *ignosel = "[Xinvalid operands/illegal instruction for cpu";
 long labelloc;
@@ -233,14 +232,13 @@ line: KOC_CHDEF STRING ',' exprlist {
          if (findrv == CF_END) {
             fraerror("more expressions than characters");
             break;
-         }
-         if (evalr[0].seg != SSG_ABS)
+         } else if (evalr[0].seg != SSG_ABS)
             fraerror("noncomputable expression");
          else switch (findrv) {
             case CF_UNDEF:
-               if (evalr[0].value < 0 || evalr[0].value > 255)
+               if (evalr[0].value < 0 || evalr[0].value > 0xff)
                   frawarn("character translation value truncated");
-               *charaddr = evalr[0].value & 0xff;
+               *charaddr = evalr[0].value&0xff;
                prtequvalue("C: 0x%lx\n", evalr[0].value);
             break;
             case CF_INVALID: case CF_NUMBER:

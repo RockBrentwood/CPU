@@ -1,45 +1,38 @@
 // Frankenstein Cross-Assemblers, version 2.0.
 // Original author: Mark Zenier.
-// Lexical analyzer for framework cross assembler.
+// The lexical analyzer for the framework cross-assembler.
 #include <stdio.h>
 #include "Extern.h"
 #include "Token.h"
 
-#define PRINTCTRL(char) ((char)+'@')
+#define PRINTCTRL(Ch) ((Ch) + '@')
 
 #ifndef DEBUG
 #   define DEBUG 0
 #endif
 
-extern YYSTYPE yylval;
+// extern YYSTYPE yylval; // Already declared in Token.h.
 
 FILE *yyin;
 
-char finbuff[INBUFFSZ] = "L:";
-                /* initialization nonreusable, wiped out by pass 2 */
-static char *frainptr = &finbuff[2];
-                /* point to null byte after L: on start up */
+char finbuff[INBUFFSZ] = "L:"; // Initialization non-reusable, wiped out by pass 2.
 readacts nextreadact = Nra_normal;
 
-// Read a line, on end of file, pop the include file
-// stack.
-// return	false	got a line
-//		true	end of input
+// Read a line, and on end of file, pop the include file stack.
+// Return:
+// ∙	false:	got a line,
+// ∙	true:	end of input.
 static bool frareadrec(void) {
-   while (fgets(&finbuff[2], INBUFFSZ - 2, yyin) == (char *)NULL) {
-      if (currfstk == 0) {
-         return true;
-      } else {
-         fclose(yyin);
-         yyin = infilestk[--currfstk].fpt;
-         fprintf(intermedf, "X:%s\n", infilestk[currfstk].fnm);
-      }
+   while (fgets(&finbuff[2], INBUFFSZ - 2, yyin) == NULL) {
+      if (currfstk == 0) return true;
+      fclose(yyin), yyin = infilestk[--currfstk].fpt; // Reopen.
+      fprintf(intermedf, "X:%s\n", infilestk[currfstk].fnm);
    }
    return false;
 }
 
-static int currtok = 0; /* subscript of next token to return */
-static int intokcnt = 0; /* number of tokens in queue */
+static int currtok = 0; // The subscript of the next token to return.
+static int intokcnt = 0; // The number of tokens in the queue.
 
 static struct {
    char *textstrt, *textend;
@@ -48,8 +41,7 @@ static struct {
    enum { Yetprint, Yetsymbol, Yetreserved, Yetopcode, Yetconstant, Yetstring, Yetunprint, Yetinvalid } errtype;
 } scanqueue[INBUFFSZ], *lasttokfetch, *nexttokload;
 
-static char tempstrpool[2 * INBUFFSZ];
-static char *tptrstr;
+static char tempstrpool[2*INBUFFSZ];
 
 typedef enum char_t {
 // Control Space   '\n'    Alpha    '"'     Etc     '$'     '%'     '\''    0-1     2-7     8-9     ';'
@@ -79,7 +71,8 @@ static char_t chartrantab[0x80] = {
 };
 
 #if DEBUG
-
+// Compensating for lack of transparency in the lexical scanner.
+// Slated for removal, after root canal is done to nativize the C code and clean everything up.
 static char *statelab[] = {
    " 0 start of label",
    " 1 comment",
@@ -143,15 +136,12 @@ static char *actlab[] = {
    "33 set text start",
    "34 token choke"
 };
-
-#endif /* DEBUG */
+#endif // DEBUG
 
 const bool XX = false, oo = true;
-static struct {
-   char action;
-   char nextstate;
-   bool contin;
-} *thisact, characttab[23][CharXs] = {
+static struct ActItem {
+   char action, nextstate; bool contin;
+} characttab[][CharXs] = {
      // Control    Space      '\n'       Letter     '"'        Other      '$'        '%'
      // '\''       0-1        2-7        8-9        ';'        '<'        '='        '>'
      // '@'        ACEF       'B'        'D'        Hh         OoQq       acef       'b'
@@ -319,480 +309,296 @@ static struct {
    }
 };
 
-#define YEXL 32
-static char yytext[YEXL];
+static char yytext[0x20];
+static const size_t YEXL = sizeof yytext/sizeof yytext[0];
 
 static char *erryytextex(int type) {
-   char *strptr, *endptr;
-   int charcnt;
-
-   strptr = (lasttokfetch->textstrt) - 1;
-   if (type == STRING) {
-      endptr = (lasttokfetch->textend) - 1;
-      if (*endptr == '\n')
-         endptr--;
-   } else {
-      endptr = (lasttokfetch->textend) - 2;
-   }
-
-   for (charcnt = 0; (strptr <= endptr) && charcnt < (YEXL - 1); charcnt++) {
-      yytext[charcnt] = *strptr++;
-   }
+   char *strptr = lasttokfetch->textstrt - 1;
+   char *endptr = lasttokfetch->textend - 1;
+   if (type != STRING || *endptr == '\n') endptr--;
+   int charcnt = 0;
+   for (; strptr <= endptr && charcnt < YEXL - 1; strptr++, charcnt++) yytext[charcnt] = *strptr;
    yytext[charcnt] = '\0';
 }
 
 int Scan(void) {
    if (currtok >= intokcnt) {
       switch (nextreadact) {
-         case Nra_new: /* access next file */
+         case Nra_new: // Get the next file.
             fprintf(intermedf, "F:%s\n", infilestk[++currfstk].fnm);
             yyin = infilestk[currfstk].fpt;
             nextreadact = Nra_normal;
          case Nra_normal:
-            if (frareadrec()) {
-            /* EOF */ ;
-               return 0;
-            }
-            break;
-
-         case Nra_end: /* pop file and access previous */
+            if (frareadrec()) return 0; // EOF
+         break;
+         case Nra_end: // Pop the file and get the previous one.
             if (currfstk > 0) {
                fclose(yyin);
                yyin = infilestk[--currfstk].fpt;
                fprintf(intermedf, "X:%s\n", infilestk[currfstk].fnm);
-               if (frareadrec()) {
-               /* EOF */ ;
-                  return 0;
-               } else {
-                  nextreadact = Nra_normal;
-               }
-            } else {
-            /* EOF */ ;
-               return 0;
-            }
-            break;
+               if (frareadrec()) return 0; // EOF
+               nextreadact = Nra_normal;
+            } else return 0; // EOF
+         break;
       }
-
-      if (listflag) {
-         fputs(finbuff, intermedf);
-      } else {
-         fputs("L:\n", intermedf);
-      }
-
-   /* Scan a line */
-
-      frainptr = &finbuff[2];
-
-      currtok = intokcnt = 0;
-      nexttokload = &scanqueue[0];
-
-      tptrstr = &tempstrpool[0];
-      int scanstate = 0;
+      fputs(listflag? finbuff: "L:\n", intermedf);
+   // Scan a line.
+      char *frainptr = &finbuff[2]; // Point to the NUL byte after L: on start up.
+      currtok = intokcnt = 0, nexttokload = scanqueue;
+      char *tptrstr = tempstrpool;
       bool havesym = false; // true: symbol, false: opcode
       char *thistokstart;
       long consaccum, consbase;
-
+      int scanstate = 0;
       for (char nextchar; (nextchar = *frainptr++) != '\0'; ) {
-         char_t charset = chartrantab[nextchar & 0x7f];
+         char_t charset = chartrantab[nextchar&0x7f];
+         struct ActItem *thisact;
          do {
             thisact = &characttab[scanstate][charset];
-
 #if DEBUG
-            if (isprint(nextchar))
-               printf("%c    ", nextchar);
-            else
-               printf("0x%2.2x ", nextchar);
-            printf("%-18s %-33s %-11s  %2.2d\n", statelab[scanstate], actlab[thisact->action], thisact->contin ? "Continue" : "Swallow", thisact->nextstate);
+            if (isprint(nextchar)) printf("%c    ", nextchar); else printf("0x%2.2x ", nextchar);
+            printf("%-18s %-33s %-11s %2.2d\n", statelab[scanstate], actlab[thisact->action], thisact->contin? "Continue": "Swallow", thisact->nextstate);
 #endif
-
             switch (thisact->action) {
-               case 0: /* skip/no op */
-                  break;
-
-               case 1: /* load EOL token */
-                  nexttokload->lvalv.longv = 0;
-                  nexttokload->tokv = EOL;
-                  nexttokload->errtype = Yetunprint;
-                  nexttokload++;
-                  intokcnt++;
-                  break;
-
-               case 2: /* start string */
-                  thistokstart = tptrstr;
-                  nexttokload->textstrt = frainptr;
-                  break;
-
-               case 3: /* process label */
-               {
-                  struct symel *tempsym;
-
+            // Skip/no op.
+               case 0: break;
+            // Load '\n'.
+               case 1:
+                  nexttokload->lvalv.longv = 0, nexttokload->tokv = EOL, nexttokload->errtype = Yetunprint;
+                  nexttokload++, intokcnt++;
+               break;
+            // Start a string.
+               case 2:
+                  thistokstart = tptrstr, nexttokload->textstrt = frainptr;
+               break;
+            // Process a label.
+               case 3: {
                   *tptrstr++ = '\0';
-                  tempsym = symbentry(thistokstart, SYMBOL);
-                  if ((tempsym->seg) != SSG_RESV) {
-                     nexttokload->tokv = LABEL;
-                     nexttokload->errtype = Yetsymbol;
-                     nexttokload->lvalv.symb = tempsym;
-                  } else {
-                     nexttokload->tokv = tempsym->tok;
-                     nexttokload->errtype = Yetreserved;
-                     nexttokload->lvalv.intv = tempsym->value;
-                  }
+                  struct symel *tempsym = symbentry(thistokstart, SYMBOL);
+                  if (tempsym->seg != SSG_RESV)
+                     nexttokload->tokv = LABEL, nexttokload->errtype = Yetsymbol, nexttokload->lvalv.symb = tempsym;
+                  else
+                     nexttokload->tokv = tempsym->tok, nexttokload->errtype = Yetreserved, nexttokload->lvalv.intv = tempsym->value;
                   nexttokload->textend = frainptr;
-                  nexttokload++;
-                  intokcnt++;
+                  nexttokload++, intokcnt++;
                }
-                  break;
-
-               case 4: /* save string char */
+               break;
+            // Save a string character.
+               case 4:
                   *tptrstr++ = nextchar;
-                  break;
-
-               case 5: /* load single char token */
-                  nexttokload->lvalv.longv = 0;
-                  nexttokload->tokv = nextchar;
-                  nexttokload->errtype = Yetprint;
-                  nexttokload++;
-                  intokcnt++;
-                  break;
-
-               case 6: /* load EQ token */
-                  nexttokload->lvalv.longv = 0;
-                  nexttokload->tokv = KEOP_EQ;
-                  nexttokload->errtype = Yetunprint;
-                  nexttokload++;
-                  intokcnt++;
-                  break;
-
-               case 7: /* process symbol */
-               {
-                  struct symel *symp;
-                  char *ytp;
-                  int tempov;
-
+               break;
+            // Load a single character token.
+               case 5:
+                  nexttokload->lvalv.longv = 0, nexttokload->tokv = nextchar, nexttokload->errtype = Yetprint;
+                  nexttokload++, intokcnt++;
+               break;
+            // Load '='.
+               case 6:
+                  nexttokload->lvalv.longv = 0, nexttokload->tokv = KEOP_EQ, nexttokload->errtype = Yetunprint;
+                  nexttokload++, intokcnt++;
+               break;
+            // Process a symbol.
+               case 7:
                   *tptrstr++ = '\0';
                   if (!havesym) {
-                     for (ytp = thistokstart; *ytp != '\0'; ytp++) {
-                        if (islower(*ytp)) {
-                           *ytp = toupper(*ytp);
-                        }
-                     }
-                     nexttokload->lvalv.intv = tempov = findop(thistokstart);
-                     nexttokload->tokv = optab[tempov].token;
-                     nexttokload->errtype = Yetopcode;
+                     for (char *ytp = thistokstart; *ytp != '\0'; ytp++) if (islower(*ytp)) *ytp = toupper(*ytp);
+                     int tempov = findop(thistokstart);
+                     nexttokload->lvalv.intv = tempov, nexttokload->tokv = optab[tempov].token, nexttokload->errtype = Yetopcode;
                      havesym = true;
                   } else {
-                     symp = symbentry(thistokstart, SYMBOL);
-                     if (symp->seg != SSG_RESV) {
-                        nexttokload->lvalv.symb = symp;
-                        nexttokload->errtype = Yetsymbol;
-                     } else {
-                        nexttokload->lvalv.intv = symp->value;
-                        nexttokload->errtype = Yetreserved;
-                     }
-
+                     struct symel *symp = symbentry(thistokstart, SYMBOL);
+                     if (symp->seg != SSG_RESV)
+                        nexttokload->lvalv.symb = symp, nexttokload->errtype = Yetsymbol;
+                     else
+                        nexttokload->lvalv.intv = symp->value, nexttokload->errtype = Yetreserved;
                      nexttokload->tokv = symp->tok;
                   }
-
                   nexttokload->textend = frainptr;
-                  nexttokload++;
-                  intokcnt++;
-               }
-                  break;
-
-               case 8: /* load $ token */
-                  nexttokload->lvalv.longv = 0;
-                  nexttokload->tokv = '$';
-                  nexttokload->errtype = Yetprint;
-                  nexttokload++;
-                  intokcnt++;
-                  break;
-
-               case 9: /* setup for $hex */
-                  consbase = 16;
-                  consaccum = 0;
-                  break;
-
-               case 10: /* accumulate 0-9 constant */
-                  consaccum = (consaccum * consbase)
-                     + (nextchar - '0');
-                  break;
-
-               case 11: /* accumulate A-F constant */
-                  consaccum = (consaccum * consbase)
-                     + (nextchar - 'A' + 10);
-                  break;
-
-               case 12: /* accumulate a-f constant */
-                  consaccum = (consaccum * consbase)
-                     + (nextchar - 'a' + 10);
-                  break;
-
-               case 13: /* load Constant token */
-                  nexttokload->lvalv.longv = consaccum;
-                  nexttokload->tokv = CONSTANT;
-                  nexttokload->errtype = Yetconstant;
-                  nexttokload->textend = frainptr;
-                  nexttokload++;
-                  intokcnt++;
-                  break;
-
-               case 14: /* load @ token */
-                  nexttokload->lvalv.longv = 0;
-                  nexttokload->tokv = '@';
-                  nexttokload->errtype = Yetprint;
-                  nexttokload++;
-                  intokcnt++;
-                  break;
-
-               case 15: /* setup for @octal */
-                  consbase = 8;
-                  consaccum = 0;
-                  break;
-
-               case 16: /* setup for %binary */
-                  consbase = 2;
-                  consaccum = 0;
-                  break;
-
-               case 17: /* load % token */
-                  nexttokload->lvalv.longv = 0;
-                  nexttokload->tokv = '%';
-                  nexttokload->errtype = Yetprint;
-                  nexttokload++;
-                  intokcnt++;
-                  break;
-
-               case 18: /* load String token */
+                  nexttokload++, intokcnt++;
+               break;
+            // Load '$'.
+               case 8:
+                  nexttokload->lvalv.longv = 0, nexttokload->tokv = '$', nexttokload->errtype = Yetprint;
+                  nexttokload++, intokcnt++;
+               break;
+            // Set up for $[0-9a-fA-F]*.
+               case 9:
+                  consbase = 0x10, consaccum = 0;
+               break;
+            // Accumulate [0-9].
+               case 10:
+                  consaccum = consbase*consaccum + nextchar - '0';
+               break;
+            // Accumulate [A-F].
+               case 11:
+                  consaccum = consbase*consaccum + (nextchar - 'A' + 10);
+               break;
+            // Accumulate [a-f].
+               case 12:
+                  consaccum = consbase*consaccum + (nextchar - 'a' + 10);
+               break;
+            // Load a Constant token.
+               case 13:
+                  nexttokload->lvalv.longv = consaccum, nexttokload->tokv = CONSTANT;
+                  nexttokload->errtype = Yetconstant, nexttokload->textend = frainptr;
+                  nexttokload++, intokcnt++;
+               break;
+            // Load '@'.
+               case 14:
+                  nexttokload->lvalv.longv = 0, nexttokload->tokv = '@', nexttokload->errtype = Yetprint;
+                  nexttokload++, intokcnt++;
+               break;
+            // Set up for @[0-7]*.
+               case 15:
+                  consbase = 010, consaccum = 0;
+               break;
+            // Set up for %[0-1]*.
+               case 16:
+                  consbase = 2, consaccum = 0;
+               break;
+            // Load '%'.
+               case 17:
+                  nexttokload->lvalv.longv = 0, nexttokload->tokv = '%', nexttokload->errtype = Yetprint;
+                  nexttokload++, intokcnt++;
+               break;
+            // Load a String token.
+               case 18:
                   *tptrstr++ = '\0';
-                  nexttokload->lvalv.strng = thistokstart;
-                  nexttokload->tokv = STRING;
-                  nexttokload->errtype = Yetstring;
-                  nexttokload->textend = frainptr;
-                  nexttokload++;
-                  intokcnt++;
-                  break;
-
-               case 19: /* load GE token */
-                  nexttokload->lvalv.longv = 0;
-                  nexttokload->tokv = KEOP_GE;
-                  nexttokload->errtype = Yetunprint;
-                  nexttokload++;
-                  intokcnt++;
-                  break;
-
-               case 20: /* load GT token */
-                  nexttokload->lvalv.longv = 0;
-                  nexttokload->tokv = KEOP_GT;
-                  nexttokload->errtype = Yetunprint;
-                  nexttokload++;
-                  intokcnt++;
-                  break;
-
-               case 21: /* load LE token */
-                  nexttokload->lvalv.longv = 0;
-                  nexttokload->tokv = KEOP_LE;
-                  nexttokload->errtype = Yetunprint;
-                  nexttokload++;
-                  intokcnt++;
-                  break;
-
-               case 22: /* load NE token */
-                  nexttokload->lvalv.longv = 0;
-                  nexttokload->tokv = KEOP_NE;
-                  nexttokload->errtype = Yetunprint;
-                  nexttokload++;
-                  intokcnt++;
-                  break;
-
-               case 23: /* load LT token */
-                  nexttokload->lvalv.longv = 0;
-                  nexttokload->tokv = KEOP_LT;
-                  nexttokload->errtype = Yetunprint;
-                  nexttokload++;
-                  intokcnt++;
-                  break;
-
-               case 24: /* save numeric char 0-9 */
+                  nexttokload->lvalv.strng = thistokstart, nexttokload->tokv = STRING;
+                  nexttokload->errtype = Yetstring, nexttokload->textend = frainptr;
+                  nexttokload++, intokcnt++;
+               break;
+            // Load '≥'.
+               case 19:
+                  nexttokload->lvalv.longv = 0, nexttokload->tokv = KEOP_GE, nexttokload->errtype = Yetunprint;
+                  nexttokload++, intokcnt++;
+               break;
+            // Load '>'.
+               case 20:
+                  nexttokload->lvalv.longv = 0, nexttokload->tokv = KEOP_GT, nexttokload->errtype = Yetunprint;
+                  nexttokload++, intokcnt++;
+               break;
+            // Load '≤'.
+               case 21:
+                  nexttokload->lvalv.longv = 0, nexttokload->tokv = KEOP_LE, nexttokload->errtype = Yetunprint;
+                  nexttokload++, intokcnt++;
+               break;
+            // Load '≠'.
+               case 22:
+                  nexttokload->lvalv.longv = 0, nexttokload->tokv = KEOP_NE, nexttokload->errtype = Yetunprint;
+                  nexttokload++, intokcnt++;
+               break;
+            // Load '<'.
+               case 23:
+                  nexttokload->lvalv.longv = 0, nexttokload->tokv = KEOP_LT, nexttokload->errtype = Yetunprint;
+                  nexttokload++, intokcnt++;
+               break;
+            // Save a numeric character [0-9].
+               case 24:
                   *tptrstr++ = nextchar - '0';
-                  break;
-
-               case 25: /* save numeric char A-F */
+               break;
+            // Save a numeric character [A-F].
+               case 25:
                   *tptrstr++ = nextchar - 'A' + 10;
-                  break;
-
-               case 26: /* save numeric char a-f */
+               break;
+            // Save a numeric character [a-f].
+               case 26:
                   *tptrstr++ = nextchar - 'a' + 10;
-                  break;
-
-               case 27: /* convert numeric string base 2 */
-               {
-                  consaccum = 0;
-                  while (thistokstart < tptrstr) {
-                     consaccum = (consaccum * 2) + *thistokstart++;
-                  }
-                  nexttokload->lvalv.longv = consaccum;
-                  nexttokload->tokv = CONSTANT;
-                  nexttokload->errtype = Yetconstant;
-                  nexttokload->textend = frainptr;
-                  nexttokload++;
-                  intokcnt++;
-               }
-                  break;
-
-               case 28: /* convert numeric string base 8 */
-               {
-                  consaccum = 0;
-                  while (thistokstart < tptrstr) {
-                     consaccum = (consaccum * 8) + *thistokstart++;
-                  }
-                  nexttokload->lvalv.longv = consaccum;
-                  nexttokload->tokv = CONSTANT;
-                  nexttokload->errtype = Yetconstant;
-                  nexttokload->textend = frainptr;
-                  nexttokload++;
-                  intokcnt++;
-               }
-                  break;
-
-               case 29: /* convert numeric string base 10 */
-               {
-                  consaccum = 0;
-                  while (thistokstart < tptrstr) {
-                     consaccum = (consaccum * 10) + *thistokstart++;
-                  }
-                  nexttokload->lvalv.longv = consaccum;
-                  nexttokload->tokv = CONSTANT;
-                  nexttokload->errtype = Yetconstant;
-                  nexttokload->textend = frainptr;
-                  nexttokload++;
-                  intokcnt++;
-               }
-                  break;
-
-               case 30: /* convert numeric string base 16 */
-               {
-                  consaccum = 0;
-                  while (thistokstart < tptrstr) {
-                     consaccum = (consaccum * 16) + *thistokstart++;
-                  }
-                  nexttokload->lvalv.longv = consaccum;
-                  nexttokload->tokv = CONSTANT;
-                  nexttokload->errtype = Yetconstant;
-                  nexttokload->textend = frainptr;
-                  nexttokload++;
-                  intokcnt++;
-               }
-                  break;
-
-               case 31: /* save numeric 0xb */
+               break;
+            // Convert a numeric string base 2.
+               case 27:
+                  for (consaccum = 0; thistokstart < tptrstr; thistokstart++) consaccum = 2*consaccum + *thistokstart;
+                  nexttokload->lvalv.longv = consaccum, nexttokload->tokv = CONSTANT;
+                  nexttokload->errtype = Yetconstant, nexttokload->textend = frainptr;
+                  nexttokload++, intokcnt++;
+               break;
+            // Convert a numeric string base 8.
+               case 28:
+                  for (consaccum = 0; thistokstart < tptrstr; thistokstart++) consaccum = 010*consaccum + *thistokstart;
+                  nexttokload->lvalv.longv = consaccum, nexttokload->tokv = CONSTANT;
+                  nexttokload->errtype = Yetconstant, nexttokload->textend = frainptr;
+                  nexttokload++, intokcnt++;
+               break;
+            // Convert a numeric string base 10.
+               case 29:
+                  for (consaccum = 0; thistokstart < tptrstr; thistokstart++) consaccum = 10*consaccum + *thistokstart;
+                  nexttokload->lvalv.longv = consaccum, nexttokload->tokv = CONSTANT;
+                  nexttokload->errtype = Yetconstant, nexttokload->textend = frainptr;
+                  nexttokload++, intokcnt++;
+               break;
+            // Convert a numeric string base 16.
+               case 30:
+                  for (consaccum = 0; thistokstart < tptrstr; thistokstart++) consaccum = 0x10*consaccum + *thistokstart;
+                  nexttokload->lvalv.longv = consaccum, nexttokload->tokv = CONSTANT;
+                  nexttokload->errtype = Yetconstant, nexttokload->textend = frainptr;
+                  nexttokload++, intokcnt++;
+               break;
+            // Save numeric 0xb.
+               case 31:
                   *tptrstr++ = 0xb;
-                  break;
-
-               case 32: /* save numeric 0xd */
+               break;
+            // Save numeric 0xd.
+               case 32:
                   *tptrstr++ = 0xd;
-                  break;
-
-               case 33: /* set text start */
+               break;
+            // Set the text start.
+               case 33:
                   nexttokload->textstrt = frainptr;
-                  break;
-
-               case 34: /* token choke */
-                  nexttokload->lvalv.longv = 0L;
-                  nexttokload->tokv = KTK_invalid;
-                  nexttokload->errtype = Yetinvalid;
-                  nexttokload->textend = frainptr;
-                  nexttokload++;
-                  intokcnt++;
-                  break;
+               break;
+            // Token choke.
+               case 34:
+                  nexttokload->lvalv.longv = 0L, nexttokload->tokv = KTK_invalid;
+                  nexttokload->errtype = Yetinvalid, nexttokload->textend = frainptr;
+                  nexttokload++, intokcnt++;
+               break;
             }
-
             scanstate = thisact->nextstate;
-
          } while (thisact->contin);
       }
-
-      if (intokcnt <= 0) { /* no tokens in line (comment or whitespace overlength) */
-         scanqueue[0].tokv = EOL;
-         scanqueue[0].errtype = Yetunprint;
-         scanqueue[0].lvalv.longv = 0;
-         intokcnt = 1;
-      }
-
-      if (scanstate != 0) { /* no EOL */
-         fraerror("Overlength/Unterminated Line");
-      }
+   // If no tokens were in in line (comment or whitespace overlength).
+      if (intokcnt <= 0) scanqueue[0].tokv = EOL, scanqueue[0].errtype = Yetunprint, scanqueue[0].lvalv.longv = 0, intokcnt = 1;
+   // If there was no '\n'.
+      if (scanstate != 0) fraerror("Overlength/Unterminated Line");
    }
    lasttokfetch = &scanqueue[currtok++];
    yylval = lasttokfetch->lvalv;
    return lasttokfetch->tokv;
 }
 
-// First pass - output a parser error to intermediate file
+// First pass ― output a parser error to intermediate file.
 void yyerror(char *str) {
    switch (lasttokfetch->errtype) {
       case Yetprint:
-         if (!isprint(lasttokfetch->tokv)) {
+         if (!isprint(lasttokfetch->tokv))
             fprintf(intermedf, "E: ERROR - %s at/before character \"^%c\"\n", str, PRINTCTRL(lasttokfetch->tokv));
-         } else {
+         else
             fprintf(intermedf, "E: ERROR - %s at/before character \"%c\"\n", str, lasttokfetch->tokv);
-         }
-         break;
-
-      case Yetsymbol:
-      case Yetreserved:
-      case Yetopcode:
-      case Yetconstant:
-         erryytextex(SYMBOL);
-         fprintf(intermedf, "E: ERROR - %s at/before token \"%s\" \n", str, yytext);
-         break;
-
+      break;
+      case Yetsymbol: case Yetreserved: case Yetopcode: case Yetconstant:
+         erryytextex(SYMBOL), fprintf(intermedf, "E: ERROR - %s at/before token \"%s\" \n", str, yytext);
+      break;
       case Yetinvalid:
-         erryytextex(SYMBOL);
-         fprintf(intermedf, "E: ERROR - %s at invalid token \"%s\" \n", str, yytext);
-         break;
-
+         erryytextex(SYMBOL), fprintf(intermedf, "E: ERROR - %s at invalid token \"%s\" \n", str, yytext);
+      break;
       case Yetstring:
-         erryytextex(STRING);
-         fprintf(intermedf, "E: ERROR - %s at/before string %s \n", str, yytext);
-         break;
-
+         erryytextex(STRING), fprintf(intermedf, "E: ERROR - %s at/before string %s \n", str, yytext);
+      break;
       case Yetunprint: {
          char *taglab;
-
          switch (lasttokfetch->tokv) {
-            case EOL:
-               taglab = "End of Line";
-               break;
-            case KEOP_EQ:
-               taglab = "\"=\"";
-               break;
-            case KEOP_GE:
-               taglab = "\">=\"";
-               break;
-            case KEOP_GT:
-               taglab = "\">\"";
-               break;
-            case KEOP_LE:
-               taglab = "\"<=\"";
-               break;
-            case KEOP_NE:
-               taglab = "\"<>\"";
-               break;
-            case KEOP_LT:
-               taglab = "\"<\"";
-               break;
-            default:
-               taglab = "Undeterminable Symbol";
-               break;
+            case EOL: taglab = "End of Line"; break;
+            case KEOP_EQ: taglab = "\"=\""; break;
+            case KEOP_GE: taglab = "\">=\""; break;
+            case KEOP_GT: taglab = "\">\""; break;
+            case KEOP_LE: taglab = "\"<=\""; break;
+            case KEOP_NE: taglab = "\"<>\""; break;
+            case KEOP_LT: taglab = "\"<\""; break;
+            default: taglab = "Undeterminable Symbol"; break;
          }
          fprintf(intermedf, "E: ERROR - %s at/before %s\n", str, taglab);
       }
-         break;
-
-      default:
-         fprintf(intermedf, "E: ERROR - %s - undetermined yyerror type\n", str);
-         break;
+      break;
+      default: fprintf(intermedf, "E: ERROR - %s - undetermined yyerror type\n", str); break;
    }
-
    errorcnt++;
 }

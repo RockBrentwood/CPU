@@ -3,17 +3,14 @@
 // Original author: Mark Zenier.
 // Framework crossassembler for z80 + and minus.
 
-// Frame work parser description for framework cross
-// assemblers
+// Frame work parser description for framework cross-assemblers.
 #include <stdio.h>
 #include "Extern.h"
 #include "Constants.h"
 
-// Selection critera and syntax type defines for
-// the z80 frasm (framework cross assembler)
+// Selection critera and syntax type defines for the Z80 frasm (framework cross-assembler).
 
-/* xxxx.0000.0000.0000 cpu mask selection for all instructions */
-
+// xxxx.0000.0000.0000:	CPU mask selection for all instructions.
 #define	CPUMASK		0xf000
 
 #define	CPU8080		0x1000
@@ -26,9 +23,7 @@
 #define	TSZ80PLUS	0x4000
 #define	TS64180		0x8000
 
-/* 0000.0000.0xxx.xxxx double register select bits for B02, CC01, LD02, LD03,
-			LD05, LD06, LD07, LD08, LD09, LD10, LD12, N03, N04, N05,
-			N07, N11 */
+// 0000.0000.0xxx.xxxx:	double register select bits for B02, CC01, LD02, LD03, LD05, LD06, LD07, LD08, LD09, LD10, LD12, N03, N04, N05, N07, N11.
 #define DRMASK 0x7f
 #define	DRIX	1
 #define	DRIY	2
@@ -38,19 +33,17 @@
 #define	DRBC	0x20
 #define	DRAF	0x40
 
-/* 0000.0xxx.x000.0000 destination select bits */
+// 0000.0xxx.x000.0000:	destination select bits.
 #define	DRDESTMASK	0x780
 #define	DRDESTSP	0x80
 #define DRDESTHL	0x100
 #define DRDESTIX	0x200
 #define DRDESTIY	0x300
 
-/* 0000.x000.0000.0000 register is accum for LD02, LD10 */
-
+// 0000.x000.0000.0000:	register is accum for LD02, LD10.
 #define REGISA	0x800
 
-/* register field values for instructions */
-
+// Register field values for instructions.
 #define	VALREGA	7
 #define	VALREGB	0
 #define	VALREGC	1
@@ -62,7 +55,7 @@
 #define ST_B01 0x1
 #define ST_B02 0x2
 #define ST_B03 0x4
-/* 0000.0000.xxxx.xxxx condition select */
+// 0000.0000.xxxx.xxxx:	condition select.
 #define CCSELMASK	0x00ff
 #define CCSELNZ	0x0001
 #define CCSELZ	0x0002
@@ -79,15 +72,15 @@
 #define ST_CC05 0x10
 #define ST_EX01 0x1
 #define EXMASK	0xf
-/* 0000.0000.0000.00xx */
+// 0000.0000.0000.00xx.
 #define EX2AF		1
 #define EX2HL		2
-/* 0000.0000.0000.xx00 */
+// 0000.0000.0000.xx00.
 #define EX1AF		4
 #define EX1DE		8
 #define ST_EX02 0x2
 #define ST_IM01 0x1
-/* 0000.0000.0000.0xxx interrupt mode select bits */
+// 0000.0000.0000.0xxx:	interrupt mode select bits.
 #define	INTSETMASK	7
 #define INTSETMODE0	1
 #define INTSETMODE1	2
@@ -111,7 +104,7 @@
 #define ST_LD13 0x1000
 #define ST_LD14 0x2000
 #define ST_LD15 0x4000
-/* 0000.0000.0000.00xx */
+// 0000.0000.0000.00xx.
 #define SPECIALRMASK	3
 #define SPECIALIR	1
 #define SPECIALRR	2
@@ -370,9 +363,9 @@ line: KOC_CHDEF STRING ',' exprlist {
             fraerror("noncomputable expression");
          else switch (findrv) {
             case CF_UNDEF:
-               if (evalr[0].value < 0 || evalr[0].value > 255)
+               if (evalr[0].value < 0 || evalr[0].value > 0xff)
                   frawarn("character translation value truncated");
-               *charaddr = evalr[0].value & 0xff;
+               *charaddr = evalr[0].value&0xff;
                prtequvalue("C: 0x%lx\n", evalr[0].value);
             break;
             case CF_INVALID: case CF_NUMBER:
@@ -516,7 +509,7 @@ genline: KOC_ioop '(' topexpr ')' ',' reg8 {
    genlocrec(currseg, labelloc);
    pevalexpr(1, $3);
    evalr[2].value = $6 << 3;
-   locctr += geninstr(findgen($1, ST_IO01, cpuselect | ($6 == VALREGA ? REGISA : 0)));
+   locctr += geninstr(findgen($1, ST_IO01, cpuselect | ($6 == VALREGA? REGISA: 0)));
 };
 genline: KOC_ioop '(' REGC ')' ',' reg8 {
    genlocrec(currseg, labelloc);
@@ -527,7 +520,7 @@ genline: KOC_ioop reg8 ',' '(' topexpr ')' {
    genlocrec(currseg, labelloc);
    evalr[1].value = $2 << 3;
    pevalexpr(2, $5);
-   locctr += geninstr(findgen($1, ST_IO03, cpuselect | ($2 == VALREGA ? REGISA : 0)));
+   locctr += geninstr(findgen($1, ST_IO03, cpuselect | ($2 == VALREGA? REGISA: 0)));
 };
 genline: KOC_ioop reg8 ',' '(' REGC ')' {
    genlocrec(currseg, labelloc);
@@ -542,7 +535,7 @@ genline: KOC_ldop '(' dreg ')' ',' topexpr {
 genline: KOC_ldop '(' dreg ')' ',' reg8 {
    genlocrec(currseg, labelloc);
    evalr[1].value = $6;
-   locctr += geninstr(findgen($1, ST_LD02, cpuselect | $3 | ($6 == VALREGA ? REGISA : 0)));
+   locctr += geninstr(findgen($1, ST_LD02, cpuselect | $3 | ($6 == VALREGA? REGISA: 0)));
 };
 genline: KOC_ldop '(' topexpr ')' ',' dreg {
    genlocrec(currseg, labelloc);
@@ -561,7 +554,7 @@ genline: KOC_ldop dreg ',' '(' topexpr ')' {
 };
 genline: KOC_ldop dreg ',' dreg {
    genlocrec(currseg, labelloc);
-   locctr += geninstr(findgen($1, ST_LD06, cpuselect | $4 | ($2 == DRSP ? DRDESTSP : 0)));
+   locctr += geninstr(findgen($1, ST_LD06, cpuselect | $4 | ($2 == DRSP? DRDESTSP: 0)));
 };
 genline: KOC_ldop dreg ',' topexpr {
    genlocrec(currseg, labelloc);
@@ -583,7 +576,7 @@ genline: KOC_ldop index ',' reg8 {
 genline: KOC_ldop reg8 ',' '(' dreg ')' {
    genlocrec(currseg, labelloc);
    evalr[1].value = $2 << 3;
-   locctr += geninstr(findgen($1, ST_LD10, cpuselect | $5 | ($2 == VALREGA ? REGISA : 0)));
+   locctr += geninstr(findgen($1, ST_LD10, cpuselect | $5 | ($2 == VALREGA? REGISA: 0)));
 };
 genline: KOC_ldop reg8 ',' topexpr {
    genlocrec(currseg, labelloc);
@@ -605,11 +598,11 @@ genline: KOC_ldop reg8 ',' reg8 {
 genline: KOC_ldop reg8 ',' '(' topexpr ')' {
    genlocrec(currseg, labelloc);
    pevalexpr(1, $5);
-   locctr += geninstr(findgen($1, ST_LD14, cpuselect | ($2 == VALREGA ? REGISA : 0)));
+   locctr += geninstr(findgen($1, ST_LD14, cpuselect | ($2 == VALREGA? REGISA: 0)));
 };
 genline: KOC_ldop reg8 ',' specialr {
    genlocrec(currseg, labelloc);
-   locctr += geninstr(findgen($1, ST_LD15, cpuselect | $4 | ($2 == VALREGA ? REGISA : 0)));
+   locctr += geninstr(findgen($1, ST_LD15, cpuselect | $4 | ($2 == VALREGA? REGISA: 0)));
 };
 genline: KOC_ldop specialr ',' REGA {
    genlocrec(currseg, labelloc);
@@ -656,22 +649,22 @@ genline: KOC_opcode reg8 {
 };
 genline: KOC_opcode reg8 ',' '(' DREGHL ')' {
    genlocrec(currseg, labelloc);
-   locctr += geninstr(findgen($1, ST_N09, cpuselect | ($2 == VALREGA ? REGISA : 0)));
+   locctr += geninstr(findgen($1, ST_N09, cpuselect | ($2 == VALREGA? REGISA: 0)));
 };
 genline: KOC_opcode reg8 ',' topexpr {
    genlocrec(currseg, labelloc);
    pevalexpr(1, $4);
-   locctr += geninstr(findgen($1, ST_N10, cpuselect | ($2 == VALREGA ? REGISA : 0)));
+   locctr += geninstr(findgen($1, ST_N10, cpuselect | ($2 == VALREGA? REGISA: 0)));
 };
 genline: KOC_opcode reg8 ',' index {
    genlocrec(currseg, labelloc);
    pevalexpr(1, $4.exp);
-   locctr += geninstr(findgen($1, ST_N11, cpuselect | $4.indsel | ($2 == VALREGA ? REGISA : 0)));
+   locctr += geninstr(findgen($1, ST_N11, cpuselect | $4.indsel | ($2 == VALREGA? REGISA: 0)));
 };
 genline: KOC_opcode reg8 ',' reg8 {
    genlocrec(currseg, labelloc);
    evalr[1].value = $4;
-   locctr += geninstr(findgen($1, ST_N12, cpuselect | ($2 == VALREGA ? REGISA : 0)));
+   locctr += geninstr(findgen($1, ST_N12, cpuselect | ($2 == VALREGA? REGISA: 0)));
 };
 genline: KOC_restart expr {
    int selc = 0;

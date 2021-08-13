@@ -3,31 +3,30 @@
 // Original author: Mark Zenier.
 // 8048 et al instruction generation file.
 
-// Frame work parser description for framework cross
-// assemblers
+// Frame work parser description for framework cross-assemblers.
 #include <stdio.h>
 #include "Extern.h"
 #include "Constants.h"
 
-/* 0000.0000.0000.xxxx interrupt selections */
+// 0000.0000.0000.xxxx:	interrupt selections.
 #define	ISELMASK	0xf
 #define	ISELI		0x1
 #define	ISELTCNTI	0x2
 #define	ISELDMA		0x4
 #define	ISELFLAGS	0x8
-/* 0000.0000.0000.xxxx accum-flag selections */
+// 0000.0000.0000.xxxx:	accum-flag selections.
 #define	AFSELMASK	0xf
 #define	AFSELA		0x1
 #define	AFSELC		0x2
 #define	AFSELF0		0x4
 #define	AFSELF1		0x8
-/* 0000.0000.xxxx.0000 low port selections */
+// 0000.0000.xxxx.0000:	low port selections.
 #define	PSELMASK	0xf0
 #define	PSELBUS		0x10
 #define	PSELP1		0x20
 #define	PSELP2		0x40
 #define	PSELDBB		0x80
-/* 0000.00xx.xxxx.0000 misc register selections */
+// 0000.00xx.xxxx.0000:	misc register selections.
 #define	MSELMASK	0x3f0
 #define	MSELPSW		0x10
 #define	MSELT		0x20
@@ -35,12 +34,12 @@
 #define	MSELTCNT	0x80
 #define	MSELCLK		0x100
 #define	MSELSTS		0x200
-/* 0000.xx00.0000.0000 ram size */
+// 0000.xx00.0000.0000:	RAM size.
 #define	RAMSIZEMASK	0xc00
 #define	RAMSIZE64	0x400
 #define	RAMSIZE128	0x800
 #define	RAMSIZE256	0xc00
-/* xxx0.0000.0000.0000 instruction set variations */
+// xxx0.0000.0000.0000:	instruction set variations.
 #define	INSTIDL		0x8000
 #define	INSTNOT41	0x4000
 #define	INST41		0x2000
@@ -83,7 +82,7 @@
 #define ST_MINDIRRIM 0x200
 
 static char *genbdef = "[1=];";
-static char *genwdef = "[1=]y"; /* x for normal, y for byte rev */
+static char *genwdef = "[1=]y"; // x for normal, y for byte rev.
 char *ignosyn = "[Xinvalid syntax for instruction";
 char *ignosel = "[Xinvalid operands/illegal instruction for cpu";
 int cpuselect = CPU80C50;
@@ -301,9 +300,9 @@ line: KOC_CHDEF STRING ',' exprlist {
             fraerror("noncomputable expression");
          else switch (findrv) {
             case CF_UNDEF:
-               if (evalr[0].value < 0 || evalr[0].value > 255)
+               if (evalr[0].value < 0 || evalr[0].value > 0xff)
                   frawarn("character translation value truncated");
-               *charaddr = evalr[0].value & 0xff;
+               *charaddr = evalr[0].value&0xff;
                prtequvalue("C: 0x%lx\n", evalr[0].value);
             break;
             case CF_INVALID: case CF_NUMBER:
@@ -373,17 +372,17 @@ line: LABEL KOC_REG expr {
       pevalexpr(0, $3);
       if (evalr[0].seg != SSG_ABS)
          fraerror("noncomputable expression for REGISTER SET");
-      else switch (cpuselect & RAMSIZEMASK) {
+      else switch (cpuselect&RAMSIZEMASK) {
          case RAMSIZE64:
-            if (evalr[0].value < 0 || evalr[0].value > 63)
+            if (evalr[0].value < 0 || evalr[0].value > 0x3f)
                fraerror("unimplemented register address");
          break;
          case RAMSIZE128:
-            if (evalr[0].value < 0 || evalr[0].value > 127)
+            if (evalr[0].value < 0 || evalr[0].value > 0x7f)
                fraerror("unimplemented register address");
          break;
          case RAMSIZE256:
-            if (evalr[0].value < 0 || evalr[0].value > 255)
+            if (evalr[0].value < 0 || evalr[0].value > 0xff)
                fraerror("unimplemented register address");
          break;
          default: break;

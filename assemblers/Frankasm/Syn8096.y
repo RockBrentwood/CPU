@@ -3,17 +3,16 @@
 // Original author: Mark Zenier.
 // 8096 instruction generation file.
 
-// Frame work parser description for framework cross
-// assemblers
+// Frame work parser description for framework cross-assemblers.
 #include <stdio.h>
 #include "Extern.h"
 #include "Constants.h"
 
-/*	0000.0000.0000.00xx	short/long index selection */
+// 0000.0000.0000.00xx:	short/long index selection.
 #define	ADDR		0x3
 #define	DIRECT		0x1
 #define	EXTENDED	0x2
-/*	0000.0000.0000.x000	80196 select */
+// 0000.0000.0000.x000:	80196 select.
 #define	CPU196		0x8
 #define	CPU96		0
 #define ST_INH 0x1
@@ -35,10 +34,10 @@
 
 int cpuselect = CPU196;
 static char *genbdef = "[1=];";
-static char *genwdef = "[1=]y"; /* x for normal, y for byte rev */
+static char *genwdef = "[1=]y"; // x for normal, y for byte rev.
 char *ignosyn = "[Xinvalid syntax for instruction";
 char *ignosel = "[Xinvalid operands/illegal instruction for cpu";
-/*	constants for increment bit in indirect operand */
+// Constant / for increment bit in indirect operand.
 #define	AUTOINC		1
 #define	NOINC		0
 long labelloc;
@@ -248,9 +247,9 @@ line: KOC_CHDEF STRING ',' exprlist {
             fraerror("noncomputable expression");
          else switch (findrv) {
             case CF_UNDEF:
-               if (evalr[0].value < 0 || evalr[0].value > 255)
+               if (evalr[0].value < 0 || evalr[0].value > 0xff)
                   frawarn("character translation value truncated");
-               *charaddr = evalr[0].value & 0xff;
+               *charaddr = evalr[0].value&0xff;
                prtequvalue("C: 0x%lx\n", evalr[0].value);
             break;
             case CF_INVALID: case CF_NUMBER:
@@ -310,32 +309,32 @@ stringlist: stringlist ',' STRING { stringlist[nextstrs++] = $3, $$ = nextstrs; 
 stringlist: STRING { nextstrs = 0, stringlist[nextstrs++] = $1, $$ = nextstrs; };
 
 genline: KOC_AWRESM expr {
-   while (labelloc & 1)
+   while (labelloc&1)
       labelloc += 1;
    pevalexpr(0, $2);
    if (evalr[0].seg != SSG_ABS)
       fraerror("noncomputable result for RMB expression");
    else
-      locctr = labelloc + (2 * evalr[0].value), prtequvalue("C: 0x%lx\n", labelloc);
+      locctr = labelloc + 2*evalr[0].value, prtequvalue("C: 0x%lx\n", labelloc);
 };
 genline: KOC_ALRESM expr {
-   while (labelloc & 3)
+   while (labelloc&3)
       labelloc += 1;
    pevalexpr(0, $2);
    if (evalr[0].seg != SSG_ABS)
       fraerror("noncomputable result for RMB expression");
    else
-      locctr = labelloc + (4 * evalr[0].value), prtequvalue("C: 0x%lx\n", labelloc);
+      locctr = labelloc + 4*evalr[0].value, prtequvalue("C: 0x%lx\n", labelloc);
 };
 genline: KOC_ALDEF exprlist {
-   while (labelloc & 3)
+   while (labelloc&3)
       labelloc = (locctr += 1);
    genlocrec(currseg, labelloc);
    for (satsub = 0; satsub < $2; satsub++)
       pevalexpr(1, exprlist[satsub]), locctr += geninstr("[1=]~.ffff&y!.10}y");
 };
 genline: KOC_AWDEF exprlist {
-   if (labelloc & 1)
+   if (labelloc&1)
       labelloc = (locctr += 1);
    genlocrec(currseg, labelloc);
    for (satsub = 0; satsub < $2; satsub++)
@@ -354,20 +353,20 @@ genline: KOC_opcode {
 genline: KOC_opcode expr {
    genlocrec(currseg, labelloc);
    pevalexpr(1, $2);
-   locctr += geninstr(findgen($1, ST_DIR1, cpuselect + ((evalr[1].seg == SSG_ABS && evalr[1].value >= 0 && evalr[1].value <= 255) ? DIRECT : EXTENDED)));
+   locctr += geninstr(findgen($1, ST_DIR1, cpuselect + (evalr[1].seg == SSG_ABS && evalr[1].value >= 0 && evalr[1].value <= 0xff? DIRECT: EXTENDED)));
 };
 genline: KOC_opcode expr ',' expr {
    genlocrec(currseg, labelloc);
    pevalexpr(1, $2);
    pevalexpr(2, $4);
-   locctr += geninstr(findgen($1, ST_DIR2, cpuselect + ((evalr[2].seg == SSG_ABS && evalr[2].value >= 0 && evalr[2].value <= 255) ? DIRECT : EXTENDED)));
+   locctr += geninstr(findgen($1, ST_DIR2, cpuselect + (evalr[2].seg == SSG_ABS && evalr[2].value >= 0 && evalr[2].value <= 0xff? DIRECT: EXTENDED)));
 };
 genline: KOC_opcode expr ',' expr ',' expr {
    genlocrec(currseg, labelloc);
    pevalexpr(1, $2);
    pevalexpr(2, $4);
    pevalexpr(3, $6);
-   locctr += geninstr(findgen($1, ST_DIR3, cpuselect + ((evalr[3].seg == SSG_ABS && evalr[3].value >= 0 && evalr[3].value <= 255) ? DIRECT : EXTENDED)));
+   locctr += geninstr(findgen($1, ST_DIR3, cpuselect + (evalr[3].seg == SSG_ABS && evalr[3].value >= 0 && evalr[3].value <= 0xff? DIRECT: EXTENDED)));
 };
 genline: KOC_opcode '#' expr {
    genlocrec(currseg, labelloc);
@@ -433,14 +432,14 @@ genline: KOC_opcode expr '[' expr ']' {
    genlocrec(currseg, labelloc);
    pevalexpr(1, $2);
    pevalexpr(2, $4);
-   locctr += geninstr(findgen($1, ST_INX1, cpuselect + ((evalr[1].seg == SSG_ABS && evalr[1].value >= -128 && evalr[1].value <= 127) ? DIRECT : EXTENDED)));
+   locctr += geninstr(findgen($1, ST_INX1, cpuselect + (evalr[1].seg == SSG_ABS && evalr[1].value >= -0x80 && evalr[1].value <= 0x7f? DIRECT: EXTENDED)));
 };
 genline: KOC_opcode expr ',' expr '[' expr ']' {
    genlocrec(currseg, labelloc);
    pevalexpr(1, $2);
    pevalexpr(2, $4);
    pevalexpr(3, $6);
-   locctr += geninstr(findgen($1, ST_INX2, cpuselect + ((evalr[2].seg == SSG_ABS && evalr[2].value >= -128 && evalr[2].value <= 127) ? DIRECT : EXTENDED)));
+   locctr += geninstr(findgen($1, ST_INX2, cpuselect + (evalr[2].seg == SSG_ABS && evalr[2].value >= -0x80 && evalr[2].value <= 0x7f? DIRECT: EXTENDED)));
 };
 genline: KOC_opcode expr ',' expr ',' expr '[' expr ']' {
    genlocrec(currseg, labelloc);
@@ -448,7 +447,7 @@ genline: KOC_opcode expr ',' expr ',' expr '[' expr ']' {
    pevalexpr(2, $4);
    pevalexpr(3, $6);
    pevalexpr(4, $8);
-   locctr += geninstr(findgen($1, ST_INX3, cpuselect + ((evalr[3].seg == SSG_ABS && evalr[3].value >= -128 && evalr[3].value <= 127) ? DIRECT : EXTENDED)));
+   locctr += geninstr(findgen($1, ST_INX3, cpuselect + (evalr[3].seg == SSG_ABS && evalr[3].value >= -0x80 && evalr[3].value <= 0x7f? DIRECT: EXTENDED)));
 };
 
 expr: '+' expr %prec KEOP_MUN { $$ = $2; };

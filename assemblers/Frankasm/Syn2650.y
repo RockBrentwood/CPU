@@ -3,21 +3,18 @@
 // Original author: Mark Zenier.
 // 2650 instruction generation file, standard syntax.
 
-// Frame work parser description for framework cross
-// assemblers
+// Frame work parser description for framework cross-assemblers.
 #include <stdio.h>
 #include "Extern.h"
 #include "Constants.h"
 
-        /* selectors for register */
-        /* 0000 0000 0000 xxxx */
+// 0000 0000 0000 xxxx:	selectors for register.
 #define REGMASK	0xf
 #define REG0	0x1
 #define REG1	0x2
 #define REG2	0x4
 #define REG3	0x8
-        /* selectors for conditions */
-        /* 0000 0000 xxxx 0000 */
+// 0000 0000 xxxx 0000:	selectors for conditions.
 #define CONDMASK	0xf0
 #define COND0	0x10
 #define COND1	0x20
@@ -58,7 +55,7 @@ static int regsel[4] = { REG0, REG1, REG2, REG3 };
 static int condsel[4] = { COND0, COND1, COND2, COND3 };
 static int prevpage;
 static char *genbdef = "[1=];";
-static char *genwdef = "[1=]x"; /* x for normal, y for byte rev */
+static char *genwdef = "[1=]x"; // x for normal, y for byte rev.
 char *ignosyn = "[Xinvalid syntax for instruction";
 char *ignosel = "[Xinvalid operands";
 long labelloc;
@@ -267,9 +264,9 @@ line: KOC_CHDEF STRING ',' exprlist {
             fraerror("noncomputable expression");
          else switch (findrv) {
             case CF_UNDEF:
-               if (evalr[0].value < 0 || evalr[0].value > 255)
+               if (evalr[0].value < 0 || evalr[0].value > 0xff)
                   frawarn("character translation value truncated");
-               *charaddr = evalr[0].value & 0xff;
+               *charaddr = evalr[0].value&0xff;
                prtequvalue("C: 0x%lx\n", evalr[0].value);
             break;
             case CF_INVALID: case CF_NUMBER:
@@ -335,34 +332,34 @@ genline: KOC_ACON exprlist {
 };
 genline: KOC_opcode {
    genlocrec(currseg, labelloc);
-   prevpage = locctr & PAGEBITS;
+   prevpage = locctr&PAGEBITS;
    if (prevpage == locctr)
       frawarn("Page Boundary");
    locctr += geninstr(findgen($1, ST_INH, 0));
 };
 genline: KOC_opcode expr {
    genlocrec(currseg, labelloc);
-   prevpage = (locctr & PAGEBITS);
+   prevpage = (locctr&PAGEBITS);
    if (prevpage == locctr)
       frawarn("Page Boundary");
    pevalexpr(1, $2);
    locctr += geninstr(findgen($1, ST_EXP, 0));
-   if (((locctr - 1) & PAGEBITS) != prevpage)
+   if (((locctr - 1)&PAGEBITS) != prevpage)
       fraerror("instruction crosses page boundry");
 };
 genline: KOC_opcode '*' expr {
    genlocrec(currseg, labelloc);
-   prevpage = (locctr & PAGEBITS);
+   prevpage = (locctr&PAGEBITS);
    if (prevpage == locctr)
       frawarn("Page Boundary");
    pevalexpr(1, $3);
    locctr += geninstr(findgen($1, ST_INDIR, 0));
-   if (((locctr - 1) & PAGEBITS) != prevpage)
+   if (((locctr - 1)&PAGEBITS) != prevpage)
       fraerror("instruction crosses page boundry");
 };
 genline: KOC_opcode REGISTER {
    genlocrec(currseg, labelloc);
-   prevpage = (locctr & PAGEBITS);
+   prevpage = (locctr&PAGEBITS);
    if (prevpage == locctr)
       frawarn("Page Boundary");
    evalr[1].value = $2;
@@ -370,7 +367,7 @@ genline: KOC_opcode REGISTER {
 };
 genline: KOC_opcode ',' REGISTER {
    genlocrec(currseg, labelloc);
-   prevpage = (locctr & PAGEBITS);
+   prevpage = (locctr&PAGEBITS);
    if (prevpage == locctr)
       frawarn("Page Boundary");
    evalr[1].value = $3;
@@ -378,29 +375,29 @@ genline: KOC_opcode ',' REGISTER {
 };
 genline: KOC_opcode ',' REGISTER expr {
    genlocrec(currseg, labelloc);
-   prevpage = (locctr & PAGEBITS);
+   prevpage = (locctr&PAGEBITS);
    if (prevpage == locctr)
       frawarn("Page Boundary");
    evalr[1].value = $3;
    pevalexpr(2, $4);
    locctr += geninstr(findgen($1, ST_REGEXP, regsel[$3]));
-   if (((locctr - 1) & PAGEBITS) != prevpage)
+   if (((locctr - 1)&PAGEBITS) != prevpage)
       fraerror("instruction crosses page boundry");
 };
 genline: KOC_opcode ',' REGISTER '*' expr {
    genlocrec(currseg, labelloc);
-   prevpage = (locctr & PAGEBITS);
+   prevpage = (locctr&PAGEBITS);
    if (prevpage == locctr)
       frawarn("Page Boundary");
    evalr[1].value = $3;
    pevalexpr(2, $5);
    locctr += geninstr(findgen($1, ST_REGINDIR, regsel[$3]));
-   if (((locctr - 1) & PAGEBITS) != prevpage)
+   if (((locctr - 1)&PAGEBITS) != prevpage)
       fraerror("instruction crosses page boundry");
 };
 genline: KOC_opcode ',' CONDITION {
    genlocrec(currseg, labelloc);
-   prevpage = (locctr & PAGEBITS);
+   prevpage = (locctr&PAGEBITS);
    if (prevpage == locctr)
       frawarn("Page Boundary");
    evalr[1].value = $3;
@@ -408,63 +405,63 @@ genline: KOC_opcode ',' CONDITION {
 };
 genline: KOC_opcode ',' CONDITION expr {
    genlocrec(currseg, labelloc);
-   prevpage = (locctr & PAGEBITS);
+   prevpage = (locctr&PAGEBITS);
    if (prevpage == locctr)
       frawarn("Page Boundary");
    evalr[1].value = $3;
    pevalexpr(2, $4);
    locctr += geninstr(findgen($1, ST_CONDEXP, condsel[$3]));
-   if (((locctr - 1) & PAGEBITS) != prevpage)
+   if (((locctr - 1)&PAGEBITS) != prevpage)
       fraerror("instruction crosses page boundry");
 };
 genline: KOC_opcode ',' CONDITION '*' expr {
    genlocrec(currseg, labelloc);
-   prevpage = (locctr & PAGEBITS);
+   prevpage = (locctr&PAGEBITS);
    if (prevpage == locctr)
       frawarn("Page Boundary");
    evalr[1].value = $3;
    pevalexpr(2, $5);
    locctr += geninstr(findgen($1, ST_CONDINDIR, condsel[$3]));
-   if (((locctr - 1) & PAGEBITS) != prevpage)
+   if (((locctr - 1)&PAGEBITS) != prevpage)
       fraerror("instruction crosses page boundry");
 };
 genline: KOC_opcode expr ',' REGISTER {
    genlocrec(currseg, labelloc);
-   prevpage = (locctr & PAGEBITS);
+   prevpage = (locctr&PAGEBITS);
    if (prevpage == locctr)
       frawarn("Page Boundary");
    evalr[1].value = $4;
    pevalexpr(2, $2);
    locctr += geninstr(findgen($1, ST_BINDEX, regsel[$4]));
-   if (((locctr - 1) & PAGEBITS) != prevpage)
+   if (((locctr - 1)&PAGEBITS) != prevpage)
       fraerror("instruction crosses page boundry");
 };
 genline: KOC_opcode '*' expr ',' REGISTER {
    genlocrec(currseg, labelloc);
-   prevpage = (locctr & PAGEBITS);
+   prevpage = (locctr&PAGEBITS);
    if (prevpage == locctr)
       frawarn("Page Boundary");
    evalr[1].value = $5;
    pevalexpr(2, $3);
    locctr += geninstr(findgen($1, ST_BINDIRX, regsel[$5]));
-   if (((locctr - 1) & PAGEBITS) != prevpage)
+   if (((locctr - 1)&PAGEBITS) != prevpage)
       fraerror("instruction crosses page boundry");
 };
 genline: KOC_indexabs ',' REGISTER expr {
    genlocrec(currseg, labelloc);
-   prevpage = (locctr & PAGEBITS);
+   prevpage = (locctr&PAGEBITS);
    if (prevpage == locctr)
       frawarn("Page Boundary");
    evalr[1].value = $3;
    pevalexpr(2, $4);
    evalr[3].value = API_ABS;
    locctr += geninstr(findgen($1, ST_ABSOLUTE, regsel[$3]));
-   if (((locctr - 1) & PAGEBITS) != prevpage)
+   if (((locctr - 1)&PAGEBITS) != prevpage)
       fraerror("instruction crosses page boundry");
 };
 genline: KOC_indexabs ',' REGISTER expr ',' REGISTER {
    genlocrec(currseg, labelloc);
-   prevpage = (locctr & PAGEBITS);
+   prevpage = (locctr&PAGEBITS);
    if (prevpage == locctr)
       frawarn("Page Boundary");
    if ($3 != 0)
@@ -473,12 +470,12 @@ genline: KOC_indexabs ',' REGISTER expr ',' REGISTER {
    pevalexpr(2, $4);
    evalr[3].value = API_IND;
    locctr += geninstr(findgen($1, ST_ABSOLUTE, regsel[$6]));
-   if (((locctr - 1) & PAGEBITS) != prevpage)
+   if (((locctr - 1)&PAGEBITS) != prevpage)
       fraerror("instruction crosses page boundry");
 };
 genline: KOC_indexabs ',' REGISTER expr ',' REGISTER ',' '+' {
    genlocrec(currseg, labelloc);
-   prevpage = (locctr & PAGEBITS);
+   prevpage = (locctr&PAGEBITS);
    if (prevpage == locctr)
       frawarn("Page Boundary");
    if ($3 != 0)
@@ -487,12 +484,12 @@ genline: KOC_indexabs ',' REGISTER expr ',' REGISTER ',' '+' {
    pevalexpr(2, $4);
    evalr[3].value = API_INC;
    locctr += geninstr(findgen($1, ST_ABSOLUTE, regsel[$6]));
-   if (((locctr - 1) & PAGEBITS) != prevpage)
+   if (((locctr - 1)&PAGEBITS) != prevpage)
       fraerror("instruction crosses page boundry");
 };
 genline: KOC_indexabs ',' REGISTER expr ',' REGISTER ',' '-' {
    genlocrec(currseg, labelloc);
-   prevpage = (locctr & PAGEBITS);
+   prevpage = (locctr&PAGEBITS);
    if (prevpage == locctr)
       frawarn("Page Boundary");
    if ($3 != 0)
@@ -501,24 +498,24 @@ genline: KOC_indexabs ',' REGISTER expr ',' REGISTER ',' '-' {
    pevalexpr(2, $4);
    evalr[3].value = API_DEC;
    locctr += geninstr(findgen($1, ST_ABSOLUTE, regsel[$6]));
-   if (((locctr - 1) & PAGEBITS) != prevpage)
+   if (((locctr - 1)&PAGEBITS) != prevpage)
       fraerror("instruction crosses page boundry");
 };
 genline: KOC_indexabs ',' REGISTER '*' expr {
    genlocrec(currseg, labelloc);
-   prevpage = (locctr & PAGEBITS);
+   prevpage = (locctr&PAGEBITS);
    if (prevpage == locctr)
       frawarn("Page Boundary");
    evalr[1].value = $3;
    pevalexpr(2, $5);
    evalr[3].value = API_IABS;
    locctr += geninstr(findgen($1, ST_ABSOLUTE, regsel[$3]));
-   if (((locctr - 1) & PAGEBITS) != prevpage)
+   if (((locctr - 1)&PAGEBITS) != prevpage)
       fraerror("instruction crosses page boundry");
 };
 genline: KOC_indexabs ',' REGISTER '*' expr ',' REGISTER {
    genlocrec(currseg, labelloc);
-   prevpage = (locctr & PAGEBITS);
+   prevpage = (locctr&PAGEBITS);
    if (prevpage == locctr)
       frawarn("Page Boundary");
    if ($3 != 0)
@@ -527,12 +524,12 @@ genline: KOC_indexabs ',' REGISTER '*' expr ',' REGISTER {
    pevalexpr(2, $5);
    evalr[3].value = API_IIND;
    locctr += geninstr(findgen($1, ST_ABSOLUTE, regsel[$7]));
-   if (((locctr - 1) & PAGEBITS) != prevpage)
+   if (((locctr - 1)&PAGEBITS) != prevpage)
       fraerror("instruction crosses page boundry");
 };
 genline: KOC_indexabs ',' REGISTER '*' expr ',' REGISTER ',' '+' {
    genlocrec(currseg, labelloc);
-   prevpage = (locctr & PAGEBITS);
+   prevpage = (locctr&PAGEBITS);
    if (prevpage == locctr)
       frawarn("Page Boundary");
    if ($3 != 0)
@@ -541,12 +538,12 @@ genline: KOC_indexabs ',' REGISTER '*' expr ',' REGISTER ',' '+' {
    pevalexpr(2, $5);
    evalr[3].value = API_IINC;
    locctr += geninstr(findgen($1, ST_ABSOLUTE, regsel[$7]));
-   if (((locctr - 1) & PAGEBITS) != prevpage)
+   if (((locctr - 1)&PAGEBITS) != prevpage)
       fraerror("instruction crosses page boundry");
 };
 genline: KOC_indexabs ',' REGISTER '*' expr ',' REGISTER ',' '-' {
    genlocrec(currseg, labelloc);
-   prevpage = (locctr & PAGEBITS);
+   prevpage = (locctr&PAGEBITS);
    if (prevpage == locctr)
       frawarn("Page Boundary");
    if ($3 != 0)
@@ -555,7 +552,7 @@ genline: KOC_indexabs ',' REGISTER '*' expr ',' REGISTER ',' '-' {
    pevalexpr(2, $5);
    evalr[3].value = API_IDEC;
    locctr += geninstr(findgen($1, ST_ABSOLUTE, regsel[$7]));
-   if (((locctr - 1) & PAGEBITS) != prevpage)
+   if (((locctr - 1)&PAGEBITS) != prevpage)
       fraerror("instruction crosses page boundry");
 };
 
