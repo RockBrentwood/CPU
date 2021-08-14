@@ -7,6 +7,9 @@ These are the original SHAR files posted to alt.sources in 1990/12 and may be fo
 ∙       http://ftp.lp0.dk/pub/archives/usenet/utzoo-ex/b191/alt/sources/
         (Missing Frankenstein Cross Assemblers, Hitachi 6301/3, Part 2 of 2)
 ∙       https://www.digiater.nl/openvms/decus/lt91b/unixmisc/altsources/
+∙	http://atjs.mbnet.fi/mc6809/
+	An implementation, specialized to the 6809, with a bug fix added to the original.
+	http://atjs.mbnet.fi/mc6809/Assembler/as6809.tar.gz
 ∙       http://cd.textfiles.com/sourcecode/00_index.txt
         Under http://cd.textfiles.com/sourcecode/usenet/altsrcs/2:
         2182.        Frankenstein Cross Assemblers, Base source, Part 1 of 3
