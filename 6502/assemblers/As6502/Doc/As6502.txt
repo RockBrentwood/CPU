@@ -1,0 +1,123 @@
+AS6502
+━━━━━━
+1986/03/01
+
+NAME
+────
+	As6502 ― assembler for MOS Technology 650X microprocessors
+
+SYNOPSIS
+────────
+	«As6502» [option] [parameters] file ...
+
+DESCRIPTION
+───────────
+«As6502» assembles the named files and produces a listing on the standard output.
+Available options are:
+∙	«-i»	ignore .nlst pseudo ops in the source file.
+∙	«-l»	produce only an error listing on the standard output.
+∙	«-n»	print address in normal <high byte><low byte> format, rather than split <low byte>:<high byte> format.
+∙	«-o»	generate the ASCII object file ‟6502.out”.
+	The per-line format of that file is:
+		;<address low byte><address high byte><data>...
+∙	«-s»	print symbol table at the end of the assembly listing.
+∙	«-m»	Causes the object file to be output in standard MOS Technology format.
+		This option implies -o.
+
+Parameters:
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+Parameters consist of an option character followed by a value.
+The value may follow with or without whitespace.
+All values are decimal numbers.
+Available parameters are:
+∙	«-t»	Specify the size of the symbol table.
+		The default is 20000 bytes.
+		Values less than 1000 are not accepted.
+∙	«-p»	Specify the number of lines per page. 
+		This does not include the heading.
+		The heading uses an additional 4 lines.
+		The default is 60, which gives 3 blank lines between pages on a 66 line page
+		(1 line at the top and 2 lines at the bottom).
+		A form feed precedes the headings.
+		Specifying 0 for page size results in no heading at all.
+∙	«-w»	Specify the number of characters per line on the listing file.
+		The default is 132.
+		The minimum allowed is 80 and the maximum is 133.
+
+Symbol conventions:
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+∙	Up to 19 alphanumeric characters from the set (a-z, A-Z, 0-9, ., _), with the initial character being non-numeric.
+∙	Asterisk (*) is the symbolic name of the location counter.
+∙	Op code mnemonics (upper and/or lower case):
+		ADC   BIT   BVS   CPX   INC   LDX   PHP   RTI   SEI  TAY
+		AND   BMI   CLC   CPY   INX   LDY   PLA   RTS   STA  TSX
+		ASL   BNE   CLD   DEC   INY   LSR   PLP   SBC   STX  TXA
+		BCC   BPL   CLI   DEX   JMP   NOP   ROL   SEC   STY  TXS
+		BCS   BRK   CLV   DEY   JSR   ORA   ROR   SED   TAX  TYA
+		BEQ   BVC   CMP   EOR   LDA   PHA
+
+Pseudo op mnemonics:
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+∙	=	equate label to operand value.
+∙	*=	equate location counter to operand value.
+∙	.WORD	assign 16 bit operand value to next 2 locations.
+∙	.DBYT	assign 16 bit value to next 2 locations, reverse.
+∙	.BYTE	assign 8 bit operand value to next location.
+∙	.NLST	turn listing mode off.
+∙	.LIST	turn listing mode on.
+∙	.PAGE	start a new listing page.
+		A title enclosed in "" is optional.
+		The title must be small enough to fit in the heading line.
+
+Constant types:
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+∙	%	binary number prefix.
+∙	@ or 0	octal number prefix.
+∙	$	hexadecimal number prefix.
+∙	'	ASCII character prefix.
+∙	"	ASCII character string prefix and suffix.
+∙	default (leading digit 1 through 9) decimal number.
+
+Operand field operators:
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+∙	+	addition		^	logical exclusive OR
+∙	-	subtraction		~	logical 1's complement
+∙	/	integer division	$	logical AND
+∙	*	multiplication		|	logical OR
+∙	%	modulo			<	low byte
+					>	high byte
+FILES
+─────
+∙	/bin/As6502	the assembler
+∙	6502.out	object (with -o option)
+
+SEE ALSO
+────────
+∙	J. H. Van Ornum, "as6502 User Notes"
+
+DIAGNOSTICS
+───────────
+File handling diagnostics:
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+∙	Invalid argument count - as6502 invoked without a source file or with too many source files.
+∙	Open error for file <name> - as6502 cannot open source file.
+∙	Create error (6502.out) - as6502 cannot create object file.
+∙	Close error - as6502 cannot close the source file.
+∙	Close error (6502.out) - as6502 cannot close object file.
+
+Assembly error diagnostics:
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+∙	Symbol table full - symbol table overflowed allotted space.
+	Number of symbols is a function of symbol sizes.
+∙	Label multiply defined - symbol defined more than once.
+∙	Sync error - the pass 2 value of symbol in the label field is different than the pass 1 value.
+∙	Invalid operation code - op code mnemonic is invalid.
+∙	Operand field missing - the op code mnemonic requires an operand, and none was found.
+∙	Invalid operand field - operand field contains an operator which is not recognized by as6502.
+∙	Invalid branch address - branch instruction to a location which is out of range.
+∙	Invalid addressing mode - tried to use an addressing mode which is not available to the operation code.
+∙	Operand field size error - operand is larger than hex FF.
+∙	Undefined symbol in operand field - a symbol in the operand field never appeared in the label field.
+
+BUGS
+────

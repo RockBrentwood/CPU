@@ -1,5 +1,6 @@
 As6502 User Notes
 ━━━━━━━━━━━━━━━━━
+Recompiled, manually, from User.1.
 
 SOURCE LINE FORMAT:
 ───────────────────
