@@ -4,22 +4,46 @@
 #include "Constants.h"
 #include "Extern.h"
 
-/****************************************************************************/
+char hex[5]; // hexadecimal character buffer
+static int lablptr; // label pointer into symbol table
+int objcnt; // object byte counter
+int opflg; // operation code flags
+char prlnbuf[LAST_CH_POS + 1]; // print line buffer
+int slnum; // source line number counter
 
-/* printhead prints the page heading   */
+char *symtab; // symbol table
+#if 0
+struct sym_tab {
+   char size;
+   char chars[size];
+   char flag;
+   int value;
+   int line defined
+   char number of references
+   int line referenced
+// The above occurs 0 or more times.
+};
+#endif
+unsigned size; // symbol table size
+char symbol[SBOLSZ]; // temporary symbol storage
+int udtype; // undefined symbol type
+int undef; // undefined symbol in expression flg
 
+// Print the page heading.
 void printhead(void) {
    if (pagesize == 0) return;
    pagect++;
-   fprintf(stdout, "\f\nAmiga 6502 assembler :  -  %s PAGE %d\n", titlbuf, pagect);
-   fprintf(stdout, "Line      Location     Label Opcode Operand  Comment   %s\n\n", date);
+   fprintf(stdout,
+      "\f\n"
+      "Amiga 6502 assembler :  -  %s PAGE %d\n"
+      "Line      Location     Label Opcode Operand  Comment   %s\n"
+      "\n",
+      titlbuf, pagect, date
+   );
    paglin = 0;
 }
 
-/****************************************************************************/
-
-/* printline prints the contents of prlnbuf */
-
+// Print the contents of prlnbuf.
 void println(void) {
    if (lflag > 0) {
       if (paglin == pagesize) printhead();
@@ -29,62 +53,46 @@ void println(void) {
    }
 }
 
-/* convert number supplied as argument to hexadecimal in hex[digit] (lsd)
-		through hex[1] (msd)		*/
-
+// Convert the number supplied as an argument to hexadecimal in hex[digit] (lsd) through hex[1] (msd).
 void hexcon(int digit, int num) {
-
    for (; digit > 0; digit--) {
-      hex[digit] = (num & 0x0f) + '0';
-      if (hex[digit] > '9')
-         hex[digit] += 'A' - '9' - 1;
+      hex[digit] = (num&0x0f) + '0';
+      if (hex[digit] > '9') hex[digit] += 'A' - '9' - 1;
       num >>= 4;
    }
 }
 
-/*    object code record generation routines    */
-/*    added to generate MOS Technology format   */
-/*       object records                         */
-/*           By Joel Swank 12/86                */
+// Object code record generation routines.
+static char obj_rec[60]; // The buffer for the object record.
+static unsigned obj_ptr = 0; // The pointer for the buffer.
+static unsigned obj_bytes = 0; // The number of bytes in the current record.
+static unsigned rec_cnt = 0; // The number of records in this file.
+static unsigned cksum = 0; // The record check sum accumulator.
 
-static char obj_rec[60]; /* buffer for object record */
-static unsigned obj_ptr = 0; /* pointer for above  */
-static unsigned obj_bytes = 0; /* count of bytes in current record */
-static unsigned rec_cnt = 0; /* count of records in this file */
-static unsigned cksum = 0; /* record check sum accumulator  */
+// MOS Tech. object format is as follows:
+// ( all data is in ASCII encoded hexidecimal)
+//	Data record: ;nnaaaadddd...xxxx[cr]
+//	Last record: ;00ccccxxxx[cr]
+// Where:
+//	;	=	Start of record (ASCII 3B)
+//	nn	=	The number of data bytes in the record.
+//			max = 24 bytes.
+//	aaaa	=	The address of the first data byte in the record.
+//	dd	=	1 data byte.
+//	xxxx	=	The checksum that is the twos compliment sum of all data bytes, the count byte and the address bytes.
+//	cccc	=	The number of records in the file.
+//	[cr]	=	Carriage Return (0x0d in ASCII).
 
-/*     MOS Tech. object format is as follows    */
-/*
-	( all data is in ASCII encoded hexidecimal)
-
- Data record : ;nnaaaadddd...xxxx[cr]
- Last record : ;00ccccxxxx[cr]
-
- Where:
-	;	= Start of record (ASCII 3B)
-	nn	= Number of data bytes in the record.
-		  max = 24 bytes.
-	aaaa	= address of first data byte in the record.
-	dd	= 1 data byte.
-	xxxx	= checksum that is the twos compliment sum of all
-		  data bytes, the count byte and the address bytes.
-	cccc	= count of records in the file.
-	[cr]	= ASCII Carriage Return (ASCII 0D).
-
-*/
-
-/*   put one object byte in hex   */
-
+// Put one object byte in hex.
 static void put_obj(unsigned val) {
    hexcon(2, val);
    obj_rec[obj_ptr++] = hex[1];
    obj_rec[obj_ptr++] = hex[2];
-   cksum += (val & 0xff);
+   cksum += val&0xff;
    obj_bytes++;
 }
 
-/*    print the current object record if any */
-
+// Print the current object record if any.
 static void prt_obj(void) {
    if (obj_bytes == 0) return;
    cksum += obj_bytes;
@@ -95,80 +103,60 @@ static void prt_obj(void) {
    fprintf(optr, "%c%c%c%c\n", hex[1], hex[2], hex[3], hex[4]);
 }
 
-/*    start an object record (end previous) */
-
-/*  val: current location counter */
+// Start an object record (end previous).
+// ∙	val:	the current location counter.
 static void start_obj(unsigned val) {
-   prt_obj(); /* print the current record if any */
+   prt_obj(); // Print the current record if any.
    hexcon(4, val);
    obj_bytes = 0;
    for (obj_ptr = 0; obj_ptr < 4; obj_ptr++) obj_rec[obj_ptr] = hex[obj_ptr + 1];
-   cksum = (val >> 8) + (val & 0xff);
+   cksum = (val >> 8) + (val&0xff);
    rec_cnt++;
 }
 
-/*    finish object file       */
-
+// Finish the object file.
 void fin_obj(void) {
-   unsigned i;
    prt_obj();
    hexcon(4, ++rec_cnt);
    fprintf(optr, ";00");
-   for (i = 1; i < 5; i++) fputc(hex[i], optr);
-   rec_cnt = rec_cnt / 256 + (rec_cnt & 0xff);
+   for (unsigned i = 1; i < 5; i++) fputc(hex[i], optr);
+   rec_cnt = rec_cnt / 256 + (rec_cnt&0xff);
    hexcon(4, rec_cnt);
-   for (i = 1; i < 5; i++) fputc(hex[i], optr);
+   for (unsigned i = 1; i < 5; i++) fputc(hex[i], optr);
    fputc('\n', optr);
 }
 
-/* load 16 bit value in printable form into prlnbuf */
-
+// Load a 16-bit value in printable form into prlnbuf.
 void loadlc(int val, int f, int outflg) {
-   int i;
-
-   i = 6 + 7 * f;
+   int i = 6 + 7*f;
    hexcon(4, val);
-   if (nflag == 0) {
-      prlnbuf[i++] = hex[3];
-      prlnbuf[i++] = hex[4];
-      prlnbuf[i++] = ':';
-      prlnbuf[i++] = hex[1];
-      prlnbuf[i] = hex[2];
-   } else {
-      prlnbuf[i++] = hex[1];
-      prlnbuf[i++] = hex[2];
-      prlnbuf[i++] = hex[3];
-      prlnbuf[i] = hex[4];
-   }
-   if ((pass == LAST_PASS) && (oflag != 0) && (objcnt <= 0) && (outflg != 0)) {
-      if (mflag != 0) start_obj(val);
-      else fprintf(optr, "\n;%c%c%c%c", hex[3], hex[4], hex[1], hex[2]);
+   if (nflag == 0)
+      prlnbuf[i++] = hex[3], prlnbuf[i++] = hex[4], prlnbuf[i++] = ':', prlnbuf[i++] = hex[1], prlnbuf[i] = hex[2];
+   else
+      prlnbuf[i++] = hex[1], prlnbuf[i++] = hex[2], prlnbuf[i++] = hex[3], prlnbuf[i] = hex[4];
+   if (pass == LAST_PASS && oflag != 0 && objcnt <= 0 && outflg != 0) {
+      if (mflag != 0) start_obj(val); else fprintf(optr, "\n;%c%c%c%c", hex[3], hex[4], hex[1], hex[2]);
       objcnt = 22;
    }
 }
 
-/* load value in hex into prlnbuf[contents[i]] */
-/* and output hex characters to obuf if LAST_PASS & oflag == 1 */
-
-/* f: contents field subscript */
-/* outflg: flag to output object bytes */
+// Load a value in hex into prlnbuf[contents[i]] and output hex characters to obuf if LAST_PASS&oflag == 1.
+// ∙	f:	the contents field subscript.
+// ∙	outflg:	a flag to output object bytes.
 void loadv(int val, int f, int outflg) {
-
    hexcon(2, val);
-   prlnbuf[13 + 3 * f] = hex[1];
-   prlnbuf[14 + 3 * f] = hex[2];
-   if ((pass == LAST_PASS) && (oflag != 0) && (outflg != 0)) {
-      if (mflag != 0) put_obj(val);
-      else {
-         fputc(hex[1], optr);
-         fputc(hex[2], optr);
-      }
+   prlnbuf[13 + 3*f] = hex[1];
+   prlnbuf[14 + 3*f] = hex[2];
+   if (pass == LAST_PASS && oflag != 0 && outflg != 0) {
+      if (mflag != 0)
+         put_obj(val);
+      else
+         fputc(hex[1], optr), fputc(hex[2], optr);
       --objcnt;
    }
 }
 
-/* error printing routine */
-
+// Error printing routine.
 void error(char *stptr) {
    loadlc(loccnt, 0, 1);
    loccnt += 3;
@@ -180,20 +168,14 @@ void error(char *stptr) {
    errcnt++;
 }
 
-/* colsym() collects a symbol from prlnbuf into symbol[],
- *    leaves prlnbuf pointer at first invalid symbol character,
- *    returns 0 if no symbol collected
- */
-
+// Collect a symbol from prlnbuf into symbol[],
+// ∙	leave prlnbuf pointer at the first invalid symbol character,
+// ∙	return 0 if no symbol is collected.
 static int colsym(int *ip) {
-   int valid;
-   int i;
-   char ch;
-
-   valid = 1;
-   i = 0;
+   int valid = 1;
+   int i = 0;
    while (valid == 1) {
-      ch = prlnbuf[*ip];
+      char ch = prlnbuf[*ip];
       if (ch == '_' || ch == '.');
       else if (ch >= 'a' && ch <= 'z');
       else if (ch >= 'A' && ch <= 'Z');
@@ -206,258 +188,184 @@ static int colsym(int *ip) {
          (*ip)++;
       }
    }
-   if (i == 1) {
-      switch (symbol[1]) {
-         case 'A':
-         case 'a':
-         case 'X':
-         case 'x':
-         case 'Y':
-         case 'y':
-            error("Symbol is reserved (A, X or Y)");
-            i = 0;
-      }
+   if (i == 1) switch (symbol[1]) {
+      case 'A': case 'X': case 'Y':
+      case 'a': case 'x': case 'y':
+         error("Symbol is reserved (A, X or Y)"), i = 0;
+      break;
    }
-   symbol[0] = i;
-   return (i);
+   return symbol[0] = i;
 }
 
-/* openspc : open up a space in the symbol table        */
-/*           the space will be at (ptr) and will be     */
-/*           len characters long. return -1 if no room. */
-
+// Open up a space in the symbol table
+// the space will be at (ptr) and will be len characters long.
+// return -1 if no room.
 static int openspc(int ptr, int len) {
-   int ptr2, ptr3;
    if (nxt_free + len > size) return -1;
-   if (ptr != nxt_free) {
-      ptr2 = nxt_free - 1;
-      ptr3 = ptr2 + len;
-      while (ptr2 >= ptr) symtab[ptr3--] = symtab[ptr2--];
-   }
+   if (ptr != nxt_free)
+      for (int ptr2 = nxt_free - 1, ptr3 = ptr2 + len; ptr2 >= ptr; ptr2--, ptr3--) symtab[ptr3] = symtab[ptr2];
    nxt_free += len;
    if (lablptr >= ptr) lablptr += len;
    return 0;
 }
 
-/*  instal symbol into symtab
- */
-
+// Install a symbol into symtab.
 static int stinstal(int ptr) {
-   int ptr2, i;
    if (openspc(ptr, symbol[0] + 7) == -1) {
       error("Symbol Table Full"); /* print error msg and ...  */
       pass = DONE; /* cause termination of assembly */
       return -1;
    }
-   ptr2 = ptr;
-   for (i = 0; i < symbol[0] + 1; i++)
-      symtab[ptr2++] = symbol[i];
-   symtab[ptr2++] = udtype;
-   symtab[ptr2 + 4] = 0;
-   return (ptr);
+   int ptr2 = ptr;
+   for (int i = 0; i < symbol[0] + 1; i++) symtab[ptr2++] = symbol[i];
+   symtab[ptr2++] = udtype, symtab[ptr2 + 4] = 0;
+   return ptr;
 }
 
-/* symbol table lookup
- *	if found, return pointer to symbol
- *	else, install symbol as undefined, and return pointer
- */
-
+// Symbol table lookup:
+// ∙	if found, return a pointer to the symbol,
+// ∙	else, install the symbol as undefined, and return the pointer.
 static int stlook(void) {
-   int ptr, ln, eq;
-   ptr = 0;
+   int ptr = 0;
    while (ptr < nxt_free) {
-      ln = symbol[0];
+      int ln = symbol[0];
       if (symtab[ptr] < ln) ln = symtab[ptr];
-      if ((eq = strncmp(&symtab[ptr + 1], &symbol[1], ln)) == 0 && symtab[ptr] == symbol[0]) return ptr;
+      int eq = strncmp(&symtab[ptr + 1], &symbol[1], ln);
+      if (eq == 0 && symtab[ptr] == symbol[0]) return ptr;
       if (eq > 0) return (stinstal(ptr));
       ptr = ptr + 6 + symtab[ptr];
-      ptr = ptr + 1 + 2 * (symtab[ptr] & 0xff);
+      ptr = ptr + 1 + 2*(symtab[ptr]&0xff);
    }
    return (stinstal(ptr));
 }
 
-/* operation code table lookup
- *	if found, return pointer to symbol,
- *	else, return -1
- */
-
+// Operation code table lookup:
+// ∙	if found, return a pointer to the symbol,
+// ∙	else, return -1.
 static int oplook(int *ip) {
-   register char ch;
-   register int i;
-   register int j;
+   char ch;
    int k;
-   int temp[2];
-
-   i = j = 0;
-   temp[0] = temp[1] = 0;
-   while ((ch = prlnbuf[*ip]) != ' ' && ch != 0 && ch != '\t' && ch != ';') {
-      if (ch >= 'A' && ch <= 'Z')
-         ch &= 0x1f;
-      else if (ch >= 'a' && ch <= 'z')
-         ch &= 0x1f;
-      else if (ch == '.')
-         ch = 31;
-      else if (ch == '*')
-         ch = 30;
-      else if (ch == '=')
-         ch = 29;
-      else return (-1);
-      temp[j] = (temp[j] * 0x20) + (ch & 0xff);
-      if (ch == 29)
-         break;
-      ++(*ip);
+   int i = 0, j = 0;
+   int temp[2] = { 0, 0 };
+   while ((ch = prlnbuf[*ip]) != ' ' && ch != '\0' && ch != '\t' && ch != ';') {
+      if (ch >= 'A' && ch <= 'Z') ch &= 0x1f;
+      else if (ch >= 'a' && ch <= 'z') ch &= 0x1f;
+      else if (ch == '.') ch = 31;
+      else if (ch == '*') ch = 30;
+      else if (ch == '=') ch = 29;
+      else return -1;
+      temp[j] = temp[j] << 5 | ch&0xff;
+      if (ch == 29) break;
+      ++*ip;
       if (++i >= 3) {
          i = 0;
-         if (++j >= 2) {
-            return (-1);
-         }
+         if (++j >= 2) return -1;
       }
    }
-   if ((j = temp[0] ^ temp[1]) == 0)
-      return (-2);
+   j = temp[0] ^ temp[1];
+   if (j == 0) return -2;
    k = 0;
-   i = step[k] - 3;
+   i = step[k] - 1;
    do {
-      if (j == optab[i]) {
-         opflg = optab[++i];
-         opval = optab[++i];
-         return (i);
-      } else if (j < optab[i])
-         i -= step[++k];
+      if (j == optab[i].Nmemonic) {
+         opflg = optab[i].Operation, opval = optab[i].Code;
+         return 3*i + 2;
+      } else if (j < optab[i].Nmemonic) i -= step[++k];
       else i += step[++k];
-   } while (step[k] != 0);
-   return (-1);
+   } while (step[k] > 0);
+   return -1;
 }
 
-/* assign <value> to label pointed to by lablptr,
- *	checking for valid definition, etc.
- */
-
+// Assign <value> to label pointed to by lablptr, checking for valid definition, etc.
 int labldef(int lval) {
    int i;
-
    if (lablptr != -1) {
       lablptr += symtab[lablptr] + 1;
       if (pass == FIRST_PASS) {
          if (symtab[lablptr] == UNDEF) {
-            symtab[lablptr + 1] = lval & 0xff;
-            i = symtab[lablptr + 2] = (lval >> 8) & 0xff;
-            if (i == 0)
-               symtab[lablptr] = DEFZRO;
-            else symtab[lablptr] = DEFABS;
-         } else if (symtab[lablptr] == UNDEFAB) {
-            symtab[lablptr] = DEFABS;
-            symtab[lablptr + 1] = lval & 0xff;
-            symtab[lablptr + 2] = (lval >> 8) & 0xff;
-         } else {
-            symtab[lablptr] = MDEF;
-            symtab[lablptr + 1] = 0;
-            symtab[lablptr + 2] = 0;
+            symtab[lablptr + 1] = lval&0xff;
+            int i = symtab[lablptr + 2] = (lval >> 8)&0xff;
+            symtab[lablptr] = i == 0? DEFZRO: DEFABS;
+         } else if (symtab[lablptr] == UNDEFAB)
+            symtab[lablptr] = DEFABS, symtab[lablptr + 1] = lval&0xff, symtab[lablptr + 2] = (lval >> 8)&0xff;
+         else {
+            symtab[lablptr] = MDEF, symtab[lablptr + 1] = 0, symtab[lablptr + 2] = 0;
             error("Label multiply defined");
-            return (-1);
+            return -1;
          }
-         symtab[lablptr + 3] = slnum & 0xff;
-         symtab[lablptr + 4] = (slnum >> 8) & 0xff;
+         symtab[lablptr + 3] = slnum&0xff, symtab[lablptr + 4] = (slnum >> 8)&0xff;
       } else {
-         i = (symtab[lablptr + 2] << 8) + (symtab[lablptr + 1] & 0xff);
-         i &= 0xffff;
+         i = ((symtab[lablptr + 2] << 8) + (symtab[lablptr + 1]&0xff))&0xffff;
          if (i != lval && pass == LAST_PASS) {
             error("Sync error");
-            return (-1);
+            return -1;
          }
       }
    }
-   return (0);
+   return 0;
 }
 
-/* translate source line to machine language */
-
+// Translate a source line to machine language.
 void assemble(void) {
-   int flg;
-   int i; /* prlnbuf pointer */
-
-   if ((prlnbuf[SFIELD] == ';') | (prlnbuf[SFIELD] == 0)) {
-      if (pass == LAST_PASS)
-         println();
+   if (prlnbuf[SFIELD] == ';' | prlnbuf[SFIELD] == 0) {
+      if (pass == LAST_PASS) println();
       return;
    }
    lablptr = -1;
-   i = SFIELD;
+   int i = SFIELD; // prlnbuf pointer.
    udtype = UNDEF;
    if (colsym(&i) != 0 && (lablptr = stlook()) == -1)
       return;
    while (prlnbuf[++i] == ' '); /* find first non-space */
-   if ((flg = oplook(&i)) < 0) { /* collect operation code */
+   int flg = oplook(&i);
+   if (flg < 0) { // Collect operation code.
       labldef(loccnt);
-      if (flg == -1)
-         error("Invalid operation code");
-      if ((flg == -2) && (pass == LAST_PASS)) {
-         if (lablptr != -1)
-            loadlc(loccnt, 1, 0);
+      if (flg == -1) error("Invalid operation code");
+      else if (flg == -2 && pass == LAST_PASS) {
+         if (lablptr != -1) loadlc(loccnt, 1, 0);
          println();
       }
       return;
    }
-   if (opflg == PSEUDO)
-      pseudo(&i);
-   else if (labldef(loccnt) == -1)
-      return;
-   else {
-      if (opflg == CLASS1)
-         class1();
-      else if (opflg == CLASS2)
-         class2(&i);
-      else class3(&i);
-   }
+   if (opflg == PSEUDO) pseudo(&i);
+   else if (labldef(loccnt) == -1) return;
+   else if (opflg == CLASS1) class1();
+   else if (opflg == CLASS2) class2(&i);
+   else class3(&i);
 }
 
-/*   addref : add a reference line to the  symbol pointed to    */
-/*            by ip.                        */
-
+// Add a reference line to the symbol pointed to by ip.
 static void addref(int ip) {
-   int rct, ptr;
-   rct = ptr = ip + symtab[ip] + 6;
-   if ((symtab[rct] & 0xff) == 255) { /* non-fatal error   */
+   int rct = ip + symtab[ip] + 6;
+   int ptr = rct;
+   if ((symtab[rct]&0xff) == 255) { /* non-fatal error   */
       fprintf(stderr, "%s\n", prlnbuf);
       fprintf(stderr, "Too many references\n");
       return;
    }
-   ptr += (symtab[rct] & 0xff) * 2 + 1;
+   ptr += (symtab[rct]&0xff)*2 + 1;
    if (openspc(ptr, 2) == -1) {
       error("Symbol Table Full");
       return;
    }
-   symtab[ptr] = slnum & 0xff;
-   symtab[ptr + 1] = (slnum >> 8) & 0xff;
+   symtab[ptr] = slnum&0xff, symtab[ptr + 1] = (slnum >> 8)&0xff;
    symtab[rct]++;
 }
 
-/* determine the value of the symbol,
- * given pointer to first character of symbol in symtab
- */
-
+// Determine the value of the symbol, given a pointer to first character of symbol in symtab.
 int symval(int *ip) {
-   int ptr;
-   int svalue;
-
-   svalue = 0;
+   int svalue = 0;
    colsym(ip);
-   if ((ptr = stlook()) == -1)
-      undef = 1; /* no room error */
-   else if (symtab[ptr + symtab[ptr] + 1] == UNDEF)
-      undef = 1;
-   else if (symtab[ptr + symtab[ptr] + 1] == UNDEFAB)
-      undef = 1;
-   else svalue = ((symtab[ptr + symtab[ptr] + 3] << 8) + (symtab[ptr + symtab[ptr] + 2] & 0xff)) & 0xffff;
-   if (symtab[ptr + symtab[ptr] + 1] == DEFABS)
-      zpref = 1;
-   if (undef != 0)
-      zpref = 1;
-
-/* add a reference entry to symbol table on first pass only,
-   except for branch instructions (CLASS2) which do not come
-   through here on the first pass                            */
+   int ptr = stlook();
+   if (ptr == -1) undef = 1; // No-room error.
+   else if (symtab[ptr + symtab[ptr] + 1] == UNDEF) undef = 1;
+   else if (symtab[ptr + symtab[ptr] + 1] == UNDEFAB) undef = 1;
+   else svalue = ((symtab[ptr + symtab[ptr] + 3] << 8) + (symtab[ptr + symtab[ptr] + 2]&0xff))&0xffff;
+   if (symtab[ptr + symtab[ptr] + 1] == DEFABS) zpref = 1;
+   if (undef != 0) zpref = 1;
+// Add a reference entry to symbol table on first pass only,
+// except for branch instructions (CLASS2) which do not come through here on the first pass.
    if (ptr >= 0 && pass == FIRST_PASS) addref(ptr);
-   if (ptr >= 0 && opflg == CLASS2) addref(ptr); /* branch addresses */
-   return (svalue);
+   if (ptr >= 0 && opflg == CLASS2) addref(ptr); // Branch addresses.
+   return svalue;
 }

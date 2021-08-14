@@ -1,5 +1,33 @@
-1986		Original Author: J. H. Van Ornum at AT&T Bell Laboratories.
-1987/08/22	Adapted from the earlier source and re-released by Joel Swank.
+1985?		Original Author: J. H. Van Ornum at AT&T Bell Laboratories.
+1985?		George V. Wilder
+		Two changes to version 1.4 have been made to "port" As6502 to CP/M(tm).
+		A "tolower()" function call was add to the command line processing code
+		to (re)map the command line arguments to lower case (CP/M converts all command line arguments to upper case).
+		The readline() function has code added to "ignore" the '\r' character
+		(CP/M includes the \r character along with \n).
+
+		Also, the ability to process multiple files on the command line has been added.
+		Now one can do, for example:
+			As6502 -nisvo header.file source.file data.file ...
+1985/05/09	Joel Swank
+		Had to take out tolower call to work on 4.2bsd.
+1986/12/02	Joel Swank
+		Added USAGE message in place of Invalid count message.
+1986/12		Joel Swank
+		Added paging-related features.
+		Added object code record generation routines to generate MOS Technology format object records.
+1987/03/01	Joel Swank
+		Version 5.0 ported to the Amiga.
+		Version 5.0 is a major revision by Joel Swank.
+		It adds the following features:
+		―	'.PAGE' pseudo with optional title;
+		―	automatic paging and -p flag to specify page length;
+		―	a sorted symbol cross reference;
+		―	-t flag to specify the symbol table size;
+		―	-w flag to specify the width of a listing line.
+		―	The -m option causes the object file to be formatted as a standard MOS Technology object file.
+		―	Also added error checking and error messages to the argument parsing routine.
+1987/08/22	Archived and released by Joel Swank.
 2021/08/13	Archive unpacked.
 		Makefile repaired.
 		Operational baseline for pre-C90 established.
@@ -30,3 +58,5 @@
 		The file was ultimately converted from an easlier version, which was derived by nroff from User.1.
 		Moved {As6502.User}.{1,man,txt} into the Doc subdirectory.
 		Moved {AssmTest}.{ex,in}, BootSA.{ex,s,txt} into the Test subdirectory.
+2021/08/14	Remove the ‟register” keyword.
+		Rendered into optimized, idiomatic, nativized C.
