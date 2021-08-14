@@ -1,11 +1,11 @@
 #include <stdio.h>
-#include "Assm1.h"
-#include "Assm2.h"
 #include <ctype.h>
+#include "Constants.h"
+#include "Extern.h"
 
 /* class 1 machine operations processor - 1 byte, no operand field */
 
-class1() {
+void class1(void) {
    if (pass == LAST_PASS) {
       loadlc(loccnt, 0, 1);
       loadv(opval, 0, 1);
@@ -16,9 +16,7 @@ class1() {
 
 /* collect number operand		*/
 
-colnum(ip)
-int *ip;
-{
+static int colnum(int *ip) {
    int mul;
    int nval;
    char ch;
@@ -52,9 +50,7 @@ int *ip;
 
 /* evaluate expression */
 
-evaluate(ip)
-int *ip;
-{
+static int evaluate(int *ip) {
    int tvalue;
    int invalid;
    int parflg, value2;
@@ -185,9 +181,7 @@ int *ip;
 
 /* class 2 machine operations processor - 2 byte, relative addressing */
 
-class2(ip)
-int *ip;
-{
+void class2(int *ip) {
 
    if (pass == LAST_PASS) {
       loadlc(loccnt, 0, 1);
@@ -207,9 +201,7 @@ int *ip;
 
 /* class 3 machine operations processor - various addressing modes */
 
-class3(ip)
-int *ip;
-{
+void class3(int *ip) {
    char ch;
    int code;
    int flag;
@@ -353,9 +345,7 @@ int *ip;
 
 /* pseudo operations processor */
 
-pseudo(ip)
-int *ip;
-{
+void pseudo(int *ip) {
    int count;
    int i, j;
    int tvalue;

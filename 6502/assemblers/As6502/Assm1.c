@@ -1,10 +1,10 @@
 /*    As6502 main routine: assm1.c     */
 #include <stdio.h>
 #include <ctype.h>
-#include "Assm1.h"
-#include "Assm2.h"
 #include <time.h>
 #include <stdlib.h>
+#include "Constants.h"
+#include "Extern.h"
 
 #define CPMEOF EOF
 
@@ -39,18 +39,15 @@
  /*   Had to take out tolower call to work on 4.2bsd.  Joel Swank 5/9/85 */
  /*   Added USAGE message in place of Invalid count message JS 12/2/86   */
 
-int badflag;
-int act;
-char **avt;
+static int badflag;
+static int act;
+static char **avt;
 
 /*****************************************************************************/
 
 /*   parse the command args and save data   */
 
-getargs(argc, argv)
-int argc;
-char *argv[];
-{
+static void getargs(int argc, char *argv[]) {
    int i;
    char c;
    int sz;
@@ -139,11 +136,7 @@ char *argv[];
 
 /* initialize opens files */
 
-initialize(ac, av, argc)
-int ac;
-char *av[];
-int argc;
-{
+static void initialize(int ac, char *av[], int argc) {
 
    if ((iptr = fopen(*av, "r")) == NULL) {
       fprintf(stderr, "Open error for file '%s'.\n", *av);
@@ -157,7 +150,7 @@ int argc;
    }
 }
 
-int field[] = {
+static int field[] = {
    SFIELD,
    SFIELD + 8,
    SFIELD + 14,
@@ -168,7 +161,7 @@ int field[] = {
 
 /*    clear the print buffer      */
 
-clrlin() {
+static void clrlin(void) {
    int i;
    for (i = 0; i < LAST_CH_POS; i++)
       prlnbuf[i] = ' ';
@@ -176,7 +169,7 @@ clrlin() {
 
 /* readline reads and formats an input line	*/
 
-readline() {
+static int readline(void) {
    int i; /* pointer into prlnbuf */
    int j; /* pointer to current field start       */
    int ch; /* current character            */
@@ -249,7 +242,7 @@ readline() {
  * wrapup() closes the source, object and stdout files
  */
 
-wrapup() {
+static void wrapup(void) {
 
    fclose(iptr); /* close source file */
    if (pass == DONE) {
@@ -259,14 +252,13 @@ wrapup() {
          fclose(optr);
       }
    }
-   return;
 }
 
 /****************************************************************************/
 
 /* prsymhead prints the page heading   */
 
-prsymhead() {
+static void prsymhead(void) {
    if (pagesize == 0) return;
    pagect++;
    fprintf(stdout, "\f\nAmiga 6502 assembler :  Symbol Cross Reference - %s PAGE %d\n", syspc, pagect);
@@ -276,7 +268,7 @@ prsymhead() {
 
 /* prsyline prints the contents of prlnbuf */
 
-prsyline() {
+static void prsyline(void) {
    if (paglin == pagesize) prsymhead();
    prlnbuf[linesize] = '\0';
    fprintf(stdout, "%s\n", prlnbuf);
@@ -287,7 +279,7 @@ prsyline() {
 /* symbol table print
  */
 
-stprnt() {
+static void stprnt(void) {
    int i; /* print line position */
    int ptr; /* symbol table position */
    int j; /* integer conversion variable */
@@ -344,10 +336,7 @@ stprnt() {
 
 }
 
-main(argc, argv)
-int argc;
-char *argv[];
-{
+int main(int argc, char *argv[]) {
    int cnt;
    int i;
    int ac;
@@ -357,15 +346,15 @@ char *argv[];
    pagesize = PAGESIZE;
    linesize = LINESIZE;
    getargs(argc, argv); /*   parse the command line arguments   */
-   if (badflag > 0) exit(1);
+   if (badflag > 0) return 1;
    if (act == 0) {
       fprintf(stderr, "USAGE: as6502 -[milnosv] [-p -t -w] file ...\n");
-      exit(1);
+      return 1;
    }
    symtab = malloc(size);
    if (symtab == 0) {
       fprintf(stderr, "Symbol table allocation failed - specify a smaller size\n");
-      exit(2);
+      return 2;
    }
    time(&l);
    date = ctime(&l);

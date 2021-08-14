@@ -1,17 +1,14 @@
 #include <stdio.h>
-#include "Assm1.h"
-#include "Assm2.h"
 #include <ctype.h>
 #include <string.h>
-
-extern int optab[];
-extern int step[];
+#include "Constants.h"
+#include "Extern.h"
 
 /****************************************************************************/
 
 /* printhead prints the page heading   */
 
-printhead() {
+void printhead(void) {
    if (pagesize == 0) return;
    pagect++;
    fprintf(stdout, "\f\nAmiga 6502 assembler :  -  %s PAGE %d\n", titlbuf, pagect);
@@ -23,7 +20,7 @@ printhead() {
 
 /* printline prints the contents of prlnbuf */
 
-println() {
+void println(void) {
    if (lflag > 0) {
       if (paglin == pagesize) printhead();
       prlnbuf[linesize] = '\0';
@@ -35,10 +32,7 @@ println() {
 /* convert number supplied as argument to hexadecimal in hex[digit] (lsd)
 		through hex[1] (msd)		*/
 
-hexcon(digit, num)
-int digit;
-int num;
-{
+void hexcon(int digit, int num) {
 
    for (; digit > 0; digit--) {
       hex[digit] = (num & 0x0f) + '0';
@@ -53,11 +47,11 @@ int num;
 /*       object records                         */
 /*           By Joel Swank 12/86                */
 
-char obj_rec[60]; /* buffer for object record */
-unsigned obj_ptr = 0; /* pointer for above  */
-unsigned obj_bytes = 0; /* count of bytes in current record */
-unsigned rec_cnt = 0; /* count of records in this file */
-unsigned cksum = 0; /* record check sum accumulator  */
+static char obj_rec[60]; /* buffer for object record */
+static unsigned obj_ptr = 0; /* pointer for above  */
+static unsigned obj_bytes = 0; /* count of bytes in current record */
+static unsigned rec_cnt = 0; /* count of records in this file */
+static unsigned cksum = 0; /* record check sum accumulator  */
 
 /*     MOS Tech. object format is as follows    */
 /*
@@ -81,9 +75,7 @@ unsigned cksum = 0; /* record check sum accumulator  */
 
 /*   put one object byte in hex   */
 
-put_obj(val)
-unsigned val;
-{
+static void put_obj(unsigned val) {
    hexcon(2, val);
    obj_rec[obj_ptr++] = hex[1];
    obj_rec[obj_ptr++] = hex[2];
@@ -93,7 +85,7 @@ unsigned val;
 
 /*    print the current object record if any */
 
-prt_obj() {
+static void prt_obj(void) {
    if (obj_bytes == 0) return;
    cksum += obj_bytes;
    hexcon(2, obj_bytes);
@@ -105,9 +97,8 @@ prt_obj() {
 
 /*    start an object record (end previous) */
 
-start_obj(val)
-unsigned val; /*  current location counter */
-{
+/*  val: current location counter */
+static void start_obj(unsigned val) {
    prt_obj(); /* print the current record if any */
    hexcon(4, val);
    obj_bytes = 0;
@@ -118,7 +109,7 @@ unsigned val; /*  current location counter */
 
 /*    finish object file       */
 
-fin_obj() {
+void fin_obj(void) {
    unsigned i;
    prt_obj();
    hexcon(4, ++rec_cnt);
@@ -132,11 +123,7 @@ fin_obj() {
 
 /* load 16 bit value in printable form into prlnbuf */
 
-loadlc(val, f, outflg)
-int val;
-int f;
-int outflg;
-{
+void loadlc(int val, int f, int outflg) {
    int i;
 
    i = 6 + 7 * f;
@@ -163,11 +150,9 @@ int outflg;
 /* load value in hex into prlnbuf[contents[i]] */
 /* and output hex characters to obuf if LAST_PASS & oflag == 1 */
 
-loadv(val, f, outflg)
-int val;
-int f; /* contents field subscript */
-int outflg; /* flag to output object bytes */
-{
+/* f: contents field subscript */
+/* outflg: flag to output object bytes */
+void loadv(int val, int f, int outflg) {
 
    hexcon(2, val);
    prlnbuf[13 + 3 * f] = hex[1];
@@ -184,9 +169,7 @@ int outflg; /* flag to output object bytes */
 
 /* error printing routine */
 
-error(stptr)
-char *stptr;
-{
+void error(char *stptr) {
    loadlc(loccnt, 0, 1);
    loccnt += 3;
    loadv(0, 0, 0);
@@ -202,9 +185,7 @@ char *stptr;
  *    returns 0 if no symbol collected
  */
 
-colsym(ip)
-int *ip;
-{
+static int colsym(int *ip) {
    int valid;
    int i;
    char ch;
@@ -245,9 +226,7 @@ int *ip;
 /*           the space will be at (ptr) and will be     */
 /*           len characters long. return -1 if no room. */
 
-openspc(ptr, len)
-int ptr, len;
-{
+static int openspc(int ptr, int len) {
    int ptr2, ptr3;
    if (nxt_free + len > size) return -1;
    if (ptr != nxt_free) {
@@ -263,9 +242,7 @@ int ptr, len;
 /*  instal symbol into symtab
  */
 
-stinstal(ptr)
-int ptr;
-{
+static int stinstal(int ptr) {
    int ptr2, i;
    if (openspc(ptr, symbol[0] + 7) == -1) {
       error("Symbol Table Full"); /* print error msg and ...  */
@@ -285,7 +262,7 @@ int ptr;
  *	else, install symbol as undefined, and return pointer
  */
 
-stlook() {
+static int stlook(void) {
    int ptr, ln, eq;
    ptr = 0;
    while (ptr < nxt_free) {
@@ -304,9 +281,7 @@ stlook() {
  *	else, return -1
  */
 
-oplook(ip)
-int *ip;
-{
+static int oplook(int *ip) {
    register char ch;
    register int i;
    register int j;
@@ -358,9 +333,7 @@ int *ip;
  *	checking for valid definition, etc.
  */
 
-labldef(lval)
-int lval;
-{
+int labldef(int lval) {
    int i;
 
    if (lablptr != -1) {
@@ -399,7 +372,7 @@ int lval;
 
 /* translate source line to machine language */
 
-assemble() {
+void assemble(void) {
    int flg;
    int i; /* prlnbuf pointer */
 
@@ -441,9 +414,7 @@ assemble() {
 /*   addref : add a reference line to the  symbol pointed to    */
 /*            by ip.                        */
 
-addref(ip)
-int ip;
-{
+static void addref(int ip) {
    int rct, ptr;
    rct = ptr = ip + symtab[ip] + 6;
    if ((symtab[rct] & 0xff) == 255) { /* non-fatal error   */
@@ -454,7 +425,7 @@ int ip;
    ptr += (symtab[rct] & 0xff) * 2 + 1;
    if (openspc(ptr, 2) == -1) {
       error("Symbol Table Full");
-      return -1;
+      return;
    }
    symtab[ptr] = slnum & 0xff;
    symtab[ptr + 1] = (slnum >> 8) & 0xff;
@@ -465,9 +436,7 @@ int ip;
  * given pointer to first character of symbol in symtab
  */
 
-symval(ip)
-int *ip;
-{
+int symval(int *ip) {
    int ptr;
    int svalue;
 

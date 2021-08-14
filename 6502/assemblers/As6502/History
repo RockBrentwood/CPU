@@ -13,3 +13,12 @@
 		History file and output for BootSA.s added.
 2021/08/13	Normalize #define's in Assm0.c.
 		Normalize layout in *.c and *.h.
+		Toplogical sorting of routines in *.c.
+		Replacement of in-line external declarations of C-library functions by standard headers.
+2021/08/13	Operational baseline for C90 established.
+		Header files renamed more transparently:
+		―	Assm{1,2}.h → {Constants,Extern}.h
+		Function declarations upgraded to prototypes and added to Extern.h.
+		Implicit types converted to int or void.
+		Inconsistent implicit types resolved (i.e. a void and integer return in the same function).
+		‟static” added to defnitions of every variable and function that's file-local.

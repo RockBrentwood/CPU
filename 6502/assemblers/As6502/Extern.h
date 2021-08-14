@@ -34,3 +34,25 @@ extern int titlesize; /* maximum characters oer line  */
 extern char titlbuf[]; /* buffer for title from .page  */
 extern char syspc[80]; /* variable filler for heading  */
 extern char *date; /* pointer to formatted date string */
+
+// Assm1.c:
+extern int optab[];
+extern int step[];
+
+// Assm2.c:
+void printhead(void);
+void println(void);
+void hexcon(int digit, int num);
+void fin_obj(void);
+void loadlc(int val, int f, int outflg);
+void loadv(int val, int f, int outflg);
+void error(char *stptr);
+int labldef(int lval);
+void assemble(void);
+int symval(int *ip);
+
+// Assm3.c:
+void class1(void);
+void class2(int *ip);
+void class3(int *ip);
+void pseudo(int *ip);
