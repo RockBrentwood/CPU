@@ -168,7 +168,7 @@ not or shl shr xor AND DEFINED EQ GE GT HIGH
 LE LOW LT MOD NE NOT OR SHL SHR XOR
 .DE
 .H 3 "Numeric Constants"
-numeric constants can be specified in decimal, hexadecimal,
+Numeric constants can be specified in decimal, hexadecimal,
 octal, and binary.  Constants are maintained as long
 variables, but the instruction generation will cause an error
 if the value is too big to fit in its destination field.
@@ -225,7 +225,7 @@ decimal number
 .LI $faf
 hexadecimal number
 .LI 0fafh
-hexadecimal number, note leading zero used to differentiate this from symbol
+hexadecimal number. Note: a leading zero is used to differentiate this from symbol
 "fafh"
 .LI @1234
 octal number
@@ -455,7 +455,7 @@ For the main file, processing shifts to the following passes of the
 assembly.
 The end statement is optional, as the end of file condition is treated in the
 same fashion.
-If the optional label is present, The symbol specified is used as the
+If the optional label is present, the symbol specified is used as the
 execution start address that is output in the binary file.
 The symbol must be used as a label somewhere else in the file.
 When more than one start address is specified, the last one in the file is
@@ -692,10 +692,11 @@ The optional label is set to the first location of the generated instruction.
 .H 2 "Program Generated Messages and Errors"
 .H 3 "Messages"
 .VL 10 5 1
-.LI "`` ERROR SUMMARY - ERRORS DETECTED {count}''"
-.LI "``               -  WARNINGS       {count}''"
+.LI "`` Error Summary: {count} error(s).''"
+.LI "`` Error Summary: {count} error(s), {count} warning(s).''"
+.LI "`` Error Summary: {count} warning(s).''"
 .LI "\ "
-output at the end of the listing and on the console.
+outputs at the end of the listing and on the console, if errors and/or warnings occurred.
 .LE
 .H 3 "System Errors"
 .VL 10 5 1
@@ -764,7 +765,7 @@ Fatal error.  The symbol table is full.  The symbol index
 is used in the output pass to direct symbol references to
 the symbol table entry.
 .LE
-.H 3 "Error"
+.H 3 "Errors"
 .VL 10 5 1
 .LI "``ELSE with no matching if''"
 .LI "``ENDI with no matching if''"
@@ -893,7 +894,7 @@ expression in a CHARUSE statement does not
 correspond to any CHARSET statements label.
 .SP
 .LI "``overflow in instruction generation''"
-.LI "``overflow in polish expression conversion''"
+.LI "``overflow in postfix expression conversion''"
 .LI "\ "
 The intermediate file line being built exceeds the length
 of the buffer.  The expression is too complex.
