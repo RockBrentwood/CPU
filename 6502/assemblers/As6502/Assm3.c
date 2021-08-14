@@ -5,12 +5,12 @@
 
 int loccnt; // location counter
 static int value; // operand field value
-char zpref; // zero page reference flag
+bool zpref; // zero page reference flag
 
 // Machine operations processor - 1 byte, no operand field.
 void class1(void) {
    if (pass == LAST_PASS)
-      loadlc(loccnt, 0, 1), loadv(opval, 0, 1), println();
+      loadlc(loccnt, 0, true), loadv(opval, 0, true), println();
    loccnt++;
 }
 
@@ -23,10 +23,10 @@ static int colnum(int *ip) {
    else if (ch >= '1' && ch <= '9') Base = 10, nval = ch - '0';
    else if (ch == '@' || ch == '0') Base = 010;
    else if (ch == '%') Base = 2;
-   while ((ch = prlnbuf[++(*ip)] - '0') >= 0) {
+   while ((ch = prlnbuf[++*ip] - '0') >= 0) {
       if (ch > 9) {
-         ch -= ('A' - '9' - 1);
-         if (ch > 0xf) ch -= ('a' - 'A');
+         ch -= 'A' - '9' - 1;
+         if (ch > 0xf) ch -= 'a' - 'A';
          if (ch > 0xf || ch < 10) break;
       }
       if (ch >= Base) break;
@@ -36,14 +36,15 @@ static int colnum(int *ip) {
 }
 
 // Evaluate an expression.
-static int evaluate(int *ip) {
+static bool evaluate(int *ip) {
    char op = '+';
-   int parflg = 0;
-   zpref = undef = value = 0;
-   int invalid = 0;
+   bool parflg = false;
+   value = 0;
+   zpref = undef = false;
+   bool invalid = false;
    int value2;
    char op2;
-// hcj: zpref should reflect the value of the expression, not the value of the intermediate symbols
+// hcj: zpref should reflect the value of the expression, not the value of the intermediate symbols.
    char ch;
    while ((ch = prlnbuf[*ip]) != ' ' && ch != ')' && ch != ',' && ch != ';') {
       int tvalue = 0;
@@ -56,17 +57,17 @@ static int evaluate(int *ip) {
       else if (ch == '\'') {
          ++*ip, tvalue = prlnbuf[*ip]&0xff, ++*ip;
       } else if (ch == '[') {
-         if (parflg == 1)
-            error("Too many ['s in expression"), invalid++;
+         if (parflg)
+            error("Too many ['s in expression"), invalid = true;
          else
-            value2 = value, op2 = op, value = tvalue = 0, op = '+', parflg = 1;
+            value2 = value, op2 = op, value = tvalue = 0, op = '+', parflg = true;
          ++*ip;
          continue;
       } else if (ch == ']') {
-         if (parflg == 0)
-            error("No matching [ for ] in expression"), invalid++;
+         if (!parflg)
+            error("No matching [ for ] in expression"), invalid = true;
          else
-            parflg = 0, tvalue = value, value = value2, op = op2;
+            parflg = false, tvalue = value, value = value2, op = op2;
          ++*ip;
       }
       switch (op) {
@@ -83,40 +84,40 @@ static int evaluate(int *ip) {
             tvalue >>= 8;
          case '<':
             if (value != 0) error("High or low byte operator not first in operand field");
-            value = tvalue&0xff, zpref = 0;
+            value = tvalue&0xff, zpref = false;
          break;
-         default: invalid++;
+         default: invalid = true;
       }
       op = prlnbuf[*ip];
       if (op == ' ' || op == ')' || op == ',' || op == ';') break;
       else if (op != ']') ++*ip;
    }
-   if (parflg == 1) {
+   if (parflg) {
       error("Missing ] in expression");
-      return 1;
+      return true;
    }
-   if (value < 0 || value >= 256) zpref = 1;
-   if (undef != 0) {
-      if (pass != FIRST_PASS) error("Undefined symbol in operand field"), invalid++;
+   if (value < 0 || value >= 256) zpref = true;
+   if (undef) {
+      if (pass != FIRST_PASS) error("Undefined symbol in operand field"), invalid = true;
       value = 0;
-   } else if (invalid != 0) error("Invalid operand field");
+   } else if (invalid) error("Invalid operand field");
 // This is the only way out that may not signal error
-   else zpref = value < 0 || value >= 256? 1: 0;
+   else zpref = value < 0 || value >= 256;
    return invalid;
 }
 
 // Machine operations processor - 2 byte, relative addressing.
 void class2(int *ip) {
    if (pass == LAST_PASS) {
-      loadlc(loccnt, 0, 1);
-      loadv(opval, 0, 1);
-      while (prlnbuf[++(*ip)] == ' ');
-      if (evaluate(ip) != 0) {
+      loadlc(loccnt, 0, true);
+      loadv(opval, 0, true);
+      while (prlnbuf[++*ip] == ' ');
+      if (evaluate(ip)) {
          loccnt += 2;
          return;
       }
       loccnt += 2;
-      if ((value -= loccnt) >= -128 && value < 128) loadv(value, 1, 1), println();
+      if ((value -= loccnt) >= -128 && value < 128) loadv(value, 1, true), println();
       else error("Invalid branch address");
    } else loccnt += 2;
 }
@@ -124,7 +125,7 @@ void class2(int *ip) {
 // Machine operations processor - various addressing modes.
 void class3(int *ip) {
    char ch;
-   while ((ch = prlnbuf[++(*ip)]) == ' ');
+   while ((ch = prlnbuf[++*ip]) == ' ');
    int flag, ztmask;
    switch (ch) {
       case 0: case ';': error("Operand field missing"); return;
@@ -140,8 +141,8 @@ void class3(int *ip) {
             default: flag = ABS | ZER | ZERX | ABSX | ABSY | ABSY2 | ZERY; break;
          }
          if (flag&(INDX | INDY | ZER | ZERX | ZERY)&opflg) udtype = UNDEFAB;
-         if (evaluate(ip) != 0) return;
-         if (zpref != 0) flag &= (ABS | ABSX | ABSY | ABSY2 | IND | IMM1 | IMM2), ztmask = 0;
+         if (evaluate(ip)) return;
+         if (zpref) flag &= (ABS | ABSX | ABSY | ABSY2 | IND | IMM1 | IMM2), ztmask = 0;
          else ztmask = ZER | ZERX | ZERY;
          int code = 0;
          int i = 0;
@@ -185,7 +186,7 @@ void class3(int *ip) {
    // Single byte - class 3.
       case ACC:
          if (pass == LAST_PASS)
-            loadlc(loccnt, 0, 1), loadv(opval + 8, 0, 1), println();
+            loadlc(loccnt, 0, true), loadv(opval + 8, 0, true), println();
          loccnt++;
       return;
    // double byte - class 3.
@@ -199,7 +200,7 @@ void class3(int *ip) {
          opval += 4;
       case INDX: case IMM1:
          if (pass == LAST_PASS)
-            loadlc(loccnt, 0, 1), loadv(opval, 0, 1), loadv(value, 1, 1), println();
+            loadlc(loccnt, 0, true), loadv(opval, 0, true), loadv(value, 1, true), println();
          loccnt += 2;
       return;
    // Triple byte - class 3.
@@ -211,7 +212,7 @@ void class3(int *ip) {
          opval += 12;
       case ABS:
          if (pass == LAST_PASS)
-            opval += 12, loadlc(loccnt, 0, 1), loadv(opval, 0, 1), loadv(value, 1, 1), loadv(value >> 8, 2, 1), println();
+            opval += 12, loadlc(loccnt, 0, true), loadv(opval, 0, true), loadv(value, 1, true), loadv(value >> 8, 2, true), println();
          loccnt += 3;
       return;
       default: error("Invalid addressing mode"); return;
@@ -223,8 +224,8 @@ void pseudo(int *ip) {
    switch (opval) {
    // .byte pseudo.
       case 0: {
-         labldef(loccnt), loadlc(loccnt, 0, 1);
-         while (prlnbuf[++(*ip)] == ' '); // field.
+         labldef(loccnt), loadlc(loccnt, 0, true);
+         while (prlnbuf[++*ip] == ' '); // field.
          int count = 0;
          do {
             if (prlnbuf[*ip] == '"') {
@@ -232,24 +233,24 @@ void pseudo(int *ip) {
                   if (tvalue == '\0') {
                      error("Unterminated ASCII string");
                      return;
-                  } else if (tvalue == '\\') switch (tvalue = prlnbuf[++(*ip)]) {
+                  } else if (tvalue == '\\') switch (tvalue = prlnbuf[++*ip]) {
                      case 'n': tvalue = '\n'; break;
                      case 't': tvalue = '\t'; break;
                   }
                   loccnt++;
                   if (pass == LAST_PASS) {
-                     loadv(tvalue, count, 1);
+                     loadv(tvalue, count, true);
                      if (++count >= 3) {
                         println();
                         int i = 0;
                         for (; i < SFIELD; i++) prlnbuf[i] = ' ';
-                        prlnbuf[i] = 0, count = 0, loadlc(loccnt, 0, 1);
+                        prlnbuf[i] = 0, count = 0, loadlc(loccnt, 0, true);
                      }
                   }
                }
                ++*ip;
             } else {
-               if (evaluate(ip) != 0) {
+               if (evaluate(ip)) {
                   loccnt++;
                   return;
                }
@@ -258,12 +259,12 @@ void pseudo(int *ip) {
                   error("Operand field size error");
                   return;
                } else if (pass == LAST_PASS) {
-                  loadv(value, count, 1);
+                  loadv(value, count, true);
                   if (++count >= 3) {
                      println();
                      int i = 0;
                      for (; i < SFIELD; i++) prlnbuf[i] = ' ';
-                     prlnbuf[i] = 0, count = 0, loadlc(loccnt, 0, 1);
+                     prlnbuf[i] = 0, count = 0, loadlc(loccnt, 0, true);
                   }
                }
             }
@@ -273,43 +274,43 @@ void pseudo(int *ip) {
       break;
    // = pseudo.
       case 1:
-         while (prlnbuf[++(*ip)] == ' ');
-         if (evaluate(ip) != 0) break;
+         while (prlnbuf[++*ip] == ' ');
+         if (evaluate(ip)) break;
          labldef(value);
-         if (pass == LAST_PASS) loadlc(value, 1, 0), println();
+         if (pass == LAST_PASS) loadlc(value, 1, false), println();
       break;
    // .word pseudo.
       case 2:
-         labldef(loccnt), loadlc(loccnt, 0, 1);
-         while (prlnbuf[++(*ip)] == ' ');
+         labldef(loccnt), loadlc(loccnt, 0, true);
+         while (prlnbuf[++*ip] == ' ');
          do {
-            if (evaluate(ip) != 0) {
+            if (evaluate(ip)) {
                loccnt += 2;
                break;
             }
             loccnt += 2;
             if (pass == LAST_PASS) {
-               loadv(value, 0, 1), loadv(value >> 8, 1, 1), println();
+               loadv(value, 0, true), loadv(value >> 8, 1, true), println();
                int i = 0;
                for (; i < SFIELD; i++) prlnbuf[i] = ' ';
-               prlnbuf[i] = 0, loadlc(loccnt, 0, 1);
+               prlnbuf[i] = 0, loadlc(loccnt, 0, true);
             }
          } while (prlnbuf[(*ip)++] == ',');
       break;
    // *= pseudo.
       case 3: {
-         while (prlnbuf[++(*ip)] == ' ');
+         while (prlnbuf[++*ip] == ' ');
          int tvalue;
          if (prlnbuf[*ip] == '*') {
-            if (evaluate(ip) != 0) break;
-            else if (undef != 0) {
+            if (evaluate(ip)) break;
+            else if (undef) {
                error("Undefined symbol in operand field.");
                return;
             }
             tvalue = loccnt;
          } else {
-            if (evaluate(ip) != 0) break;
-            else if (undef != 0) {
+            if (evaluate(ip)) break;
+            else if (undef) {
                error("Undefined symbol in operand field.");
                return;
             }
@@ -317,7 +318,7 @@ void pseudo(int *ip) {
          }
          loccnt = value;
          labldef(tvalue);
-         if (pass == LAST_PASS) objcnt = 0, loadlc(tvalue, 1, 0), println();
+         if (pass == LAST_PASS) objcnt = 0, loadlc(tvalue, 1, false), println();
       }
       break;
    // .list pseudo.
@@ -330,29 +331,29 @@ void pseudo(int *ip) {
       break;
    // .dbyt pseudo.
       case 6:
-         labldef(loccnt), loadlc(loccnt, 0, 1);
-         while (prlnbuf[++(*ip)] == ' ');
+         labldef(loccnt), loadlc(loccnt, 0, true);
+         while (prlnbuf[++*ip] == ' ');
          do {
-            if (evaluate(ip) != 0) {
+            if (evaluate(ip)) {
                loccnt += 2;
                break;
             }
             loccnt += 2;
             if (pass == LAST_PASS) {
-               loadv(value >> 8, 0, 1), loadv(value, 1, 1), println();
+               loadv(value >> 8, 0, true), loadv(value, 1, true), println();
                int i = 0;
                for (; i < SFIELD; i++) prlnbuf[i] = ' ';
-               prlnbuf[i] = 0, loadlc(loccnt, 0, 1);
+               prlnbuf[i] = 0, loadlc(loccnt, 0, true);
             }
          } while (prlnbuf[(*ip)++] == ',');
       break;
    // .page pseudo .
       case 7:
          if (pagesize == 0) break;
-         while (prlnbuf[++(*ip)] == ' ');
+         while (prlnbuf[++*ip] == ' ');
          if (prlnbuf[(*ip)] == '"') {
             int i = 0;
-            for (int tvalue; (tvalue = prlnbuf[++(*ip)]) != '"'; ) {
+            for (int tvalue; (tvalue = prlnbuf[++*ip]) != '"'; ) {
                if (tvalue == '\0') {
                   error("Unterminated ASCII string");
                   return;

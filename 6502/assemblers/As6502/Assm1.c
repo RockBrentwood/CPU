@@ -11,25 +11,23 @@
 
 #define CPMEOF EOF
 
-static int badflag;
-static int act;
-static char **avt;
+static bool badflag;
+static int act; static char **avt;
 
 static FILE *iptr;
 FILE *optr;
-static int dflag; // debug flag
-static int sflag; // symbol table output flag
+static bool dflag; // debug flag
+static bool sflag; // symbol table output flag
 
 int errcnt; // error counter
-int iflag; // ignore .nlst flag
+bool iflag; // ignore .nlst flag
 int lflag; // disable listing flag
-int mflag; // generate MOS Technology object format
-int nflag; // normal/split address mode
-int oflag; // object output flag
+bool mflag; // generate MOS Technology object format
+bool nflag; // normal/split address mode
+bool oflag; // object output flag
 
 int nxt_free; // next free location in symtab
 int pass; // pass counter
-
 
 // Added by Joel Swank (1986/12).
 int pagect; // count of pages
@@ -49,22 +47,22 @@ static void getargs(int argc, char *argv[]) {
    while (--argc > 0 && (*++argv)[0] == '-') {
       for (int i = 1, c; (c = (*argv)[i]) != '\0'; i++) switch (c) {
       // Debug flag.
-         case 'd': dflag++; break;
+         case 'd': dflag = true; break;
       // Ignore .nlst flag.
-         case 'i': iflag++; break;
+         case 'i': iflag = true; break;
       // Disable listing flag.
          case 'l': lflag--; break;
       // Normal/split address mode.
-         case 'n': nflag++; break;
+         case 'n': nflag = true; break;
       // MOS Tech. object format; -m implies -o.
          case 'm':
-            mflag++;
+            mflag = true;
       // Object output flag.
          case 'o':
-            oflag++;
+            oflag = true;
          break;
       // List symbol table flag.
-         case 's': sflag++; break;
+         case 's': sflag = true; break;
       // Print the assembler version.
          case 'v': fprintf(stderr, "%s - Amiga version 5.0 - 3/1/87 - JHV [gvw,jhs]\n", App); break;
       // Input symbol table size.
@@ -77,7 +75,7 @@ static void getargs(int argc, char *argv[]) {
             if (sz > 1000)
                size = sz;
             else
-               fprintf(stderr, "Invalid Symbol table size - minimum is 1000\n"), badflag++;
+               fprintf(stderr, "Invalid Symbol table size - minimum is 1000\n"), badflag = true;
          }
          goto Break;
       // Input lines per page.
@@ -90,7 +88,7 @@ static void getargs(int argc, char *argv[]) {
             if (sz > 10 || sz == 0)
                pagesize = sz;
             else
-               fprintf(stderr, "Invalid Pagesize - minimum is 10\n"), badflag++;
+               fprintf(stderr, "Invalid Pagesize - minimum is 10\n"), badflag = true;
          }
          goto Break;
       // Input characters per line.
@@ -103,10 +101,10 @@ static void getargs(int argc, char *argv[]) {
             if (sz >= 80 && sz < 133)
                linesize = sz;
             else
-               fprintf(stderr, "Invalid Linesize - min is 80, max is 133\n"), badflag++;
+               fprintf(stderr, "Invalid Linesize - min is 80, max is 133\n"), badflag = true;
          }
          goto Break;
-         default: fprintf(stderr, "Unknown flag '%c'\n", c), badflag++; break;
+         default: fprintf(stderr, "Unknown flag '%c'\n", c), badflag = true; break;
       }
    Break:;
    }
@@ -118,7 +116,7 @@ static void getargs(int argc, char *argv[]) {
 static void initialize(int ac, char *av[], int argc) {
    iptr = fopen(*av, "r");
    if (iptr == NULL) fprintf(stderr, "Open error for file '%s'.\n", *av), exit(1);
-   if (pass == LAST_PASS && oflag != 0 && ac == argc) {
+   if (pass == LAST_PASS && oflag && ac == argc) {
       optr = fopen("6502.out", "w");
       if (optr == NULL) fprintf(stderr, "Create error for object file 6502.out.\n"), exit(1);
    }
@@ -186,8 +184,8 @@ static int readline(void) {
 // Close the source, object and stdout files.
 static void wrapup(void) {
    fclose(iptr); // Close the source file.
-   if (pass == DONE && oflag != 0 && optr != 0) {
-      if (mflag != 0) fin_obj(); else fputc('\n', optr);
+   if (pass == DONE && oflag && optr != 0) {
+      if (mflag) fin_obj(); else fputc('\n', optr);
       fclose(optr);
    }
 }
@@ -229,10 +227,10 @@ static void stprnt(void) {
    // Integer conversion variable.
       int j = symtab[ptr++]&0xff; j += (symtab[ptr++] << 8);
       hexcon(4, j);
-      if (nflag == 0) {
-         i--;
-         prlnbuf[i++] = hex[3], prlnbuf[i++] = hex[4], prlnbuf[i++] = ':', prlnbuf[i++] = hex[1], prlnbuf[i++] = hex[2];
-      } else for (int k = 1; k < 5; k++) prlnbuf[i++] = hex[k];
+      if (nflag)
+         for (int k = 1; k < 5; k++) prlnbuf[i++] = hex[k];
+      else
+         i--, prlnbuf[i++] = hex[3], prlnbuf[i++] = hex[4], prlnbuf[i++] = ':', prlnbuf[i++] = hex[1], prlnbuf[i++] = hex[2];
       j = symtab[ptr++]&0xff;
       j += (symtab[ptr++] << 8);
       char buf[6]; sprintf(buf, "%d", j);
@@ -264,7 +262,7 @@ static void stprnt(void) {
 int main(int argc, char *argv[]) {
    size = STABSZ, pagesize = PAGESIZE, linesize = LINESIZE;
    getargs(argc, argv); // Parse the command line arguments.
-   if (badflag > 0) return 1;
+   if (badflag) return 1;
    if (act == 0) {
       fprintf(stderr, "USAGE: %s -[milnosv] [-p -t -w] file ...\n", App);
       return 1;
@@ -282,10 +280,9 @@ int main(int argc, char *argv[]) {
    for (; i < linesize - 58; i++) syspc[i] = ' ';
    syspc[i] = '\0';
    int ac = act; char **av = avt;
-   pass = FIRST_PASS;
    errcnt = loccnt = slnum = 0;
    fprintf(stderr, "Initialization complete\n");
-   while (pass != DONE) {
+   for (pass = FIRST_PASS; pass != DONE; ) {
       initialize(ac, av, act);
       fprintf(stderr, "PASS %d %s\n", pass + 1, *av);
       if (pass == LAST_PASS && ac == act) errcnt = loccnt = slnum = 0;
@@ -305,12 +302,12 @@ int main(int argc, char *argv[]) {
             --ac, ++av;
             if (ac == 0) {
                pass = DONE;
-               if (sflag != 0) stprnt();
+               if (sflag) stprnt();
             }
          break;
       }
       wrapup();
-      if (dflag != 0 && pass == LAST_PASS) fprintf(stdout, "nxt_free = %d\n", nxt_free);
+      if (dflag && pass == LAST_PASS) fprintf(stdout, "nxt_free = %d\n", nxt_free);
    }
    fclose(stdout);
    free(symtab);

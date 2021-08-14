@@ -60,3 +60,5 @@
 		Moved {AssmTest}.{ex,in}, BootSA.{ex,s,txt} into the Test subdirectory.
 2021/08/14	Remove the ‟register” keyword.
 		Rendered into optimized, idiomatic, nativized C.
+2021/08/14	Added <stdbool.h>.
+		Lifted integer-valued boolean variables and functions to ‟bool”.

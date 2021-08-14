@@ -27,7 +27,7 @@ struct sym_tab {
 unsigned size; // symbol table size
 char symbol[SBOLSZ]; // temporary symbol storage
 int udtype; // undefined symbol type
-int undef; // undefined symbol in expression flg
+bool undef; // undefined symbol in expression flag
 
 // Print the page heading.
 void printhead(void) {
@@ -120,35 +120,35 @@ void fin_obj(void) {
    hexcon(4, ++rec_cnt);
    fprintf(optr, ";00");
    for (unsigned i = 1; i < 5; i++) fputc(hex[i], optr);
-   rec_cnt = rec_cnt / 256 + (rec_cnt&0xff);
+   rec_cnt = rec_cnt/0x100 + (rec_cnt&0xff);
    hexcon(4, rec_cnt);
    for (unsigned i = 1; i < 5; i++) fputc(hex[i], optr);
    fputc('\n', optr);
 }
 
 // Load a 16-bit value in printable form into prlnbuf.
-void loadlc(int val, int f, int outflg) {
+void loadlc(int val, int f, bool outflg) {
    int i = 6 + 7*f;
    hexcon(4, val);
-   if (nflag == 0)
-      prlnbuf[i++] = hex[3], prlnbuf[i++] = hex[4], prlnbuf[i++] = ':', prlnbuf[i++] = hex[1], prlnbuf[i] = hex[2];
-   else
+   if (nflag)
       prlnbuf[i++] = hex[1], prlnbuf[i++] = hex[2], prlnbuf[i++] = hex[3], prlnbuf[i] = hex[4];
-   if (pass == LAST_PASS && oflag != 0 && objcnt <= 0 && outflg != 0) {
-      if (mflag != 0) start_obj(val); else fprintf(optr, "\n;%c%c%c%c", hex[3], hex[4], hex[1], hex[2]);
+   else
+      prlnbuf[i++] = hex[3], prlnbuf[i++] = hex[4], prlnbuf[i++] = ':', prlnbuf[i++] = hex[1], prlnbuf[i] = hex[2];
+   if (pass == LAST_PASS && oflag && objcnt <= 0 && outflg) {
+      if (mflag) start_obj(val); else fprintf(optr, "\n;%c%c%c%c", hex[3], hex[4], hex[1], hex[2]);
       objcnt = 22;
    }
 }
 
-// Load a value in hex into prlnbuf[contents[i]] and output hex characters to obuf if LAST_PASS&oflag == 1.
+// Load a value in hex into prlnbuf[contents[i]] and output hex characters to obuf if LAST_PASS and oflag.
 // ∙	f:	the contents field subscript.
 // ∙	outflg:	a flag to output object bytes.
-void loadv(int val, int f, int outflg) {
+void loadv(int val, int f, bool outflg) {
    hexcon(2, val);
    prlnbuf[13 + 3*f] = hex[1];
    prlnbuf[14 + 3*f] = hex[2];
-   if (pass == LAST_PASS && oflag != 0 && outflg != 0) {
-      if (mflag != 0)
+   if (pass == LAST_PASS && oflag && outflg) {
+      if (mflag)
          put_obj(val);
       else
          fputc(hex[1], optr), fputc(hex[2], optr);
@@ -158,11 +158,11 @@ void loadv(int val, int f, int outflg) {
 
 // Error printing routine.
 void error(char *stptr) {
-   loadlc(loccnt, 0, 1);
+   loadlc(loccnt, 0, true);
    loccnt += 3;
-   loadv(0, 0, 0);
-   loadv(0, 1, 0);
-   loadv(0, 2, 0);
+   loadv(0, 0, false);
+   loadv(0, 1, false);
+   loadv(0, 2, false);
    fprintf(stderr, "%s\n", prlnbuf);
    fprintf(stderr, "%s\n", stptr);
    errcnt++;
@@ -172,20 +172,19 @@ void error(char *stptr) {
 // ∙	leave prlnbuf pointer at the first invalid symbol character,
 // ∙	return 0 if no symbol is collected.
 static int colsym(int *ip) {
-   int valid = 1;
+   bool valid = true;
    int i = 0;
-   while (valid == 1) {
+   while (valid) {
       char ch = prlnbuf[*ip];
       if (ch == '_' || ch == '.');
       else if (ch >= 'a' && ch <= 'z');
       else if (ch >= 'A' && ch <= 'Z');
       else if (i >= 1 && ch >= '0' && ch <= '9');
       else if (i == 1 && ch == '=');
-      else valid = 0;
-      if (valid == 1) {
-         if (i < SBOLSZ - 1)
-            symbol[++i] = ch;
-         (*ip)++;
+      else valid = false;
+      if (valid) {
+         if (i < SBOLSZ - 1) symbol[++i] = ch;
+         ++*ip;
       }
    }
    if (i == 1) switch (symbol[1]) {
@@ -197,29 +196,16 @@ static int colsym(int *ip) {
    return symbol[0] = i;
 }
 
-// Open up a space in the symbol table
-// the space will be at (ptr) and will be len characters long.
-// return -1 if no room.
-static int openspc(int ptr, int len) {
-   if (nxt_free + len > size) return -1;
+// Open up a space in the symbol table.
+// The space will be at (ptr) and will be len characters long.
+// return true if and only if there is more room available.
+static bool openspc(int ptr, int len) {
+   if (nxt_free + len > size) return false;
    if (ptr != nxt_free)
       for (int ptr2 = nxt_free - 1, ptr3 = ptr2 + len; ptr2 >= ptr; ptr2--, ptr3--) symtab[ptr3] = symtab[ptr2];
    nxt_free += len;
    if (lablptr >= ptr) lablptr += len;
-   return 0;
-}
-
-// Install a symbol into symtab.
-static int stinstal(int ptr) {
-   if (openspc(ptr, symbol[0] + 7) == -1) {
-      error("Symbol Table Full"); /* print error msg and ...  */
-      pass = DONE; /* cause termination of assembly */
-      return -1;
-   }
-   int ptr2 = ptr;
-   for (int i = 0; i < symbol[0] + 1; i++) symtab[ptr2++] = symbol[i];
-   symtab[ptr2++] = udtype, symtab[ptr2 + 4] = 0;
-   return ptr;
+   return true;
 }
 
 // Symbol table lookup:
@@ -232,22 +218,28 @@ static int stlook(void) {
       if (symtab[ptr] < ln) ln = symtab[ptr];
       int eq = strncmp(&symtab[ptr + 1], &symbol[1], ln);
       if (eq == 0 && symtab[ptr] == symbol[0]) return ptr;
-      if (eq > 0) return (stinstal(ptr));
-      ptr = ptr + 6 + symtab[ptr];
-      ptr = ptr + 1 + 2*(symtab[ptr]&0xff);
+      else if (eq > 0) break;
+      ptr += 6 + symtab[ptr], ptr += 1 + 2*(symtab[ptr]&0xff);
    }
-   return (stinstal(ptr));
+// Install a symbol into symtab.
+   if (!openspc(ptr, symbol[0] + 7)) {
+   // Print an error msg and end the assembly.
+      error("Symbol Table Full"), pass = DONE;
+      return -1;
+   }
+   int ptr2 = ptr;
+   for (int i = 0; i < symbol[0] + 1; i++) symtab[ptr2++] = symbol[i];
+   symtab[ptr2++] = udtype, symtab[ptr2 + 4] = 0;
+   return ptr;
 }
 
 // Operation code table lookup:
 // ∙	if found, return a pointer to the symbol,
 // ∙	else, return -1.
 static int oplook(int *ip) {
-   char ch;
-   int k;
    int i = 0, j = 0;
    int temp[2] = { 0, 0 };
-   while ((ch = prlnbuf[*ip]) != ' ' && ch != '\0' && ch != '\t' && ch != ';') {
+   for (char ch; (ch = prlnbuf[*ip]) != ' ' && ch != '\0' && ch != '\t' && ch != ';'; ) {
       if (ch >= 'A' && ch <= 'Z') ch &= 0x1f;
       else if (ch >= 'a' && ch <= 'z') ch &= 0x1f;
       else if (ch == '.') ch = 31;
@@ -262,9 +254,9 @@ static int oplook(int *ip) {
          if (++j >= 2) return -1;
       }
    }
-   j = temp[0] ^ temp[1];
+   j = temp[0]^temp[1];
    if (j == 0) return -2;
-   k = 0;
+   int k = 0;
    i = step[k] - 1;
    do {
       if (j == optab[i].Nmemonic) {
@@ -278,7 +270,6 @@ static int oplook(int *ip) {
 
 // Assign <value> to label pointed to by lablptr, checking for valid definition, etc.
 int labldef(int lval) {
-   int i;
    if (lablptr != -1) {
       lablptr += symtab[lablptr] + 1;
       if (pass == FIRST_PASS) {
@@ -295,7 +286,7 @@ int labldef(int lval) {
          }
          symtab[lablptr + 3] = slnum&0xff, symtab[lablptr + 4] = (slnum >> 8)&0xff;
       } else {
-         i = ((symtab[lablptr + 2] << 8) + (symtab[lablptr + 1]&0xff))&0xffff;
+         int i = ((symtab[lablptr + 2] << 8) + (symtab[lablptr + 1]&0xff))&0xffff;
          if (i != lval && pass == LAST_PASS) {
             error("Sync error");
             return -1;
@@ -314,15 +305,14 @@ void assemble(void) {
    lablptr = -1;
    int i = SFIELD; // prlnbuf pointer.
    udtype = UNDEF;
-   if (colsym(&i) != 0 && (lablptr = stlook()) == -1)
-      return;
-   while (prlnbuf[++i] == ' '); /* find first non-space */
+   if (colsym(&i) != 0 && (lablptr = stlook()) == -1) return;
+   while (prlnbuf[++i] == ' '); // Find the first non-space.
    int flg = oplook(&i);
    if (flg < 0) { // Collect operation code.
       labldef(loccnt);
       if (flg == -1) error("Invalid operation code");
       else if (flg == -2 && pass == LAST_PASS) {
-         if (lablptr != -1) loadlc(loccnt, 1, 0);
+         if (lablptr != -1) loadlc(loccnt, 1, false);
          println();
       }
       return;
@@ -338,13 +328,13 @@ void assemble(void) {
 static void addref(int ip) {
    int rct = ip + symtab[ip] + 6;
    int ptr = rct;
-   if ((symtab[rct]&0xff) == 255) { /* non-fatal error   */
+   if ((symtab[rct]&0xff) == 0xff) { // Non-fatal error.
       fprintf(stderr, "%s\n", prlnbuf);
       fprintf(stderr, "Too many references\n");
       return;
    }
-   ptr += (symtab[rct]&0xff)*2 + 1;
-   if (openspc(ptr, 2) == -1) {
+   ptr += 2*(symtab[rct]&0xff) + 1;
+   if (!openspc(ptr, 2)) {
       error("Symbol Table Full");
       return;
    }
@@ -357,12 +347,12 @@ int symval(int *ip) {
    int svalue = 0;
    colsym(ip);
    int ptr = stlook();
-   if (ptr == -1) undef = 1; // No-room error.
-   else if (symtab[ptr + symtab[ptr] + 1] == UNDEF) undef = 1;
-   else if (symtab[ptr + symtab[ptr] + 1] == UNDEFAB) undef = 1;
+   if (ptr == -1) undef = true; // No-room error.
+   else if (symtab[ptr + symtab[ptr] + 1] == UNDEF) undef = true;
+   else if (symtab[ptr + symtab[ptr] + 1] == UNDEFAB) undef = true;
    else svalue = ((symtab[ptr + symtab[ptr] + 3] << 8) + (symtab[ptr + symtab[ptr] + 2]&0xff))&0xffff;
-   if (symtab[ptr + symtab[ptr] + 1] == DEFABS) zpref = 1;
-   if (undef != 0) zpref = 1;
+   if (symtab[ptr + symtab[ptr] + 1] == DEFABS) zpref = true;
+   if (undef) zpref = true;
 // Add a reference entry to symbol table on first pass only,
 // except for branch instructions (CLASS2) which do not come through here on the first pass.
    if (ptr >= 0 && pass == FIRST_PASS) addref(ptr);
