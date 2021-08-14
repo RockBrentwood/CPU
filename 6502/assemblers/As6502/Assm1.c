@@ -223,7 +223,7 @@ static void stprnt(void) {
       int i = 1;
       for (; i <= symtab[ptr]; i++) prlnbuf[i] = symtab[ptr + i];
       ptr += i + 1;
-      i = 23; /* value at pos 23  */
+      i = 23; // The value at pos 23.
    // Integer conversion variable.
       int j = symtab[ptr++]&0xff; j += (symtab[ptr++] << 8);
       hexcon(4, j);
@@ -236,15 +236,15 @@ static void stprnt(void) {
       char buf[6]; sprintf(buf, "%d", j);
    // Printf buffer pointer.
       int k = 0;
-      i = 30; /* line defined at pos 30 */
+      i = 30; // The line defined at pos 30.
       while (buf[k] != '\0') prlnbuf[i++] = buf[k++];
       k = 0;
-      i = 37; /* count of references    */
+      i = 37; // The number of references.
    // Counter for references.
       int refct = symtab[ptr++]&0xff;
       sprintf(buf, "(%d)", refct);
       while (buf[k] != '\0') prlnbuf[i++] = buf[k++];
-      i++; /* and all the references   */
+      i++; // ... and all the references.
       while (refct > 0) {
          j = symtab[ptr++]&0xff, j += (symtab[ptr++] << 8);
          sprintf(buf, "%d", j);
@@ -256,7 +256,6 @@ static void stprnt(void) {
       }
       prlnbuf[i] = '\0', prsyline();
    }
-
 }
 
 int main(int argc, char *argv[]) {

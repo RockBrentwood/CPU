@@ -70,16 +70,15 @@ static unsigned rec_cnt = 0; // The number of records in this file.
 static unsigned cksum = 0; // The record check sum accumulator.
 
 // MOS Tech. object format is as follows:
-// ( all data is in ASCII encoded hexidecimal)
+// (all data is in ASCII encoded hexidecimal)
 //	Data record: ;nnaaaadddd...xxxx[cr]
 //	Last record: ;00ccccxxxx[cr]
 // Where:
-//	;	=	Start of record (ASCII 3B)
-//	nn	=	The number of data bytes in the record.
-//			max = 24 bytes.
+//	;	=	The start of record (ASCII 0x3b).
+//	nn	=	The number of data bytes in the record; with 0 < nn ≤ 24.
 //	aaaa	=	The address of the first data byte in the record.
 //	dd	=	1 data byte.
-//	xxxx	=	The checksum that is the twos compliment sum of all data bytes, the count byte and the address bytes.
+//	xxxx	=	The twos-complement checksum of all data bytes, the count byte and the address bytes.
 //	cccc	=	The number of records in the file.
 //	[cr]	=	Carriage Return (0x0d in ASCII).
 
@@ -106,7 +105,7 @@ static void prt_obj(void) {
 // Start an object record (end previous).
 // ∙	val:	the current location counter.
 static void start_obj(unsigned val) {
-   prt_obj(); // Print the current record if any.
+   prt_obj();
    hexcon(4, val);
    obj_bytes = 0;
    for (obj_ptr = 0; obj_ptr < 4; obj_ptr++) obj_rec[obj_ptr] = hex[obj_ptr + 1];
@@ -234,8 +233,10 @@ static int stlook(void) {
 }
 
 // Operation code table lookup:
-// ∙	if found, return a pointer to the symbol,
-// ∙	else, return -1.
+// Return:
+// ∙	0:	for opcodes,
+// ∙	1:	for identifiers other than opcodes,
+// ∙	2:	for anything else.
 static int oplook(int *ip) {
    int i = 0, j = 0;
    int temp[2] = { 0, 0 };
@@ -245,27 +246,26 @@ static int oplook(int *ip) {
       else if (ch == '.') ch = 31;
       else if (ch == '*') ch = 30;
       else if (ch == '=') ch = 29;
-      else return -1;
+      else return 2;
       temp[j] = temp[j] << 5 | ch&0xff;
       if (ch == 29) break;
       ++*ip;
       if (++i >= 3) {
          i = 0;
-         if (++j >= 2) return -1;
+         if (++j >= 2) return 2;
       }
    }
    j = temp[0]^temp[1];
-   if (j == 0) return -2;
-   int k = 0;
-   i = step[k] - 1;
+   if (j == 0) return 1;
+   int step = 0x40, op = step - 1;
    do {
-      if (j == optab[i].Nmemonic) {
-         opflg = optab[i].Operation, opval = optab[i].Code;
-         return 3*i + 2;
-      } else if (j < optab[i].Nmemonic) i -= step[++k];
-      else i += step[++k];
-   } while (step[k] > 0);
-   return -1;
+      if (j == optab[op].Nmemonic) {
+         opflg = optab[op].Operation, opval = optab[op].Code;
+         return 0;
+      } else if (j < optab[op].Nmemonic) op -= step >>= 1;
+      else op += step >>= 1;
+   } while (step >= 1);
+   return 2;
 }
 
 // Assign <value> to label pointed to by lablptr, checking for valid definition, etc.
@@ -307,21 +307,29 @@ void assemble(void) {
    udtype = UNDEF;
    if (colsym(&i) != 0 && (lablptr = stlook()) == -1) return;
    while (prlnbuf[++i] == ' '); // Find the first non-space.
-   int flg = oplook(&i);
-   if (flg < 0) { // Collect operation code.
-      labldef(loccnt);
-      if (flg == -1) error("Invalid operation code");
-      else if (flg == -2 && pass == LAST_PASS) {
-         if (lablptr != -1) loadlc(loccnt, 1, false);
-         println();
-      }
-      return;
+   switch (oplook(&i)) {
+   // An opcode.
+      case 0:
+         if (opflg == PSEUDO) pseudo(&i);
+         else if (labldef(loccnt) == -1) return;
+         else if (opflg == CLASS1) class1();
+         else if (opflg == CLASS2) class2(&i);
+         else class3(&i);
+      break;
+   // An identifier other than an opcode.
+      case 1:
+         labldef(loccnt); // Collect operation code.
+         if (pass == LAST_PASS) {
+            if (lablptr != -1) loadlc(loccnt, 1, false);
+            println();
+         }
+      break;
+   // Not an identifier.
+      case 2:
+         labldef(loccnt); // Collect operation code.
+         error("Invalid operation code");
+      break;
    }
-   if (opflg == PSEUDO) pseudo(&i);
-   else if (labldef(loccnt) == -1) return;
-   else if (opflg == CLASS1) class1();
-   else if (opflg == CLASS2) class2(&i);
-   else class3(&i);
 }
 
 // Add a reference line to the symbol pointed to by ip.

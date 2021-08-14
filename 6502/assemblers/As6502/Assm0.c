@@ -11,6 +11,7 @@ int opval; // operation code value
 #define Word1(A) ((A)&0x1f)
 #define Word2(A, B) (((A)&0x1f) << 5 | (B)&0x1f)
 #define Word3(A, B, C) (((A)&0x1f) << 10 | ((B)&0x1f) << 5 | (C)&0x1f)
+#define Word4(A, B, C, D) Word3(31, A^C, B^D)
 
 struct OpT/* { int Nmemonic, Operation, Code; }*/ optab[] = {
 // 29: '=', 30: '*', 31: '.'.
@@ -72,12 +73,12 @@ struct OpT/* { int Nmemonic, Operation, Code; }*/ optab[] = {
    { Word3('T','X','A'), CLASS1, 0x8a },
    { Word3('T','X','S'), CLASS1, 0x9a },
    { Word3('T','Y','A'), CLASS1, 0x98 },
-   { Word3(31,'W','O') ^ Word2('R','D'), PSEUDO, 2 }, // 0x7cab
-   { Word3(31,'B','Y') ^ Word2('T','E'), PSEUDO, 0 }, // 0x7edc
-   { Word3(31,'P','A') ^ Word2('G','E'), PSEUDO, 7 }, // 0x7ee4
-   { Word3(31,'D','B') ^ Word2('Y','T'), PSEUDO, 6 }, // 0x7fb6
-   { Word3(31,'N','L') ^ Word2('S','T'), PSEUDO, 5 }, // 0x7fb8
-   { Word3(31,'L','I') ^ Word2('S','T'), PSEUDO, 4 }, // 0x7ffd
+   { Word4('W','O','R','D'), PSEUDO, 2 }, // 0x7cab
+   { Word4('B','Y','T','E'), PSEUDO, 0 }, // 0x7edc
+   { Word4('P','A','G','E'), PSEUDO, 7 }, // 0x7ee4
+   { Word4('D','B','Y','T'), PSEUDO, 6 }, // 0x7fb6
+   { Word4('N','L','S','T'), PSEUDO, 5 }, // 0x7fb8
+   { Word4('L','I','S','T'), PSEUDO, 4 }, // 0x7ffd
    { Word3(31,31,31), 0, 0 },
    { Word3(31,31,31), 0, 0 },
    { Word3(31,31,31), 0, 0 },
@@ -141,6 +142,3 @@ struct OpT/* { int Nmemonic, Operation, Code; }*/ optab[] = {
    { Word3(31,31,31), 0, 0 },
    { Word3(31,31,31), 0, 0 }
 };
-
-// step[n] = 2⁶⁻ⁿ, for n ∈ [0,6]
-int step[] = { 1 << 6, 1 << 5, 1 << 4, 1 << 3, 1 << 2, 1 << 1, 1 << 0, 0 };

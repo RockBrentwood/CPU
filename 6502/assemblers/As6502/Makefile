@@ -17,7 +17,7 @@ Assm3$O: Constants.h Extern.h Assm3.c
 	$(CC) $(CFLAGS) Assm3.c
 
 check: # Test/AssmTest.ex
-##	./As6502 -nisv Test/AssmTest.in > Assm.ex	## The test output in AssmTest.ex goes with -nsv, not -nisv.
+##	./As6502 -nisv Test/AssmTest.in > Assm.ex	## Test/AssmTest.ex was produced with -nsv, not -nisv.
 	./As6502 -nsv Test/AssmTest.in > Assm.ex
 	diff Test/AssmTest.ex Assm.ex
 # Test/AssmTest.ex: ./As6502

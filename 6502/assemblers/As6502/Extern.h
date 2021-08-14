@@ -3,7 +3,6 @@
 // Assm0.c:
 extern int opval; // operation code value
 extern struct OpT { int Nmemonic, Operation, Code; } optab[];
-extern int step[];
 
 // Assm1.c:
 extern FILE *optr;
