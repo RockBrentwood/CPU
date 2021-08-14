@@ -1,6 +1,6 @@
 Update Note (2021/08/13) ― archive editor:
 ──────────────────────────────────────────
-This is the 6502 assembler, being updated to C99, originally posted by Joel Swank in 1987
+This is the 6502 assembler, originally posted by Joel Swank in 1987, and now updated to C99.
 The original file manifest is in Manifest.txt.
 
 The original readme (modulo changes in layout) is below and is subject to future revision, as changes are made to this code.

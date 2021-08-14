@@ -62,3 +62,5 @@
 		Rendered into optimized, idiomatic, nativized C.
 2021/08/14	Added <stdbool.h>.
 		Lifted integer-valued boolean variables and functions to ‟bool”.
+		Normalized declaration of locals: initialized declaration at point of first use, in the smallest scope.
+		Operational baseline for C99 established.
