@@ -1,4 +1,6 @@
-2021/08/13	Archive unpacked
+1986		Original Author: J. H. Van Ornum at AT&T Bell Laboratories.
+1987/08/22	Adapted from the earlier source and re-released by Joel Swank.
+2021/08/13	Archive unpacked.
 		Makefile repaired.
 		Operational baseline for pre-C90 established.
 2021/08/13	Files renamed (to contemporary standards; i.e. *.h for header files).
@@ -22,3 +24,9 @@
 		Implicit types converted to int or void.
 		Inconsistent implicit types resolved (i.e. a void and integer return in the same function).
 		‟static” added to defnitions of every variable and function that's file-local.
+2021/08/13	Assm6502.txt → User.txt, which is the compiled version of User.1.
+		Compiled As6502.1, by hand, into As6502.txt
+		Translated User.txt, by hand, retaining the earlier version as User.man.
+		The file was ultimately converted from an easlier version, which was derived by nroff from User.1.
+		Moved {As6502.User}.{1,man,txt} into the Doc subdirectory.
+		Moved {AssmTest}.{ex,in}, BootSA.{ex,s,txt} into the Test subdirectory.

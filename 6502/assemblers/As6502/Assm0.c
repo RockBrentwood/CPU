@@ -58,7 +58,6 @@ char *date; /* pointer to formatted date string */
 #define Word1(A) ((A)&0x1f)
 #define Word2(A, B) (((A)&0x1f) << 5 | (B)&0x1f)
 #define Word3(A, B, C) (((A)&0x1f) << 10 | ((B)&0x1f) << 5 | (C)&0x1f)
-#define OPSIZE	127
 
 int optab[] = {
 /* nmemonic  operation code table       */
@@ -191,15 +190,5 @@ int optab[] = {
    Word3(31, 31, 31), 0, 0
 };
 
-#define Div2(X) (((X) + 1)/2)
-
-int step[] = {
-   3 * Div2(OPSIZE),
-   3 * Div2(Div2(OPSIZE)),
-   3 * Div2(Div2(Div2(OPSIZE))),
-   3 * Div2(Div2(Div2(Div2(OPSIZE)))),
-   3 * Div2(Div2(Div2(Div2(Div2(OPSIZE))))),
-   3 * (2),
-   3 * (1),
-   0
-};
+// step[n] = 3×2⁶⁻ⁿ, for n ∈ [0,6]
+int step[] = { 3 << 6, 3 << 5, 3 << 4, 3 << 3, 3 << 2, 3 << 1, 3 << 0, 0 };

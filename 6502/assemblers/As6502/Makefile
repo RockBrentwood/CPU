@@ -16,18 +16,20 @@ Assm2$O: Constants.h Extern.h Assm2.c
 Assm3$O: Constants.h Extern.h Assm3.c
 	$(CC) $(CFLAGS) Assm3.c
 
-check: AssmTest.ex
-AssmTest.ex: As6502
-##	./As6502 -nisv AssmTest.in > Assm.ex	## The test output in AssmTest.ex goes with -nsv, not -nisv.
-	./As6502 -nsv AssmTest.in > Assm.ex
-	touch AssmTest.ex
-	diff AssmTest.ex Assm.ex
+check: # Test/AssmTest.ex
+##	./As6502 -nisv Test/AssmTest.in > Assm.ex	## The test output in AssmTest.ex goes with -nsv, not -nisv.
+	./As6502 -nsv Test/AssmTest.in > Assm.ex
+	diff Test/AssmTest.ex Assm.ex
+# Test/AssmTest.ex: ./As6502
+#	./As6502 -nsv Test/AssmTest.in > Test/AssmTest.ex
+#	touch Test/AssmTest.ex
 
-manuals: As6502.man User.man
-As6502.man: As6502.1
-	man -d As6502.1 > As6502.man
-User.man: User.1
-	nroff User.1 > User.man
+#manuals: As6502.man User.man
+#As6502.man: Doc/As6502.1
+#	man -d Doc/As6502.1 > As6502.man
+#User.man: User.1
+#	nroff Doc/User.1 > User.man
+
 clean:
 	$(RM) $W$O
 	$(RM) Assm.ex

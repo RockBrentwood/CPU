@@ -13,11 +13,11 @@ I compiled it under Manx.
 The port required only minor changes.
 There are 2 documentation files - as6502.man and as6502.notes.
 The source in UNIX nroff format for these files are as6502.1 (use -man) and user.nr respectively.
-A test source file, assmtest, and the resulting listing file, assmtest.l, are included.
+A test source file, AssmTest.in, and the resulting listing file, AssmTest.ex, are included.
 These can be used to check functions after compiling.
 Type the following:
-	as6502 -nsv assmtest >temp
-then compare temp to assmtest.l.
+	as6502 -nsv AssmTest.in >Assm.ex
+then compare Assm.ex to AssmTest.ex.
 They should be the same except for the dates in the headings.
 
 Joel Swank

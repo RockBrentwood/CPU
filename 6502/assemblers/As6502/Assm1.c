@@ -1,4 +1,4 @@
-/*    As6502 main routine: assm1.c     */
+/*    As6502 main routine: Assm1.c     */
 #include <stdio.h>
 #include <ctype.h>
 #include <time.h>
