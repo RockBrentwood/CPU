@@ -34,28 +34,22 @@ char hexcva[17] = "0123456789abcdef";
 // ∙	str: the message.
 // Global:
 // ∙	the count of warnings.
-void frawarn(char *str) {
-   fprintf(intermedf, "E: WARNING - %s\n", str);
-   warncnt++;
-}
+void frawarn(char *str) { fprintf(intermedf, "E: WARNING - %s\n", str), warncnt++; }
 
 // First pass ― generate error message by writing line to intermediate file.
 // Parameter:
 // ∙	str: the message.
 // Global:
 // ∙	the count of errors.
-void fraerror(char *str) {
-   fprintf(intermedf, "E: ERROR - %s\n", str);
-   errorcnt++;
-}
+void fraerror(char *str) { fprintf(intermedf, "E: ERROR - %s\n", str), errorcnt++; }
 
 // Fatal error subroutine, shutdown and quit right now!
 // Parameter:
 // ∙	str: the message.
 // Global:
 // ∙	if debug mode is true, save the intermediate file.
-// No-return:
-// ∙	exit(2)
+// No return:
+// ∙	exit(2).
 void frafatal(char *str) {
    fprintf(stderr, "Fatal error - %s\n", str);
    if (intermedf != NULL) {
@@ -67,11 +61,11 @@ void frafatal(char *str) {
 
 // First pass ― generate error message by writing line to intermediate file.
 // Parameters:
-// ∙	str: the message,
-// ∙	start: the pointer to bad character definition,
-// ∙	beyond: the pointer after bad definition.
+// ∙	str:	the message,
+// ∙	start:	the pointer to bad character definition,
+// ∙	beyond:	the pointer after bad definition.
 // Global:
-//	the count of errors.
+// ∙	the count of errors.
 void fracherror(char *str, char *start, char *beyond) {
    char bcbuff[8];
    int cnt = 0;
@@ -81,9 +75,10 @@ void fracherror(char *str, char *start, char *beyond) {
    errorcnt++;
 }
 
-// First pass ― generate comment lines in intermediate file for the value in a set, equate, or org statement, etc..
-// Parameter:
-// ∙	fstr, lv: the format string and a long integer value
+// First pass ― generate comment lines in the intermediate file for the value in a set, equate, or org statement, etc..
+// Parameters:
+// ∙	fstr:	the format string, and
+// ∙	lv:	a long integer value.
 void prtequvalue(char *fstr, long lv) { fprintf(intermedf, fstr, lv); }
 
 #define SYMPERLINE 3
@@ -122,8 +117,8 @@ static void filesymbols(void) {
    }
 }
 
-// The top driver routine for framework cross-assembler:
-// ∙	set the cpu type if implemented in the parser
+// The top driver routine for the framework cross-assembler:
+// ∙	set the cpu type if implemented in the parser,
 // ∙	process the command line parameters,
 // ∙	set up the tables,
 // ∙	call the first pass parser,
@@ -131,7 +126,8 @@ static void filesymbols(void) {
 // ∙	call the second pass,
 // ∙	close down and delete the outputs if there were any errors.
 // Return:
-//	2 for error, 0 for OK
+// ∙	2 for error,
+// ∙	0 for OK.
 int main(int argc, char *argv[]) {
    char *App = argc < 1? NULL: argv[0]; if (App == NULL || *App == '\0') App = "FrAsm";
    cpumatch(App);

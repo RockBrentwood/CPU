@@ -304,9 +304,9 @@ int geninstr(char *str) {
       if (state == GSTR_PASS) switch (*str) {
       // Generate start:
          case IG_START: state = GSTR_PROCESS, innum = 0, str++; break;
-      // EMU8, EMS7:
+      // Generate unsigned8: Generate signed7:
          case IFC_EMU8: case IFC_EMS7: len++, goutch(*str++); break;
-      // EM16, EMBR16:
+      // Generate high unsigned16: Generate low unsigned16:
          case IFC_EM16: case IFC_EMBR16: len += 2, goutch(*str++); break;
          default: goutch(*str++); break;
       } else switch (*str) {

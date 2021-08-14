@@ -202,7 +202,7 @@ static void outeval(void) {
          case IFC_TESTERR:
             if (etop) frp2error("expression fails validity test");
          break;
-      // SWidth:
+      // SWidth A:
          case IFC_SWIDTH:
             if (etop > 0 && etop < maskmax) {
                if (estkm1p->v < -(widthmask[etop - 1] + 1) || estkm1p->v > widthmask[etop - 1])
@@ -211,7 +211,7 @@ static void outeval(void) {
             } else
                frp2error("unimplemented width");
          break;
-      // Width:
+      // Width A:
          case IFC_WIDTH:
             if (etop > 0 && etop < maskmax) {
                if (estkm1p->v < -(widthmask[etop - 1] + 1) || estkm1p->v > widthmask[etop])
@@ -220,7 +220,7 @@ static void outeval(void) {
             } else
                frp2error("unimplemented width");
          break;
-      // IWidth:
+      // IWidth A:
          case IFC_IWIDTH:
             if (etop > 0 && etop < maskmax) {
                if (estkm1p->v < 0 || estkm1p->v > widthmask[etop])
@@ -229,7 +229,7 @@ static void outeval(void) {
             } else
                frp2error("unimplemented width");
          break;
-      // EMU8:
+      // Put unsigned8:
          case IFC_EMU8:
             if (etop >= -0x80 && etop <= 0xff)
                outresult[nextresult++] = etop&0xff;
@@ -237,7 +237,7 @@ static void outeval(void) {
                outresult[nextresult++] = 0, frp2error("expression exceeds available field width");
             genlocctr++, etop = 0;
          break;
-      // EMS7:
+      // Put signed7:
          case IFC_EMS7:
             if (etop >= -0x80 && etop <= 0x7f)
                outresult[nextresult++] = etop&0xff;
@@ -245,7 +245,7 @@ static void outeval(void) {
                outresult[nextresult++] = 0, frp2error("expression exceeds available field width");
             genlocctr++, etop = 0;
          break;
-      // EM16:
+      // Put high unsigned16:
          case IFC_EM16:
             if (etop >= -0x8000L && etop <= 0xffffL)
                outresult[nextresult++] = (etop >> 8)&0xff, outresult[nextresult++] = etop&0xff;
@@ -253,7 +253,7 @@ static void outeval(void) {
                outresult[nextresult++] = 0, outresult[nextresult++] = 0, frp2error("expression exceeds available field width");
             genlocctr += 2, etop = 0;
          break;
-      // EMBR16:
+      // Put low unsigned16:
          case IFC_EMBR16:
             if (etop >= -0x8000L && etop <= 0xffffL)
                outresult[nextresult++] = etop&0xff, outresult[nextresult++] = (etop >> 8)&0xff;

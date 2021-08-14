@@ -27,7 +27,6 @@ History:
 		Syn6301.y:	Originally in fraselcrit.h.
 				Selection criteria and token values for the 6301 framework assembler.
 		Syn6805.y:	Originally in fraselcrit.h.
-				Mark Zenier
 				Selection criteria and token values for the 6805 framework assembler.
 		Syn6811.y:	Originally in fraselcrit.h.
 				Selection criteria and token values for the 6811 framework assembler.
@@ -40,6 +39,7 @@ History:
 				Possibly, the separation of fraselcrit.h into crit{6301,6805,6811}.h.
 1987/10/28:	SynZ8.y:	Originally critz8.h.
 				Selection criteria and syntax type constants for the Z8 framework assembler.
+1987/10/31:	Halloween ― unofficial name change to Frankenstein.
 1988/01/22:	SynZ80.y:	Originally critz80.h.
 				Selection criteria and syntax type defines for the Z80 frasm (framework cross-assembler).
 1988/02/02:	Syn*.y:		Frame work parser description for framework cross-assemblers.
@@ -60,10 +60,12 @@ History:
 1990/12/04-06:	Posted to alt.sources.
 		See Cover.txt for the article headers.
 		Note: not all alt.sources servers archived the Frankasm/As630102 SHAR file.
-2020/03/20:	Unpacked
+2020/03/20:	Unpacked ― missing the second half of the 6301 SHAR file.
 2021/07/28:	Source files normalized:
 		∙	excess spaces trimmed,
 		∙	all history-related comments have been collated and moved to the file ‟History”.
+2021/07/28:	The archive was multiply-sourced, with the 1990 Amiga extension acquired
+		and a bug fix to the initialization of ‟interfn”.
 2021/07/28:	Established operational baseline in ANSI-C.
 		The end-of-line spaces in the test output files for the 6301, 6811 and z8 were adjusted to match actual output.
 		The 6502 test output, in both this version and the original, has an invalid opcode error for ‟mul”.
