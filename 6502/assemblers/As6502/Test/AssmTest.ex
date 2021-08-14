@@ -1,6 +1,6 @@
 
 Amiga 6502 assembler :  -  A test program for as6502                                                                         PAGE 1
-Line      Location     Label Opcode Operand  Comment   Sat Apr 25 07:49:36 1987
+Line      Location     Label Opcode Operand  Comment   Fri Aug 13 22:06:01 2021
 
    3                   ;******************************************
    4                   ; Test file for the 6502 assembler - as6502
@@ -64,7 +64,7 @@ Line      Location     Label Opcode Operand  Comment   Sat Apr 25 07:49:36 1987
   57  0109   A5 0C             lda   a1-a2     ; also page zero
 
 Amiga 6502 assembler :  -  A test program for as6502                                                                         PAGE 2
-Line      Location     Label Opcode Operand  Comment   Sat Apr 25 07:49:36 1987
+Line      Location     Label Opcode Operand  Comment   Fri Aug 13 22:06:01 2021
 
   58  010B   0A                asl   A         ; accumulator addressing
   59  010C   0A                AsL   a         ; accumulator addressing also
@@ -128,7 +128,7 @@ Line      Location     Label Opcode Operand  Comment   Sat Apr 25 07:49:36 1987
  120  0169   38                sec
 
 Amiga 6502 assembler :  -  A test program for as6502                                                                         PAGE 3
-Line      Location     Label Opcode Operand  Comment   Sat Apr 25 07:49:36 1987
+Line      Location     Label Opcode Operand  Comment   Fri Aug 13 22:06:01 2021
 
  121  016A   F8                sed
  122  016B   78                sei
