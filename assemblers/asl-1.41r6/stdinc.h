@@ -28,7 +28,6 @@
 #endif
 #endif
 
-#include "pascstyle.h"
 #include "datatypes.h"
 #include "chardefs.h"
 

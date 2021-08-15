@@ -46,54 +46,54 @@ char *InfoMessCopyright="(C) 1992,1997 Alfred Arnold";
 
    LargeWord PCs[PCMax+1];                  /* Programmzaehler */
    LargeWord StartAdr;                      /* Programmstartadresse */
-   Boolean StartAdrPresent;                 /*          "           definiert? */
+   bool StartAdrPresent;                    /*          "           definiert? */
    LargeWord Phases[PCMax+1];               /* Verschiebungen */
    Word Grans[PCMax+1]; 	            /* Groesse der Adressierungselemente */
    Word ListGrans[PCMax+1]; 	            /* Wortgroesse im Listing */
    ChunkList SegChunks[PCMax+1];            /* Belegungen */
    Integer ActPC;                           /* gewaehlter Programmzaehler */
-   Boolean PCsUsed[PCMax+1];                /* PCs bereits initialisiert ? */
+   bool PCsUsed[PCMax+1];                   /* PCs bereits initialisiert ? */
    LongInt SegInits[PCMax+1];               /* Segmentstartwerte */
    LongInt ValidSegs;                       /* erlaubte Segmente */
-   Boolean ENDOccured;	                    /* END-Statement aufgetreten ? */
-   Boolean Retracted;			    /* Codes zurueckgenommen ? */
+   bool ENDOccured;	                    /* END-Statement aufgetreten ? */
+   bool Retracted;			    /* Codes zurueckgenommen ? */
 
    Word TypeFlag;		    /* Welche Adressraeume genutzt ? */
    ShortInt SizeFlag;		    /* Welche Operandengroessen definiert ? */
 
    Byte PassNo;                     /* Durchlaufsnummer */
    Integer JmpErrors;               /* Anzahl fraglicher Sprungfehler */
-   Boolean ThrowErrors;             /* Fehler verwerfen bei Repass ? */
-   Boolean Repass;		    /* noch ein Durchlauf erforderlich */
+   bool ThrowErrors;                /* Fehler verwerfen bei Repass ? */
+   bool Repass;		            /* noch ein Durchlauf erforderlich */
    Byte MaxSymPass;	            /* Pass, nach dem Symbole definiert sein muessen */
    Byte ShareMode;                  /* 0=kein SHARED,1=Pascal-,2=C-Datei, 3=ASM-Datei */
    DebugType DebugMode;             /* Ausgabeformat Debug-Datei */
    Byte ListMode;                   /* 0=kein Listing,1=Konsole,2=auf Datei */
    Byte ListOn;		    	    /* Listing erzeugen ? */
-   Boolean MakeUseList; 	    /* Belegungsliste ? */
-   Boolean MakeCrossList;	    /* Querverweisliste ? */
-   Boolean MakeSectionList;	    /* Sektionsliste ? */
-   Boolean MakeIncludeList;         /* Includeliste ? */
-   Boolean RelaxedMode;		    /* alle Integer-Syntaxen zulassen ? */
+   bool MakeUseList;     	    /* Belegungsliste ? */
+   bool MakeCrossList;    	    /* Querverweisliste ? */
+   bool MakeSectionList;	    /* Sektionsliste ? */
+   bool MakeIncludeList;            /* Includeliste ? */
+   bool RelaxedMode;		    /* alle Integer-Syntaxen zulassen ? */
    Byte ListMask;		    /* Listingmaske */
-   Boolean ExtendErrors;	    /* erweiterte Fehlermeldungen */
-   Boolean NumericErrors;	    /* Fehlermeldungen mit Nummer */
-   Boolean CodeOutput;		    /* Code erzeugen */
-   Boolean MacProOutput;	    /* Makroprozessorausgabe schreiben */
-   Boolean MacroOutput;             /* gelesene Makros schreiben */
-   Boolean QuietMode;               /* keine Meldungen */
+   bool ExtendErrors;    	    /* erweiterte Fehlermeldungen */
+   bool NumericErrors;    	    /* Fehlermeldungen mit Nummer */
+   bool CodeOutput;		    /* Code erzeugen */
+   bool MacProOutput;    	    /* Makroprozessorausgabe schreiben */
+   bool MacroOutput;                /* gelesene Makros schreiben */
+   bool QuietMode;                  /* keine Meldungen */
    char *DivideChars;               /* Trennzeichen fuer Parameter. Inhalt Read Only! */
-   Boolean HasAttrs;                /* Opcode hat Attribut */
+   bool HasAttrs;                   /* Opcode hat Attribut */
    char *AttrChars;                 /* Zeichen, mit denen Attribut abgetrennt wird */
-   Boolean MsgIfRepass;		    /* Meldungen, falls neuer Pass erforderlich */
+   bool MsgIfRepass;		    /* Meldungen, falls neuer Pass erforderlich */
    Integer PassNoForMessage;        /* falls ja: ab welchem Pass ? */
-   Boolean CaseSensitive;           /* Gross/Kleinschreibung unterscheiden ? */
+   bool CaseSensitive;              /* Gross/Kleinschreibung unterscheiden ? */
 
    FILE *PrgFile;                   /* Codedatei */
 
    String ErrorPath,ErrorName;	    /* Ausgabedatei Fehlermeldungen */
    String OutName;                  /* Name Code-Datei */
-   Boolean IsErrorOpen;
+   bool IsErrorOpen;
    String CurrFileName;             /* mom. bearbeitete Datei */
    LongInt MomLineCounter;          /* Position in mom. Datei */
    LongInt CurrLine;       	    /* virtuelle Position */
@@ -101,24 +101,24 @@ char *InfoMessCopyright="(C) 1992,1997 Alfred Arnold";
    LongInt MacLineSum;              /* inkl. Makroexpansion */
 
    LongInt NOPCode;                 /* Maschinenbefehl NOP zum Stopfen */
-   Boolean TurnWords;		    /* TRUE  = Motorola-Wortformat */
-				    /* FALSE = Intel-Wortformat */
+   bool TurnWords;		    /* true  = Motorola-Wortformat */
+				    /* false = Intel-Wortformat */
    Byte HeaderID;		    /* Kennbyte des Codeheaders */
    char *PCSymbol;		    /* Symbol, womit Programmzaehler erreicht wird. Inhalt Read Only! */
    TConstMode ConstMode;
-   Boolean SetIsOccupied;           /* TRUE: SET ist Prozessorbefehl */
+   bool SetIsOccupied;              /* true: SET ist Prozessorbefehl */
 #ifdef __PROTOS__
    void (*MakeCode)(void);          /* Codeerzeugungsprozedur */
-   Boolean (*ChkPC)(void);	    /* ueberprueft Codelaengenueberschreitungen */
-   Boolean (*IsDef)(void);	    /* ist Label nicht als solches zu werten ? */
+   bool (*ChkPC)(void);    	    /* ueberprueft Codelaengenueberschreitungen */
+   bool (*IsDef)(void);    	    /* ist Label nicht als solches zu werten ? */
    void (*SwitchFrom)(void);        /* bevor von einer CPU weggeschaltet wird */
    void (*InternSymbol)(char *Asc, TempResult *Erg); /* vordefinierte Symbole ? */
    void (*InitPassProc)(void);	    /* Funktion zur Vorinitialisierung vor einem Pass */
    void (*ClearUpProc)(void);       /* Aufraeumen nach Assemblierung */
 #else
    void (*MakeCode)();
-   Boolean (*ChkPC)();
-   Boolean (*IsDef)();
+   bool (*ChkPC)();
+   bool (*IsDef)();
    void (*SwitchFrom)();
    void (*InternSymbol)();
    void (*InitPassProc)();
@@ -134,7 +134,7 @@ char *InfoMessCopyright="(C) 1992,1997 Alfred Arnold";
    FILE *MacroFile;		    /* Ausgabedatei Makroliste */
    String LstName;		    /* Name der Listdatei */
    String MacroName,MacProName;
-   Boolean DoLst,NextDoLst;         /* Listing an */
+   bool DoLst,NextDoLst;            /* Listing an */
    String ShareName;                /* Name des Sharefiles */
 /**   PrgName:String;                  { Name der Codedatei }**/
 
@@ -143,10 +143,10 @@ char *InfoMessCopyright="(C) 1992,1997 Alfred Arnold";
    PCPUDef FirstCPUDef;		    /* Liste mit Prozessordefinitionen */
    CPUVar CPUCnt;	    	    /* Gesamtzahl Prozessoren */
 
-   Boolean FPUAvail;		    /* Koprozessor erlaubt ? */
-   Boolean DoPadding;		    /* auf gerade Byte-Zahl ausrichten ? */
-   Boolean SupAllowed;              /* Supervisormode freigegeben */
-   Boolean Maximum;		    /* CPU nicht kastriert */
+   bool FPUAvail;		    /* Koprozessor erlaubt ? */
+   bool DoPadding;		    /* auf gerade Byte-Zahl ausrichten ? */
+   bool SupAllowed;                 /* Supervisormode freigegeben */
+   bool Maximum;		    /* CPU nicht kastriert */
 
    String LabPart,OpPart,AttrPart,  /* Komponenten der Zeile */
           ArgPart,CommPart,LOpPart;
@@ -161,7 +161,7 @@ char *InfoMessCopyright="(C) 1992,1997 Alfred Arnold";
    String ListLine;		    /* alternative Ausgabe vor Listing fuer EQU */
    String ErrorPos;		    /* zus. Positionsinformation in Makros */
    Byte PageLength,PageWidth;       /* Seitenlaenge/breite in Zeilen/Spalten */
-   Boolean LstMacroEx;              /* Makroexpansionen auflisten */
+   bool LstMacroEx;                 /* Makroexpansionen auflisten */
    String PrtInitString;	    /* Druckerinitialisierungsstring */
    String PrtExitString;	    /* Druckerdeinitialisierungsstring */
    String PrtTitleString;	    /* Titelzeile */
@@ -175,20 +175,20 @@ char *InfoMessCopyright="(C) 1992,1997 Alfred Arnold";
    Word *WAsmCode;
    Byte *BAsmCode;
 
-   Boolean DontPrint;               /* Flag:PC veraendert, aber keinen Code erzeugt */
+   bool DontPrint;                  /* Flag:PC veraendert, aber keinen Code erzeugt */
 /**   MultiFace:RECORD Case Byte OF
 		    0:(Feld:WordField);
 		    1:(Val32:Single);
 		    2:(Val64:Double);
 		    3:(Val80:Extended);
 		    4:(ValCo:Comp);
-		    END;**/
+		    };**/
 
    Byte StopfZahl;                  /* Anzahl der im 2.Pass festgestellten
 				       ueberfluessigen Worte, die mit NOP ge-
 				       fuellt werden muessen */
 
-   Boolean SuppWarns;
+   bool SuppWarns;
 
    unsigned char CharTransTable[256]; /* Zeichenuebersetzungstabelle */
 
@@ -198,15 +198,15 @@ char *InfoMessCopyright="(C) 1992,1997 Alfred Arnold";
 
    PSaveState FirstSaveState;	    /* gesicherte Zustaende */
 
-   Boolean MakeDebug;		    /* Debugginghilfe */
+   bool MakeDebug;		    /* Debugginghilfe */
    FILE *Debug;
 
 
 	void AsmDefInit(void)
-BEGIN
+{
    LongInt z;
 
-   DoLst=True; PassNo=1; MaxSymPass=1;
+   DoLst=true; PassNo=1; MaxSymPass=1;
 
    LineSum=0;
 
@@ -219,26 +219,26 @@ BEGIN
 
    CurrFileName[0]='\0'; MomLineCounter=0;
 
-   FirstFunction=Nil; FirstDefine=Nil; FirstSaveState=Nil;
-END
+   FirstFunction=NULL; FirstDefine=NULL; FirstSaveState=NULL;
+}
 
 	void NullProc(void)
-BEGIN
-END
+{
+}
 
         void Default_InternSymbol(char *Asc, TempResult *Erg)
-BEGIN
+{
    if (Asc); /* satisfy compiler */
    Erg->Typ=TempNone;
-END
+}
 
 	void asmdef_init(void)
-BEGIN
+{
    Integer z;
 
    InitPassProc=NullProc;
    ClearUpProc=NullProc;
-   FirstCPUDef=Nil;
+   FirstCPUDef=NULL;
    CPUCnt=0;
    SwitchFrom=NullProc;
    for (z=0; z<256; z++) CharTransTable[z]=z;
@@ -248,5 +248,5 @@ BEGIN
    WAsmCode=(Word *) DAsmCode;
    BAsmCode=(Byte *) DAsmCode;
 
-   RelaxedMode=True; ConstMode=ConstModeC;
-END
+   RelaxedMode=true; ConstMode=ConstModeC;
+}

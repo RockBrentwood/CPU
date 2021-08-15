@@ -14,138 +14,138 @@
 #include "stringlists.h"
 
 	void InitStringList(StringList *List)
-BEGIN
-   *List=Nil;
-END
+{
+   *List=NULL;
+}
 
         void ClearStringEntry(StringRecPtr *Elem)
-BEGIN
-   free((*Elem)->Content); free(*Elem); *Elem=Nil;
-END
+{
+   free((*Elem)->Content); free(*Elem); *Elem=NULL;
+}
 
         void ClearStringList(StringList *List)
-BEGIN
+{
    StringRecPtr Hilf;
 
-   while (*List!=Nil)
-    BEGIN
+   while (*List!=NULL)
+    {
      Hilf=(*List); *List=(*List)->Next;
      ClearStringEntry(&Hilf);
-    END
-END
+    }
+}
 
         void AddStringListFirst(StringList *List, char *NewStr)
-BEGIN
+{
    StringRecPtr Neu;
 
    Neu=(StringRecPtr) malloc(sizeof(StringRec));
    Neu->Content=strdup(NewStr);
    Neu->Next=(*List);
    *List=Neu;
-END
+}
 
         void AddStringListLast(StringList *List, char *NewStr)
-BEGIN
+{
    StringRecPtr Neu,Lauf;
 
    Neu=(StringRecPtr) malloc(sizeof(StringRec));
-   Neu->Content=strdup(NewStr); Neu->Next=Nil;
-   if (*List==Nil) *List=Neu;
+   Neu->Content=strdup(NewStr); Neu->Next=NULL;
+   if (*List==NULL) *List=Neu;
    else
-    BEGIN
-     Lauf=(*List); while (Lauf->Next!=Nil) Lauf=Lauf->Next;
+    {
+     Lauf=(*List); while (Lauf->Next!=NULL) Lauf=Lauf->Next;
      Lauf->Next=Neu;
-    END
-END
+    }
+}
 
         void RemoveStringList(StringList *List, char *OldStr)
-BEGIN
+{
    StringRecPtr Lauf,Hilf;
 
-   if (*List==Nil) return;
+   if (*List==NULL) return;
    if (strcmp((*List)->Content,OldStr)==0)
-    BEGIN
+    {
      Hilf=(*List); *List=(*List)->Next; ClearStringEntry(&Hilf);
-    END
+    }
    else
-    BEGIN
+    {
      Lauf=(*List);
-     while ((Lauf->Next!=Nil) AND (strcmp(Lauf->Next->Content,OldStr)!=0)) Lauf=Lauf->Next;
-     if (Lauf->Next!=Nil)
-      BEGIN
+     while ((Lauf->Next!=NULL) && (strcmp(Lauf->Next->Content,OldStr)!=0)) Lauf=Lauf->Next;
+     if (Lauf->Next!=NULL)
+      {
        Hilf=Lauf->Next; Lauf->Next=Hilf->Next; ClearStringEntry(&Hilf);
-      END
-    END
-END
+      }
+    }
+}
 
         char *GetStringListFirst(StringList List, StringRecPtr *Lauf)
-BEGIN
+{
    static char *Dummy="",*tmp;
 
    *Lauf=List;
-   if (*Lauf==Nil) return Dummy;
+   if (*Lauf==NULL) return Dummy;
    else
-    BEGIN
+    {
      tmp=(*Lauf)->Content;
      *Lauf=(*Lauf)->Next;
      return tmp;
-    END
-END
+    }
+}
 
         char *GetStringListNext(StringRecPtr *Lauf)
-BEGIN
+{
    static char *Dummy="",*tmp;
 
-   if (*Lauf==Nil) return Dummy;
+   if (*Lauf==NULL) return Dummy;
    else
-    BEGIN
+    {
      tmp=(*Lauf)->Content;
      *Lauf=(*Lauf)->Next;
      return tmp;
-    END
-END
+    }
+}
 
 	char *GetAndCutStringList(StringList *List)
-BEGIN
+{
    StringRecPtr Hilf;
    static String Result;
 
-   if (*List==Nil) Result[0]='\0';
+   if (*List==NULL) Result[0]='\0';
    else
-    BEGIN
+    {
      Hilf=(*List); *List=(*List)->Next;
      strmaxcpy(Result,Hilf->Content,255);
      free(Hilf->Content); free(Hilf);
-    END
+    }
    return Result;
-END
+}
 
-        Boolean StringListEmpty(StringList List)
-BEGIN
-   return (List==Nil);
-END
+        bool StringListEmpty(StringList List)
+{
+   return (List==NULL);
+}
 
         StringList DuplicateStringList(StringList Src)
-BEGIN
+{
    StringRecPtr Lauf;
    StringList Dest;
 
    InitStringList(&Dest);
-   if (Src!=Nil)
-    BEGIN
+   if (Src!=NULL)
+    {
      AddStringListLast(&Dest,GetStringListFirst(Src,&Lauf));
-     while (Lauf!=Nil)
+     while (Lauf!=NULL)
       AddStringListLast(&Dest,GetStringListNext(&Lauf));
-    END
+    }
    return Dest;
-END
+}
 
-        Boolean StringListPresent(StringList List, char *Search)
-BEGIN
-   while ((List!=Nil) AND (strcmp(List->Content,Search)!=0)) List=List->Next;
-   return (List!=Nil);
-END
+        bool StringListPresent(StringList List, char *Search)
+{
+   while ((List!=NULL) && (strcmp(List->Content,Search)!=0)) List=List->Next;
+   return (List!=NULL);
+}
 
 	void stringlists_init(void)
-BEGIN
-END
+{
+}

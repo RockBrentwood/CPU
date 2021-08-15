@@ -46,13 +46,13 @@ static Byte Header,Segment,Gran;
 static LongWord StartAdr,Sums[PCMax+1];
 static Word Len,ID,z;
 static int Ch;
-static Boolean HeadFnd;
+static bool HeadFnd;
 
 #include "tools.rsc"
 #include "plist.rsc"
 
 	int main(int argc, char **argv)
-BEGIN
+{
    ParamCount=argc-1; ParamStr=argv;
 
    endian_init();
@@ -66,27 +66,27 @@ BEGIN
    NLS_Initialize(); WrCopyRight("PLIST/C V1.41r5");
 
    if (ParamCount==0)
-    BEGIN
+    {
      errno=0;
      printf("%s",MessFileRequest); fgets(ProgName,255,stdin);
      ChkIO(OutName);
-    END
+    }
    else if (ParamCount==1 ) strmaxcpy(ProgName,ParamStr[1],255);
    else
-    BEGIN
+    {
      errno=0; printf("%s%s%s\n",InfoMessHead1,GetEXEName(),InfoMessHead2); ChkIO(OutName);
      for (z=0; z<InfoMessHelpCnt; z++)
-      BEGIN
+      {
        errno=0; printf("%s\n",InfoMessHelp[z]); ChkIO(OutName);
-      END
+      }
      exit(1);
-    END
+    }
 
    AddSuffix(ProgName,Suffix);
 
-   if ((ProgFile=fopen(ProgName,OPENRDMODE))==Nil) ChkIO(ProgName);
+   if ((ProgFile=fopen(ProgName,OPENRDMODE))==NULL) ChkIO(ProgName);
 
-   if (NOT Read2(ProgFile,&ID)) ChkIO(ProgName);
+   if (! Read2(ProgFile,&ID)) ChkIO(ProgName);
    if (ID!=FileMagic) FormatError(ProgName,FormatInvHeaderMsg);
 
    errno=0; printf("\n"); ChkIO(OutName);
@@ -96,51 +96,51 @@ BEGIN
    for (z=0; z<=PCMax; Sums[z++]=0);
 
    do
-    BEGIN
+    {
      ReadRecordHeader(&Header,&Segment,&Gran,ProgName,ProgFile);
 
-     HeadFnd=False;
+     HeadFnd=false;
 
      if (Header==FileHeaderEnd)
-      BEGIN
+      {
        errno=0; printf(MessGenerator); ChkIO(OutName);
        do
-        BEGIN
+        {
   	 errno=0; Ch=fgetc(ProgFile); ChkIO(ProgName);
          if (Ch!=EOF)
-         BEGIN
+         {
 	  errno=0; putchar(Ch); ChkIO(OutName);
-         END
-        END
+         }
+        }
        while (Ch!=EOF);
-       errno=0; printf("\n"); ChkIO(OutName); HeadFnd=True;
-      END
+       errno=0; printf("\n"); ChkIO(OutName); HeadFnd=true;
+      }
 
      else if (Header==FileHeaderStartAdr)
-      BEGIN
-       if (NOT Read4(ProgFile,&StartAdr)) ChkIO(ProgName);
+      {
+       if (! Read4(ProgFile,&StartAdr)) ChkIO(ProgName);
        errno=0; printf("%s%s\n",MessEntryPoint,HexLong(StartAdr));
        ChkIO(OutName);
-      END
+      }
 
      else
-      BEGIN
+      {
        errno=0;
        for (z=0; z<HeaderCnt; z++)
-        if ((Magic==0) AND (Header==HeaderBytes[z]))
-	 BEGIN
+        if ((Magic==0) && (Header==HeaderBytes[z]))
+	 {
 	  printf("%s    ",HeaderNames[z]);
-	  HeadFnd=True;
-	 END
-       if (NOT HeadFnd) printf("???=%02x        ",Header);
+	  HeadFnd=true;
+	 }
+       if (! HeadFnd) printf("???=%02x        ",Header);
        ChkIO(OutName);
 
        errno=0; printf("%-5s   ",SegNames[Segment]);  ChkIO(OutName);
 
-       if (NOT Read4(ProgFile,&StartAdr)) ChkIO(ProgName);
+       if (! Read4(ProgFile,&StartAdr)) ChkIO(ProgName);
        errno=0; printf("%s          ",HexLong(StartAdr));  ChkIO(OutName);
 
-       if (NOT Read2(ProgFile,&Len)) ChkIO(ProgName);
+       if (! Read2(ProgFile,&Len)) ChkIO(ProgName);
        errno=0; printf("%s      ",HexWord(Len));  ChkIO(OutName);
 
        if (Len!=0) StartAdr+=(Len/Gran)-1;
@@ -152,21 +152,21 @@ BEGIN
        if (ftell(ProgFile)+Len>=FileSize(ProgFile))
         FormatError(ProgName,FormatInvRecordLenMsg);
        else if (fseek(ProgFile,Len,SEEK_CUR)!=0) ChkIO(ProgName);
-      END
-    END
+      }
+    }
    while (Header!=0);
 
    errno=0; printf("\n"); ChkIO(OutName);
    errno=0; printf("%s",MessSum1); ChkIO(OutName);
    for (z=0; z<=PCMax; z++)
-    if ((z==SegCode) OR (Sums[z]!=0))
-     BEGIN
+    if ((z==SegCode) || (Sums[z]!=0))
+     {
       errno=0;
       printf("%d%s%s\n%s",Sums[z],(Sums[z]==1)?MessSumSing:MessSumPlur,SegNames[z],Blanks(strlen(MessSum1)));
-     END
+     }
    errno=0; printf("\n"); ChkIO(OutName);
    errno=0; printf("\n"); ChkIO(OutName);
 
    errno=0; fclose(ProgFile); ChkIO(ProgName);
    return 0;
-END
+}

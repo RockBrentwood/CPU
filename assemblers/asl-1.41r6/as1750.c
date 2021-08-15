@@ -42,7 +42,6 @@
 #include "asmsub.h"
 #include "asmpars.h"
 #include "as1750.h"
-#define bool      char
 #define ushort    unsigned short
 #define ulong     unsigned long
 #define status    unsigned
@@ -83,13 +82,13 @@ error (char *layout,...)	/*  Return the ERROR status code. */
 char *
 get_num (char *s, int *outnum)
 {
-  bool is_neg = FALSE, intel = FALSE, c_lang = FALSE, tld = FALSE;
+  bool is_neg = false, intel = false, c_lang = false, tld = false;
   char *start;
 
   *outnum = 0;
   if (*s == '-')
     {
-      is_neg = TRUE;
+      is_neg = true;
       ++s;
     }
   else if (*s == '+')
@@ -101,7 +100,7 @@ get_num (char *s, int *outnum)
       while (isxdigit (*++p))
 	;
       if (upcase (*p) == 'H')
-	intel = TRUE;
+	intel = true;
     }
   if (intel
       || (c_lang = (*s == '0' && upcase (*(s + 1)) == 'X'))
@@ -332,7 +331,7 @@ add_reloc (symbol_t sym)	/* auxiliary to parse_addr() */
   if (relblk.data == (struct reloc *) 0)
     problem ("request for relocation space refused by OS");
   rel = &relblk.data[relblk.n_used];
-  rel->done = FALSE;		/* default initializations */
+  rel->done = false;		/* default initializations */
   rel->reltype = Word_Reloc;
   rel->frag_index = curr_frag;
   rel->obj_index = objblk[curr_frag].n_used;
@@ -357,7 +356,7 @@ parse_addr (char *s)
       *p = '\0';
       if ((sym = find_or_enter (s)) == SNULL)
 	return ERROR;
-      sym->is_referenced = TRUE;
+      sym->is_referenced = true;
       *p = c;
       s = p++;
       if (c == '\0')
@@ -381,7 +380,7 @@ parse_addr (char *s)
 	  *s = '\0';
 	  if ((sym1 = find_or_enter (p)) == SNULL)
 	    return ERROR;
-	  sym1->is_referenced = TRUE;
+	  sym1->is_referenced = true;
 	  *s = c1;
 	  if (c == '+')
 	    {
@@ -490,7 +489,7 @@ parse_addr (char *s)
 	  *p = '\0';
 	  if ((sym = find_or_enter (s)) == SNULL)
 	    return ERROR;
-	  sym->is_referenced = TRUE;
+	  sym->is_referenced = true;
 	  *p = c;
 	  s = p;
 	  if (sym->is_constant)
@@ -510,7 +509,7 @@ parse_addr (char *s)
 static char *
 get_sym_num (char *s, int *outnum)
 {
-  Boolean okay;
+  bool okay;
   *outnum = (int) EvalIntExpression (s, Int16, &okay);
   if (!okay)
     return NULL;
@@ -524,7 +523,7 @@ static status
 parse_addr (char *s)
 {
   int value;
-  Boolean okay;
+  bool okay;
   value = (int) EvalIntExpression (s, Int16, &okay);
   if (!okay)
     return ERROR;
@@ -1272,7 +1271,7 @@ ushort
 as1750 (char *operation, int n_operands, char *operand[])
 {
   int i, optab_ndx, firstletter;
-  bool found = FALSE;
+  bool found = false;
 
   if (n_operands < 0 || n_operands > 3 || *operation < 'A' || *operation > 'X')
     return NO_OPCODE;
@@ -1285,7 +1284,7 @@ as1750 (char *operation, int n_operands, char *operand[])
   for (i = 0; i < ofstab[firstletter].n_entries; i++, optab_ndx++)
     if (!strcmp (operation + 1, optab[optab_ndx].mnemon + 1))
       {
-	found = TRUE;
+	found = true;
 	break;
       }
   if (!found)

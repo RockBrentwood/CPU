@@ -170,16 +170,16 @@ static ErrorDef ErrorDefs[]={
      {-1,NULL}};
 
 	char *GetErrorMsg(int number)
-BEGIN
+{
    static String hs;
    ErrorDef *z;
 
-   for (z=ErrorDefs; z->Msg!=Nil; z++)
+   for (z=ErrorDefs; z->Msg!=NULL; z++)
     if (number==z->Code) break;
 
-   if (z->Msg!=Nil) return z->Msg;
+   if (z->Msg!=NULL) return z->Msg;
    else
-    BEGIN
+    {
      sprintf(hs,"%s%d",IoErrUnknown,number); return hs;
-    END
-END
+    }
+}

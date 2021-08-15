@@ -46,22 +46,22 @@ static ConstOrder *ConstOrders;
 /*---------------------------------------------------------------------------*/
 
 	static void AddFixed(char *NName, Word NCode)
-BEGIN
+{
    if (InstrZ>=FixedOrderCount) exit(255);
    FixedOrders[InstrZ].Name=NName;
    FixedOrders[InstrZ++].Code=NCode;
-END
+}
 
 	static void AddConst(char *NName, Word NCode, IntType NMax)
-BEGIN
+{
    if (InstrZ>=ConstOrderCount) exit(255);
    ConstOrders[InstrZ].Name=NName;
    ConstOrders[InstrZ].Code=NCode;
    ConstOrders[InstrZ++].Max=NMax;
-END
+}
 
 	static void InitFields(void)
-BEGIN
+{
    FixedOrders=(FixedOrder *) malloc(sizeof(FixedOrder)*FixedOrderCount); InstrZ=0;
    AddFixed("AM"  ,0x00a);  AddFixed("AMC" ,0x00b);  AddFixed("AND" ,0x018);
    AddFixed("CLD" ,0x011);  AddFixed("CMA" ,0x01c);  AddFixed("DEY" ,0x017);
@@ -98,116 +98,116 @@ BEGIN
    AddConst("TABP",0x080,UInt6);  AddConst("TAM" ,0x2c0,UInt4);
    AddConst("TMA" ,0x2b0,UInt4);  AddConst("XAM" ,0x2d0,UInt4);
    AddConst("XAMD",0x2f0,UInt4);  AddConst("XAMI",0x2e0,UInt4);
-END
+}
 
         static void DeinitFields(void)
-BEGIN
+{
    free(FixedOrders);
    free(ConstOrders);
-END
+}
 
 /*-------------------------------------------------------------------------*/
 
-	static Boolean DecodePseudo(void)
-BEGIN
-   Boolean ValOK;
+	static bool DecodePseudo(void)
+{
+   bool ValOK;
    Word Size,z,z2;
    TempResult t;
    char Ch;
 
    if (Memo("SFR"))
-    BEGIN
+    {
      CodeEquate(SegData,0,415);
-     return True;
-    END
+     return true;
+    }
 
    if (Memo("RES"))
-    BEGIN
+    {
      if (ArgCnt!=1) WrError(1110);
      else
-      BEGIN
-       FirstPassUnknown=False;
+      {
+       FirstPassUnknown=false;
        Size=EvalIntExpression(ArgStr[1],Int16,&ValOK);
        if (FirstPassUnknown) WrError(1820);
-       if ((ValOK) AND (NOT FirstPassUnknown))
-	BEGIN
-	 DontPrint=True;
+       if ((ValOK) && (! FirstPassUnknown))
+	{
+	 DontPrint=true;
 	 CodeLen=Size;
          if (MakeUseList)
           if (AddChunk(SegChunks+ActPC,ProgCounter(),CodeLen,ActPC==SegCode)) WrError(90);
-	END
-      END
-     return True;
-    END
+	}
+      }
+     return true;
+    }
 
    if (Memo("DATA"))
-    BEGIN
+    {
      if (ArgCnt==0) WrError(1110);
      else
-      BEGIN
-       ValOK=True;
+      {
+       ValOK=true;
        for (z=1; z<=ArgCnt; z++)
 	if (ValOK)
-	 BEGIN
-          FirstPassUnknown=False;
+	 {
+          FirstPassUnknown=false;
 	  EvalExpression(ArgStr[z],&t);
-          if ((t.Typ==TempInt) AND (FirstPassUnknown))
+          if ((t.Typ==TempInt) && (FirstPassUnknown))
            if (ActPC==SegData) t.Contents.Int&=7; else t.Contents.Int&=511;
 	  switch (t.Typ)
-           BEGIN
+           {
             case TempInt:
              if (ActPC==SegCode)
-              BEGIN
-               if (NOT RangeCheck(t.Contents.Int,Int10))
-                BEGIN
-                 WrError(1320); ValOK=False;
-                END
+              {
+               if (! RangeCheck(t.Contents.Int,Int10))
+                {
+                 WrError(1320); ValOK=false;
+                }
                else WAsmCode[CodeLen++]=t.Contents.Int & 0x3ff;
-              END
+              }
              else
-              BEGIN
-               if (NOT RangeCheck(t.Contents.Int,Int4))
-                BEGIN
-                 WrError(1320); ValOK=False;
-                END
+              {
+               if (! RangeCheck(t.Contents.Int,Int4))
+                {
+                 WrError(1320); ValOK=false;
+                }
                else BAsmCode[CodeLen++]=t.Contents.Int & 0x0f;
-              END
+              }
              break;
             case TempFloat:
-             WrError(1135); ValOK=False;
+             WrError(1135); ValOK=false;
              break;
             case TempString:
              for (z2=0; z2<strlen(t.Contents.Ascii); z2++)
-              BEGIN
+              {
                Ch=CharTransTable[(int) t.Contents.Ascii[z2]];
                if (ActPC==SegCode)
                 WAsmCode[CodeLen++]=Ch;
                else
-                BEGIN
+                {
                  BAsmCode[CodeLen++]=Ch >> 4;
                  BAsmCode[CodeLen++]=Ch & 15;
-                END
-              END
+                }
+              }
              break;
 	    default:
-             ValOK=False;
-	   END
-	 END
-       if (NOT ValOK) CodeLen=0;
-      END
-     return True;
-    END
+             ValOK=false;
+	   }
+	 }
+       if (! ValOK) CodeLen=0;
+      }
+     return true;
+    }
 
-   return False;
-END
+   return false;
+}
 
         static void MakeCode_4500(void)
-BEGIN
+{
    Integer z;
    Word AdrWord;
-   Boolean OK;
+   bool OK;
 
-   CodeLen=0; DontPrint=False;
+   CodeLen=0; DontPrint=false;
 
    /* zu ignorierendes */
 
@@ -219,173 +219,173 @@ BEGIN
 
    for (z=0; z<FixedOrderCount; z++)
     if (Memo(FixedOrders[z].Name))
-     BEGIN
+     {
       if (ArgCnt!=0) WrError(1110);
       else
-       BEGIN
+       {
         CodeLen=1; WAsmCode[0]=FixedOrders[z].Code;
-       END
+       }
       return;
-     END
+     }
 
    if (Memo("SZD"))
-    BEGIN
+    {
      if (ArgCnt!=0) WrError(1110);
      else
-      BEGIN
+      {
        CodeLen=2; WAsmCode[0]=0x024; WAsmCode[1]=0x02b;
-      END
+      }
      return;
-    END
+    }
 
    for (z=0; z<ConstOrderCount; z++)
     if (Memo(ConstOrders[z].Name))
-     BEGIN
+     {
       if (ArgCnt!=1) WrError(1110);
       else
-       BEGIN
+       {
         WAsmCode[0]=EvalIntExpression(ArgStr[1],ConstOrders[z].Max,&OK);
         if (OK)
-         BEGIN
+         {
           CodeLen=1; WAsmCode[0]+=ConstOrders[z].Code;
-         END
-       END
+         }
+       }
       return;
-     END
+     }
 
    if (Memo("SEA"))
-    BEGIN
+    {
      if (ArgCnt!=1) WrError(1110);
      else
-      BEGIN
+      {
        WAsmCode[1]=EvalIntExpression(ArgStr[1],UInt4,&OK);
        if (OK)
-        BEGIN
+        {
          CodeLen=2; WAsmCode[1]+=0x070; WAsmCode[0]=0x025;
-        END
-      END
+        }
+      }
      return;
-    END
+    }
 
    if (Memo("B"))
-    BEGIN
+    {
      if (ArgCnt!=1) WrError(1110);
      else
-      BEGIN
+      {
        AdrWord=EvalIntExpression(ArgStr[1],UInt13,&OK);
        if (OK)
-        if ((NOT SymbolQuestionable) AND ((EProgCounter() >> 7)!=(AdrWord >> 7))) WrError(1910);
+        if ((! SymbolQuestionable) && ((EProgCounter() >> 7)!=(AdrWord >> 7))) WrError(1910);
         else
-         BEGIN
+         {
           CodeLen=1; WAsmCode[0]=0x180+(AdrWord&0x7f);
-         END
-      END
+         }
+      }
      return;
-    END
+    }
 
-   if ((Memo("BL")) OR (Memo("BML")))
-    BEGIN
-     if ((ArgCnt<1) OR (ArgCnt>2)) WrError(1110);
+   if ((Memo("BL")) || (Memo("BML")))
+    {
+     if ((ArgCnt<1) || (ArgCnt>2)) WrError(1110);
      else
-      BEGIN
+      {
        if (ArgCnt==1) AdrWord=EvalIntExpression(ArgStr[1],UInt13,&OK);
        else
-        BEGIN
+        {
          AdrWord=EvalIntExpression(ArgStr[1],UInt6,&OK) << 7;
          if (OK) AdrWord+=EvalIntExpression(ArgStr[2],UInt7,&OK);
-        END;
+        };
        if (OK)
-        BEGIN
+        {
          CodeLen=2;
 	 WAsmCode[1]=0x200+(AdrWord & 0x7f)+((AdrWord >> 12) << 7);
-	 WAsmCode[0]=0x0c0+(Ord(Memo("BL")) << 5)+((AdrWord >> 7) & 0x1f);
-        END
-      END
+	 WAsmCode[0]=0x0c0+(Memo("BL") << 5)+((AdrWord >> 7) & 0x1f);
+        }
+      }
      return;
-    END
+    }
 
-   if ((Memo("BLA")) OR (Memo("BMLA")))
-    BEGIN
+   if ((Memo("BLA")) || (Memo("BMLA")))
+    {
      if (ArgCnt!=1) WrError(1110);
      else
-      BEGIN
+      {
        AdrWord=EvalIntExpression(ArgStr[1],UInt6,&OK);
        if (OK)
-        BEGIN
+        {
          CodeLen=2;
 	 WAsmCode[1]=0x200+(AdrWord & 0x0f)+((AdrWord & 0x30) << 2);
-	 WAsmCode[0]=0x010+(Ord(Memo("BMLA")) << 5);
-        END
-      END
+	 WAsmCode[0]=0x010+(Memo("BMLA") << 5);
+        }
+      }
      return;
-    END
+    }
 
    if (Memo("BM"))
-    BEGIN
+    {
      if (ArgCnt!=1) WrError(1110);
      else
-      BEGIN
+      {
        AdrWord=EvalIntExpression(ArgStr[1],UInt13,&OK);
        if (OK)
 	if ((AdrWord >> 7)!=2) WrError(1905);
         else
-         BEGIN
+         {
          CodeLen=1;
 	 WAsmCode[0]=0x100+(AdrWord & 0x7f);
-        END
-      END
+        }
+      }
      return;
-    END
+    }
 
    if (Memo("LXY"))
-    BEGIN
-     if ((ArgCnt==0) OR (ArgCnt>2)) WrError(1110);
+    {
+     if ((ArgCnt==0) || (ArgCnt>2)) WrError(1110);
      else
-      BEGIN
+      {
        if (ArgCnt==1) AdrWord=EvalIntExpression(ArgStr[1],Int8,&OK);
        else
-        BEGIN
+        {
          AdrWord=EvalIntExpression(ArgStr[1],Int4,&OK) << 4;
          if (OK) AdrWord+=EvalIntExpression(ArgStr[2],Int4,&OK);
-	END
+	}
        if (OK)
-        BEGIN
+        {
          CodeLen=1;
          WAsmCode[0]=0x300+AdrWord;
-        END
-      END
+        }
+      }
      return;
-    END
+    }
 
    WrXError(1200,OpPart);
-END
+}
 
-        static Boolean ChkPC_4500(void)
-BEGIN
+        static bool ChkPC_4500(void)
+{
    switch (ActPC)
-    BEGIN
+    {
      case SegCode : return (ProgCounter() < 0x2000);
      case SegData : return (ProgCounter() < 416);
-     default: return False;
-    END
-END
+     default: return false;
+    }
+}
 
-        static Boolean IsDef_4500(void)
-BEGIN
+        static bool IsDef_4500(void)
+{
    return (Memo("SFR"));
-END
+}
 
         static void SwitchFrom_4500(void)
-BEGIN
+{
    DeinitFields();
-END
+}
 
         static void SwitchTo_4500(void)
-BEGIN
-   TurnWords=False; ConstMode=ConstModeMoto; SetIsOccupied=False;
+{
+   TurnWords=false; ConstMode=ConstModeMoto; SetIsOccupied=false;
 
    PCSymbol="*"; HeaderID=0x12; NOPCode=0x000;
-   DivideChars=","; HasAttrs=False;
+   DivideChars=","; HasAttrs=false;
 
    ValidSegs=(1<<SegCode)|(1<<SegData);
    Grans[SegCode ]=2; ListGrans[SegCode ]=2; SegInits[SegCode ]=0;
@@ -395,9 +395,9 @@ BEGIN
    SwitchFrom=SwitchFrom_4500;
 
    InitFields();
-END
+}
 
 	void code4500_init(void)
-BEGIN
+{
    CPU4500=AddCPU("MELPS4500" ,SwitchTo_4500);
-END
+}

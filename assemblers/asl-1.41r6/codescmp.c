@@ -46,42 +46,42 @@ static FixedOrder *JmpOrders;
 /*---------------------------------------------------------------------------*/
 
         static void AddFixed(char *NName, Byte NCode)
-BEGIN
+{
    if (InstrZ>=FixedOrderCnt) exit(255);
    FixedOrders[InstrZ].Name=NName;
    FixedOrders[InstrZ++].Code=NCode;
-END
+}
 
         static void AddImm(char *NName, Byte NCode)
-BEGIN
+{
    if (InstrZ>=ImmOrderCnt) exit(255);
    ImmOrders[InstrZ].Name=NName;
    ImmOrders[InstrZ++].Code=NCode;
-END
+}
 
         static void AddReg(char *NName, Byte NCode)
-BEGIN
+{
    if (InstrZ>=RegOrderCnt) exit(255);
    RegOrders[InstrZ].Name=NName;
    RegOrders[InstrZ++].Code=NCode;
-END
+}
 
         static void AddMem(char *NName, Byte NCode)
-BEGIN
+{
    if (InstrZ>=MemOrderCnt) exit(255);
    MemOrders[InstrZ].Name=NName;
    MemOrders[InstrZ++].Code=NCode;
-END
+}
 
         static void AddJmp(char *NName, Byte NCode)
-BEGIN
+{
    if (InstrZ>=JmpOrderCnt) exit(255);
    JmpOrders[InstrZ].Name=NName;
    JmpOrders[InstrZ++].Code=NCode;
-END
+}
 
         static void InitFields(void)
-BEGIN
+{
    FixedOrders=(FixedOrder *) malloc(sizeof(FixedOrder)*FixedOrderCnt); InstrZ=0;
    AddFixed("LDE" ,0x40); AddFixed("XAE" ,0x01); AddFixed("ANE" ,0x50);
    AddFixed("ORE" ,0x58); AddFixed("XRE" ,0x60); AddFixed("DAE" ,0x68);
@@ -107,99 +107,99 @@ BEGIN
    JmpOrders=(FixedOrder *) malloc(sizeof(FixedOrder)*JmpOrderCnt); InstrZ=0;
    AddJmp("JMP" ,0x90); AddJmp("JP"  ,0x94); AddJmp("JZ"  ,0x98);
    AddJmp("JNZ" ,0x9c);
-END
+}
 
         static void DeinitFields(void)
-BEGIN
+{
    free(FixedOrders);
    free(ImmOrders);
    free(RegOrders);
    free(MemOrders);
    free(JmpOrders);
-END
+}
 
 /*---------------------------------------------------------------------------*/
 
-	static Boolean DecodeReg(char *Asc, Byte *Erg)
-BEGIN
-   if ((strlen(Asc)!=2) OR (toupper(*Asc)!='P')) return False;
+	static bool DecodeReg(char *Asc, Byte *Erg)
+{
+   if ((strlen(Asc)!=2) || (toupper(*Asc)!='P')) return false;
 
    switch (toupper(Asc[1]))
-    BEGIN
+    {
      case 'C': *Erg=0; break;
      case '0': case '1': case '2':
      case '3': *Erg=Asc[1]-'0'; break;
-     default: return False;
-    END
+     default: return false;
+    }
 
-   return True;
-END
+   return true;
+}
 
-	static Boolean DecodeAdr(char *Asc, Boolean MayInc, Byte PCDisp, Byte *Arg)
-BEGIN
+	static bool DecodeAdr(char *Asc, bool MayInc, Byte PCDisp, Byte *Arg)
+{
    Integer Disp;
    Word PCVal;
-   Boolean OK;
+   bool OK;
    int l=strlen(Asc);
 
-   if ((l>=4) AND (Asc[l-1]==')') AND (Asc[l-4]=='('))
-    BEGIN
+   if ((l>=4) && (Asc[l-1]==')') && (Asc[l-4]=='('))
+    {
      Asc[l-1]='\0';
      if (DecodeReg(Asc+l-3,Arg))
-      BEGIN
+      {
        Asc[l-4]='\0';
        if (*Asc=='@')
-        BEGIN
-         if (NOT MayInc)
-          BEGIN
-           WrError(1350); return False;
-          END
+        {
+         if (! MayInc)
+          {
+           WrError(1350); return false;
+          }
          strcpy(Asc,Asc+1); *Arg+=4;
-        END
+        }
        if (strcasecmp(Asc,"E")==0) BAsmCode[1]=0x80;
        else if (*Arg==0)
-        BEGIN
-         WrXError(1445,Asc+l-3); return False;
-        END
+        {
+         WrXError(1445,Asc+l-3); return false;
+        }
        else
-        BEGIN
+        {
          BAsmCode[1]=EvalIntExpression(Asc,SInt8,&OK);
-         if (NOT OK) return False;
-        END
-       return True;
-      END
+         if (! OK) return false;
+        }
+       return true;
+      }
      else Asc[l-1]=')';
-    END
+    }
 
    PCVal=(EProgCounter() & 0xf000)+((EProgCounter()+1) & 0xfff);
    Disp=EvalIntExpression(Asc,UInt16,&OK)-PCDisp-PCVal;
    if (OK)
-    if ((NOT SymbolQuestionable) AND ((Disp<-128) OR (Disp>127))) WrError(1370);
+    if ((! SymbolQuestionable) && ((Disp<-128) || (Disp>127))) WrError(1370);
     else
-     BEGIN
-      BAsmCode[1]=Disp & 0xff; *Arg=0; return True;
-     END
-   return False;
-END
+     {
+      BAsmCode[1]=Disp & 0xff; *Arg=0; return true;
+     }
+   return false;
+}
 
 /*---------------------------------------------------------------------------*/
 
-	static Boolean DecodePseudo(void)
-BEGIN
-   return False;
-END
+	static bool DecodePseudo(void)
+{
+   return false;
+}
 
         static void ChkPage(void)
-BEGIN
+{
    if (((EProgCounter()) & 0xf000)!=((EProgCounter()+CodeLen) & 0xf000)) WrError(250);
-END
+}
 
         static void MakeCode_SCMP(void)
-BEGIN
+{
    Integer z;
-   Boolean OK;
+   bool OK;
 
-   CodeLen=0; DontPrint=False;
+   CodeLen=0; DontPrint=false;
 
    /* zu ignorierendes */
 
@@ -209,125 +209,125 @@ BEGIN
 
    if (DecodePseudo()) return;
 
-   if (DecodeIntelPseudo(False)) return;
+   if (DecodeIntelPseudo(false)) return;
 
    /* ohne Argument */
 
    for (z=0; z<FixedOrderCnt; z++)
     if (Memo(FixedOrders[z].Name))
-     BEGIN
+     {
       if (ArgCnt!=0) WrError(1110);
       else
-       BEGIN
+       {
         BAsmCode[0]=FixedOrders[z].Code; CodeLen=1;
-       END
+       }
       return;
-     END
+     }
 
    /* immediate */
 
    for (z=0; z<ImmOrderCnt; z++)
     if (Memo(ImmOrders[z].Name))
-     BEGIN
+     {
       if (ArgCnt!=1) WrError(1110);
       else
-       BEGIN
+       {
         BAsmCode[1]=EvalIntExpression(ArgStr[1],Int8,&OK);
         if (OK)
-         BEGIN
+         {
           BAsmCode[0]=ImmOrders[z].Code; CodeLen=2; ChkPage();
-         END
-       END
+         }
+       }
       return;
-     END
+     }
 
    /* ein Register */
 
    for (z=0; z<RegOrderCnt; z++)
     if (Memo(RegOrders[z].Name))
-     BEGIN
+     {
       if (ArgCnt!=1) WrError(1110);
-      else if (NOT DecodeReg(ArgStr[1],BAsmCode+0)) WrXError(1445,ArgStr[1]);
+      else if (! DecodeReg(ArgStr[1],BAsmCode+0)) WrXError(1445,ArgStr[1]);
       else
-       BEGIN
+       {
         BAsmCode[0]+=RegOrders[z].Code; CodeLen=1;
-       END
+       }
       return;
-     END
+     }
 
    /* ein Speicheroperand */
 
    for (z=0; z<MemOrderCnt; z++)
     if (Memo(MemOrders[z].Name))
-     BEGIN
+     {
       if (ArgCnt!=1) WrError(1110);
-      else if (DecodeAdr(ArgStr[1],True,0,BAsmCode+0))
-       BEGIN
+      else if (DecodeAdr(ArgStr[1],true,0,BAsmCode+0))
+       {
         BAsmCode[0]+=MemOrders[z].Code; CodeLen=2; ChkPage();
-       END
+       }
       return;
-     END
+     }
 
    for (z=0; z<JmpOrderCnt; z++)
     if (Memo(JmpOrders[z].Name))
-     BEGIN
+     {
       if (ArgCnt!=1) WrError(1110);
-      else if (DecodeAdr(ArgStr[1],False,1,BAsmCode+0))
-       BEGIN
+      else if (DecodeAdr(ArgStr[1],false,1,BAsmCode+0))
+       {
         BAsmCode[0]+=JmpOrders[z].Code; CodeLen=2; ChkPage();
-       END
+       }
       return;
-     END
+     }
 
-   if ((Memo("ILD")) OR (Memo("DLD")))
-    BEGIN
+   if ((Memo("ILD")) || (Memo("DLD")))
+    {
      if (ArgCnt!=1) WrError(1110);
-     else if (DecodeAdr(ArgStr[1],False,0,BAsmCode+0))
-      BEGIN
-       BAsmCode[0]+=0xa8+(Ord(Memo("DLD")) << 4); CodeLen=2; ChkPage();
-      END
+     else if (DecodeAdr(ArgStr[1],false,0,BAsmCode+0))
+      {
+       BAsmCode[0]+=0xa8+(Memo("DLD") << 4); CodeLen=2; ChkPage();
+      }
      return;
-    END
+    }
 
    WrXError(1200,OpPart);
-END
+}
 
-        static Boolean ChkPC_SCMP(void)
-BEGIN
+        static bool ChkPC_SCMP(void)
+{
    switch (ActPC)
-    BEGIN
+    {
      case SegCode: return (ProgCounter()<0x10000);
-     default: return False;
-    END
-END
+     default: return false;
+    }
+}
 
-        static Boolean IsDef_SCMP(void)
-BEGIN
-   return False;
-END
+        static bool IsDef_SCMP(void)
+{
+   return false;
+}
 
         static void SwitchFrom_SCMP(void)
-BEGIN
+{
    DeinitFields();
-END
+}
 
         static void SwitchTo_SCMP(void)
-BEGIN
-   TurnWords=False; ConstMode=ConstModeC; SetIsOccupied=False;
+{
+   TurnWords=false; ConstMode=ConstModeC; SetIsOccupied=false;
 
    PCSymbol="$"; HeaderID=0x6e; NOPCode=0x08;
-   DivideChars=","; HasAttrs=False;
+   DivideChars=","; HasAttrs=false;
 
    ValidSegs=1<<SegCode;
    Grans[SegCode]=1; ListGrans[SegCode]=1; SegInits[SegCode]=0;
 
    MakeCode=MakeCode_SCMP; ChkPC=ChkPC_SCMP; IsDef=IsDef_SCMP;
    SwitchFrom=SwitchFrom_SCMP; InitFields();
-END
+}
 
 	void codescmp_init(void)
-BEGIN
+{
    CPUSCMP=AddCPU("SC/MP",SwitchTo_SCMP);
-END
+}
 
 

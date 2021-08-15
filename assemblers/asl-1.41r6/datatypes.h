@@ -1,4 +1,7 @@
 #include "sysdefs.h"
+#include <stdbool.h>
+
+#define MaxLongInt 0x7fffffff
 
 typedef Card8 Byte;       /* Integertypen */
 typedef Integ8 ShortInt;
@@ -29,21 +32,4 @@ typedef char Char;
 typedef double Double;
 typedef float Single;
 
-typedef Byte Boolean;
-
 typedef char String[256];
-
-#ifndef TRUE
-#define TRUE 1
-#endif
-#ifndef True
-#define True 1
-#endif
-
-#ifndef FALSE
-#define FALSE 0
-#endif
-#ifndef False
-#define False 0
-#endif
-

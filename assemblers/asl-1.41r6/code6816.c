@@ -94,29 +94,29 @@ static CPUVar CPU6816;
 /*-------------------------------------------------------------------------*/
 
         static void AddFixed(char *NName, Word NCode)
-BEGIN
+{
    if (InstrZ>=FixedOrderCnt) exit(255);
    FixedOrders[InstrZ].Name=NName;
    FixedOrders[InstrZ++].Code=NCode;
-END
+}
 
         static void AddRel(char *NName, Word NCode)
-BEGIN
+{
    if (InstrZ>=RelOrderCnt) exit(255);
    RelOrders[InstrZ].Name=NName;
    RelOrders[InstrZ++].Code=NCode;
-END
+}
 
         static void AddLRel(char *NName, Word NCode)
-BEGIN
+{
    if (InstrZ>=LRelOrderCnt) exit(255);
    LRelOrders[InstrZ].Name=NName;
    LRelOrders[InstrZ++].Code=NCode;
-END
+}
 
         static void AddGen(char *NName, ShortInt NSize, Word NCode,
                            Word NExtCode, Byte NShift, Byte NMask)
-BEGIN
+{
    if (InstrZ>=GenOrderCnt) exit(255);
    GenOrders[InstrZ].Name=NName;
    GenOrders[InstrZ].Code=NCode;
@@ -124,39 +124,39 @@ BEGIN
    GenOrders[InstrZ].Size=NSize;
    GenOrders[InstrZ].AdrMask=NMask;
    GenOrders[InstrZ++].ExtShift=NShift;
-END
+}
 
         static void AddAux(char *NName, Word NCode)
-BEGIN
+{
    if (InstrZ>=AuxOrderCnt) exit(255);
    AuxOrders[InstrZ].Name=NName;
    AuxOrders[InstrZ++].Code=NCode;
-END
+}
 
         static void AddImm(char *NName, Word NCode)
-BEGIN
+{
    if (InstrZ>=ImmOrderCnt) exit(255);
    ImmOrders[InstrZ].Name=NName;
    ImmOrders[InstrZ++].Code=NCode;
-END
+}
 
         static void AddExt(char *NName, Word NCode)
-BEGIN
+{
    if (InstrZ>=ExtOrderCnt) exit(255);
    ExtOrders[InstrZ].Name=NName;
    ExtOrders[InstrZ++].Code=NCode;
-END
+}
 
         static void AddEmu(char *NName, Word NCode1, Word NCode2)
-BEGIN
+{
    if (InstrZ>=EmuOrderCnt) exit(255);
    EmuOrders[InstrZ].Name=NName;
    EmuOrders[InstrZ].Code1=NCode1;
    EmuOrders[InstrZ++].Code2=NCode2;
-END
+}
 
 	static void InitFields(void)
-BEGIN
+{
    FixedOrders=(FixedOrder *) malloc(sizeof(FixedOrder)*FixedOrderCnt); InstrZ=0;
    AddFixed("ABA"   ,0x370b); AddFixed("ABX"   ,0x374f);
    AddFixed("ABY"   ,0x375f); AddFixed("ABZ"   ,0x376f);
@@ -326,10 +326,10 @@ BEGIN
    Regs=(char **) malloc(sizeof(char *)*RegCnt);
    Regs[0]="D"; Regs[1]="E"; Regs[2]="X"; Regs[3]="Y";
    Regs[4]="Z"; Regs[5]="K"; Regs[6]="CCR";
-END
+}
 
 	static void DeinitFields(void)
-BEGIN
+{
    free(FixedOrders);
    free(RelOrders);
    free(LRelOrders);
@@ -339,34 +339,34 @@ BEGIN
    free(ExtOrders);
    free(EmuOrders);
    free(Regs);
-END
+}
 
 /*-------------------------------------------------------------------------*/
 
 typedef enum {ShortDisp,LongDisp,NoDisp} DispType;
 
 	static void ChkAdr(Byte Mask)
-BEGIN
-   if ((AdrMode!=ModNone) AND ((Mask AND (1 << AdrMode))==0))
-    BEGIN
+{
+   if ((AdrMode!=ModNone) && ((Mask && (1 << AdrMode))==0))
+    {
      WrError(1350);
      AdrMode=ModNone; AdrCnt=0;
-    END
-END
+    }
+}
 
    	static void SplitSize(char *Asc, DispType *Erg)
-BEGIN
+{
    if (strlen(Asc)<1) *Erg=NoDisp;
    else if (*Asc=='>') *Erg=LongDisp;
    else if (*Asc=='<') *Erg=ShortDisp;
    else *Erg=NoDisp;
-END
+}
 
-	static void DecodeAdr(Integer Start, Integer Stop, Boolean LongAdr, Byte Mask)
-BEGIN
+	static void DecodeAdr(Integer Start, Integer Stop, bool LongAdr, Byte Mask)
+{
    Integer V16;
    LongInt V32;
-   Boolean OK;
+   bool OK;
    String s;
    DispType Size;
 
@@ -374,61 +374,61 @@ BEGIN
 
    Stop-=Start-1;
    if (Stop<1)
-    BEGIN
+    {
      WrError(1110); return;
-    END
+    }
 
    /* immediate ? */
 
    if (*ArgStr[Start]=='#')
-    BEGIN
+    {
      strmaxcpy(s,ArgStr[Start]+1,255); SplitSize(s,&Size);
      switch (OpSize)
-      BEGIN
+      {
        case -1: WrError(1132); break;
        case 0:
         AdrVals[0]=EvalIntExpression(s,Int8,&OK);
         if (OK)
-         BEGIN
+         {
           AdrCnt=1; AdrMode=ModImm;
-         END
+         }
         break;
        case 1:
         V16=EvalIntExpression(s,(Size==ShortDisp)?SInt8:Int16,&OK);
-        if ((Size==NoDisp) AND (V16>=-128) AND (V16<=127) AND ((Mask & MModImmExt)!=0))
+        if ((Size==NoDisp) && (V16>=-128) && (V16<=127) && ((Mask & MModImmExt)!=0))
          Size=ShortDisp;
         if (OK)
          if (Size==ShortDisp)
-          BEGIN
+          {
            AdrVals[0]=Lo(V16);
            AdrCnt=1; AdrMode=ModImmExt;
-          END
+          }
          else
-          BEGIN
+          {
            AdrVals[0]=Hi(V16);
            AdrVals[1]=Lo(V16);
            AdrCnt=2; AdrMode=ModImm;
-          END
+          }
         break;
        case 2:
         V32=EvalIntExpression(s,Int32,&OK);
         if (OK)
-         BEGIN
+         {
           AdrVals[0]=(V32 >> 24) & 0xff;
           AdrVals[1]=(V32 >> 16) & 0xff;
           AdrVals[2]=(V32 >>  8) & 0xff;
           AdrVals[3]=V32 & 0xff;
           AdrCnt=4; AdrMode=ModImm;
-         END
+         }
         break;
-      END
+      }
      ChkAdr(Mask); return;
-    END
+    }
 
    /* zusammengesetzt ? */
 
    if (Stop==2)
-    BEGIN
+    {
      AdrPart=0xff;
      if (strcasecmp(ArgStr[Start+1],"X")==0) AdrPart=0x00;
      else if (strcasecmp(ArgStr[Start+1],"Y")==0) AdrPart=0x10;
@@ -437,7 +437,7 @@ BEGIN
      if (AdrPart!=0xff)
       if (strcasecmp(ArgStr[Start],"E")==0) AdrMode=ModDispE;
       else
-       BEGIN
+       {
         SplitSize(ArgStr[Start],&Size);
         if (Size==ShortDisp)
 	 V32=EvalIntExpression(ArgStr[Start],UInt8,&OK);
@@ -446,82 +446,82 @@ BEGIN
         else
          V32=EvalIntExpression(ArgStr[Start],SInt16,&OK);
         if (OK)
-         BEGIN
+         {
           if (Size==NoDisp)
-           if ((V32>=0) AND (V32<=255) AND ((Mask & MModDisp8)!=0)) Size=ShortDisp;
+           if ((V32>=0) && (V32<=255) && ((Mask & MModDisp8)!=0)) Size=ShortDisp;
           if (Size==ShortDisp)
-           BEGIN
+           {
             AdrVals[0]=V32 & 0xff;
 	    AdrCnt=1; AdrMode=ModDisp8;
-           END
+           }
           else if (LongAdr)
-	   BEGIN
+	   {
             AdrVals[0]=(V32 >> 16) & 0x0f;
             AdrVals[1]=(V32 >> 8) & 0xff;
             AdrVals[2]=V32 & 0xff;
             AdrCnt=3; AdrMode=ModDisp16;
-           END
+           }
           else
-           BEGIN
+           {
             AdrVals[0]=(V32 >> 8) & 0xff;
             AdrVals[1]=V32 & 0xff;
             AdrCnt=2; AdrMode=ModDisp16;
-           END
-         END
-       END
+           }
+         }
+       }
      ChkAdr(Mask); return;
-    END
+    }
 
    /* absolut ? */
 
    else
-    BEGIN
+    {
      SplitSize(ArgStr[Start],&Size);
      V32=EvalIntExpression(ArgStr[Start],UInt20,&OK);
      if (OK)
       if (LongAdr)
-       BEGIN
+       {
         AdrVals[0]=(V32 >> 16) & 0xff;
         AdrVals[1]=(V32 >> 8) & 0xff;
         AdrVals[2]=V32 & 0xff;
         AdrMode=ModAbs; AdrCnt=3;
-       END
+       }
       else
-       BEGIN
+       {
         if ((V32 >> 16)!=Reg_EK) WrError(110);
         AdrVals[0]=(V32 >> 8) & 0xff;
         AdrVals[1]=V32 & 0xff;
         AdrMode=ModAbs; AdrCnt=2;
-       END
+       }
      ChkAdr(Mask); return;
-    END
-END
+    }
+}
 
 /*-------------------------------------------------------------------------*/
 
-	static Boolean DecodePseudo(void)
-BEGIN
+	static bool DecodePseudo(void)
+{
 #define ASSUME6816Count 1
    static ASSUMERec ASSUME6816s[ASSUME6816Count]=
 	       {{"EK" , &Reg_EK , 0 , 0xff , 0x100}};
 
    if (Memo("ASSUME"))
-    BEGIN
+    {
      CodeASSUME(ASSUME6816s,ASSUME6816Count);
-     return True;
-    END
+     return true;
+    }
 
-   return False;
-END
+   return false;
+}
 
 	static void MakeCode_6816(void)
-BEGIN
+{
    Integer z,z2;
-   Boolean OK;
+   bool OK;
    Byte Mask;
    LongInt AdrLong;
 
-   CodeLen=0; DontPrint=False; AdrCnt=0; OpSize=(-1);
+   CodeLen=0; DontPrint=false; AdrCnt=0; OpSize=(-1);
 
    /* zu ignorierendes */
 
@@ -531,47 +531,47 @@ BEGIN
 
    if (DecodePseudo()) return;
 
-   if (DecodeMotoPseudo(True)) return;
+   if (DecodeMotoPseudo(true)) return;
 
    /* Anweisungen ohne Argument */
 
    for (z=0; z<FixedOrderCnt; z++)
     if Memo(FixedOrders[z].Name)
-     BEGIN
+     {
       if (ArgCnt!=0) WrError(1110);
       else
-       BEGIN
+       {
         BAsmCode[0]=Hi(FixedOrders[z].Code); BAsmCode[1]=Lo(FixedOrders[z].Code);
         CodeLen=2;
-       END
+       }
       return;
-     END
+     }
 
    for (z=0; z<EmuOrderCnt; z++)
     if Memo(EmuOrders[z].Name)
-     BEGIN
+     {
       if (ArgCnt!=0) WrError(1110);
       else
-       BEGIN
+       {
         BAsmCode[0]=Hi(EmuOrders[z].Code1); BAsmCode[1]=Lo(EmuOrders[z].Code1);
         BAsmCode[2]=Hi(EmuOrders[z].Code2); BAsmCode[3]=Lo(EmuOrders[z].Code2);
         CodeLen=4;
-       END
+       }
       return;
-     END
+     }
 
    /* Datentransfer */
 
    for (z=0; z<AuxOrderCnt; z++)
     if (Memo(AuxOrders[z].Name))
-     BEGIN
-      if ((ArgCnt<1) OR (ArgCnt>2)) WrError(1110);
+     {
+      if ((ArgCnt<1) || (ArgCnt>2)) WrError(1110);
       else
-       BEGIN
+       {
         OpSize=1;
-        DecodeAdr(1,ArgCnt,False,(*OpPart=='S'?0:MModImm)+MModDisp8+MModDisp16+MModAbs);
+        DecodeAdr(1,ArgCnt,false,(*OpPart=='S'?0:MModImm)+MModDisp8+MModDisp16+MModAbs);
         switch (AdrMode)
-         BEGIN
+         {
           case ModDisp8:
            BAsmCode[0]=AuxOrders[z].Code+AdrPart;
            BAsmCode[1]=AdrVals[0]; CodeLen=2;
@@ -591,119 +591,119 @@ BEGIN
            if (*OpPart=='L') BAsmCode[1]-=0x40;
            memcpy(BAsmCode+2,AdrVals,AdrCnt); CodeLen=2+AdrCnt;
            break;
-         END
-       END
+         }
+       }
       return;
-     END
+     }
 
    for (z=0; z<ExtOrderCnt; z++)
     if (Memo(ExtOrders[z].Name))
-     BEGIN
+     {
       if (ArgCnt!=1) WrError(1110);
       else
-       BEGIN
-        OpSize=1; DecodeAdr(1,1,False,MModAbs);
+       {
+        OpSize=1; DecodeAdr(1,1,false,MModAbs);
         switch (AdrMode)
-         BEGIN
+         {
           case ModAbs:
            BAsmCode[0]=Hi(ExtOrders[z].Code); BAsmCode[1]=Lo(ExtOrders[z].Code);
            memcpy(BAsmCode+2,AdrVals,AdrCnt); CodeLen=2+AdrCnt;
            break;
-         END
-       END
+         }
+       }
       return;
-     END
+     }
 
-   if ((Memo("PSHM")) OR (Memo("PULM")))
-    BEGIN
+   if ((Memo("PSHM")) || (Memo("PULM")))
+    {
      if (ArgCnt<1) WrError(1110);
      else
-      BEGIN
-       OK=True; Mask=0;
+      {
+       OK=true; Mask=0;
        for (z=1; z<=ArgCnt; z++)
         if (OK)
-         BEGIN
+         {
           z2=0; NLS_UpString(ArgStr[z]);
-	  while ((z2<RegCnt) AND (strcmp(ArgStr[z],Regs[z2])!=0)) z2++;
+	  while ((z2<RegCnt) && (strcmp(ArgStr[z],Regs[z2])!=0)) z2++;
           if (z2>=RegCnt)
-           BEGIN
-            WrXError(1445,ArgStr[z]); OK=False;
-           END
+           {
+            WrXError(1445,ArgStr[z]); OK=false;
+           }
           else if (Memo("PSHM")) Mask+=(1 << z2);
           else Mask+=(1 << (RegCnt-1-z2));
-         END
+         }
        if (OK)
-        BEGIN
-         BAsmCode[0]=0x34+Ord(Memo("PULM")); BAsmCode[1]=Mask;
+        {
+         BAsmCode[0]=0x34+Memo("PULM"); BAsmCode[1]=Mask;
          CodeLen=2;
-        END
-      END
+        }
+      }
      return;
-    END
+    }
 
-   if ((Memo("MOVB")) OR (Memo("MOVW")))
-    BEGIN
-     z=Ord(Memo("MOVW"));
+   if ((Memo("MOVB")) || (Memo("MOVW")))
+    {
+     z=Memo("MOVW");
      if (ArgCnt==2)
-      BEGIN
-       DecodeAdr(1,1,False,MModAbs);
+      {
+       DecodeAdr(1,1,false,MModAbs);
        if (AdrMode==ModAbs)
-        BEGIN
+        {
          memcpy(BAsmCode+2,AdrVals,2);
-         DecodeAdr(2,2,False,MModAbs);
+         DecodeAdr(2,2,false,MModAbs);
          if (AdrMode==ModAbs)
-          BEGIN
+          {
            memcpy(BAsmCode+4,AdrVals,2);
            BAsmCode[0]=0x37; BAsmCode[1]=0xfe + z; /* ANSI :-0 */
            CodeLen=6;
-          END
-        END
-      END
+          }
+        }
+      }
      else if (ArgCnt!=3) WrError(1110);
      else if (strcasecmp(ArgStr[2],"X")==0)
-      BEGIN
+      {
        BAsmCode[1]=EvalIntExpression(ArgStr[1],SInt8,&OK);
        if (OK)
-        BEGIN
-         DecodeAdr(3,3,False,MModAbs);
+        {
+         DecodeAdr(3,3,false,MModAbs);
          if (AdrMode==ModAbs)
-          BEGIN
+          {
            memcpy(BAsmCode+2,AdrVals,2);
            BAsmCode[0]=0x30+z;
            CodeLen=4;
-          END
-        END
-      END
+          }
+        }
+      }
      else if (strcasecmp(ArgStr[3],"X")==0)
-      BEGIN
+      {
        BAsmCode[3]=EvalIntExpression(ArgStr[2],SInt8,&OK);
        if (OK)
-        BEGIN
-         DecodeAdr(1,1,False,MModAbs);
+        {
+         DecodeAdr(1,1,false,MModAbs);
          if (AdrMode==ModAbs)
-          BEGIN
+          {
            memcpy(BAsmCode+1,AdrVals,2);
            BAsmCode[0]=0x32+z;
            CodeLen=4;
-          END
-        END
-      END
+          }
+        }
+      }
      else WrError(1350);
      return;
-    END
+    }
 
    /* Arithmetik */
 
    for (z=0; z<GenOrderCnt; z++)
     if (Memo(GenOrders[z].Name))
-     BEGIN
-      if ((ArgCnt<1) OR (ArgCnt>2)) WrError(1110);
+     {
+      if ((ArgCnt<1) || (ArgCnt>2)) WrError(1110);
       else
-       BEGIN
+       {
         OpSize=GenOrders[z].Size;
-        DecodeAdr(1,ArgCnt,False,GenOrders[z].AdrMask);
+        DecodeAdr(1,ArgCnt,false,GenOrders[z].AdrMask);
         switch (AdrMode)
-         BEGIN
+         {
           case ModDisp8:
            BAsmCode[0]=GenOrders[z].Code+AdrPart;
            BAsmCode[1]=AdrVals[0]; CodeLen=2;
@@ -724,34 +724,34 @@ BEGIN
            break;
           case ModImm:
            if (OpSize==0)
-            BEGIN
+            {
              BAsmCode[0]=GenOrders[z].Code+0x30;
              BAsmCode[1]=AdrVals[0]; CodeLen=2;
-            END
+            }
            else
-            BEGIN
+            {
              BAsmCode[0]=0x37; BAsmCode[1]=GenOrders[z].Code+0x30;
              memcpy(BAsmCode+2,AdrVals,AdrCnt); CodeLen=2+AdrCnt;
-            END
+            }
            break;
           case ModImmExt:
            BAsmCode[0]=GenOrders[z].ExtCode;
            BAsmCode[1]=AdrVals[0]; CodeLen=2;
            break;
-         END
-       END
+         }
+       }
       return;
-     END
+     }
 
    for (z=0; z<ImmOrderCnt; z++)
     if (Memo(ImmOrders[z].Name))
-     BEGIN
+     {
       if (ArgCnt!=1) WrError(1110);
       else
-       BEGIN
-        OpSize=1; DecodeAdr(1,1,False,MModImm+MModImmExt);
+       {
+        OpSize=1; DecodeAdr(1,1,false,MModImm+MModImmExt);
         switch (AdrMode)
-         BEGIN
+         {
           case ModImm:
            BAsmCode[0]=0x37; BAsmCode[1]=ImmOrders[z].Code;
            memcpy(BAsmCode+2,AdrVals,AdrCnt); CodeLen=2+AdrCnt;
@@ -759,64 +759,64 @@ BEGIN
           case ModImmExt:
            BAsmCode[0]=ImmOrders[z].Code; BAsmCode[1]=AdrVals[0]; CodeLen=2;
            break;
-         END
-       END
+         }
+       }
       return;
-     END
+     }
 
-   if ((Memo("ANDP")) OR (Memo("ORP")))
-    BEGIN
+   if ((Memo("ANDP")) || (Memo("ORP")))
+    {
      if (ArgCnt!=1) WrError(1110);
      else
-      BEGIN
-       OpSize=1; DecodeAdr(1,1,False,MModImm);
+      {
+       OpSize=1; DecodeAdr(1,1,false,MModImm);
        switch (AdrMode)
-        BEGIN
+        {
          case ModImm:
-          BAsmCode[0]=0x37; BAsmCode[1]=0x3a+Ord(Memo("ORP"));
+          BAsmCode[0]=0x37; BAsmCode[1]=0x3a+Memo("ORP");
           memcpy(BAsmCode+2,AdrVals,AdrCnt); CodeLen=2+AdrCnt;
           break;
-        END
-      END
+        }
+      }
      return;
-    END
+    }
 
-   if ((Memo("MAC")) OR (Memo("RMAC")))
-    BEGIN
+   if ((Memo("MAC")) || (Memo("RMAC")))
+    {
      if (ArgCnt!=2) WrError(1110);
      else
-      BEGIN
+      {
        z=EvalIntExpression(ArgStr[1],UInt4,&OK);
        if (OK)
-        BEGIN
+        {
          BAsmCode[1]=EvalIntExpression(ArgStr[2],UInt4,&OK);
          if (OK)
-          BEGIN
+          {
            BAsmCode[1]+=(z << 4);
-           BAsmCode[0]=0x7b+(Ord(Memo("RMAC")) << 7);
+           BAsmCode[0]=0x7b+(Memo("RMAC") << 7);
            CodeLen=2;
-          END
-        END
-      END
+          }
+        }
+      }
      return;
-    END
+    }
 
    /* Bitoperationen */
 
-   if ((Memo("BCLR")) OR (Memo("BSET")))
-    BEGIN
-     if ((ArgCnt<2) OR (ArgCnt>3)) WrError(1110);
+   if ((Memo("BCLR")) || (Memo("BSET")))
+    {
+     if ((ArgCnt<2) || (ArgCnt>3)) WrError(1110);
      else
-      BEGIN
-       OpSize=0; z=Ord(Memo("BSET"));
-       DecodeAdr(ArgCnt,ArgCnt,False,MModImm);
+      {
+       OpSize=0; z=Memo("BSET");
+       DecodeAdr(ArgCnt,ArgCnt,false,MModImm);
        switch (AdrMode)
-        BEGIN
+        {
          case ModImm:
           Mask=AdrVals[0];
-          DecodeAdr(1,ArgCnt-1,False,MModDisp8+MModDisp16+MModAbs);
+          DecodeAdr(1,ArgCnt-1,false,MModDisp8+MModDisp16+MModAbs);
           switch (AdrMode)
-           BEGIN
+           {
             case ModDisp8:
              BAsmCode[0]=0x17; BAsmCode[1]=0x08+z+AdrPart;
              BAsmCode[2]=Mask; BAsmCode[3]=AdrVals[0];
@@ -832,27 +832,27 @@ BEGIN
 	     memcpy(BAsmCode+2,AdrVals,AdrCnt);
              CodeLen=2+AdrCnt;
              break;
-           END
+           }
           break;
-        END
-      END
+        }
+      }
      return;
-    END
+    }
 
-   if ((Memo("BCLRW")) OR (Memo("BSETW")))
-    BEGIN
-     if ((ArgCnt<2) OR (ArgCnt>3)) WrError(1110);
+   if ((Memo("BCLRW")) || (Memo("BSETW")))
+    {
+     if ((ArgCnt<2) || (ArgCnt>3)) WrError(1110);
      else
-      BEGIN
-       OpSize=1; z=Ord(Memo("BSETW"));
-       DecodeAdr(ArgCnt,ArgCnt,False,MModImm);
+      {
+       OpSize=1; z=Memo("BSETW");
+       DecodeAdr(ArgCnt,ArgCnt,false,MModImm);
        switch (AdrMode)
-        BEGIN
+        {
          case ModImm:
           memcpy(BAsmCode+2,AdrVals,AdrCnt);
-          DecodeAdr(1,ArgCnt-1,False,MModDisp16+MModAbs);
+          DecodeAdr(1,ArgCnt-1,false,MModDisp16+MModAbs);
           switch (AdrMode)
-           BEGIN
+           {
             case ModDisp16:
              BAsmCode[0]=0x27; BAsmCode[1]=0x08+z+AdrPart;
   	     memcpy(BAsmCode+4,AdrVals,AdrCnt);
@@ -863,90 +863,90 @@ BEGIN
   	     memcpy(BAsmCode+4,AdrVals,AdrCnt);
              CodeLen=4+AdrCnt;
              break;
-           END
-        END
-      END
+           }
+        }
+      }
      return;
-    END
+    }
 
-   if ((Memo("BRCLR")) OR (Memo("BRSET")))
-    BEGIN
-     if ((ArgCnt<3) OR (ArgCnt>4)) WrError(1110);
+   if ((Memo("BRCLR")) || (Memo("BRSET")))
+    {
+     if ((ArgCnt<3) || (ArgCnt>4)) WrError(1110);
      else
-      BEGIN
-       z=Ord(Memo("BRSET"));
-       OpSize=0; DecodeAdr(ArgCnt-1,ArgCnt-1,False,MModImm);
+      {
+       z=Memo("BRSET");
+       OpSize=0; DecodeAdr(ArgCnt-1,ArgCnt-1,false,MModImm);
        if (AdrMode==ModImm)
-        BEGIN
+        {
          BAsmCode[1]=AdrVals[0];
          AdrLong=EvalIntExpression(ArgStr[ArgCnt],UInt20,&OK)-EProgCounter()-6;
          if (OK)
-          BEGIN
+          {
            OK=SymbolQuestionable;
-           DecodeAdr(1,ArgCnt-2,False,MModDisp8+MModDisp16+MModAbs);
+           DecodeAdr(1,ArgCnt-2,false,MModDisp8+MModDisp16+MModAbs);
            switch (AdrMode)
-            BEGIN
+            {
              case ModDisp8:
-              if ((AdrLong>=-128) AND (AdrLong<127))
-               BEGIN
+              if ((AdrLong>=-128) && (AdrLong<127))
+               {
                 BAsmCode[0]=0xcb-(z << 6)+AdrPart;
                 BAsmCode[2]=AdrVals[0];
                 BAsmCode[3]=AdrLong & 0xff;
                 CodeLen=4;
-               END
-              else if ((NOT OK) AND ((AdrLong<-0x8000l) OR (AdrLong>0x7fffl))) WrError(1370);
+               }
+              else if ((! OK) && ((AdrLong<-0x8000l) || (AdrLong>0x7fffl))) WrError(1370);
               else
-               BEGIN
+               {
                 BAsmCode[0]=0x0a+AdrPart+z;
                 BAsmCode[2]=0;
                 BAsmCode[3]=AdrVals[0];
                 BAsmCode[4]=(AdrLong >> 8) & 0xff;
 	        BAsmCode[5]=AdrLong & 0xff;
 	        CodeLen=6;
-               END
+               }
               break;
              case ModDisp16:
-              if ((NOT OK) AND ((AdrLong<-0x8000l) OR (AdrLong>0x7fffl))) WrError(1370);
+              if ((! OK) && ((AdrLong<-0x8000l) || (AdrLong>0x7fffl))) WrError(1370);
               else
-               BEGIN
+               {
                 BAsmCode[0]=0x0a+AdrPart+z;
                 memcpy(BAsmCode+2,AdrVals,2);
                 BAsmCode[4]=(AdrLong >> 8) & 0xff;
 	        BAsmCode[5]=AdrLong & 0xff;
 	        CodeLen=6;
-               END
+               }
               break;
              case ModAbs:
-              if ((NOT OK) AND ((AdrLong<-0x8000l) OR (AdrLong>0x7fffl))) WrError(1370);
+              if ((! OK) && ((AdrLong<-0x8000l) || (AdrLong>0x7fffl))) WrError(1370);
               else
-               BEGIN
+               {
                 BAsmCode[0]=0x3a+z;
                 memcpy(BAsmCode+2,AdrVals,2);
                 BAsmCode[4]=(AdrLong >> 8) & 0xff;
 	        BAsmCode[5]=AdrLong & 0xff;
 	        CodeLen=6;
-               END
+               }
               break;
-            END
-          END
-        END
-      END
+            }
+          }
+        }
+      }
      return;
-    END
+    }
 
    /* Spruenge */
 
-   if ((Memo("JMP")) OR (Memo("JSR")))
-    BEGIN
-     if ((ArgCnt<1) OR (ArgCnt>2)) WrError(1110);
+   if ((Memo("JMP")) || (Memo("JSR")))
+    {
+     if ((ArgCnt<1) || (ArgCnt>2)) WrError(1110);
      else
-      BEGIN
+      {
        OpSize=1;
-       DecodeAdr(1,ArgCnt,True,MModAbs20+MModDisp20);
+       DecodeAdr(1,ArgCnt,true,MModAbs20+MModDisp20);
        switch (AdrMode)
-        BEGIN
+        {
          case ModAbs20:
-          BAsmCode[0]=0x7a+(Ord(Memo("JSR")) << 7);
+          BAsmCode[0]=0x7a+(Memo("JSR") << 7);
           memcpy(BAsmCode+1,AdrVals,AdrCnt);
           CodeLen=1+AdrCnt;
           break;
@@ -956,109 +956,109 @@ BEGIN
           memcpy(BAsmCode+1,AdrVals,AdrCnt);
           CodeLen=1+AdrCnt;
           break;
-        END
-      END
+        }
+      }
      return;
-    END
+    }
 
    for (z=0; z<RelOrderCnt; z++)
-    if ((Memo(RelOrders[z].Name)) OR ((*OpPart=='L') AND (strcmp(OpPart+1,RelOrders[z].Name)==0)))
-     BEGIN
+    if ((Memo(RelOrders[z].Name)) || ((*OpPart=='L') && (strcmp(OpPart+1,RelOrders[z].Name)==0)))
+     {
       if (ArgCnt!=1) WrError(1110);
       else
-       BEGIN
+       {
         AdrLong=EvalIntExpression(ArgStr[1],UInt24,&OK)-EProgCounter()-6;
         if ((AdrLong&1)==1) WrError(1325);
         else if (*OpPart=='L')
-         if ((NOT SymbolQuestionable) AND ((AdrLong>0x7fffl) OR (AdrLong<-0x8000l))) WrError(1370);
+         if ((! SymbolQuestionable) && ((AdrLong>0x7fffl) || (AdrLong<-0x8000l))) WrError(1370);
          else
-          BEGIN
+          {
            BAsmCode[0]=0x37; BAsmCode[1]=RelOrders[z].Code+0x80;
            BAsmCode[2]=(AdrLong >> 8) & 0xff;
            BAsmCode[3]=AdrLong & 0xff;
            CodeLen=4;
-          END
+          }
         else
-         if ((NOT SymbolQuestionable) AND ((AdrLong>0x7fl) OR (AdrLong<-0x80l))) WrError(1370);
+         if ((! SymbolQuestionable) && ((AdrLong>0x7fl) || (AdrLong<-0x80l))) WrError(1370);
          else
-          BEGIN
+          {
            BAsmCode[0]=0xb0+RelOrders[z].Code;
            BAsmCode[1]=AdrLong & 0xff;
            CodeLen=2;
-          END
-       END
+          }
+       }
       return;
-     END
+     }
 
    for (z=0; z<LRelOrderCnt; z++)
     if (Memo(LRelOrders[z].Name))
-     BEGIN
+     {
       if (ArgCnt!=1) WrError(1110);
       else
-       BEGIN
+       {
         AdrLong=EvalIntExpression(ArgStr[1],UInt24,&OK)-EProgCounter()-6;
         if ((AdrLong&1)==1) WrError(1325);
-        else if ((NOT SymbolQuestionable) AND ((AdrLong>0x7fffl) OR (AdrLong<-0x8000l))) WrError(1370);
+        else if ((! SymbolQuestionable) && ((AdrLong>0x7fffl) || (AdrLong<-0x8000l))) WrError(1370);
         else
-         BEGIN
+         {
           BAsmCode[0]=Hi(LRelOrders[z].Code); BAsmCode[1]=Lo(LRelOrders[z].Code);
           BAsmCode[2]=(AdrLong >> 8) & 0xff;
           BAsmCode[3]=AdrLong & 0xff;
           CodeLen=4;
-         END
-       END
+         }
+       }
       return;
-     END
+     }
 
    if (Memo("BSR"))
-    BEGIN
+    {
      if (ArgCnt!=1) WrError(1110);
      else
-      BEGIN
+      {
        AdrLong=EvalIntExpression(ArgStr[1],UInt24,&OK)-EProgCounter()-6;
        if ((AdrLong&1)==1) WrError(1325);
-       else if ((NOT SymbolQuestionable) AND ((AdrLong>0x7fl) OR (AdrLong<-0x80l))) WrError(1370);
+       else if ((! SymbolQuestionable) && ((AdrLong>0x7fl) || (AdrLong<-0x80l))) WrError(1370);
        else
-        BEGIN
+        {
          BAsmCode[0]=0x36;
          BAsmCode[1]=AdrLong & 0xff;
          CodeLen=2;
-        END
-      END
+        }
+      }
      return;
-    END
+    }
 
    WrXError(1200,OpPart);
-END
+}
 
 	static void InitCode_6816(void)
-BEGIN
+{
    SaveInitProc();
    Reg_EK=0;
-END
+}
 
-	static Boolean ChkPC_6816(void)
-BEGIN
+	static bool ChkPC_6816(void)
+{
    if (ActPC==SegCode) return (ProgCounter()<0x100000);
-   else return False;
-END
+   else return false;
+}
 
-	static Boolean IsDef_6816(void)
-BEGIN
-   return False;
-END
+	static bool IsDef_6816(void)
+{
+   return false;
+}
 
         static void SwitchFrom_6816(void)
-BEGIN
+{
    DeinitFields();
-END
+}
 
 	static void SwitchTo_6816(void)
-BEGIN
-   TurnWords=False; ConstMode=ConstModeMoto; SetIsOccupied=False;
+{
+   TurnWords=false; ConstMode=ConstModeMoto; SetIsOccupied=false;
 
    PCSymbol="*"; HeaderID=0x65; NOPCode=0x274c;
-   DivideChars=","; HasAttrs=False;
+   DivideChars=","; HasAttrs=false;
 
    ValidSegs=(1<<SegCode);
    Grans[SegCode]=1; ListGrans[SegCode]=1; SegInits[SegCode]=0;
@@ -1067,11 +1067,11 @@ BEGIN
    SwitchFrom=SwitchFrom_6816;
 
    InitFields();
-END
+}
 
 	void code6816_init(void)
-BEGIN
+{
    CPU6816=AddCPU("68HC16",SwitchTo_6816);
 
    SaveInitProc=InitPassProc; InitPassProc=InitCode_6816;
-END
+}

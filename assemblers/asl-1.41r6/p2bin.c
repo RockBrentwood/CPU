@@ -39,10 +39,10 @@ static String SrcName,TargName;
 
 static LongWord StartAdr,StopAdr,RealFileLen;
 static LongWord MaxGran,Dummy;
-static Boolean StartAuto,StopAuto;
+static bool StartAuto,StopAuto;
 
 static Byte FillVal;
-static Boolean DoCheckSum;
+static bool DoCheckSum;
 
 static Byte SizeDiv;
 static LongInt ANDMask,ANDEq;
@@ -56,87 +56,87 @@ static ChunkList UsedList;
 #ifdef DEBUG
 #define ChkIO(s) ChkIO_L(s,__LINE__)
 	static void ChkIO_L(char *s, int line)
-BEGIN
+{
    if (errno!=0)
-    BEGIN
+    {
      fprintf(stderr,"%s %d\n",s,line); exit(3);
-    END
-END
+    }
+}
 #endif
 
-        static void ParamError(Boolean InEnv, char *Arg)
-BEGIN
+        static void ParamError(bool InEnv, char *Arg)
+{
    printf("%s%s\n%s\n",(InEnv)?ErrMsgInvEnvParam:ErrMsgInvParam,Arg,ErrMsgProgTerm);
    exit(1);
-END
+}
 
 #define BufferSize 4096
 static Byte Buffer[BufferSize];
 
         static void OpenTarget(void)
-BEGIN
+{
    LongWord Rest,Trans;
 
    TargFile=fopen(TargName,OPENWRMODE);
-   if (TargFile==Nil) ChkIO(TargName);
+   if (TargFile==NULL) ChkIO(TargName);
    RealFileLen=((StopAdr-StartAdr+1)*MaxGran)/SizeDiv;
 
    memset(Buffer,FillVal,BufferSize);
 
    Rest=RealFileLen;
    while (Rest!=0)
-    BEGIN
+    {
      Trans=min(Rest,BufferSize);
      if (fwrite(Buffer,1,Trans,TargFile)!=Trans) ChkIO(TargName);
      Rest-=Trans;
-    END
-END
+    }
+}
 
 	static void CloseTarget(void)
-BEGIN
+{
    LongWord Sum,Rest,Trans,Real,z;
 
    if (fclose(TargFile)==EOF) ChkIO(TargName);
 
    if (DoCheckSum)
-    BEGIN
-     TargFile=fopen(TargName,OPENUPMODE); if (TargFile==Nil) ChkIO(TargName);
+    {
+     TargFile=fopen(TargName,OPENUPMODE); if (TargFile==NULL) ChkIO(TargName);
      Rest=FileSize(TargFile)-1;
      Sum=0;
      while (Rest!=0)
-      BEGIN
+      {
        Trans=min(Rest,BufferSize);
        Rest-=Trans;
        Real=fread(Buffer,1,Trans,TargFile);
        if (Real!=Trans) ChkIO(TargName);
        for (z=0; z<Trans; Sum+=Buffer[z++]);
-      END
+      }
      errno=0; printf("%s%s\n",InfoMessChecksum,HexLong(Sum));
      Buffer[0]=0x100-(Sum&0xff); fflush(TargFile);
      if (fwrite(Buffer,1,1,TargFile)!=1) ChkIO(TargName); fflush(TargFile);
      if (fclose(TargFile)==EOF) ChkIO(TargName);
-    END
+    }
 
    if (Magic!=0) unlink(TargName);
-END
+}
 
         static void ProcessFile(char *FileName, LongWord Offset)
-BEGIN
+{
    FILE *SrcFile;
    Word TestID;
    Byte InpHeader,InpSegment;
    LongWord InpStart,SumLen;
    Word InpLen,TransLen,ResLen;
-   Boolean doit;
+   bool doit;
    LongWord ErgStart,ErgStop,NextPos;
    Word ErgLen=0;
    LongInt z;
    Byte Gran;
 
    SrcFile=fopen(FileName,OPENRDMODE);
-   if (SrcFile==Nil) ChkIO(FileName);
+   if (SrcFile==NULL) ChkIO(FileName);
 
-   if (NOT Read2(SrcFile,&TestID)) ChkIO(FileName);
+   if (! Read2(SrcFile,&TestID)) ChkIO(FileName);
    if (TestID!=FileID) FormatError(FileName,FormatInvHeaderMsg);
 
    errno=0; printf("%s==>>%s",FileName,TargName); ChkIO(OutName);
@@ -144,41 +144,41 @@ BEGIN
    SumLen=0;
 
    do
-    BEGIN
+    {
      ReadRecordHeader(&InpHeader,&InpSegment,&Gran,FileName,SrcFile);
      if (InpHeader==FileHeaderStartAdr)
-      BEGIN
-       if (NOT Read4(SrcFile,&ErgStart)) ChkIO(FileName);
-      END
+      {
+       if (! Read4(SrcFile,&ErgStart)) ChkIO(FileName);
+      }
      else if (InpHeader!=FileHeaderEnd)
-      BEGIN
-       if (NOT Read4(SrcFile,&InpStart)) ChkIO(FileName);
-       if (NOT Read2(SrcFile,&InpLen)) ChkIO(FileName);
+      {
+       if (! Read4(SrcFile,&InpStart)) ChkIO(FileName);
+       if (! Read2(SrcFile,&InpLen)) ChkIO(FileName);
 
        NextPos=ftell(SrcFile)+InpLen;
        if (NextPos>=FileSize(SrcFile)-1)
         FormatError(FileName,FormatInvRecordLenMsg);
 
-       doit=(FilterOK(InpHeader) AND (InpSegment==SegCode));
+       doit=(FilterOK(InpHeader) && (InpSegment==SegCode));
 
        if (doit)
-        BEGIN
+        {
          InpStart+=Offset;
  	 ErgStart=max(StartAdr,InpStart);
  	 ErgStop=min(StopAdr,InpStart+(InpLen/Gran)-1);
  	 doit=(ErgStop>=ErgStart);
          if (doit)
- 	  BEGIN
+ 	  {
  	   ErgLen=(ErgStop+1-ErgStart)*Gran;
-           if (AddChunk(&UsedList,ErgStart,ErgStop-ErgStart+1,True))
-            BEGIN
+           if (AddChunk(&UsedList,ErgStart,ErgStop-ErgStart+1,true))
+            {
              errno=0; printf(" %s\n",ErrMsgOverlap); ChkIO(OutName);
-            END
-          END
-        END
+            }
+          }
+        }
 
        if (doit)
-        BEGIN
+        {
  	 /* an Anfang interessierender Daten */
 
  	 if (fseek(SrcFile,(ErgStart-InpStart)*Gran,SEEK_CUR)==-1) ChkIO(FileName);
@@ -190,39 +190,39 @@ BEGIN
  	 /* umkopieren */
 
  	 while (ErgLen>0)
- 	  BEGIN
+ 	  {
  	   TransLen=min(BufferSize,ErgLen);
  	   if (fread(Buffer,1,TransLen,SrcFile)!=TransLen) ChkIO(FileName);
  	   if (SizeDiv==1) ResLen=TransLen;
  	   else
- 	    BEGIN
+ 	    {
  	     ResLen=0;
  	     for (z=0; z<(LongInt)TransLen; z++)
  	      if (((ErgStart*Gran+z)&ANDMask)==ANDEq)
  	       Buffer[ResLen++]=Buffer[z];
- 	    END
+ 	    }
  	   if (fwrite(Buffer,1,ResLen,TargFile)!=ResLen) ChkIO(TargName);
  	   ErgLen-=TransLen; ErgStart+=TransLen; SumLen+=ResLen;
- 	  END
-        END
+ 	  }
+        }
        if (fseek(SrcFile,NextPos,SEEK_SET)==-1) ChkIO(FileName);
-      END
-    END
+      }
+    }
    while (InpHeader!=0);
 
    errno=0; printf("  (%d Byte)\n",SumLen); ChkIO(OutName);
 
    if (fclose(SrcFile)==EOF) ChkIO(FileName);
-END
+}
 
 	static void ProcessGroup(char *GroupName_O, ProcessProc Processor)
-BEGIN
+{
 /**   s:SearchRec;**/
    String /**Path,Name,**/Ext,GroupName;
    LongWord Offset;
 
    strmaxcpy(GroupName,GroupName_O,255); strmaxcpy(Ext,GroupName,255);
-   if (NOT RemoveOffset(GroupName,&Offset)) ParamError(False,Ext);
+   if (! RemoveOffset(GroupName,&Offset)) ParamError(false,Ext);
    AddSuffix(GroupName,Suffix);
 
    Processor(GroupName,Offset);
@@ -233,92 +233,92 @@ BEGIN
     WriteLn(ErrMsgNullMaskA,GroupName,ErrMsgNullMaskB)
    ELSE
     WHILE DosError=0 DO
-     BEGIN
+     {
       Processor(Path+s.Name,Offset);
       FindNext(s);
-     END;**/
-END
+     };**/
+}
 
         static void MeasureFile(char *FileName, LongWord Offset)
-BEGIN
+{
    FILE *f;
    Byte Header,Gran,Segment;
    Word Length,TestID;
    LongWord Adr,EndAdr,NextPos;
 
    f=fopen(FileName,OPENRDMODE);
-   if (f==Nil) ChkIO(FileName);
+   if (f==NULL) ChkIO(FileName);
 
-   if (NOT Read2(f,&TestID)) ChkIO(FileName);
+   if (! Read2(f,&TestID)) ChkIO(FileName);
    if (TestID!=FileMagic) FormatError(FileName,FormatInvHeaderMsg);
 
    do
-    BEGIN
+    {
      ReadRecordHeader(&Header,&Segment,&Gran,FileName,f);
 
      if (Header==FileHeaderStartAdr)
-      BEGIN
+      {
        if (fseek(f,sizeof(LongWord),SEEK_CUR)==-1) ChkIO(FileName);
-      END
+      }
      else if (Header!=FileHeaderEnd)
-      BEGIN
-       if (NOT Read4(f,&Adr)) ChkIO(FileName);
-       if (NOT Read2(f,&Length)) ChkIO(FileName);
+      {
+       if (! Read4(f,&Adr)) ChkIO(FileName);
+       if (! Read2(f,&Length)) ChkIO(FileName);
        NextPos=ftell(f)+Length;
        if (NextPos>FileSize(f))
         FormatError(FileName,FormatInvRecordLenMsg);
 
-       if (FilterOK(Header) AND (Segment==SegCode))
-        BEGIN
+       if (FilterOK(Header) && (Segment==SegCode))
+        {
          Adr+=Offset;
  	 EndAdr=Adr+(Length/Gran)-1;
          if (Gran>MaxGran) MaxGran=Gran;
          if (StartAuto) if (StartAdr>Adr) StartAdr=Adr;
  	 if (StopAuto) if (EndAdr>StopAdr) StopAdr=EndAdr;
-        END
+        }
 
        fseek(f,NextPos,SEEK_SET);
-      END
-    END
+      }
+    }
    while(Header!=0);
 
    if (fclose(f)==EOF) ChkIO(FileName);
-END
+}
 
-	static CMDResult CMD_AdrRange(Boolean Negate, char *Arg)
-BEGIN
+	static CMDResult CMD_AdrRange(bool Negate, char *Arg)
+{
    char *p,Save;
-   Boolean err;
+   bool err;
 
-   if (Arg==Nil); /* satisfy some compilers */
+   if (Arg==NULL); /* satisfy some compilers */
 
    if (Negate)
-    BEGIN
+    {
      StartAdr=0; StopAdr=0x7fff;
      return CMDOK;
-    END
+    }
    else
-    BEGIN
-     p=strchr(Arg,'-'); if (p==Nil) return CMDErr;
+    {
+     p=strchr(Arg,'-'); if (p==NULL) return CMDErr;
 
      Save=(*p); *p='\0';
-     if ((StartAuto=(strcmp(Arg,"$")==0))) err=True;
+     if ((StartAuto=(strcmp(Arg,"$")==0))) err=true;
      else StartAdr=ConstLongInt(Arg,&err);
      *p=Save;
-     if (NOT err) return CMDErr;
+     if (! err) return CMDErr;
 
-     if ((StopAuto=(strcmp(p+1,"$")==0))) err=True;
+     if ((StopAuto=(strcmp(p+1,"$")==0))) err=true;
      else StopAdr=ConstLongInt(p+1,&err);
-     if (NOT err) return CMDErr;
+     if (! err) return CMDErr;
 
-     if ((NOT StartAuto) AND (NOT StopAuto) AND (StartAdr>StopAdr)) return CMDErr;
+     if ((! StartAuto) && (! StopAuto) && (StartAdr>StopAdr)) return CMDErr;
 
      return CMDArg;
-    END
-END
+    }
+}
 
-	static CMDResult CMD_ByteMode(Boolean Negate, char *Arg)
-BEGIN
+	static CMDResult CMD_ByteMode(bool Negate, char *Arg)
+{
 #define ByteModeCnt 9
    static char *ByteModeStrings[ByteModeCnt]={"ALL","EVEN","ODD","BYTE0","BYTE1","BYTE2","BYTE3","WORD0","WORD1"};
    static Byte ByteModeDivs[ByteModeCnt]={1,2,2,4,4,4,4,2,2};
@@ -330,42 +330,42 @@ BEGIN
    if (Negate); /* satisfy some compilers */
 
    if (*Arg=='\0')
-    BEGIN
+    {
      SizeDiv=1; ANDEq=0; ANDMask=0;
      return CMDOK;
-    END
+    }
    else
-    BEGIN
+    {
      for (z=0; z<strlen(Arg); z++) Arg[z]=toupper(Arg[z]);
      ANDEq=0xff;
      for (z=0; z<ByteModeCnt; z++)
       if (strcmp(Arg,ByteModeStrings[z])==0)
-       BEGIN
+       {
         SizeDiv=ByteModeDivs[z];
         ANDMask=ByteModeMasks[z];
         ANDEq  =ByteModeEqs[z];
-       END
+       }
       if (ANDEq==0xff) return CMDErr; else return CMDArg;
-    END
-END
+    }
+}
 
-	static CMDResult CMD_FillVal(Boolean Negate, char *Arg)
-BEGIN
-   Boolean err;
+	static CMDResult CMD_FillVal(bool Negate, char *Arg)
+{
+   bool err;
 
    if (Negate); /* satisfy some compilers */
 
    FillVal=ConstLongInt(Arg,&err);
-   if (NOT err) return CMDErr; else return CMDArg;
-END
+   if (! err) return CMDErr; else return CMDArg;
+}
 
-	static CMDResult CMD_CheckSum(Boolean Negate, char *Arg)
-BEGIN
-   if (Arg==Nil); /* satisfy some compilers */
+	static CMDResult CMD_CheckSum(bool Negate, char *Arg)
+{
+   if (Arg==NULL); /* satisfy some compilers */
 
-   DoCheckSum=NOT Negate;
+   DoCheckSum=! Negate;
    return CMDOK;
-END
+}
 
 #define P2BINParamCnt 5
 static CMDRec P2BINParams[P2BINParamCnt]=
@@ -376,7 +376,7 @@ static CMDRec P2BINParams[P2BINParamCnt]=
 		{"l", CMD_FillVal}};
 
 	int main(int argc, char **argv)
-BEGIN
+{
    ParamStr=argv; ParamCount=argc-1;
    endian_init();
    stringutil_init();
@@ -392,41 +392,41 @@ BEGIN
    InitChunk(&UsedList);
 
    if (ParamCount==0)
-    BEGIN
+    {
      errno=0; printf("%s%s%s\n",InfoMessHead1,GetEXEName(),InfoMessHead2); ChkIO(OutName);
      for (z=0; z<InfoMessHelpCnt; z++)
-      BEGIN
+      {
        errno=0; printf("%s\n",InfoMessHelp[z]); ChkIO(OutName);
-      END
+      }
      exit(1);
-    END
+    }
 
-   StartAdr=0; StopAdr=0x7fff; StartAuto=False; StopAuto=False;
-   FillVal=0xff; DoCheckSum=False; SizeDiv=1; ANDEq=0;
+   StartAdr=0; StopAdr=0x7fff; StartAuto=false; StopAuto=false;
+   FillVal=0xff; DoCheckSum=false; SizeDiv=1; ANDEq=0;
    ProcessCMD(P2BINParams,P2BINParamCnt,ParProcessed,"P2BINCMD",ParamError);
 
    if (ProcessedEmpty(ParProcessed))
-    BEGIN
+    {
      errno=0;
      printf("%s\n",ErrMsgTargMissing);
      ChkIO(OutName);
      exit(1);
-    END
+    }
 
    z=ParamCount;
-   while ((z>0) AND (NOT ParProcessed[z])) z--;
+   while ((z>0) && (! ParProcessed[z])) z--;
    strmaxcpy(TargName,ParamStr[z],255);
-   if (NOT RemoveOffset(TargName,&Dummy)) ParamError(False,ParamStr[z]);
-   ParProcessed[z]=False;
+   if (! RemoveOffset(TargName,&Dummy)) ParamError(false,ParamStr[z]);
+   ParProcessed[z]=false;
    if (ProcessedEmpty(ParProcessed))
-    BEGIN
+    {
      strmaxcpy(SrcName,ParamStr[z],255); DelSuffix(TargName);
-    END
+    }
    AddSuffix(TargName,BinSuffix);
 
    MaxGran=1;
-   if ((StartAuto) OR (StopAuto))
-    BEGIN
+   if ((StartAuto) || (StopAuto))
+    {
 #ifdef __STDC__
      if (StartAuto) StartAdr=0xffffffffu;
 #else
@@ -437,10 +437,10 @@ BEGIN
      else for (z=1; z<=ParamCount; z++)
        if (ParProcessed[z]) ProcessGroup(ParamStr[z],MeasureFile);
      if (StartAdr>StopAdr)
-      BEGIN
+      {
        errno=0; printf("%s\n",ErrMsgAutoFailed); ChkIO(OutName); exit(1);
-      END
-    END
+      }
+    }
 
    OpenTarget();
 
@@ -450,4 +450,4 @@ BEGIN
 
    CloseTarget();
    return 0;
-END
+}

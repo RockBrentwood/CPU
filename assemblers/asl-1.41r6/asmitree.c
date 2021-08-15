@@ -20,150 +20,150 @@
 
 /*---------------------------------------------------------------------------*/
 
-        static Boolean AddSingle(PInstTreeNode *Node, char *NName, InstProc NProc, Word NIndex)
-BEGIN
+        static bool AddSingle(PInstTreeNode *Node, char *NName, InstProc NProc, Word NIndex)
+{
    PInstTreeNode p1,p2;
-   Boolean Result=False;
+   bool Result=false;
 
    ChkStack();
 
-   if (*Node==Nil)
-    BEGIN
+   if (*Node==NULL)
+    {
      *Node=(PInstTreeNode) malloc(sizeof(TInstTreeNode));
-     (*Node)->Left=Nil; (*Node)->Right=Nil;
+     (*Node)->Left=NULL; (*Node)->Right=NULL;
      (*Node)->Proc=NProc; (*Node)->Index=NIndex;
      (*Node)->Balance=0;
      (*Node)->Name=strdup(NName);
-     Result=True;
-    END
+     Result=true;
+    }
    else if (strcmp(NName,(*Node)->Name)<0)
-    BEGIN
+    {
      if (AddSingle(&((*Node)->Left),NName,NProc,NIndex))
       switch ((*Node)->Balance)
-       BEGIN
+       {
         case 1:
          (*Node)->Balance=0;
          break;
         case 0:
          (*Node)->Balance=(-1);
-         Result=True;
+         Result=true;
          break;
         case -1:
          p1=(*Node)->Left;
          if (p1->Balance==-1)
-          BEGIN
+          {
            (*Node)->Left=p1->Right; p1->Right=(*Node);
            (*Node)->Balance=0; *Node=p1;
-          END
+          }
          else
-          BEGIN
+          {
            p2=p1->Right;
            p1->Right=p2->Left; p2->Left=p1;
            (*Node)->Left=p2->Right; p2->Right=(*Node);
            if (p2->Balance==-1) (*Node)->Balance=   1; else (*Node)->Balance=0;
            if (p2->Balance== 1) p1     ->Balance=(-1); else p1     ->Balance=0;
            *Node=p2;
-          END
+          }
          (*Node)->Balance=0;
          break;
-       END
-    END
+       }
+    }
    else
-    BEGIN
+    {
      if (AddSingle(&((*Node)->Right),NName,NProc,NIndex))
       switch ((*Node)->Balance)
-       BEGIN
+       {
         case -1:
          (*Node)->Balance=0;
          break;
         case 0:
          (*Node)->Balance=1;
-         Result=True;
+         Result=true;
          break;
         case 1:
          p1=(*Node)->Right;
          if (p1->Balance==1)
-          BEGIN
+          {
            (*Node)->Right=p1->Left; p1->Left=(*Node);
            (*Node)->Balance=0; *Node=p1;
-          END
+          }
          else
-          BEGIN
+          {
            p2=p1->Left;
            p1->Left=p2->Right; p2->Right=p1;
            (*Node)->Right=p2->Left; p2->Left=(*Node);
            if (p2->Balance== 1) (*Node)->Balance=(-1); else (*Node)->Balance=0;
            if (p2->Balance==-1) p1     ->Balance=   1; else p1     ->Balance=0;
            *Node=p2;
-          END
+          }
          (*Node)->Balance=0;
          break;
-       END
-    END
+       }
+    }
    return Result;
-END
+}
 
         void AddInstTree(PInstTreeNode *Root, char *NName, InstProc NProc, Word NIndex)
-BEGIN
+{
    AddSingle(Root,NName,NProc,NIndex);
-END
+}
 
         static void ClearSingle(PInstTreeNode *Node)
-BEGIN
+{
    ChkStack();
 
-   if (*Node!=Nil)
-    BEGIN
+   if (*Node!=NULL)
+    {
      free((*Node)->Name);
      ClearSingle(&((*Node)->Left));
      ClearSingle(&((*Node)->Right));
-     free(*Node); *Node=Nil;
-    END
-END
+     free(*Node); *Node=NULL;
+    }
+}
 
         void ClearInstTree(PInstTreeNode *Root)
-BEGIN
+{
    ClearSingle(Root);
-END
+}
 
-        Boolean SearchInstTree(PInstTreeNode Root)
-BEGIN
+        bool SearchInstTree(PInstTreeNode Root)
+{
    Integer z;
 
    z=0;
-   while ((Root!=Nil) AND (NOT Memo(Root->Name)))
-    BEGIN
+   while ((Root!=NULL) && (! Memo(Root->Name)))
+    {
      Root=(strcmp(OpPart,Root->Name)<0)? Root->Left : Root->Right;
      z++;
-    END
+    }
 
-   if (Root==Nil) return False;
+   if (Root==NULL) return false;
    else
-    BEGIN
+    {
      Root->Proc(Root->Index);
-     return True;
-    END
-END
+     return true;
+    }
+}
 
 static char Format[20];
 
 	static void PNode(PInstTreeNode Node, Word Lev)
-BEGIN
+{
    ChkStack();
-   if (Node!=Nil)
-    BEGIN
+   if (Node!=NULL)
+    {
      PNode(Node->Left,Lev+1);
      sprintf(Format,"%%%ds %%s %%p %%p %%d\n",5*Lev);
      printf(Format,"",Node->Name,Node->Left,Node->Right,Node->Balance);
      PNode(Node->Right,Lev+1);
-    END
-END
+    }
+}
 
 	void PrintInstTree(PInstTreeNode Root)
-BEGIN
+{
    PNode(Root,0);
-END
+}
 
 	void asmitree_init(void)
-BEGIN
-END
+{
+}

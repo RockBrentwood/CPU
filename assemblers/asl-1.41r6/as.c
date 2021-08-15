@@ -97,8 +97,8 @@ VAR
    CPU:CPUVar;**/
 static String FileMask;
 static long StartTime,StopTime;
-static Boolean ErrFlag;
-static Boolean MasterFile;
+static bool ErrFlag;
+static bool MasterFile;
 
 #define MAIN
 #include "as.rsc"
@@ -106,57 +106,57 @@ static Boolean MasterFile;
 /*=== Zeilen einlesen ======================================================*/
 
         static void NULL_Restorer(PInputTag PInp)
-BEGIN
-   if (PInp==Nil); /* satisfy some compilers */
-END
+{
+   if (PInp==NULL); /* satisfy some compilers */
+}
 
         static void GenerateProcessor(PInputTag *PInp)
-BEGIN
+{
    *PInp=(PInputTag) malloc(sizeof(TInputTag));
-   (*PInp)->IsMacro=False;
-   (*PInp)->Next=Nil;
-   (*PInp)->First=True;
+   (*PInp)->IsMacro=false;
+   (*PInp)->Next=NULL;
+   (*PInp)->First=true;
    strmaxcpy((*PInp)->OrigPos,ErrorPos,255);
    (*PInp)->OrigDoLst=DoLst;
    (*PInp)->StartLine=CurrLine;
    (*PInp)->ParCnt=0; (*PInp)->ParZ=0;
    InitStringList(&((*PInp)->Params));
    (*PInp)->LineCnt=0; (*PInp)->LineZ=1;
-   (*PInp)->Lines=Nil;
+   (*PInp)->Lines=NULL;
    (*PInp)->SpecName[0]='\0';
-   (*PInp)->IsEmpty=False;
-   (*PInp)->Buffer=Nil;
-   (*PInp)->Datei=Nil;
+   (*PInp)->IsEmpty=false;
+   (*PInp)->Buffer=NULL;
+   (*PInp)->Datei=NULL;
    (*PInp)->IfLevel=SaveIFs();
    (*PInp)->Restorer=NULL_Restorer;
-END
+}
 
 /*=========================================================================*/
 /* Listing erzeugen */
 
         static void MakeList_Gen2Line(char *h, Word EffLen, Word *n)
-BEGIN
+{
    Integer z,Rest;
 
    Rest=EffLen-(*n); if (Rest>8) Rest=8; if (DontPrint) Rest=0;
    for (z=0; z<(Rest>>1); z++)
-    BEGIN
+    {
      strmaxcat(h,HexString(WAsmCode[(*n)>>1],4),255);
      strmaxcat(h," ",255);
      (*n)+=2;
-    END
+    }
    if ((Rest&1)!=0)
-    BEGIN
+    {
      strmaxcat(h,HexString(BAsmCode[*n],2),255);
      strmaxcat(h,"   ",255);
      (*n)++;
-    END
+    }
    for (z=1; z<=(8-Rest)>>1; z++)
     strmaxcat(h,"     ",255);
-END
+}
 
         static void MakeList(void)
-BEGIN
+{
    String h,h2;
    Byte i,k;
    Word n;
@@ -164,103 +164,103 @@ BEGIN
 
    EffLen=CodeLen*Granularity();
 
-   if ((strcmp(LstName,NULLDEV)!=0) AND (DoLst) AND ((ListMask&1)!=0) AND (NOT IFListMask()))
-    BEGIN
+   if ((strcmp(LstName,NULLDEV)!=0) && (DoLst) && ((ListMask&1)!=0) && (! IFListMask()))
+    {
      /* Zeilennummer / Programmzaehleradresse: */
 
      if (IncDepth==0) strmaxcpy(h2,"   ",255);
      else sprintf(h2,"(%d)",IncDepth);
      if ((ListMask&0x10)!=0)
-      BEGIN
+      {
        sprintf(h,"%5d/",CurrLine); strmaxcat(h2,h,255);
-      END
+      }
      strmaxcpy(h,h2,255); strmaxcat(h,HexBlankString(EProgCounter()-CodeLen,8),255);
      strmaxcat(h,Retracted?"  R ":" : ",255);
 
      /* Extrawurst in Listing ? */
 
      if (*ListLine!='\0')
-      BEGIN
+      {
        strmaxcat(h,ListLine,255);
        strmaxcat(h,Blanks(20-strlen(ListLine)),255);
        strmaxcat(h,OneLine,255);
        WrLstLine(h);
        *ListLine='\0';
-      END
+      }
 
      /* Code ausgeben */
 
      else
       switch (ListGran())
-       BEGIN
+       {
         case 4:
          for (i=0; i<2; i++)
-          if ((NOT DontPrint) AND ((EffLen>>2)>i))
-           BEGIN
+          if ((! DontPrint) && ((EffLen>>2)>i))
+           {
             strmaxcat(h,HexString(DAsmCode[i],8),255);
             strmaxcat(h," ",255);
-           END
+           }
           else strmaxcat(h,"         ",255);
          strmaxcat(h,"  ",255); strmaxcat(h,OneLine,255); WrLstLine(h);
-         if ((EffLen>8) AND (NOT DontPrint))
-          BEGIN
+         if ((EffLen>8) && (! DontPrint))
+          {
            EffLen-=8;
            n=EffLen>>3; if ((EffLen&7)==0) n--;
            for (i=0; i<=n; i++)
-            BEGIN
+            {
              strmaxcpy(h,"                    ",255);
              for (k=0; k<2; k++)
               if ((EffLen>>2)>i*2+k)
-               BEGIN
+               {
                 strmaxcat(h,HexString(DAsmCode[i*2+k+2],8),255);
                 strmaxcat(h," ",255);
-               END
+               }
              WrLstLine(h);
-            END
-          END
+            }
+          }
          break;
         case 2:
          n=0; MakeList_Gen2Line(h,EffLen,&n);
          strmaxcat(h,OneLine,255); WrLstLine(h);
-         if (NOT DontPrint)
+         if (! DontPrint)
           while (n<EffLen)
-           BEGIN
+           {
             strmaxcpy(h,"                    ",255);
             MakeList_Gen2Line(h,EffLen,&n);
             WrLstLine(h);
-           END
+           }
          break;
         default:
-         if ((TurnWords) AND (Granularity!=ListGran)) DreheCodes();
+         if ((TurnWords) && (Granularity!=ListGran)) DreheCodes();
          for (i=0; i<6; i++)
-          if ((NOT DontPrint) AND (EffLen>i))
-           BEGIN
+          if ((! DontPrint) && (EffLen>i))
+           {
             strmaxcat(h,HexString(BAsmCode[i],2),255); strmaxcat(h," ",255);
-           END
+           }
           else strmaxcat(h,"   ",255);
          strmaxcat(h,"  ",255); strmaxcat(h,OneLine,255);
          WrLstLine(h);
-         if ((EffLen>6) AND (NOT DontPrint))
-          BEGIN
+         if ((EffLen>6) && (! DontPrint))
+          {
            EffLen-=6;
            n=EffLen/6; if ((EffLen%6)==0) n--;
            for (i=0; i<=n; i++)
-            BEGIN
+            {
              strmaxcpy(h,"                    ",255);
              for (k=0; k<6; k++)
               if (EffLen>i*6+k)
-               BEGIN
+               {
                 strmaxcat(h,HexString(BAsmCode[i*6+k+6],2),255);
                 strmaxcat(h," ",255);
-               END
+               }
              WrLstLine(h);
-            END
-          END
-         if ((TurnWords) AND (Granularity!=ListGran)) DreheCodes();
-       END
+            }
+          }
+         if ((TurnWords) && (Granularity!=ListGran)) DreheCodes();
+       }
 
-    END
-END
+    }
+}
 
 /*=========================================================================*/
 /* Makroprozessor */
@@ -272,36 +272,36 @@ END
 /* werden gebraucht, um festzustellen, ob innerhalb eines Makrorumpfes weitere
    Makroschachtelungen auftreten */
 
-        Boolean MacroStart(void)
-BEGIN
-   return ((Memo("MACRO")) OR (Memo("IRP")) OR (Memo("REPT")) OR (Memo("WHILE")));
-END
+        bool MacroStart(void)
+{
+   return ((Memo("MACRO")) || (Memo("IRP")) || (Memo("REPT")) || (Memo("WHILE")));
+}
 
-        Boolean MacroEnd(void)
-BEGIN
+        bool MacroEnd(void)
+{
    return (Memo("ENDM"));
-END
+}
 
 /*-------------------------------------------------------------------------*/
 /* Dieser Einleseprozessor dient nur dazu, eine fehlerhafte Makrodefinition
   bis zum Ende zu ueberlesen */
 
         static void WaitENDM_Processor(void)
-BEGIN
+{
    POutputTag Tmp;
 
    if (MacroStart()) FirstOutputTag->NestLevel++;
    else if (MacroEnd()) FirstOutputTag->NestLevel--;
    if (FirstOutputTag->NestLevel<=-1)
-    BEGIN
+    {
      Tmp=FirstOutputTag;
      FirstOutputTag=Tmp->Next;
      free(Tmp);
-    END
-END
+    }
+}
 
         static void AddWaitENDM_Processor(void)
-BEGIN
+{
    POutputTag Neu;
 
    Neu=(POutputTag) malloc(sizeof(TOutputTag));
@@ -309,7 +309,7 @@ BEGIN
    Neu->NestLevel=0;
    Neu->Next=FirstOutputTag;
    FirstOutputTag=Neu;
-END
+}
 
 /*-------------------------------------------------------------------------*/
 /* normale Makros */
@@ -319,71 +319,71 @@ END
    Makro-Record um */
 
 	static void MACRO_OutProcessor(void)
-BEGIN
+{
    POutputTag Tmp;
    Integer z;
    StringRecPtr l;
    PMacroRec GMacro;
    String s;
 
-   if ((MacroOutput) AND (FirstOutputTag->DoExport))
-    BEGIN
+   if ((MacroOutput) && (FirstOutputTag->DoExport))
+    {
      errno=0;
      fprintf(MacroFile,"%s\n",OneLine);
      ChkIO(10004);
-    END
+    }
    if (MacroStart()) FirstOutputTag->NestLevel++;
    else if (MacroEnd()) FirstOutputTag->NestLevel--;
    if (FirstOutputTag->NestLevel!=-1)
-    BEGIN
+    {
      strmaxcpy(s,OneLine,255); KillCtrl(s);
      l=FirstOutputTag->Params;
      for (z=1; z<=FirstOutputTag->Mac->ParamCount; z++)
       CompressLine(GetStringListNext(&l),z,s);
      if (HasAttrs) CompressLine(AttrName,ParMax+1,s);
      AddStringListLast(&(FirstOutputTag->Mac->FirstLine),s);
-    END
+    }
 
    if (FirstOutputTag->NestLevel==-1)
-    BEGIN
+    {
      if (IfAsm)
-      BEGIN
-       AddMacro(FirstOutputTag->Mac,FirstOutputTag->PubSect,True);
-       if ((FirstOutputTag->DoGlobCopy) AND (SectionStack!=Nil))
-        BEGIN
+      {
+       AddMacro(FirstOutputTag->Mac,FirstOutputTag->PubSect,true);
+       if ((FirstOutputTag->DoGlobCopy) && (SectionStack!=NULL))
+        {
          GMacro=(PMacroRec) malloc(sizeof(MacroRec));
          GMacro->Name=strdup(FirstOutputTag->GName);
          GMacro->ParamCount=FirstOutputTag->Mac->ParamCount;
          GMacro->FirstLine=DuplicateStringList(FirstOutputTag->Mac->FirstLine);
-         AddMacro(GMacro,FirstOutputTag->GlobSect,False);
-        END
-      END
+         AddMacro(GMacro,FirstOutputTag->GlobSect,false);
+        }
+      }
      else ClearMacroRec(&(FirstOutputTag->Mac));
 
      Tmp=FirstOutputTag; FirstOutputTag=Tmp->Next;
      ClearStringList(&(Tmp->Params)); free(Tmp);
-    END
-END
+    }
+}
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 /* Hierher kommen bei einem Makroaufruf die expandierten Zeilen */
 
-        Boolean MACRO_Processor(PInputTag PInp, char *erg)
-BEGIN
+        bool MACRO_Processor(PInputTag PInp, char *erg)
+{
    StringRecPtr Lauf;
    Integer z;
-   Boolean Result;
+   bool Result;
 
-   Result=True;
+   Result=true;
 
    Lauf=PInp->Lines; for (z=1; z<=PInp->LineZ-1; z++) Lauf=Lauf->Next;
    strcpy(erg,Lauf->Content);
    Lauf=PInp->Params;
    for (z=1; z<=PInp->ParCnt; z++)
-    BEGIN
+    {
      ExpandLine(Lauf->Content,z,erg);
      Lauf=Lauf->Next;
-    END
+    }
    if (HasAttrs) ExpandLine(PInp->SaveAttr,ParMax+1,erg);
 
    CurrLine=PInp->StartLine;
@@ -391,174 +391,174 @@ BEGIN
 
    if (PInp->LineZ==1) PushLocHandle(GetLocHandle());
 
-   if (++(PInp->LineZ)>PInp->LineCnt) Result=False;
+   if (++(PInp->LineZ)>PInp->LineCnt) Result=false;
 
    return Result;
-END
+}
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 /* Initialisierung des Makro-Einleseprozesses */
 
-        static Boolean ReadMacro_SearchArg(char *Test, char *Comp, Boolean *Erg)
-BEGIN
+        static bool ReadMacro_SearchArg(char *Test, char *Comp, bool *Erg)
+{
    if (strcasecmp(Test,Comp)==0)
-    BEGIN
-     *Erg=True; return True;
-    END
-   else if ((strlen(Test)>2) AND (strncasecmp(Test,"NO",2)==0) AND (strcasecmp(Test+2,Comp)==0))
-    BEGIN
-     *Erg=False; return True;
-    END
-   else return False;
-END
+    {
+     *Erg=true; return true;
+    }
+   else if ((strlen(Test)>2) && (strncasecmp(Test,"NO",2)==0) && (strcasecmp(Test+2,Comp)==0))
+    {
+     *Erg=false; return true;
+    }
+   else return false;
+}
 
-        static Boolean ReadMacro_SearchSect(char *Test_O, char *Comp, Boolean *Erg, LongInt *Section)
-BEGIN
+        static bool ReadMacro_SearchSect(char *Test_O, char *Comp, bool *Erg, LongInt *Section)
+{
    char *p;
    String Test,Sect;
 
    strmaxcpy(Test,Test_O,255); KillBlanks(Test);
    p=strchr(Test,':');
-   if (p==Nil) *Sect='\0';
+   if (p==NULL) *Sect='\0';
    else
-    BEGIN
+    {
      strmaxcpy(Sect,p+1,255); *p='\0';
-    END
-   if ((strlen(Test)>2) AND (strncasecmp(Test,"NO",2)==0) AND (strcasecmp(Test+2,Comp)==0))
-    BEGIN
-     *Erg=False; return True;
-    END
+    }
+   if ((strlen(Test)>2) && (strncasecmp(Test,"NO",2)==0) && (strcasecmp(Test+2,Comp)==0))
+    {
+     *Erg=false; return true;
+    }
    else if (strcasecmp(Test,Comp)==0)
-    BEGIN
-     *Erg=False;
+    {
+     *Erg=false;
      return (IdentifySection(Sect,Section));
-    END
-   else return False;
-END
+    }
+   else return false;
+}
 
         static void ReadMacro(void)
-BEGIN
+{
    String PList;
    PSaveSection RunSection;
    PMacroRec OneMacro;
    Integer z1,z2;
    POutputTag Neu;
 
-   Boolean DoMacExp,DoPublic;
+   bool DoMacExp,DoPublic;
    LongInt HSect;
-   Boolean ErrFlag;
+   bool ErrFlag;
 
-   CodeLen=0; ErrFlag=False;
+   CodeLen=0; ErrFlag=false;
 
    /* Makronamen pruefen */
    /* Definition nur im ersten Pass */
 
-   if (PassNo!=1) ErrFlag=True;
-   else if (NOT ExpandSymbol(LabPart)) ErrFlag=True;
-   else if (NOT ChkSymbName(LabPart))
-    BEGIN
-     WrXError(1020,LabPart); ErrFlag=True;
-    END
+   if (PassNo!=1) ErrFlag=true;
+   else if (! ExpandSymbol(LabPart)) ErrFlag=true;
+   else if (! ChkSymbName(LabPart))
+    {
+     WrXError(1020,LabPart); ErrFlag=true;
+    }
 
    Neu=(POutputTag) malloc(sizeof(TOutputTag));
    Neu->Processor=MACRO_OutProcessor;
    Neu->NestLevel=0;
-   Neu->Params=Nil;
-   Neu->DoExport=False;
-   Neu->DoGlobCopy=False;
+   Neu->Params=NULL;
+   Neu->DoExport=false;
+   Neu->DoGlobCopy=false;
    Neu->Next=FirstOutputTag;
 
    /* Argumente ueberpruefen */
 
-   DoMacExp=LstMacroEx; DoPublic=False;
+   DoMacExp=LstMacroEx; DoPublic=false;
    *PList='\0'; z2=0;
    for (z1=1; z1<=ArgCnt; z1++)
-    if ((ArgStr[z1][0]=='{') AND (ArgStr[z1][strlen(ArgStr[z1])-1]=='}'))
-     BEGIN
+    if ((ArgStr[z1][0]=='{') && (ArgStr[z1][strlen(ArgStr[z1])-1]=='}'))
+     {
       strcpy(ArgStr[z1],ArgStr[z1]+1); ArgStr[z1][strlen(ArgStr[z1])-1]='\0';
       if (ReadMacro_SearchArg(ArgStr[z1],"EXPORT",&(Neu->DoExport)));
       else if (ReadMacro_SearchArg(ArgStr[z1],"EXPAND",&DoMacExp))
-       BEGIN
+       {
         strmaxcat(PList,",",255); strmaxcat(PList,ArgStr[z1],255);
-       END
+       }
       else if (ReadMacro_SearchSect(ArgStr[z1],"GLOBAL",&(Neu->DoGlobCopy),&(Neu->GlobSect)));
       else if (ReadMacro_SearchSect(ArgStr[z1],"PUBLIC",&DoPublic,&(Neu->PubSect)));
       else
-       BEGIN
-        WrXError(1465,ArgStr[z1]); ErrFlag=True;
-       END
-     END
+       {
+        WrXError(1465,ArgStr[z1]); ErrFlag=true;
+       }
+     }
     else
-     BEGIN
+     {
       strmaxcat(PList,",",255); strmaxcat(PList,ArgStr[z1],255); z2++;
-      if (NOT ChkMacSymbName(ArgStr[z1]))
-       BEGIN
-        WrXError(1020,ArgStr[z1]); ErrFlag=True;
-       END
+      if (! ChkMacSymbName(ArgStr[z1]))
+       {
+        WrXError(1020,ArgStr[z1]); ErrFlag=true;
+       }
       AddStringListLast(&(Neu->Params),ArgStr[z1]);
-     END
+     }
 
    /* Abbruch bei Fehler */
 
    if (ErrFlag)
-    BEGIN
+    {
      ClearStringList(&(Neu->Params));
      free(Neu);
      AddWaitENDM_Processor();
      return;
-    END
+    }
 
    /* Bei Globalisierung Namen des Extramakros ermitteln */
 
    if (Neu->DoGlobCopy)
-    BEGIN
+    {
      strmaxcpy(Neu->GName,LabPart,255);
      RunSection=SectionStack; HSect=MomSectionHandle;
-     while ((HSect!=Neu->GlobSect) AND (RunSection!=Nil))
-      BEGIN
+     while ((HSect!=Neu->GlobSect) && (RunSection!=NULL))
+      {
        strmaxprep(Neu->GName,"_",255); strmaxprep(Neu->GName,GetSectionName(HSect),255);
        HSect=RunSection->Handle; RunSection=RunSection->Next;
-      END
-    END
-   if (NOT DoPublic) Neu->PubSect=MomSectionHandle;
+      }
+    }
+   if (! DoPublic) Neu->PubSect=MomSectionHandle;
 
    OneMacro=(PMacroRec) malloc(sizeof(MacroRec)); Neu->Mac=OneMacro;
-   if ((MacroOutput) AND (Neu->DoExport))
-    BEGIN
+   if ((MacroOutput) && (Neu->DoExport))
+    {
      if (strlen(PList)!=0) strcpy(PList,PList+1);
      errno=0;
      if (Neu->DoGlobCopy) fprintf(MacroFile,"%s MACRO %s\n",Neu->GName,PList);
      else fprintf(MacroFile,"%s MACRO %s\n",LabPart,PList);
      ChkIO(10004);
-    END
-   OneMacro->Used=False;
+    }
+   OneMacro->Used=false;
    OneMacro->Name=strdup(LabPart);
    OneMacro->ParamCount=z2;
-   OneMacro->FirstLine=Nil; OneMacro->LocMacExp=DoMacExp;
+   OneMacro->FirstLine=NULL; OneMacro->LocMacExp=DoMacExp;
 
    FirstOutputTag=Neu;
-END
+}
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 /* Beendigung der Expansion eines Makros */
 
 	static void MACRO_Cleanup(PInputTag PInp)
-BEGIN
+{
    ClearStringList(&(PInp->Params));
-END
+}
 
         static void MACRO_Restorer(PInputTag PInp)
-BEGIN
+{
    PopLocHandle();
    strmaxcpy(ErrorPos,PInp->OrigPos,255);
    DoLst=PInp->OrigDoLst;
-END
+}
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 /* Dies initialisiert eine Makroexpansion */
 
         static void ExpandMacro(PMacroRec OneMacro)
-BEGIN
+{
    Integer z1;
    StringRecPtr Lauf;
    PInputTag Tag;
@@ -568,8 +568,8 @@ BEGIN
    /* if (OneMacro->Used) WrError(1850);
    else */
 
-    BEGIN
-     OneMacro->Used=True;
+    {
+     OneMacro->Used=true;
 
      /* 1. Tag erzeugen */
 
@@ -579,7 +579,7 @@ BEGIN
      Tag->Cleanup  =MACRO_Cleanup;
      strmaxcpy(Tag->SpecName,OneMacro->Name,255);
      strmaxcpy(Tag->SaveAttr,AttrPart,255);
-     Tag->IsMacro  =True;
+     Tag->IsMacro  =true;
 
      /* 2. Parameterzahl anpassen */
 
@@ -590,50 +590,50 @@ BEGIN
      /* 3. Parameterliste aufbauen - umgekehrt einfacher */
 
      for (z1=ArgCnt; z1>=1; z1--)
-      BEGIN
-       if (NOT CaseSensitive) UpString(ArgStr[z1]);
+      {
+       if (! CaseSensitive) UpString(ArgStr[z1]);
        AddStringListFirst(&(Tag->Params),ArgStr[z1]);
-      END
+      }
      Tag->ParCnt=ArgCnt;
 
      /* 4. Zeilenliste anhaengen */
 
-     Tag->Lines=OneMacro->FirstLine; Tag->IsEmpty=(OneMacro->FirstLine==Nil);
+     Tag->Lines=OneMacro->FirstLine; Tag->IsEmpty=(OneMacro->FirstLine==NULL);
      Lauf=OneMacro->FirstLine;
-     while (Lauf!=Nil)
-      BEGIN
+     while (Lauf!=NULL)
+      {
        Tag->LineCnt++; Lauf=Lauf->Next;
-      END
-    END
+      }
+    }
 
    /* 5. anhaengen */
 
    if (IfAsm)
-    BEGIN
-     NextDoLst=(DoLst AND OneMacro->LocMacExp);
+    {
+     NextDoLst=(DoLst && OneMacro->LocMacExp);
      Tag->Next=FirstInputTag; FirstInputTag=Tag;
-    END
+    }
    else
-    BEGIN
+    {
      ClearStringList(&(Tag->Params)); free(Tag);
-    END
-END
+    }
+}
 
 /*-------------------------------------------------------------------------*/
 /* vorzeitiger Abbruch eines Makros */
 
         static void ExpandEXITM(void)
-BEGIN
+{
    if (ArgCnt!=0) WrError(1110);
-   else if (FirstInputTag==Nil) WrError(1805);
-   else if (NOT FirstInputTag->IsMacro) WrError(1805);
+   else if (FirstInputTag==NULL) WrError(1805);
+   else if (! FirstInputTag->IsMacro) WrError(1805);
    else if (IfAsm)
-    BEGIN
+    {
      FirstInputTag->Cleanup(FirstInputTag);
      RestoreIFs(FirstInputTag->IfLevel);
-     FirstInputTag->IsEmpty=True;
-    END
-END
+     FirstInputTag->IsEmpty=true;
+    }
+}
 
 /*-------------------------------------------------------------------------*/
 /*--- IRP (was das bei MASM auch immer heissen mag...)
@@ -644,22 +644,22 @@ END
 /* Aufraeumroutine */
 
         static void IRP_Cleanup(PInputTag PInp)
-BEGIN
+{
    ClearStringList(&(PInp->Lines));
    ClearStringList(&(PInp->Params));
-END
+}
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 /* Diese Routine liefert bei der Expansion eines IRP-Statements die expan-
   dierten Zeilen */
 
-        Boolean IRP_Processor(PInputTag PInp, char *erg)
-BEGIN
+        bool IRP_Processor(PInputTag PInp, char *erg)
+{
    StringRecPtr Lauf;
    Integer z;
-   Boolean Result;
+   bool Result;
 
-   Result=True;
+   Result=true;
 
    Lauf=PInp->Lines; for (z=1; z<=PInp->LineZ-1; z++) Lauf=Lauf->Next;
    strcpy(erg,Lauf->Content);
@@ -669,27 +669,27 @@ BEGIN
    sprintf(ErrorPos,"%s IRP:%s/%d",PInp->OrigPos,Lauf->Content,PInp->LineZ);
 
    if (PInp->LineZ==1)
-    BEGIN
-     if (NOT PInp->First) PopLocHandle(); PInp->First=False;
+    {
+     if (! PInp->First) PopLocHandle(); PInp->First=false;
      PushLocHandle(GetLocHandle());
-    END
+    }
 
 
    if (++(PInp->LineZ)>PInp->LineCnt)
-    BEGIN
+    {
      PInp->LineZ=1;
-     if (++(PInp->ParZ)>PInp->ParCnt) Result=False;
-    END
+     if (++(PInp->ParZ)>PInp->ParCnt) Result=false;
+    }
 
    return Result;
-END
+}
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 /* Diese Routine sammelt waehrend der Definition eines IRP-Statements die
   Quellzeilen ein */
 
 	static void IRP_OutProcessor(void)
-BEGIN
+{
    POutputTag Tmp;
    StringRecPtr Dummy;
    String s;
@@ -702,65 +702,65 @@ BEGIN
    /* falls noch nicht zuende, weiterzaehlen */
 
    if (FirstOutputTag->NestLevel>-1)
-    BEGIN
+    {
      strmaxcpy(s,OneLine,255); KillCtrl(s);
      CompressLine(GetStringListFirst(FirstOutputTag->Params,&Dummy),1,s);
      AddStringListLast(&(FirstOutputTag->Tag->Lines),s);
      FirstOutputTag->Tag->LineCnt++;
-    END
+    }
 
    /* alles zusammen? Dann umhaengen */
 
    if (FirstOutputTag->NestLevel==-1)
-    BEGIN
+    {
      Tmp=FirstOutputTag; FirstOutputTag=FirstOutputTag->Next;
-     Tmp->Tag->IsEmpty=(Tmp->Tag->Lines==Nil);
+     Tmp->Tag->IsEmpty=(Tmp->Tag->Lines==NULL);
      if (IfAsm)
-      BEGIN
-       NextDoLst=DoLst AND LstMacroEx;
+      {
+       NextDoLst=DoLst && LstMacroEx;
        Tmp->Tag->Next=FirstInputTag; FirstInputTag=Tmp->Tag;
-      END
+      }
      else
-      BEGIN
+      {
        ClearStringList(&(Tmp->Tag->Lines)); ClearStringList(&(Tmp->Tag->Params));
        free(Tmp->Tag);
-      END
+      }
      ClearStringList(&(Tmp->Params));
      free(Tmp);
-    END
-END
+    }
+}
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 /* Initialisierung der IRP-Bearbeitung */
 
         static void ExpandIRP(void)
-BEGIN
+{
    String Parameter;
    Integer z1;
    PInputTag Tag;
    POutputTag Neu;
-   Boolean ErrFlag;
+   bool ErrFlag;
 
    /* 1.Parameter pruefen */
 
    if (ArgCnt<2)
-    BEGIN
-     WrError(1110); ErrFlag=True;
-    END
+    {
+     WrError(1110); ErrFlag=true;
+    }
    else
-    BEGIN
+    {
      strmaxcpy(Parameter,ArgStr[1],255);
-     if (NOT ChkMacSymbName(ArgStr[1]))
-      BEGIN
-       WrXError(1020,Parameter); ErrFlag=True;
-      END
-     else ErrFlag=False;
-    END
+     if (! ChkMacSymbName(ArgStr[1]))
+      {
+       WrXError(1020,Parameter); ErrFlag=true;
+      }
+     else ErrFlag=false;
+    }
    if (ErrFlag)
-    BEGIN
+    {
      AddWaitENDM_Processor();
      return;
-    END
+    }
 
    /* 2. Tag erzeugen */
 
@@ -770,15 +770,15 @@ BEGIN
    Tag->Restorer =MACRO_Restorer;
    Tag->Cleanup  =IRP_Cleanup;
    Tag->ParZ     =1;
-   Tag->IsMacro  =True;
+   Tag->IsMacro  =true;
 
    /* 3. Parameterliste aufbauen; rueckwaerts einen Tucken schneller */
 
    for (z1=ArgCnt; z1>=2; z1--)
-    BEGIN
+    {
      UpString(ArgStr[z1]);
      AddStringListFirst(&(Tag->Params),ArgStr[z1]);
-    END
+    }
 
    /* 4. einbetten */
 
@@ -787,23 +787,23 @@ BEGIN
    Neu->Processor=IRP_OutProcessor;
    Neu->NestLevel=0;
    Neu->Tag=Tag;
-   Neu->Params=Nil; AddStringListFirst(&(Neu->Params),ArgStr[1]);
+   Neu->Params=NULL; AddStringListFirst(&(Neu->Params),ArgStr[1]);
    FirstOutputTag=Neu;
-END
+}
 /*--- Repetition -----------------------------------------------------------*/
 
         static void REPT_Cleanup(PInputTag PInp)
-BEGIN
+{
    ClearStringList(&(PInp->Lines));
-END
+}
 
-        Boolean REPT_Processor(PInputTag PInp, char *erg)
-BEGIN
+        bool REPT_Processor(PInputTag PInp, char *erg)
+{
    StringRecPtr Lauf;
    Integer z;
-   Boolean Result;
+   bool Result;
 
-   Result=True;
+   Result=true;
 
    Lauf=PInp->Lines; for(z=1; z<=PInp->LineZ-1; z++) Lauf=Lauf->Next;
    strcpy(erg,Lauf->Content); CurrLine=PInp->StartLine+PInp->LineZ;
@@ -811,22 +811,22 @@ BEGIN
    sprintf(ErrorPos,"%s REPT %d/%d",PInp->OrigPos,PInp->ParZ,PInp->LineZ);
 
    if (PInp->LineZ==1)
-    BEGIN
-     if (NOT PInp->First) PopLocHandle(); PInp->First=False;
+    {
+     if (! PInp->First) PopLocHandle(); PInp->First=false;
      PushLocHandle(GetLocHandle());
-    END
+    }
 
     if ((++PInp->LineZ)>PInp->LineCnt)
-    BEGIN
+    {
      PInp->LineZ=1;
-     if ((++PInp->ParZ)>PInp->ParCnt) Result=False;
-    END
+     if ((++PInp->ParZ)>PInp->ParCnt) Result=false;
+    }
 
    return Result;
-END
+}
 
 	static void REPT_OutProcessor(void)
-BEGIN
+{
    POutputTag Tmp;
 
    /* Schachtelungen mitzaehlen */
@@ -837,57 +837,57 @@ BEGIN
    /* falls noch nicht zuende, weiterzaehlen */
 
    if (FirstOutputTag->NestLevel>-1)
-    BEGIN
+    {
      AddStringListLast(&(FirstOutputTag->Tag->Lines),OneLine);
      FirstOutputTag->Tag->LineCnt++;
-    END
+    }
 
    /* alles zusammen? Dann umhaengen */
 
    if (FirstOutputTag->NestLevel==-1)
-    BEGIN
+    {
      Tmp=FirstOutputTag; FirstOutputTag=FirstOutputTag->Next;
-     Tmp->Tag->IsEmpty=(Tmp->Tag->Lines==Nil);
-     if ((IfAsm) AND (Tmp->Tag->ParCnt>0))
-      BEGIN
-       NextDoLst=(DoLst AND LstMacroEx);
+     Tmp->Tag->IsEmpty=(Tmp->Tag->Lines==NULL);
+     if ((IfAsm) && (Tmp->Tag->ParCnt>0))
+      {
+       NextDoLst=(DoLst && LstMacroEx);
        Tmp->Tag->Next=FirstInputTag; FirstInputTag=Tmp->Tag;
-      END
+      }
      else
-      BEGIN
+      {
        ClearStringList(&(Tmp->Tag->Lines));
        free(Tmp->Tag);
-      END
+      }
      free(Tmp);
-    END
-END
+    }
+}
 
         static void ExpandREPT(void)
-BEGIN
-   Boolean ValOK;
+{
+   bool ValOK;
    LongInt ReptCount=0;
    PInputTag Tag;
    POutputTag Neu;
-   Boolean ErrFlag;
+   bool ErrFlag;
 
    /* 1.Repetitionszahl ermitteln */
 
    if (ArgCnt!=1)
-    BEGIN
-     WrError(1110); ErrFlag=True;
-    END
+    {
+     WrError(1110); ErrFlag=true;
+    }
    else
-    BEGIN
-     FirstPassUnknown=False;
+    {
+     FirstPassUnknown=false;
      ReptCount=EvalIntExpression(ArgStr[1],Int32,&ValOK);
      if (FirstPassUnknown) WrError(1820);
-     ErrFlag=((NOT ValOK) OR (FirstPassUnknown));
-    END
+     ErrFlag=((! ValOK) || (FirstPassUnknown));
+    }
    if (ErrFlag)
-    BEGIN
+    {
      AddWaitENDM_Processor();
      return;
-    END
+    }
 
    /* 2. Tag erzeugen */
 
@@ -896,7 +896,7 @@ BEGIN
    Tag->Processor=REPT_Processor;
    Tag->Restorer =MACRO_Restorer;
    Tag->Cleanup  =REPT_Cleanup;
-   Tag->IsMacro  =True;
+   Tag->IsMacro  =true;
    Tag->ParZ=1;
 
    /* 3. einbetten */
@@ -907,50 +907,50 @@ BEGIN
    Neu->Next=FirstOutputTag;
    Neu->Tag=Tag;
    FirstOutputTag=Neu;
-END
+}
 
 /*- bedingte Wiederholung -------------------------------------------------------*/
 
         static void WHILE_Cleanup(PInputTag PInp)
-BEGIN
+{
    ClearStringList(&(PInp->Lines));
-END
+}
 
-        Boolean WHILE_Processor(PInputTag PInp, char *erg)
-BEGIN
+        bool WHILE_Processor(PInputTag PInp, char *erg)
+{
    StringRecPtr Lauf;
    Integer z;
-   Boolean OK,Result;
+   bool OK,Result;
 
    sprintf(ErrorPos,"%s WHILE %d/%d",PInp->OrigPos,PInp->ParZ,PInp->LineZ);
    CurrLine=PInp->StartLine+PInp->LineZ;
 
    if (PInp->LineZ==1)
-    BEGIN
-     if (NOT PInp->First) PopLocHandle(); PInp->First=False;
+    {
+     if (! PInp->First) PopLocHandle(); PInp->First=false;
      PushLocHandle(GetLocHandle());
-    END
-   else OK=True;
+    }
+   else OK=true;
 
    Lauf=PInp->Lines; for (z=1; z<=PInp->LineZ-1; z++) Lauf=Lauf->Next;
    strcpy(erg,Lauf->Content);
 
    if ((++PInp->LineZ)>PInp->LineCnt)
-    BEGIN
+    {
      PInp->LineZ=1; PInp->ParZ++;
      z=EvalIntExpression(PInp->SpecName,Int32,&OK);
-     OK=(OK AND (z!=0));
+     OK=(OK && (z!=0));
      Result=OK;
-    END
-   else Result=True;
+    }
+   else Result=true;
 
    return Result;
-END
+}
 
 	static void WHILE_OutProcessor(void)
-BEGIN
+{
    POutputTag Tmp;
-   Boolean OK;
+   bool OK;
    LongInt Erg;
 
    /* Schachtelungen mitzaehlen */
@@ -961,53 +961,53 @@ BEGIN
    /* falls noch nicht zuende, weiterzaehlen */
 
    if (FirstOutputTag->NestLevel>-1)
-    BEGIN
+    {
      AddStringListLast(&(FirstOutputTag->Tag->Lines),OneLine);
      FirstOutputTag->Tag->LineCnt++;
-    END
+    }
 
    /* alles zusammen? Dann umhaengen */
 
    if (FirstOutputTag->NestLevel==-1)
-    BEGIN
+    {
      Tmp=FirstOutputTag; FirstOutputTag=FirstOutputTag->Next;
-     Tmp->Tag->IsEmpty=(Tmp->Tag->Lines==Nil);
-     FirstPassUnknown=False;
+     Tmp->Tag->IsEmpty=(Tmp->Tag->Lines==NULL);
+     FirstPassUnknown=false;
      Erg=EvalIntExpression(Tmp->Tag->SpecName,Int32,&OK);
      if (FirstPassUnknown) WrError(1820);
-     OK=(OK AND (NOT FirstPassUnknown) AND (Erg!=0));
-     if ((IfAsm) AND (OK))
-      BEGIN
-       NextDoLst=(DoLst AND LstMacroEx);
+     OK=(OK && (! FirstPassUnknown) && (Erg!=0));
+     if ((IfAsm) && (OK))
+      {
+       NextDoLst=(DoLst && LstMacroEx);
        Tmp->Tag->Next=FirstInputTag; FirstInputTag=Tmp->Tag;
-      END
+      }
      else
-      BEGIN
+      {
        ClearStringList(&(Tmp->Tag->Lines));
        free(Tmp->Tag);
-      END
+      }
      free(Tmp);
-    END
-END
+    }
+}
 
         static void ExpandWHILE(void)
-BEGIN
+{
    PInputTag Tag;
    POutputTag Neu;
-   Boolean ErrFlag;
+   bool ErrFlag;
 
    /* 1.Bedingung ermitteln */
 
    if (ArgCnt!=1)
-    BEGIN
-     WrError(1110); ErrFlag=True;
-    END
-   else ErrFlag=False;
+    {
+     WrError(1110); ErrFlag=true;
+    }
+   else ErrFlag=false;
    if (ErrFlag)
-    BEGIN
+    {
      AddWaitENDM_Processor();
      return;
-    END
+    }
 
    /* 2. Tag erzeugen */
 
@@ -1015,7 +1015,7 @@ BEGIN
    Tag->Processor=WHILE_Processor;
    Tag->Restorer =MACRO_Restorer;
    Tag->Cleanup  =WHILE_Cleanup;
-   Tag->IsMacro  =True;
+   Tag->IsMacro  =true;
    Tag->ParZ=1;
    strmaxcpy(Tag->SpecName,ArgStr[1],255);
 
@@ -1027,70 +1027,70 @@ BEGIN
    Neu->Next=FirstOutputTag;
    Neu->Tag=Tag;
    FirstOutputTag=Neu;
-END
+}
 
 /*--------------------------------------------------------------------------*/
 /* Einziehen von Include-Files */
 
 	static void INCLUDE_Cleanup(PInputTag PInp)
-BEGIN
+{
    fclose(PInp->Datei);
    free(PInp->Buffer);
    LineSum+=MomLineCounter;
-   if ((*LstName!='\0') AND (NOT QuietMode))
-    BEGIN
+   if ((*LstName!='\0') && (! QuietMode))
+    {
      printf("%s(%d)",NamePart(CurrFileName),MomLineCounter);
      printf("%s\n",ClrEol);
-    END
+    }
    if (MakeIncludeList) PopInclude();
-END
+}
 
-        Boolean INCLUDE_Processor(PInputTag PInp, char *Erg)
-BEGIN
-   Boolean Result;
+        bool INCLUDE_Processor(PInputTag PInp, char *Erg)
+{
+   bool Result;
 
-   Result=True;
+   Result=true;
 
    if (feof(PInp->Datei)) *Erg='\0';
    else
-    BEGIN
+    {
      ReadLn(PInp->Datei,Erg);
      /**ChkIO(10003);**/
-    END
+    }
    sprintf(ErrorPos,"%s(%d)",NamePart(CurrFileName),CurrLine=(++MomLineCounter));
-   if (feof(PInp->Datei)) Result=False;
+   if (feof(PInp->Datei)) Result=false;
 
    return Result;
-END
+}
 
         static void INCLUDE_Restorer(PInputTag PInp)
-BEGIN
+{
    MomLineCounter=PInp->StartLine;
    strmaxcpy(CurrFileName,PInp->SpecName,255);
    strmaxcpy(ErrorPos,PInp->OrigPos,255);
    IncDepth--;
-END
+}
 
-        static void ExpandINCLUDE(Boolean SearchPath)
-BEGIN
+        static void ExpandINCLUDE(bool SearchPath)
+{
    PInputTag Tag;
 
-   if (NOT IfAsm) return;
+   if (! IfAsm) return;
 
    if (ArgCnt!=1)
-    BEGIN
+    {
      WrError(1110); return;
-    END
+    }
 
    strmaxcpy(ArgPart,ArgStr[1],255);
    if (*ArgPart=='"') strcpy(ArgPart,ArgPart+1);
    if (ArgPart[strlen(ArgPart)-1]=='"') ArgPart[strlen(ArgPart)-1]='\0';
    AddSuffix(ArgPart,IncSuffix); strmaxcpy(ArgStr[1],ArgPart,255);
    if (SearchPath)
-    BEGIN
+    {
      strmaxcpy(ArgPart,FExpand(FSearch(ArgPart,IncludeList)),255);
      if (ArgPart[strlen(ArgPart)-1]=='/') strmaxcat(ArgPart,ArgStr[1],255);
-    END
+    }
 
    /* Tag erzeugen */
 
@@ -1108,7 +1108,7 @@ BEGIN
    /* Datei oeffnen */
 
    Tag->Datei=fopen(ArgPart,"r");
-   if (Tag->Datei==Nil) ChkIO(10001);
+   if (Tag->Datei==NULL) ChkIO(10001);
    setvbuf(Tag->Datei,Tag->Buffer,_IOFBF,BufferArraySize);
 
    /* neu besetzen */
@@ -1120,100 +1120,100 @@ BEGIN
    /* einhaengen */
 
    Tag->Next=FirstInputTag; FirstInputTag=Tag;
-END
+}
 
 /*=========================================================================*/
 /* Einlieferung von Zeilen */
 
         static void GetNextLine(char *Line)
-BEGIN
+{
    PInputTag HTag;
 
-   while ((FirstInputTag!=Nil) AND (FirstInputTag->IsEmpty))
-    BEGIN
+   while ((FirstInputTag!=NULL) && (FirstInputTag->IsEmpty))
+    {
      FirstInputTag->Restorer(FirstInputTag);
      HTag=FirstInputTag; FirstInputTag=HTag->Next;
      free(HTag);
-    END
+    }
 
-   if (FirstInputTag==Nil)
-    BEGIN
+   if (FirstInputTag==NULL)
+    {
      *Line='\0'; return;
-    END
+    }
 
-   if (NOT FirstInputTag->Processor(FirstInputTag,Line))
-    BEGIN
+   if (! FirstInputTag->Processor(FirstInputTag,Line))
+    {
      FirstInputTag->Cleanup(FirstInputTag);
-     FirstInputTag->IsEmpty=True;
-    END
+     FirstInputTag->IsEmpty=true;
+    }
 
    MacLineSum++;
-END
+}
 
-        static Boolean InputEnd(void)
-BEGIN
+        static bool InputEnd(void)
+{
    PInputTag Lauf;
 
    Lauf=FirstInputTag;
-   while (Lauf!=Nil)
-    BEGIN
-     if (NOT Lauf->IsEmpty) return False;
+   while (Lauf!=NULL)
+    {
+     if (! Lauf->IsEmpty) return false;
      Lauf=Lauf->Next;
-    END
+    }
 
-   return True;
-END
+   return true;
+}
 
 
 /*=== Eine Quelldatei ( Haupt-oder Includedatei ) bearbeiten ===============*/
 
 /*--- aus der zerlegten Zeile Code erzeugen --------------------------------*/
 
-        Boolean HasLabel(void)
-BEGIN
+        bool HasLabel(void)
+{
    return   ((*LabPart!='\0')
-         AND ((NOT Memo("SET")) OR (SetIsOccupied))
-         AND ((NOT Memo("EVAL")) OR (NOT SetIsOccupied))
-         AND (NOT Memo("EQU"))
-         AND (NOT Memo("="))
-         AND (NOT Memo(":="))
-         AND (NOT Memo("MACRO"))
-         AND (NOT Memo("FUNCTION"))
-         AND (NOT Memo("LABEL"))
-         AND (NOT IsDef()));
-END
+         && ((! Memo("SET")) || (SetIsOccupied))
+         && ((! Memo("EVAL")) || (! SetIsOccupied))
+         && (! Memo("EQU"))
+         && (! Memo("="))
+         && (! Memo(":="))
+         && (! Memo("MACRO"))
+         && (! Memo("FUNCTION"))
+         && (! Memo("LABEL"))
+         && (! IsDef()));
+}
 
         static void Produce_Code(void)
-BEGIN
+{
    Byte z;
    PMacroRec OneMacro;
-   Boolean SearchMacros;
+   bool SearchMacros;
 
    /* Makrosuche unterdruecken ? */
 
    if (*OpPart=='!')
-    BEGIN
-     SearchMacros=False; strcpy(OpPart,OpPart+1);
-    END
+    {
+     SearchMacros=false; strcpy(OpPart,OpPart+1);
+    }
    else
-    BEGIN
-     SearchMacros=True; ExpandSymbol(OpPart);
-    END
+    {
+     SearchMacros=true; ExpandSymbol(OpPart);
+    }
    strcpy(LOpPart,OpPart); NLS_UpString(OpPart);
 
    /* Prozessor eingehaengt ? */
 
-   if (FirstOutputTag!=Nil)
-    BEGIN
+   if (FirstOutputTag!=NULL)
+    {
      FirstOutputTag->Processor(); return;
-    END
+    }
 
    /* ansonsten Code erzeugen */
 
    /* evtl. voranstehendes Label ablegen */
 
    if (IfAsm)
-    if (HasLabel()) EnterIntSymbol(LabPart,EProgCounter(),ActPC,False);
+    if (HasLabel()) EnterIntSymbol(LabPart,EProgCounter(),ActPC,false);
 
    /* Makroliste ? */
 
@@ -1242,87 +1242,87 @@ BEGIN
    /* Includefile? */
 
    else if Memo("INCLUDE")
-    BEGIN
-     ExpandINCLUDE(True);
-     MasterFile=False;
-    END
+    {
+     ExpandINCLUDE(true);
+     MasterFile=false;
+    }
 
    /* Makroaufruf ? */
 
-   else if ((SearchMacros) AND (FoundMacro(&OneMacro)))
-    BEGIN
+   else if ((SearchMacros) && (FoundMacro(&OneMacro)))
+    {
      if (IfAsm) ExpandMacro(OneMacro);
      if (IfAsm) strmaxcpy(ListLine,"(MACRO)",255);
-    END
+    }
 
    else
-    BEGIN
-     StopfZahl=0; CodeLen=0; DontPrint=False;
+    {
+     StopfZahl=0; CodeLen=0; DontPrint=false;
 
      if (IfAsm)
-      BEGIN
-       if (NOT CodeGlobalPseudo()) MakeCode();
-       if ((MacProOutput) AND (strlen(OpPart)!=0))
-        BEGIN
+      {
+       if (! CodeGlobalPseudo()) MakeCode();
+       if ((MacProOutput) && (strlen(OpPart)!=0))
+        {
          errno=0; fprintf(MacProFile,"%s\n",OneLine); ChkIO(10002);
-        END
-      END
+        }
+      }
 
      for (z=0; z<StopfZahl; z++)
-      BEGIN
+      {
        switch (ListGran())
-        BEGIN
+        {
          case 4:DAsmCode[CodeLen>>2]=NOPCode; break;
          case 2:WAsmCode[CodeLen>>1]=NOPCode; break;
          case 1:BAsmCode[CodeLen   ]=NOPCode; break;
-        END
+        }
        CodeLen+=ListGran()/Granularity();
-      END
+      }
 
-     if ((NOT ChkPC()) AND (CodeLen!=0)) WrError(1925);
+     if ((! ChkPC()) && (CodeLen!=0)) WrError(1925);
      else
-      BEGIN
-       if (NOT DontPrint)
-        BEGIN
+      {
+       if (! DontPrint)
+        {
          if (MakeUseList)
           if (AddChunk(SegChunks+ActPC,ProgCounter(),CodeLen,ActPC==SegCode)) WrError(90);
          if (DebugMode!=DebugNone) AddSectionUsage(ProgCounter(),CodeLen);
-        END
+        }
        PCs[ActPC]+=CodeLen;
        /* if (ActPC!=SegCode)
-        BEGIN
-         if ((CodeLen!=0) AND (NOT DontPrint)) WrError(1940);
-        END
+        {
+         if ((CodeLen!=0) && (! DontPrint)) WrError(1940);
+        }
        else */ if (CodeOutput)
-        BEGIN
+        {
          if (DontPrint) NewRecord(); else WriteBytes();
-        END
-       if ((DebugMode!=DebugNone) AND (CodeLen>0) AND (NOT DontPrint))
-        AddLineInfo(True,CurrLine,CurrFileName,ActPC,PCs[ActPC]-CodeLen);
-      END
-    END
-END
+        }
+       if ((DebugMode!=DebugNone) && (CodeLen>0) && (! DontPrint))
+        AddLineInfo(true,CurrLine,CurrFileName,ActPC,PCs[ActPC]-CodeLen);
+      }
+    }
+}
 
 /*--- Zeile in Listing zerteilen -------------------------------------------*/
 
         static void SplitLine(void)
-BEGIN
+{
    jmp_buf Retry;
    String h;
    char *i,*k,*p;
    Integer z;
-   Boolean lpos;
+   bool lpos;
 
-   Retracted=False;
+   Retracted=false;
 
    /* Kommentar loeschen */
 
    strmaxcpy(h,OneLine,255); i=QuotPos(h,';');
-   if (i!=Nil)
-    BEGIN
+   if (i!=NULL)
+    {
      strmaxcpy(CommPart,i+1,255);
      *i='\0';
-    END
+    }
    else *CommPart='\0';
 
    /* alles in Grossbuchstaben wandeln, Praeprozessor laufen lassen */
@@ -1331,13 +1331,13 @@ BEGIN
 
    /* Label abspalten */
 
-   if ((*h!='\0') AND (NOT isspace(h[0])))
-    BEGIN
+   if ((*h!='\0') && (! isspace(h[0])))
+    {
      i=FirstBlank(h); k=strchr(h,':');
-     if ((k!=Nil) AND ((k<i) OR (i==Nil))) i=k;
+     if ((k!=NULL) && ((k<i) || (i==NULL))) i=k;
      SplitString(h,LabPart,h,i);
      if (LabPart[strlen(LabPart)-1]==':') LabPart[strlen(LabPart)-1]='\0';
-    END
+    }
    else *LabPart='\0';
 
    /* Opcode & Argument trennen */
@@ -1349,37 +1349,37 @@ BEGIN
    /* Falls noch kein Label da war, kann es auch ein Label sein */
 
    i=strchr(OpPart,':');
-   if ((*LabPart=='\0') AND (i!=Nil) AND (i==OpPart+strlen(OpPart)-1))
-    BEGIN
+   if ((*LabPart=='\0') && (i!=NULL) && (i==OpPart+strlen(OpPart)-1))
+    {
      *i='\0'; strmaxcpy(LabPart,OpPart,255); strcpy(OpPart,i+1);
      if (*OpPart=='\0')
-      BEGIN
+      {
        strmaxcpy(h,ArgPart,255);
        longjmp(Retry,1);
-      END
-    END
+      }
+    }
 
    /* Attribut abspalten */
 
    if (HasAttrs)
-    BEGIN
-     k=Nil; AttrSplit=' ';
+    {
+     k=NULL; AttrSplit=' ';
      for (z=0; z<strlen(AttrChars); z++)
-      BEGIN
+      {
        p=strchr(OpPart,AttrChars[z]);
-       if (p!=Nil) if ((k==Nil) OR (p<k)) k=p;
-      END
-     if (k!=Nil)
-      BEGIN
+       if (p!=NULL) if ((k==NULL) || (p<k)) k=p;
+      }
+     if (k!=NULL)
+      {
        AttrSplit=(*k);
        strmaxcpy(AttrPart,k+1,255); *k='\0';
-       if ((*OpPart=='\0') AND (*AttrPart!='\0'))
-        BEGIN
+       if ((*OpPart=='\0') && (*AttrPart!='\0'))
+        {
          strmaxcpy(OpPart,AttrPart,255); *AttrPart='\0';
-        END
-      END
+        }
+      }
      else *AttrPart='\0';
-    END
+    }
    else *AttrPart='\0';
 
    KillPostBlanks(ArgPart);
@@ -1389,32 +1389,32 @@ BEGIN
    ArgCnt=0; strcpy(h,ArgPart);
    if (*h!='\0')
     do
-     BEGIN
+     {
       KillPrefBlanks(h);
       i=h+strlen(h);
       for (z=0; z<strlen(DivideChars); z++)
-       BEGIN
-        p=QuotPos(h,DivideChars[z]); if ((p!=Nil) AND (p<i)) i=p;
-       END
+       {
+        p=QuotPos(h,DivideChars[z]); if ((p!=NULL) && (p<i)) i=p;
+       }
       lpos=(i==h+strlen(h)-1);
       if (i>=h) SplitString(h,ArgStr[++ArgCnt],h,i);
-      if ((lpos) AND (ArgCnt!=ParMax)) *ArgStr[++ArgCnt]='\0';
+      if ((lpos) && (ArgCnt!=ParMax)) *ArgStr[++ArgCnt]='\0';
       KillPostBlanks(ArgStr[ArgCnt]);
-     END
-    while ((*h!='\0') AND (ArgCnt!=ParMax));
+     }
+    while ((*h!='\0') && (ArgCnt!=ParMax));
 
    if (*h!='\0') WrError(1140);
 
    Produce_Code();
-END
+}
 
 /**
 CONST
    LineBuffer:String='';
-   InComment:Boolean=FALSE;
+   InComment:bool=false;
 
 	static void C_SplitLine(void)
-BEGIN
+{
    p,p2:Integer;
    SaveLine,h:String;
 
@@ -1428,14 +1428,14 @@ BEGIN
      stoert der Abbruch ohne Wiederherstellung von Oneline nicht. }
 
    IF InComment THEN
-    BEGIN
+    {
      p:=Pos('}',h);
      IF p>Length(h) THEN Exit
      ELSE
-      BEGIN
-       Delete(h,1,p); InComment:=False;
-      END;
-    END;
+      {
+       Delete(h,1,p); InComment:=false;
+      };
+    };
 
    { in der Zeile befindliche Teile loeschen; falls am Ende keine
      schliessende Klammer kommt, muessen wir das Kommentarflag setzen. }
@@ -1444,48 +1444,48 @@ BEGIN
     p:=QuotPos(h,'{');
     IF p>Length(h) THEN p:=0
     ELSE
-     BEGIN
+     {
       p2:=QuotPos(h,'}');
-      IF (p2>p) AND (Length(h)>=p2) THEN Delete(h,p,p2-p+1)
+      IF (p2>p) && (Length(h)>=p2) THEN Delete(h,p,p2-p+1)
       ELSE
-       BEGIN
+       {
         Byte(h[0]):=Pred(p);
-        InComment:=True;
+        InComment:=true;
         p:=0;
-       END;
-     END;
+       };
+     };
    UNTIL p=0;
 
    { alten Inhalt zurueckkopieren }
 
    OneLine:=SaveLine;
-END;**/
+};**/
 
 /*------------------------------------------------------------------------*/
 
         static void ProcessFile(String FileName)
-BEGIN
+{
    long NxtTime,ListTime;
    String Num;
    /*Integer z;*/
    char *Name;
 
-   sprintf(OneLine," INCLUDE \"%s\"",FileName); MasterFile=False;
+   sprintf(OneLine," INCLUDE \"%s\"",FileName); MasterFile=false;
    NextIncDepth=IncDepth;
    SplitLine();
    IncDepth=NextIncDepth;
 
    ListTime=GTime();
 
-   while ((NOT InputEnd()) AND (NOT ENDOccured))
-    BEGIN
+   while ((! InputEnd()) && (! ENDOccured))
+    {
      /* Zeile lesen */
 
      GetNextLine(OneLine);
 
      /* Ergebnisfelder vorinitialisieren */
 
-     DontPrint=False; CodeLen=0; *ListLine='\0';
+     DontPrint=false; CodeLen=0; *ListLine='\0';
 
      NextDoLst=DoLst;
      NextIncDepth=IncDepth;
@@ -1499,162 +1499,162 @@ BEGIN
 
      /* Zeilenzaehler */
 
-     if (NOT QuietMode)
-      BEGIN
+     if (! QuietMode)
+      {
        NxtTime=GTime();
-       if (((strcmp(LstName,"!1")!=0) OR ((ListMask&1)==0)) AND (DTime(ListTime,NxtTime)>50))
-        BEGIN
+       if (((strcmp(LstName,"!1")!=0) || ((ListMask&1)==0)) && (DTime(ListTime,NxtTime)>50))
+        {
          sprintf(Num,"%d",MomLineCounter); Name=NamePart(CurrFileName);
          printf("%s(%s)%s",Name,Num,ClrEol);
          /*for (z=0; z<strlen(Name)+strlen(Num)+2; z++) putchar('\b');*/
          putchar('\r');
          ListTime=NxtTime;
-        END
-      END
+        }
+      }
 
      /* bei Ende Makroprozessor ausraeumen
        OK - das ist eine Hauruckmethode... */
 
      if (ENDOccured)
-      while (FirstInputTag!=Nil) GetNextLine(OneLine);
-    END
+      while (FirstInputTag!=NULL) GetNextLine(OneLine);
+    }
 
-   while (FirstInputTag!=Nil) GetNextLine(OneLine);
+   while (FirstInputTag!=NULL) GetNextLine(OneLine);
 
    /* irgendeine Makrodefinition nicht abgeschlossen ? */
 
-   if (FirstOutputTag!=Nil) WrError(1800);
-END
+   if (FirstOutputTag!=NULL) WrError(1800);
+}
 
 /****************************************************************************/
 
         static char *TWrite_Plur(Integer n)
-BEGIN
+{
    return (n!=1) ? ListPlurName : "";
-END
+}
 
         static void TWrite_RWrite(char *dest, Double r, Byte Stellen)
-BEGIN
+{
    String s,form;
 
    sprintf(form,"%%20.%df",Stellen);
    sprintf(s,form,r);
    while (*s==' ') strcpy(s,s+1); strcat(dest,s);
-END
+}
 
         static void TWrite(Double DTime, char *dest)
-BEGIN
+{
    Integer h;
    String s;
 
    *dest='\0';
    h=(int) floor(DTime/3600.0);
    if (h>0)
-    BEGIN
+    {
      sprintf(s,"%d",h);
      strcat(dest,s);
      strcat(dest,ListHourName);
      strcat(dest,TWrite_Plur(h));
      strcat(dest,", ");
      DTime-=3600.0*h;
-    END
+    }
    h=(int) floor(DTime/60.0);
    if (h>0)
-    BEGIN
+    {
      sprintf(s,"%d",h);
      strcat(dest,s);
      strcat(dest,ListMinuName);
      strcat(dest,TWrite_Plur(h));
      strcat(dest,", ");
      DTime-=60.0*h;
-    END
+    }
    TWrite_RWrite(dest,DTime,2); strcat(dest,ListSecoName);
    if (DTime!=1) strcat(dest,ListPlurName);
-END
+}
 
 /*--------------------------------------------------------------------------*/
 
         static void AssembleFile_InitPass(void)
-BEGIN
+{
    static char DateS[31],TimeS[31];
    Integer z;
 
-   FirstInputTag=Nil; FirstOutputTag=Nil;
+   FirstInputTag=NULL; FirstOutputTag=NULL;
 
    ErrorPos[0]='\0'; MomLineCounter=0;
    MomLocHandle=(-1); LocHandleCnt=0;
 
-   SectionStack=Nil;
-   FirstIfSave=Nil;
-   FirstSaveState=Nil;
+   SectionStack=NULL;
+   FirstIfSave=NULL;
+   FirstSaveState=NULL;
 
    InitPassProc();
 
-   ActPC=SegCode; PCs[ActPC]=0; ENDOccured=False;
+   ActPC=SegCode; PCs[ActPC]=0; ENDOccured=false;
    ErrorCount=0; WarnCount=0; LineSum=0; MacLineSum=0;
    for (z=1; z<=PCMax; z++)
-    BEGIN
+    {
      PCsUsed[z]=(z==SegCode);
      Phases[z]=0;
      InitChunk(&SegChunks[z]);
-    END
+    }
    for (z=0; z<256; z++) CharTransTable[z]=z;
 
    strmaxcpy(CurrFileName,"INTERNAL",255);
    AddFile(CurrFileName); CurrLine=0;
 
    IncDepth=(-1);
-   DoLst=True;
+   DoLst=true;
 
    /* Pseudovariablen initialisieren */
 
    ResetSymbolDefines(); ResetMacroDefines();
-   EnterIntSymbol(FlagTrueName,1,0,True);
-   EnterIntSymbol(FlagFalseName,0,0,True);
-   EnterFloatSymbol(PiName,4.0*atan(1.0),True);
-   EnterIntSymbol(VerName,VerNo,0,True);
+   EnterIntSymbol(FlagTrueName,1,0,true);
+   EnterIntSymbol(FlagFalseName,0,0,true);
+   EnterFloatSymbol(PiName,4.0*atan(1.0),true);
+   EnterIntSymbol(VerName,VerNo,0,true);
 #ifdef HAS64
-   EnterIntSymbol(Has64Name,1,0,True);
+   EnterIntSymbol(Has64Name,1,0,true);
 #else
-   EnterIntSymbol(Has64Name,0,0,True);
+   EnterIntSymbol(Has64Name,0,0,true);
 #endif
-   EnterIntSymbol(CaseSensName,Ord(CaseSensitive),0,True);
+   EnterIntSymbol(CaseSensName,CaseSensitive,0,true);
    if (PassNo==0)
-    BEGIN
+    {
      NLS_CurrDateString(DateS);
-     NLS_CurrTimeString(False,TimeS);
-    END
-   EnterStringSymbol(DateName,DateS,True);
-   EnterStringSymbol(TimeName,TimeS,True);
-   SetCPU(0,True);
-   SetFlag(&SupAllowed,SupAllowedName,False);
-   SetFlag(&FPUAvail,FPUAvailName,False);
-   SetFlag(&DoPadding,DoPaddingName,True);
-   SetFlag(&Maximum,MaximumName,False);
-   EnterIntSymbol(ListOnName,ListOn=1,0,True);
-   SetFlag(&LstMacroEx,LstMacroExName,True);
-   SetFlag(&RelaxedMode,RelaxedName,False);
+     NLS_CurrTimeString(false,TimeS);
+    }
+   EnterStringSymbol(DateName,DateS,true);
+   EnterStringSymbol(TimeName,TimeS,true);
+   SetCPU(0,true);
+   SetFlag(&SupAllowed,SupAllowedName,false);
+   SetFlag(&FPUAvail,FPUAvailName,false);
+   SetFlag(&DoPadding,DoPaddingName,true);
+   SetFlag(&Maximum,MaximumName,false);
+   EnterIntSymbol(ListOnName,ListOn=1,0,true);
+   SetFlag(&LstMacroEx,LstMacroExName,true);
+   SetFlag(&RelaxedMode,RelaxedName,false);
    CopyDefSymbols();
 
    ResetPageCounter();
 
-   StartAdrPresent=False;
+   StartAdrPresent=false;
 
-   Repass=False; PassNo++;
-END
+   Repass=false; PassNo++;
+}
 
         static void AssembleFile_ExitPass(void)
-BEGIN
+{
    SwitchFrom();
    ClearLocStack();
    ClearStacks();
-   if (FirstIfSave!=Nil) WrError(1470);
-   if (FirstSaveState!=Nil) WrError(1460);
-   if (SectionStack!=Nil) WrError(1485);
-END
+   if (FirstIfSave!=NULL) WrError(1470);
+   if (FirstSaveState!=NULL) WrError(1460);
+   if (SectionStack!=NULL) WrError(1485);
+}
 
         static void AssembleFile(void)
-BEGIN
+{
    String s;
 
    if (MakeDebug) fprintf(Debug,"File %s\n",SourceFile);
@@ -1667,20 +1667,20 @@ BEGIN
 
    strmaxcpy(OutName,GetFromOutList(),255);
    if (OutName[0]=='\0')
-    BEGIN
+    {
      strmaxcpy(OutName,SourceFile,255); KillSuffix(OutName);
      AddSuffix(OutName,PrgSuffix);
-    END
+    }
 
    if (ErrorPath[0]=='\0')
-    BEGIN
+    {
      strmaxcpy(ErrorName,SourceFile,255);
      KillSuffix(ErrorName);
      AddSuffix(ErrorName,LogSuffix);
-    END
+    }
 
    switch (ListMode)
-    BEGIN
+    {
      case 0: strmaxcpy(LstName,NULLDEV,255); break;
      case 1: strmaxcpy(LstName,"!1",255); break;
      case 2:
@@ -1688,31 +1688,31 @@ BEGIN
       KillSuffix(LstName);
       AddSuffix(LstName,LstSuffix);
       break;
-    END
+    }
 
    if (ShareMode!=0)
-    BEGIN
+    {
      strmaxcpy(ShareName,SourceFile,255);
      KillSuffix(ShareName);
      switch (ShareMode)
-      BEGIN
+      {
        case 1: AddSuffix(ShareName,".inc"); break;
        case 2: AddSuffix(ShareName,".h"); break;
        case 3: AddSuffix(ShareName,IncSuffix); break;
-      END
-    END
+      }
+    }
 
    if (MacProOutput)
-    BEGIN
+    {
      strmaxcpy(MacProName,SourceFile,255); KillSuffix(MacProName);
      AddSuffix(MacProName,PreSuffix);
-    END
+    }
 
    if (MacroOutput)
-    BEGIN
+    {
      strmaxcpy(MacroName,SourceFile,255); KillSuffix(MacroName);
      AddSuffix(MacroName,MacSuffix);
-    END
+    }
 
    ClearIncludeList();
 
@@ -1726,51 +1726,51 @@ BEGIN
 
    /* Listdatei eroeffnen */
 
-   if (NOT QuietMode) printf("%s%s\n",InfoMessAssembling,SourceFile);
+   if (! QuietMode) printf("%s%s\n",InfoMessAssembling,SourceFile);
 
    do
-    BEGIN
+    {
     /* Durchlauf initialisieren */
 
     AssembleFile_InitPass(); AsmSubInit();
-    if (NOT QuietMode) printf("%s%d%s\n",InfoMessPass,PassNo,ClrEol);
+    if (! QuietMode) printf("%s%d%s\n",InfoMessPass,PassNo,ClrEol);
 
     /* Dateien oeffnen */
 
     if (CodeOutput) OpenFile();
 
     if (ShareMode!=0)
-     BEGIN
+     {
       ShareFile=fopen(ShareName,"w");
-      if (ShareFile==Nil) ChkIO(10001);
+      if (ShareFile==NULL) ChkIO(10001);
       errno=0;
       switch (ShareMode)
-       BEGIN
+       {
         case 1:fprintf(ShareFile,"(* %s-Includefile f%sr CONST-Sektion *)\n",SourceFile,CH_ue); break;
         case 2:fprintf(ShareFile,"/* %s-Includefile f%sr C-Programm */\n",SourceFile,CH_ue); break;
         case 3:fprintf(ShareFile,"; %s-Includefile f%sr Assembler-Programm\n",SourceFile,CH_ue); break;
-       END
+       }
       ChkIO(10002);
-     END
+     }
 
     if (MacProOutput)
-     BEGIN
+     {
       MacProFile=fopen(MacProName,"w");
-      if (MacProFile==Nil) ChkIO(10001);
-     END
+      if (MacProFile==NULL) ChkIO(10001);
+     }
 
-    if ((MacroOutput) AND (PassNo==1))
-     BEGIN
+    if ((MacroOutput) && (PassNo==1))
+     {
       MacroFile=fopen(MacroName,"w");
-      if (MacroFile==Nil) ChkIO(10001);
-     END
+      if (MacroFile==NULL) ChkIO(10001);
+     }
 
     /* Listdatei oeffnen */
 
     RewriteStandard(&LstFile,LstName);
-    if (LstFile==Nil) ChkIO(10001);
+    if (LstFile==NULL) ChkIO(10001);
     errno=0; fprintf(LstFile,"%s",PrtInitString); ChkIO(10002);
-    if ((ListMask&1)!=0) NewPage(0,False);
+    if ((ListMask&1)!=0) NewPage(0,false);
 
     /* assemblieren */
 
@@ -1782,25 +1782,25 @@ BEGIN
     if (CodeOutput) CloseFile();
 
     if (ShareMode!=0)
-     BEGIN
+     {
       errno=0;
       switch (ShareMode)
-       BEGIN
+       {
         case 1: fprintf(ShareFile,"(* Ende Includefile f%sr CONST-Sektion *)\n",CH_ue); break;
         case 2: fprintf(ShareFile,"/* Ende Includefile f%sr C-Programm */\n",CH_ue); break;
         case 3: fprintf(ShareFile,"; Ende Includefile f%sr Assembler-Programm\n",CH_ue); break;
-       END
+       }
       ChkIO(10002);
       fclose(ShareFile);
-     END
+     }
 
     if (MacProOutput) fclose(MacProFile);
-    if ((MacroOutput) AND (PassNo==1)) fclose(MacroFile);
+    if ((MacroOutput) && (PassNo==1)) fclose(MacroFile);
 
     /* evtl. fuer naechsten Durchlauf aufraeumen */
 
-    if ((ErrorCount==0) AND (Repass))
-     BEGIN
+    if ((ErrorCount==0) && (Repass))
+     {
       fclose(LstFile);
       if (CodeOutput) unlink(OutName);
       if (MakeUseList) ClearUseList();
@@ -1808,34 +1808,34 @@ BEGIN
       ClearDefineList();
       if (DebugMode!=DebugNone) ClearLineInfo();
       ClearIncludeList();
-     END
-    END
-   while ((ErrorCount==0) AND (Repass));
+     }
+    }
+   while ((ErrorCount==0) && (Repass));
 
    /* bei Fehlern loeschen */
 
    if (ErrorCount!=0)
-    BEGIN
+    {
      if (CodeOutput) unlink(OutName);
      if (MacProOutput) unlink(MacProName);
-     if ((MacroOutput) AND (PassNo==1))  unlink(MacroName);
+     if ((MacroOutput) && (PassNo==1))  unlink(MacroName);
      if (ShareMode!=0) unlink(ShareName);
-     ErrFlag=True;
-    END
+     ErrFlag=true;
+    }
 
    /* Debug-Ausgabe muss VOR die Symbollistenausgabe, weil letztere die
       Symbolliste loescht */
 
    if (DebugMode!=DebugNone)
-    BEGIN
+    {
      if (ErrorCount==0) DumpDebugInfo();
      ClearLineInfo();
-    END
+    }
 
    /* Listdatei abschliessen */
 
    if  (strcmp(LstName,NULLDEV)!=0)
-    BEGIN
+    {
      if ((ListMask&2)!=0) PrintSymbolList();
 
      if ((ListMask&4)!=0) PrintMacroList();
@@ -1845,23 +1845,23 @@ BEGIN
      if ((ListMask&32)!=0) PrintDefineList();
 
      if (MakeUseList)
-      BEGIN
-       NewPage(ChapDepth,True);
+      {
+       NewPage(ChapDepth,true);
        PrintUseList();
-      END
+      }
 
      if (MakeCrossList)
-      BEGIN
-       NewPage(ChapDepth,True);
+      {
+       NewPage(ChapDepth,true);
        PrintCrossList();
-      END
+      }
 
      if (MakeSectionList) PrintSectionList();
 
      if (MakeIncludeList) PrintIncludeList();
 
      errno=0; fprintf(LstFile,"%s",PrtExitString); ChkIO(10002);
-    END
+    }
 
    if (MakeUseList) ClearUseList();
 
@@ -1871,10 +1871,10 @@ BEGIN
 
    ClearIncludeList();
 
-   if ((*ErrorPath=='\0') AND (IsErrorOpen))
-    BEGIN
-     fclose(ErrorFile); IsErrorOpen=False;
-    END
+   if ((*ErrorPath=='\0') && (IsErrorOpen))
+    {
+     fclose(ErrorFile); IsErrorOpen=false;
+    }
 
    ClearUpProc();
 
@@ -1882,52 +1882,52 @@ BEGIN
 
    StopTime=GTime();
    TWrite(DTime(StartTime,StopTime)/100.0,s);
-   if (NOT QuietMode) printf("\n%s%s%s\n\n",s,InfoMessAssTime,ClrEol);
+   if (! QuietMode) printf("\n%s%s%s\n\n",s,InfoMessAssTime,ClrEol);
    if (ListMode==2)
-    BEGIN
+    {
      WrLstLine("");
      strmaxcat(s,InfoMessAssTime,255); WrLstLine(s);
      WrLstLine("");
-    END
+    }
 
    strcpy(s,Dec32BlankString(LineSum,7));
    strmaxcat(s,(LineSum==1)?InfoMessAssLine:InfoMessAssLines,255);
-   if (NOT QuietMode) printf("%s%s\n",s,ClrEol);
+   if (! QuietMode) printf("%s%s\n",s,ClrEol);
    if (ListMode==2) WrLstLine(s);
 
    if (LineSum!=MacLineSum)
-    BEGIN
+    {
      strcpy(s,Dec32BlankString(MacLineSum,7));
      strmaxcat(s,(MacLineSum==1)?InfoMessMacAssLine:InfoMessMacAssLines,255);
-     if (NOT QuietMode) printf("%s%s\n",s,ClrEol);
+     if (! QuietMode) printf("%s%s\n",s,ClrEol);
      if (ListMode==2) WrLstLine(s);
-    END
+    }
 
    strcpy(s,Dec32BlankString(PassNo,7));
    strmaxcat(s,(PassNo==1)?InfoMessPassCnt:InfoMessPPassCnt,255);
-   if (NOT QuietMode) printf("%s%s\n",s,ClrEol);
+   if (! QuietMode) printf("%s%s\n",s,ClrEol);
    if (ListMode==2) WrLstLine(s);
 
-   if ((ErrorCount>0) AND (Repass) AND (ListMode!=0))
+   if ((ErrorCount>0) && (Repass) && (ListMode!=0))
     WrLstLine(InfoMessNoPass);
 
    sprintf(s,"%s%s",Dec32BlankString(ErrorCount,7),InfoMessErrCnt);
    if (ErrorCount!=1) strmaxcat(s,InfoMessErrPCnt,255);
-   if (NOT QuietMode) printf("%s%s\n",s,ClrEol);
+   if (! QuietMode) printf("%s%s\n",s,ClrEol);
    if (ListMode==2) WrLstLine(s);
 
    sprintf(s,"%s%s",Dec32BlankString(WarnCount,7),InfoMessWarnCnt);
    if (WarnCount!=1) strmaxcat(s,InfoMessWarnPCnt,255);
-   if (NOT QuietMode) printf("%s%s\n",s,ClrEol);
+   if (! QuietMode) printf("%s%s\n",s,ClrEol);
    if (ListMode==2) WrLstLine(s);
 
 #ifdef __TURBOC__
    sprintf(s,"%s%s",Dec32BlankString(coreleft()>>10,7),InfoMessRemainMem);
-   if (NOT QuietMode) printf("%s%s\n",s,ClrEol);
+   if (! QuietMode) printf("%s%s\n",s,ClrEol);
    if (ListMode==2) WrLstLine(s);
 
    sprintf(s,"%s%s",Dec32BlankString(StackRes(),7),InfoMessRemainStack);
-   if (NOT QuietMode) printf("%s%s\n",s,ClrEol);
+   if (! QuietMode) printf("%s%s\n",s,ClrEol);
    if (ListMode==2) WrLstLine(s);
 #endif
 
@@ -1944,10 +1944,10 @@ BEGIN
    ClearFunctionList();
    ClearDefineList();
    ClearFileList();
-END
+}
 
         static void AssembleGroup(void)
-BEGIN
+{
 /**   String PathPrefix;
       Search:SearchRec;**/
 
@@ -1963,311 +1963,311 @@ BEGIN
    IF DosError<>0 THEN WriteLn(StdErr,FileMask,InfoMessNFilesFound,Char_LF)
    ELSE
     REPEAT
-     IF (Search.Attr AND (Hidden OR SysFile OR VolumeID OR Directory)=0) THEN
-      BEGIN
+     IF (Search.Attr && (Hidden || SysFile || VolumeID || Directory)=0) THEN
+      {
        SourceFile:=PathPrefix+Search.Name;
        AssembleFile;
-      END;
+      };
      FindNext(Search);
     UNTIL DosError<>0**/
-END
+}
 
 /*-------------------------------------------------------------------------*/
 
-        static CMDResult CMD_SharePascal(Boolean Negate, char *Arg)
-BEGIN
-   if (Arg==Nil); /* satisfy some compilers */
+        static CMDResult CMD_SharePascal(bool Negate, char *Arg)
+{
+   if (Arg==NULL); /* satisfy some compilers */
 
-   if (NOT Negate) ShareMode=1;
+   if (! Negate) ShareMode=1;
    else if (ShareMode==1) ShareMode=0;
    return CMDOK;
-END
+}
 
-        static CMDResult CMD_ShareC(Boolean Negate, char *Arg)
-BEGIN
-   if (Arg==Nil); /* satisfy some compilers */
+        static CMDResult CMD_ShareC(bool Negate, char *Arg)
+{
+   if (Arg==NULL); /* satisfy some compilers */
 
-   if (NOT Negate) ShareMode=2;
+   if (! Negate) ShareMode=2;
    else if (ShareMode==2) ShareMode=0;
    return CMDOK;
-END
+}
 
-        static CMDResult CMD_ShareAssembler(Boolean Negate, char *Arg)
-BEGIN
-   if (Arg==Nil); /* satisfy some compilers */
+        static CMDResult CMD_ShareAssembler(bool Negate, char *Arg)
+{
+   if (Arg==NULL); /* satisfy some compilers */
 
-   if (NOT Negate) ShareMode=3;
+   if (! Negate) ShareMode=3;
    else if (ShareMode==3) ShareMode=0;
    return CMDOK;
-END
+}
 
-        static CMDResult CMD_DebugMode(Boolean Negate, char *Arg)
-BEGIN
-   if (Arg==Nil); /* satisfy some compilers */
+        static CMDResult CMD_DebugMode(bool Negate, char *Arg)
+{
+   if (Arg==NULL); /* satisfy some compilers */
 
    /*UpString(Arg);
 
    if (Negate)
     if (Arg[0]!='\0') return CMDErr;
     else
-     BEGIN
+     {
       DebugMode=DebugNone; return CMDOK;
-     END
+     }
    else if (strcmp(Arg,"")==0)
-    BEGIN
+    {
      DebugMode=DebugMAP; return CMDOK;
-    END
+    }
    else if (strcmp(Arg,"MAP")==0)
-    BEGIN
+    {
      DebugMode=DebugMAP; return CMDArg;
-    END
+    }
    else if (strcmp(Arg,"A.OUT")==0)
-    BEGIN
+    {
      DebugMode=DebugAOUT; return CMDArg;
-    END
+    }
    else if (strcmp(Arg,"COFF")==0)
-    BEGIN
+    {
      DebugMode=DebugCOFF; return CMDArg;
-    END
+    }
    else if (strcmp(Arg,"ELF")==0)
-    BEGIN
+    {
      DebugMode=DebugELF; return CMDArg;
-    END
+    }
    else return CMDErr;*/
 
    if (Negate) DebugMode=DebugNone;
    else DebugMode=DebugMAP;
    return CMDOK;
-END
+}
 
-        static CMDResult CMD_ListConsole(Boolean Negate, char *Arg)
-BEGIN
-   if (Arg==Nil); /* satisfy some compilers */
+        static CMDResult CMD_ListConsole(bool Negate, char *Arg)
+{
+   if (Arg==NULL); /* satisfy some compilers */
 
-   if (NOT Negate) ListMode=1;
+   if (! Negate) ListMode=1;
    else if (ListMode==1) ListMode=0;
    return CMDOK;
-END
+}
 
-        static CMDResult CMD_ListFile(Boolean Negate, char *Arg)
-BEGIN
-   if (Arg==Nil); /* satisfy some compilers */
+        static CMDResult CMD_ListFile(bool Negate, char *Arg)
+{
+   if (Arg==NULL); /* satisfy some compilers */
 
-   if (NOT Negate) ListMode=2;
+   if (! Negate) ListMode=2;
    else if (ListMode==2) ListMode=0;
    return CMDOK;
-END
+}
 
-        static CMDResult CMD_SuppWarns(Boolean Negate, char *Arg)
-BEGIN
-   if (Arg==Nil); /* satisfy some compilers */
+        static CMDResult CMD_SuppWarns(bool Negate, char *Arg)
+{
+   if (Arg==NULL); /* satisfy some compilers */
 
-   SuppWarns=NOT Negate;
+   SuppWarns=! Negate;
    return CMDOK;
-END
+}
 
-        static CMDResult CMD_UseList(Boolean Negate, char *Arg)
-BEGIN
-   if (Arg==Nil); /* satisfy some compilers */
+        static CMDResult CMD_UseList(bool Negate, char *Arg)
+{
+   if (Arg==NULL); /* satisfy some compilers */
 
-   MakeUseList=NOT Negate;
+   MakeUseList=! Negate;
    return CMDOK;
-END
+}
 
-        static CMDResult CMD_CrossList(Boolean Negate, char *Arg)
-BEGIN
-   if (Arg==Nil); /* satisfy some compilers */
+        static CMDResult CMD_CrossList(bool Negate, char *Arg)
+{
+   if (Arg==NULL); /* satisfy some compilers */
 
-   MakeCrossList=NOT Negate;
+   MakeCrossList=! Negate;
    return CMDOK;
-END
+}
 
-        static CMDResult CMD_SectionList(Boolean Negate, char *Arg)
-BEGIN
-   if (Arg==Nil); /* satisfy some compilers */
+        static CMDResult CMD_SectionList(bool Negate, char *Arg)
+{
+   if (Arg==NULL); /* satisfy some compilers */
 
-   MakeSectionList=NOT Negate;
+   MakeSectionList=! Negate;
    return CMDOK;
-END
+}
 
-        static CMDResult CMD_BalanceTree(Boolean Negate, char *Arg)
-BEGIN
-   if (Arg==Nil); /* satisfy some compilers */
+        static CMDResult CMD_BalanceTree(bool Negate, char *Arg)
+{
+   if (Arg==NULL); /* satisfy some compilers */
 
-   BalanceTree=NOT Negate;
+   BalanceTree=! Negate;
    return CMDOK;
-END
+}
 
-        static CMDResult CMD_MakeDebug(Boolean Negate, char *Arg)
-BEGIN
-   if (Arg==Nil); /* satisfy some compilers */
+        static CMDResult CMD_MakeDebug(bool Negate, char *Arg)
+{
+   if (Arg==NULL); /* satisfy some compilers */
 
-   if (NOT Negate)
-    BEGIN
-     MakeDebug=True;
+   if (! Negate)
+    {
+     MakeDebug=true;
      errno=0; Debug=fopen("as.deb","w");
-     if (Debug==Nil) ChkIO(10002);
-    END
+     if (Debug==NULL) ChkIO(10002);
+    }
    else if (MakeDebug)
-    BEGIN
-     MakeDebug=False;
+    {
+     MakeDebug=false;
      fclose(Debug);
-    END
+    }
    return CMDOK;
-END
+}
 
-        static CMDResult CMD_MacProOutput(Boolean Negate, char *Arg)
-BEGIN
-   if (Arg==Nil); /* satisfy some compilers */
+        static CMDResult CMD_MacProOutput(bool Negate, char *Arg)
+{
+   if (Arg==NULL); /* satisfy some compilers */
 
-   MacProOutput=NOT Negate;
+   MacProOutput=! Negate;
    return CMDOK;
-END
+}
 
-        static CMDResult CMD_MacroOutput(Boolean Negate, char *Arg)
-BEGIN
-   if (Arg==Nil); /* satisfy some compilers */
+        static CMDResult CMD_MacroOutput(bool Negate, char *Arg)
+{
+   if (Arg==NULL); /* satisfy some compilers */
 
-   MacroOutput=NOT Negate;
+   MacroOutput=! Negate;
    return CMDOK;
-END
+}
 
-        static CMDResult CMD_MakeIncludeList(Boolean Negate, char *Arg)
-BEGIN
-   if (Arg==Nil); /* satisfy some compilers */
+        static CMDResult CMD_MakeIncludeList(bool Negate, char *Arg)
+{
+   if (Arg==NULL); /* satisfy some compilers */
 
-   MakeIncludeList=NOT Negate;
+   MakeIncludeList=! Negate;
    return CMDOK;
-END
+}
 
-        static CMDResult CMD_CodeOutput(Boolean Negate, char *Arg)
-BEGIN
-   if (Arg==Nil); /* satisfy some compilers */
+        static CMDResult CMD_CodeOutput(bool Negate, char *Arg)
+{
+   if (Arg==NULL); /* satisfy some compilers */
 
-   CodeOutput=NOT Negate;
+   CodeOutput=! Negate;
    return CMDOK;
-END
+}
 
-        static CMDResult CMD_MsgIfRepass(Boolean Negate, String Arg)
-BEGIN
-   Boolean OK;
+        static CMDResult CMD_MsgIfRepass(bool Negate, String Arg)
+{
+   bool OK;
 
-   MsgIfRepass=NOT Negate;
+   MsgIfRepass=! Negate;
    if (MsgIfRepass)
     if (Arg[0]=='\0')
-     BEGIN
+     {
       PassNoForMessage=1; return CMDOK;
-     END
+     }
     else
-     BEGIN
+     {
       PassNoForMessage=ConstLongInt(Arg,&OK);
-      if (NOT OK)
-       BEGIN
+      if (! OK)
+       {
         PassNoForMessage=1; return CMDOK;
-       END
+       }
       else if (PassNoForMessage<1) return CMDErr;
       else return CMDArg;
-     END
+     }
    else return CMDOK;
-END
+}
 
-        static CMDResult CMD_ExtendErrors(Boolean Negate, char *Arg)
-BEGIN
-   if (Arg==Nil); /* satisfy some compilers */
+        static CMDResult CMD_ExtendErrors(bool Negate, char *Arg)
+{
+   if (Arg==NULL); /* satisfy some compilers */
 
-   ExtendErrors=NOT Negate;
+   ExtendErrors=! Negate;
    return CMDOK;
-END
+}
 
-        static CMDResult CMD_NumericErrors(Boolean Negate, char *Arg)
-BEGIN
-   if (Arg==Nil); /* satisfy some compilers */
+        static CMDResult CMD_NumericErrors(bool Negate, char *Arg)
+{
+   if (Arg==NULL); /* satisfy some compilers */
 
-   NumericErrors=NOT Negate;
+   NumericErrors=! Negate;
    return CMDOK;
-END
+}
 
-        static CMDResult CMD_HexLowerCase(Boolean Negate, char *Arg)
-BEGIN
-   if (Arg==Nil); /* satisfy some compilers */
+        static CMDResult CMD_HexLowerCase(bool Negate, char *Arg)
+{
+   if (Arg==NULL); /* satisfy some compilers */
 
-   HexLowerCase=NOT Negate;
+   HexLowerCase=! Negate;
    return CMDOK;
-END
+}
 
-        static CMDResult CMD_QuietMode(Boolean Negate, char *Arg)
-BEGIN
-   if (Arg==Nil); /* satisfy some compilers */
+        static CMDResult CMD_QuietMode(bool Negate, char *Arg)
+{
+   if (Arg==NULL); /* satisfy some compilers */
 
-   QuietMode=NOT Negate;
+   QuietMode=! Negate;
    return CMDOK;
-END
+}
 
-        static CMDResult CMD_ThrowErrors(Boolean Negate, char *Arg)
-BEGIN
-   if (Arg==Nil); /* satisfy some compilers */
+        static CMDResult CMD_ThrowErrors(bool Negate, char *Arg)
+{
+   if (Arg==NULL); /* satisfy some compilers */
 
-   ThrowErrors=NOT Negate;
+   ThrowErrors=! Negate;
    return CMDOK;
-END
+}
 
-        static CMDResult CMD_CaseSensitive(Boolean Negate, char *Arg)
-BEGIN
-   if (Arg==Nil); /* satisfy some compilers */
+        static CMDResult CMD_CaseSensitive(bool Negate, char *Arg)
+{
+   if (Arg==NULL); /* satisfy some compilers */
 
-   CaseSensitive=NOT Negate;
+   CaseSensitive=! Negate;
    return CMDOK;
-END
+}
 
-        static CMDResult CMD_IncludeList(Boolean Negate, char *Arg)
-BEGIN
+        static CMDResult CMD_IncludeList(bool Negate, char *Arg)
+{
    char *p;
    String Copy,part;
 
    if (*Arg=='\0') return CMDErr;
    else
-    BEGIN
+    {
      strncpy(Copy,Arg,255);
      do
-      BEGIN
+      {
        p=strrchr(Copy,':');
-       if (p==Nil)
-        BEGIN
+       if (p==NULL)
+        {
          strmaxcpy(part,Copy,255);
          *Copy='\0';
-        END
+        }
        else
-        BEGIN
+        {
          *p='\0'; strmaxcpy(part,p+1,255);
-        END
+        }
        if (Negate) RemoveIncludeList(part); else AddIncludeList(part);
-      END
+      }
      while (Copy[0]!='\0');
      return CMDArg;
-    END
-END
+    }
+}
 
-        static CMDResult CMD_ListMask(Boolean Negate, char *Arg)
-BEGIN
-   Byte erg;
-   Boolean OK;
+        static CMDResult CMD_ListMask(bool Negate, char *Arg)
+{
+   bool erg;
+   bool OK;
 
    if (Arg[0]=='\0') return CMDErr;
    else
-    BEGIN
+    {
      OK=ConstLongInt(Arg,&erg);
-     if ((NOT OK) OR (erg>31)) return CMDErr;
+     if ((! OK) || (erg>31)) return CMDErr;
      else
-      BEGIN
+      {
        if (Negate) ListMask&=(~erg);
        else ListMask|=erg;
        return CMDArg;
-      END
-    END
-END
+      }
+    }
+}
 
-        static CMDResult CMD_DefSymbol(Boolean Negate, char *Arg)
-BEGIN
+        static CMDResult CMD_DefSymbol(bool Negate, char *Arg)
+{
    String Copy,Part,Name;
    char *p;
    TempResult t;
@@ -2276,118 +2276,118 @@ BEGIN
 
    strmaxcpy(Copy,Arg,255);
    do
-    BEGIN
+    {
      p=QuotPos(Copy,',');
-     if (p==Nil)
-      BEGIN
+     if (p==NULL)
+      {
        strmaxcpy(Part,Copy,255); Copy[0]='\0';
-      END
+      }
      else
-      BEGIN
+      {
        *p='\0'; strmaxcpy(Part,Copy,255); strcpy(Copy,p+1);
-      END
+      }
     UpString(Part);
     p=QuotPos(Part,'=');
-    if (p==Nil)
-     BEGIN
+    if (p==NULL)
+     {
       strmaxcpy(Name,Part,255); Part[0]='\0';
-     END
+     }
     else
-     BEGIN
+     {
       *p='\0'; strmaxcpy(Name,Part,255); strcpy(Part,p+1);
-     END
-    if (NOT ChkSymbName(Name)) return CMDErr;
+     }
+    if (! ChkSymbName(Name)) return CMDErr;
     if (Negate) RemoveDefSymbol(Name);
     else
-     BEGIN
+     {
       AsmParsInit();
       if (Part[0]!='\0')
-       BEGIN
-        FirstPassUnknown=False;
+       {
+        FirstPassUnknown=false;
         EvalExpression(Part,&t);
-        if ((t.Typ==TempNone) OR (FirstPassUnknown)) return CMDErr;
-       END
+        if ((t.Typ==TempNone) || (FirstPassUnknown)) return CMDErr;
+       }
       else
-       BEGIN
+       {
         t.Typ=TempInt; t.Contents.Int=1;
-       END
+       }
       AddDefSymbol(Name,&t);
-     END
-    END
+     }
+    }
    while (Copy[0]!='\0');
 
    return CMDArg;
-END
+}
 
-        static CMDResult CMD_ErrorPath(Boolean Negate, String Arg)
-BEGIN
+        static CMDResult CMD_ErrorPath(bool Negate, String Arg)
+{
    if (Negate) return CMDErr;
    else if (Arg[0]=='\0')
-    BEGIN
+    {
      ErrorPath[0]='\0'; return CMDOK;
-    END
+    }
    else
-    BEGIN
+    {
      strncpy(ErrorPath,Arg,255); return CMDArg;
-    END
-END
+    }
+}
 
-        static CMDResult CMD_OutFile(Boolean Negate, char *Arg)
-BEGIN
+        static CMDResult CMD_OutFile(bool Negate, char *Arg)
+{
    if (Arg[0]=='\0')
     if (Negate)
-     BEGIN
+     {
       ClearOutList(); return CMDOK;
-     END
+     }
     else return CMDErr;
    else
-    BEGIN
+    {
      if (Negate) RemoveFromOutList(Arg);
      else AddToOutList(Arg);
      return CMDArg;
-    END
-END
+    }
+}
 
 
-   	static Boolean CMD_CPUAlias_ChkCPUName(char *s)
-BEGIN
+   	static bool CMD_CPUAlias_ChkCPUName(char *s)
+{
    Integer z;
 
    for(z=0; z<strlen(s); z++)
-    if (NOT isalnum(s[z])) return False;
-   return True;
-END
+    if (! isalnum(s[z])) return false;
+   return true;
+}
 
-	static CMDResult CMD_CPUAlias(Boolean Negate, char *Arg)
-BEGIN
+	static CMDResult CMD_CPUAlias(bool Negate, char *Arg)
+{
    char *p;
    String s1,s2;
 
    if (Negate) return CMDErr;
    else if (Arg[0]=='\0') return CMDErr;
    else
-    BEGIN
+    {
      p=strchr(Arg,'=');
-     if (p==Nil) return CMDErr;
+     if (p==NULL) return CMDErr;
      else
-      BEGIN
+      {
        *p='\0';
        strmaxcpy(s1,Arg,255); UpString(s1);
        strmaxcpy(s2,p+1,255); UpString(s2);
        *p='=';
-       if (NOT (CMD_CPUAlias_ChkCPUName(s1) AND CMD_CPUAlias_ChkCPUName(s2)))
+       if (! (CMD_CPUAlias_ChkCPUName(s1) && CMD_CPUAlias_ChkCPUName(s2)))
         return CMDErr;
-       else if (NOT AddCPUAlias(s2,s1)) return CMDErr;
+       else if (! AddCPUAlias(s2,s1)) return CMDErr;
        else return CMDArg;
-      END
-    END
-END
+      }
+    }
+}
 
-        static void ParamError(Boolean InEnv, char *Arg)
-BEGIN
+        static void ParamError(bool InEnv, char *Arg)
+{
    printf("%s%s\n",(InEnv)?(ErrMsgInvEnvParam):(ErrMsgInvParam),Arg);
    exit(4);
-END
+}
 
 #define ASParamCnt 30
 static CMDRec ASParams[ASParamCnt]=
@@ -2431,47 +2431,47 @@ static CMDRec ASParams[ASParamCnt]=
         extern void on_exit(void (*procp)(int status, caddr_t arg),caddr_t arg);
 
 	static void GlobExitProc(int status, caddr_t arg)
-BEGIN
+{
    if (MakeDebug) fclose(Debug);
-END
+}
 
 #else
 
         static void GlobExitProc(void)
-BEGIN
+{
    if (MakeDebug) fclose(Debug);
-END
+}
 
 #endif
 
 static Integer LineZ;
 
         static void NxtLine(void)
-BEGIN
+{
    if (++LineZ==23)
-    BEGIN
+    {
      LineZ=0;
      if (Redirected!=NoRedir) return;
      printf("%s",KeyWaitMsg); while (getchar()!='\n');
      printf("%s%s",CursUp,ClrEol);
-    END
-END
+    }
+}
 
 	static void WrHead(void)
-BEGIN
+{
    if (!QuietMode)
-    BEGIN
-     setbuf(stdout,Nil);
+    {
+     setbuf(stdout,NULL);
      printf("%s%s\n",InfoMessMacroAss,Version); NxtLine();
      printf("C-Version\n"); NxtLine();
      printf("%s\n",InfoMessCopyright); NxtLine();
      WriteCopyrights(NxtLine);
      printf("\n"); NxtLine();
-    END
-END
+    }
+}
 
 	int main(int argc, char **argv)
-BEGIN
+{
    char *Env;
    String Dummy;
    Integer i;
@@ -2514,7 +2514,7 @@ BEGIN
    /*as1750_init();*/
 
 #ifdef __sunos__
-   on_exit(GlobExitProc,(caddr_t) Nil);
+   on_exit(GlobExitProc,(caddr_t) NULL);
 #else
 #ifndef __MUNIX__
    atexit(GlobExitProc);
@@ -2525,17 +2525,17 @@ BEGIN
 
    *CursUp='\0'; *ClrEol='\0';
    switch (Redirected)
-    BEGIN
+    {
      case NoRedir:
-      Env=getenv("USEANSI"); strncpy(Dummy,(Env!=Nil)?Env:"Y",255);
+      Env=getenv("USEANSI"); strncpy(Dummy,(Env!=NULL)?Env:"Y",255);
       if (toupper(Dummy[0])=='N')
-       BEGIN
-       END
+       {
+       }
       else
-       BEGIN
+       {
         strcpy(ClrEol," [K"); ClrEol[0]=Char_ESC;  /* ANSI-Sequenzen */
         strcpy(CursUp," [A"); CursUp[0]=Char_ESC;
-       END
+       }
       break;
      case RedirToDevice:
       /* Basissteuerzeichen fuer Geraete */
@@ -2544,34 +2544,34 @@ BEGIN
       break;
      case RedirToFile:
       strcpy(ClrEol,"\n");  /* CRLF auf Datei */
-    END
+    }
 
-   ShareMode=0; ListMode=0; IncludeList[0]='\0'; SuppWarns=False;
-   MakeUseList=False; MakeCrossList=False; MakeSectionList=False;
-   MakeIncludeList=False; ListMask=0x3f;
-   MakeDebug=False; ExtendErrors=False;
-   MacroOutput=False; MacProOutput=False; CodeOutput=True;
-   strcpy(ErrorPath,"!2"); MsgIfRepass=False; QuietMode=False;
-   NumericErrors=False; DebugMode=DebugNone; CaseSensitive=False;
-   ThrowErrors=False;
+   ShareMode=0; ListMode=0; IncludeList[0]='\0'; SuppWarns=false;
+   MakeUseList=false; MakeCrossList=false; MakeSectionList=false;
+   MakeIncludeList=false; ListMask=0x3f;
+   MakeDebug=false; ExtendErrors=false;
+   MacroOutput=false; MacProOutput=false; CodeOutput=true;
+   strcpy(ErrorPath,"!2"); MsgIfRepass=false; QuietMode=false;
+   NumericErrors=false; DebugMode=DebugNone; CaseSensitive=false;
+   ThrowErrors=false;
 
    LineZ=0;
 
    if (ParamCount==0)
-    BEGIN
+    {
      WrHead();
      printf("%s%s%s\n",InfoMessHead1,GetEXEName(),InfoMessHead2); NxtLine();
      for (i=0; i<InfoMessHelpCnt; i++)
-      BEGIN
+      {
        printf("%s\n",InfoMessHelp[i]); NxtLine();
-      END
+      }
      PrintCPUList(NxtLine);
      ClearCPUList();
      exit(1);
-    END
+    }
 
 #if defined(STDINCLUDES)
-   CMD_IncludeList(False,STDINCLUDES);
+   CMD_IncludeList(false,STDINCLUDES);
 #endif
    ProcessCMD(ASParams,ASParamCnt,ParUnprocessed,EnvName,ParamError);
 
@@ -2579,31 +2579,31 @@ BEGIN
 
    WrHead();
 
-   ErrFlag=False;
+   ErrFlag=false;
    if (ErrorPath[0]!='\0') strcpy(ErrorName,ErrorPath);
-   IsErrorOpen=False;
+   IsErrorOpen=false;
 
    for (i=1; i<=ParamCount; i++)
     if (ParUnprocessed[i]) break;
    if (i>ParamCount)
-    BEGIN
+    {
      printf("%s [%s] ",InvMsgSource,SrcSuffix); fgets(FileMask,255,stdin);
      AssembleGroup();
-    END
+    }
    else
     for (i=1; i<=ParamCount; i++)
     if (ParUnprocessed[i])
-     BEGIN
+     {
       strmaxcpy(FileMask,ParamStr[i],255);
       AssembleGroup();
-     END
+     }
 
-   if ((ErrorPath[0]!='\0') AND (IsErrorOpen))
-    BEGIN
-     fclose(ErrorFile); IsErrorOpen=False;
-    END
+   if ((ErrorPath[0]!='\0') && (IsErrorOpen))
+    {
+     fclose(ErrorFile); IsErrorOpen=false;
+    }
 
    ClearCPUList();
 
    if (ErrFlag) return (2); else return (0);
-END
+}

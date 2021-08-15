@@ -62,7 +62,7 @@ typedef struct
 #define CondOrderCount 9
 
 
-static Boolean CLI_SEI_Flag,ADC_SBC_Flag;
+static bool CLI_SEI_Flag,ADC_SBC_Flag;
 
 static FixedOrder *FixedOrders;
 static NormOrder *NormOrders;
@@ -78,18 +78,18 @@ static Byte AdrVals[2];
 /*---------------------------------------------------------------------------*/
 
 	static void AddFixed(char *NName, Byte NFlag, Byte NCode)
-BEGIN
+{
    if (InstrZ>=FixedOrderCount) exit(255);
    FixedOrders[InstrZ].Name=NName;
    FixedOrders[InstrZ].CPUFlag=NFlag;
    FixedOrders[InstrZ++].Code=NCode;
-END
+}
 
 	static void AddNorm(char *NName, Word ZACode, Word ACode, Word ZIXCode,
                             Word IXCode, Word ZIYCode, Word IYCode, Word IndXCode,
                             Word IndYCode, Word Ind16Code, Word ImmCode, Word AccCode,
                             Word NoneCode, Word Ind8Code, Word SpecCode)
-BEGIN
+{
    if (InstrZ>=NormOrderCount) exit(255);
    NormOrders[InstrZ].Name=NName;
    NormOrders[InstrZ].Codes[ModZA]=ZACode;
@@ -106,19 +106,19 @@ BEGIN
    NormOrders[InstrZ].Codes[ModNone]=NoneCode;
    NormOrders[InstrZ].Codes[ModInd8]=Ind8Code;
    NormOrders[InstrZ++].Codes[ModSpec]=SpecCode;
-END
+}
 
         static void AddCond(char *NName, Byte NFlag, Byte NCode)
-BEGIN
+{
    if (InstrZ>=CondOrderCount) exit(255);
    CondOrders[InstrZ].Name=NName;
    CondOrders[InstrZ].CPUFlag=NFlag;
    CondOrders[InstrZ++].Code=NCode;
-END
+}
 
 	static void InitFields(void)
-BEGIN
-   Boolean Is740=(MomCPU==CPUM740);
+{
+   bool Is740=(MomCPU==CPUM740);
 
    FixedOrders=(FixedOrder *) malloc(sizeof(FixedOrder)*FixedOrderCount); InstrZ=0;
    AddFixed("RTS", 15, 0x60);  AddFixed("RTI", 15, 0x40);
@@ -189,92 +189,92 @@ BEGIN
    AddCond("BVC", 15, 0x50);
    AddCond("BVS", 15, 0x70);
    AddCond("BRA", 14, 0x80);
-END
+}
 
 	static void DeinitFields(void)
-BEGIN
+{
    free(FixedOrders);
    free(NormOrders);
    free(CondOrders);
-END
+}
 
 /*---------------------------------------------------------------------------*/
 
 	static void ChkZero(char *Asc, Byte *erg)
-BEGIN
-   if ((strlen(Asc)>1) AND ((*Asc=='<') OR (*Asc=='>')))
-    BEGIN
-     *erg=Ord(*Asc=='<')+1; strcpy(Asc,Asc+1);
-    END
+{
+   if ((strlen(Asc)>1) && ((*Asc=='<') || (*Asc=='>')))
+    {
+     *erg=(*Asc=='<')+1; strcpy(Asc,Asc+1);
+    }
    else *erg=0;
-END
+}
 
-	static Boolean DecodePseudo(void)
-BEGIN
+	static bool DecodePseudo(void)
+{
 #define ASSUME740Count 1
    static ASSUMERec ASSUME740s[ASSUME740Count]=
  	            {{"SP", &SpecPage, 0, 0xff, -1}};
 
    if (Memo("ASSUME"))
-    BEGIN
+    {
      if (MomCPU!=CPUM740) WrError(1500);
      else CodeASSUME(ASSUME740s,ASSUME740Count);
-     return True;
-    END
+     return true;
+    }
 
-   return False;
-END
+   return false;
+}
 
 	static void ChkFlags(void)
-BEGIN
+{
    /* Spezialflags ? */
 
-   CLI_SEI_Flag=(Memo("CLI") OR Memo("SEI"));
-   ADC_SBC_Flag=(Memo("ADC") OR Memo("SBC"));
-END
+   CLI_SEI_Flag=(Memo("CLI") || Memo("SEI"));
+   ADC_SBC_Flag=(Memo("ADC") || Memo("SBC"));
+}
 
-	static Boolean CPUAllowed(Byte Flag)
-BEGIN
+	static bool CPUAllowed(Byte Flag)
+{
    return (((Flag >> (MomCPU-CPU6502))&1)==1);
-END
+}
 
 	static void InsNOP(void)
-BEGIN
+{
    memmove(BAsmCode,BAsmCode+1,CodeLen);
    CodeLen++; BAsmCode[0]=NOPCode;
-END
+}
 
-	static Boolean IsAllowed(Word Val)
-BEGIN
-   return (CPUAllowed(Hi(Val)) AND (Val!=0xffff));
-END
+	static bool IsAllowed(Word Val)
+{
+   return (CPUAllowed(Hi(Val)) && (Val!=0xffff));
+}
 
 	static void ChkZeroMode(ShortInt Mode)
-BEGIN
+{
    Integer OrderZ;
 
    for (OrderZ=0; OrderZ<NormOrderCount; OrderZ++)
     if (Memo(NormOrders[OrderZ].Name))
-     BEGIN
+     {
       if (IsAllowed(NormOrders[OrderZ].Codes[Mode]))
-       BEGIN
+       {
 	ErgMode=Mode; AdrCnt--;
-       END
+       }
       return;
-     END
-END
+     }
+}
 
 	static void MakeCode_65(void)
-BEGIN
+{
    Word OrderZ;
    Byte AdrByte;
    Integer AdrInt;
    Word AdrWord;
    String s1;
-   Boolean ValOK,b;
+   bool ValOK,b;
    Byte ZeroMode;
 
-   CodeLen=0; DontPrint=False;
+   CodeLen=0; DontPrint=false;
 
    /* zu ignorierendes */
 
@@ -284,426 +284,426 @@ BEGIN
 
    if (DecodePseudo()) { ChkFlags(); return; }
 
-   if (DecodeMotoPseudo(False)) { ChkFlags(); return; }
+   if (DecodeMotoPseudo(false)) { ChkFlags(); return; }
 
    /* Anweisungen ohne Argument */
 
    for (OrderZ=0; OrderZ<FixedOrderCount; OrderZ++)
     if (Memo(FixedOrders[OrderZ].Name))
-     BEGIN
+     {
       if (ArgCnt!=0) WrError(1110);
-      else if (NOT CPUAllowed(FixedOrders[OrderZ].CPUFlag)) WrError(1500);
+      else if (! CPUAllowed(FixedOrders[OrderZ].CPUFlag)) WrError(1500);
       else
-       BEGIN
+       {
         CodeLen=1;
         BAsmCode[0]=FixedOrders[OrderZ].Code;
         if (Memo("BRK")) BAsmCode[CodeLen++]=NOPCode;
         else if (MomCPU==CPUM740)
-	 BEGIN
+	 {
           if (Memo("PLP")) BAsmCode[CodeLen++]=NOPCode;
-	  if ((ADC_SBC_Flag) AND (Memo("SEC") OR Memo("CLC") OR Memo("CLD"))) InsNOP();
-	 END
-       END
+	  if ((ADC_SBC_Flag) && (Memo("SEC") || Memo("CLC") || Memo("CLD"))) InsNOP();
+	 }
+       }
       ChkFlags(); return;
-     END
+     }
 
-    if ((Memo("SEB")) OR (Memo("CLB")))
-     BEGIN
+    if ((Memo("SEB")) || (Memo("CLB")))
+     {
       if (ArgCnt!=2) WrError(1110);
       else if (MomCPU!=CPUM740) WrError(1500);
       else
-       BEGIN
+       {
 	AdrByte=EvalIntExpression(ArgStr[1],UInt3,&ValOK);
 	if (ValOK)
-	 BEGIN
-	  BAsmCode[0]=0x0b+(AdrByte << 5)+(Ord(Memo("CLB")) << 4);
+	 {
+	  BAsmCode[0]=0x0b+(AdrByte << 5)+(Memo("CLB") << 4);
 	  if (strcasecmp(ArgStr[2],"A")==0) CodeLen=1;
 	  else
-	   BEGIN
+	   {
             BAsmCode[1]=EvalIntExpression(ArgStr[2],UInt8,&ValOK);
 	    if (ValOK)
-	     BEGIN
+	     {
 	      CodeLen=2; BAsmCode[0]+=4;
-	     END
-	   END
-	 END
-       END
+	     }
+	   }
+	 }
+       }
       ChkFlags(); return;
-     END
+     }
 
-    if ((Memo("BBC")) OR (Memo("BBS")))
-     BEGIN
+    if ((Memo("BBC")) || (Memo("BBS")))
+     {
       if (ArgCnt!=3) WrError(1110);
       else if (MomCPU!=CPUM740) WrError(1500);
       else
-       BEGIN
+       {
 	BAsmCode[0]=EvalIntExpression(ArgStr[1],UInt3,&ValOK);
 	if (ValOK)
-	 BEGIN
-	  BAsmCode[0]=(BAsmCode[0] << 5)+(Ord(Memo("BBC")) << 4)+3;
+	 {
+	  BAsmCode[0]=(BAsmCode[0] << 5)+(Memo("BBC") << 4)+3;
 	  b=(strcasecmp(ArgStr[2],"A")!=0);
-	  if (NOT b) ValOK=True;
+	  if (! b) ValOK=true;
 	  else
-	   BEGIN
+	   {
 	    BAsmCode[0]+=4;
             BAsmCode[1]=EvalIntExpression(ArgStr[2],UInt8,&ValOK);
-	   END
+	   }
 	  if (ValOK)
-	   BEGIN
-	    AdrInt=EvalIntExpression(ArgStr[3],Int16,&ValOK)-(EProgCounter()+2+Ord(b)+Ord(CLI_SEI_Flag));
+	   {
+	    AdrInt=EvalIntExpression(ArgStr[3],Int16,&ValOK)-(EProgCounter()+2+b+CLI_SEI_Flag);
 	    if (ValOK)
-	     if (((AdrInt>127) OR (AdrInt<-128)) AND (NOT SymbolQuestionable)) WrError(1370);
+	     if (((AdrInt>127) || (AdrInt<-128)) && (! SymbolQuestionable)) WrError(1370);
 	     else
-	      BEGIN
-	       CodeLen=2+Ord(b);
+	      {
+	       CodeLen=2+b;
 	       BAsmCode[CodeLen-1]=AdrInt & 0xff;
 	       if (CLI_SEI_Flag) InsNOP();
-	      END
-	   END
-	 END
-       END
+	      }
+	   }
+	 }
+       }
       ChkFlags(); return;
-     END
+     }
 
     if (((strlen(OpPart)==4)
-    AND  (OpPart[3]>='0') AND (OpPart[3]<='7')
-    AND  ((strncmp(OpPart,"BBR",3)==0) OR (strncmp(OpPart,"BBS",3)==0))))
-     BEGIN
+    &&  (OpPart[3]>='0') && (OpPart[3]<='7')
+    &&  ((strncmp(OpPart,"BBR",3)==0) || (strncmp(OpPart,"BBS",3)==0))))
+     {
       if (ArgCnt!=2) WrError(1110);
       else if (MomCPU!=CPU65C02) WrError(1500);
       else
-       BEGIN
+       {
 	BAsmCode[1]=EvalIntExpression(ArgStr[1],UInt8,&ValOK);
 	if (ValOK)
-	 BEGIN
-	  BAsmCode[0]=((OpPart[3]-'0') << 4)+(Ord(OpPart[2]=='S') << 7)+15;
+	 {
+	  BAsmCode[0]=((OpPart[3]-'0') << 4)+((OpPart[2]=='S') << 7)+15;
           AdrInt=EvalIntExpression(ArgStr[2],UInt16,&ValOK)-(EProgCounter()+3);
 	  if (ValOK)
-	   if (((AdrInt>127) OR (AdrInt<-128)) AND (NOT SymbolQuestionable)) WrError(1370);
+	   if (((AdrInt>127) || (AdrInt<-128)) && (! SymbolQuestionable)) WrError(1370);
 	   else
-	    BEGIN
+	    {
 	     CodeLen=3;
 	     BAsmCode[2]=AdrInt & 0xff;
-	    END
-	 END
-       END
+	    }
+	 }
+       }
       ChkFlags(); return;
-     END
+     }
 
     if (((strlen(OpPart)==4)
-    AND  (OpPart[3]>='0') AND (OpPart[3]<='7')
-    AND  ((strncmp(OpPart,"RMB",3)==0) OR (strncmp(OpPart,"SMB",3)==0))))
-     BEGIN
+    &&  (OpPart[3]>='0') && (OpPart[3]<='7')
+    &&  ((strncmp(OpPart,"RMB",3)==0) || (strncmp(OpPart,"SMB",3)==0))))
+     {
       if (ArgCnt!=1) WrError(1110);
       else if (MomCPU!=CPU65C02) WrError(1500);
       else
-       BEGIN
+       {
 	BAsmCode[1]=EvalIntExpression(ArgStr[1],UInt8,&ValOK);
 	if (ValOK)
-	 BEGIN
-	  BAsmCode[0]=((OpPart[3]-'0') << 4)+(Ord(*OpPart=='S') << 7)+7;
+	 {
+	  BAsmCode[0]=((OpPart[3]-'0') << 4)+((*OpPart=='S') << 7)+7;
           CodeLen=2;
-	 END
-       END
+	 }
+       }
       ChkFlags(); return;
-     END
+     }
 
    if (Memo("LDM"))
-    BEGIN
+    {
      if (ArgCnt!=2) WrError(1110);
      else if (MomCPU!=CPUM740) WrError(1500);
      else
-      BEGIN
+      {
        BAsmCode[0]=0x3c;
        BAsmCode[2]=EvalIntExpression(ArgStr[2],UInt8,&ValOK);
        if (ValOK)
 	if (*ArgStr[1]!='#') WrError(1350);
 	else
-	 BEGIN
+	 {
           BAsmCode[1]=EvalIntExpression(ArgStr[1]+1,Int8,&ValOK);
 	  if (ValOK) CodeLen=3;
-	 END
-      END
+	 }
+      }
      ChkFlags(); return;
-    END
+    }
 
    /* normale Anweisungen: Adressausdruck parsen */
 
    ErgMode=(-1);
 
    if (ArgCnt==0)
-    BEGIN
+    {
      AdrCnt=0; ErgMode=ModNone;
-    END
+    }
 
    else if (ArgCnt==1)
-    BEGIN
+    {
      /* 1. Akkuadressierung */
 
      if (strcasecmp(ArgStr[1],"A")==0)
-      BEGIN
+      {
        AdrCnt=0; ErgMode=ModAcc;
-      END
+      }
 
      /* 2. immediate ? */
 
      else if (*ArgStr[1]=='#')
-      BEGIN
+      {
        AdrVals[0]=EvalIntExpression(ArgStr[1]+1,Int8,&ValOK);
        if (ValOK)
-	BEGIN
+	{
 	 ErgMode=ModImm; AdrCnt=1;
-	END
-      END
+	}
+      }
 
      /* 3. Special Page ? */
 
      else if (*ArgStr[1]=='\\')
-      BEGIN
+      {
        AdrWord=EvalIntExpression(ArgStr[1]+1,UInt16,&ValOK);
        if (ValOK)
 	if (Hi(AdrWord)!=SpecPage) WrError(1315);
 	else
-	 BEGIN
+	 {
 	  ErgMode=ModSpec; AdrVals[0]=Lo(AdrWord); AdrCnt=1;
-	 END
-      END
+	 }
+      }
 
      /* 4. X-indirekt ? */
 
-     else if ((strlen(ArgStr[1])>=5) AND (strcasecmp(ArgStr[1]+strlen(ArgStr[1])-3,",X)")==0))
-      BEGIN
+     else if ((strlen(ArgStr[1])>=5) && (strcasecmp(ArgStr[1]+strlen(ArgStr[1])-3,",X)")==0))
+      {
        if (*ArgStr[1]!='(') WrError(1350);
        else
-	BEGIN
+	{
          strmaxcpy(s1,ArgStr[1]+1,255); s1[strlen(s1)-3]='\0';
 	 ChkZero(s1,&ZeroMode);
          if (Memo("JMP"))
-          BEGIN
+          {
            AdrWord=EvalIntExpression(s1,UInt16,&ValOK);
            if (ValOK)
-            BEGIN
+            {
              AdrVals[0]=Lo(AdrWord); AdrVals[1]=Hi(AdrWord);
              ErgMode=ModIndX; AdrCnt=2;
-            END
-          END
+            }
+          }
          else
-          BEGIN
+          {
            AdrVals[0]=EvalIntExpression(s1,UInt8,&ValOK);
            if (ValOK)
-            BEGIN
+            {
              ErgMode=ModIndX; AdrCnt=1;
-            END
-          END
-	END
-      END
+            }
+          }
+	}
+      }
 
      else
-      BEGIN
+      {
        /* 5. indirekt absolut ? */
 
        if (IsIndirect(ArgStr[1]))
-	BEGIN
+	{
          strcpy(s1,ArgStr[1]+1); s1[strlen(s1)-1]='\0';
 	 ChkZero(s1,&ZeroMode);
 	 if (ZeroMode==2)
-	  BEGIN
+	  {
            AdrVals[0]=EvalIntExpression(s1,UInt8,&ValOK);
 	   if (ValOK)
-	    BEGIN
+	    {
 	     ErgMode=ModInd8; AdrCnt=1;
-	    END
-	  END
+	    }
+	  }
 	 else
-	  BEGIN
+	  {
 	   AdrWord=EvalIntExpression(s1,UInt16,&ValOK);
 	   if (ValOK)
-	    BEGIN
+	    {
 	     ErgMode=ModInd16; AdrCnt=2;
              AdrVals[0]=Lo(AdrWord); AdrVals[1]=Hi(AdrWord);
-	     if ((ZeroMode==0) AND (AdrVals[1]==0)) ChkZeroMode(ModInd8);
-	    END
-	  END
-	END
+	     if ((ZeroMode==0) && (AdrVals[1]==0)) ChkZeroMode(ModInd8);
+	    }
+	  }
+	}
 
        /* 6. absolut */
 
        else
-	BEGIN
+	{
 	 ChkZero(ArgStr[1],&ZeroMode);
 	 if (ZeroMode==2)
-	  BEGIN
+	  {
            AdrVals[0]=EvalIntExpression(ArgStr[1],UInt8,&ValOK);
 	   if (ValOK)
-	    BEGIN
+	    {
 	     ErgMode=ModZA; AdrCnt=1;
-	    END
-	  END
+	    }
+	  }
 	 else
-	  BEGIN
+	  {
 	   AdrWord=EvalIntExpression(ArgStr[1],UInt16,&ValOK);
 	   if (ValOK)
-	    BEGIN
+	    {
 	     ErgMode=ModA; AdrCnt=2;
              AdrVals[0]=Lo(AdrWord); AdrVals[1]=Hi(AdrWord);
-	     if ((ZeroMode==0) AND (AdrVals[1]==0)) ChkZeroMode(ModZA);
-	    END
-	  END
-	END
-      END
-    END
+	     if ((ZeroMode==0) && (AdrVals[1]==0)) ChkZeroMode(ModZA);
+	    }
+	  }
+	}
+      }
+    }
 
    else if (ArgCnt==2)
-    BEGIN
+    {
      /* 7. Y-indirekt ? */
 
-     if ((IsIndirect(ArgStr[1])) AND (strcasecmp(ArgStr[2],"Y")==0))
-      BEGIN
+     if ((IsIndirect(ArgStr[1])) && (strcasecmp(ArgStr[2],"Y")==0))
+      {
        strcpy(s1,ArgStr[1]+1); s1[strlen(s1)-1]='\0';
        ChkZero(s1,&ZeroMode);
        AdrVals[0]=EvalIntExpression(s1,UInt8,&ValOK);
        if (ValOK)
-	BEGIN
+	{
 	 ErgMode=ModIndY; AdrCnt=1;
-	END
-      END
+	}
+      }
 
      /* 8. X,Y-indiziert ? */
 
      else
-      BEGIN
+      {
        strcpy(s1,ArgStr[1]);
        ChkZero(s1,&ZeroMode);
        if (ZeroMode==2)
-	BEGIN
+	{
          AdrVals[0]=EvalIntExpression(s1,UInt8,&ValOK);
 	 if (ValOK)
-	  BEGIN
+	  {
 	   AdrCnt=1;
            ErgMode=(strcasecmp(ArgStr[2],"X")==0)?ModZIX:ModZIY;
-	  END
-	END
+	  }
+	}
        else
-	BEGIN
+	{
 	 AdrWord=EvalIntExpression(s1,Int16,&ValOK);
 	 if (ValOK)
-	  BEGIN
+	  {
 	   AdrCnt=2;
            AdrVals[0]=Lo(AdrWord); AdrVals[1]=Hi(AdrWord);
            ErgMode=(strcasecmp(ArgStr[2],"X")==0)?ModIX:ModIY;
-	   if ((AdrVals[1]==0) AND (ZeroMode==0))
+	   if ((AdrVals[1]==0) && (ZeroMode==0))
             ChkZeroMode((strcasecmp(ArgStr[2],"X")==0)?ModZIX:ModZIY);
-	  END
-	END
-      END
-    END
+	  }
+	}
+      }
+    }
 
    else
-    BEGIN
+    {
      WrError(1110);
      ChkFlags(); return;
-    END;
+    };
 
    /* in Tabelle nach Opcode suchen */
 
    for (OrderZ=0; OrderZ<NormOrderCount; OrderZ++)
     if (Memo(NormOrders[OrderZ].Name))
-     BEGIN
+     {
       if ((ErgMode==-1)) WrError(1350);
       else
-       BEGIN
+       {
 	if (NormOrders[OrderZ].Codes[ErgMode]==-1)
-	 BEGIN
+	 {
 	  if (ErgMode==ModZA) ErgMode=ModA;
 	  if (ErgMode==ModZIX) ErgMode=ModIX;
 	  if (ErgMode==ModZIY) ErgMode=ModIY;
 	  if (ErgMode==ModInd8) ErgMode=ModInd16;
 	  AdrVals[AdrCnt++]=0;
-	 END
+	 }
 	if (NormOrders[OrderZ].Codes[ErgMode]==-1) WrError(1350);
-	else if (NOT CPUAllowed(Hi(NormOrders[OrderZ].Codes[ErgMode]))) WrError(1500);
+	else if (! CPUAllowed(Hi(NormOrders[OrderZ].Codes[ErgMode]))) WrError(1500);
 	else
-	 BEGIN
+	 {
 	  BAsmCode[0]=Lo(NormOrders[OrderZ].Codes[ErgMode]);
           memcpy(BAsmCode+1,AdrVals,AdrCnt);
 	  CodeLen=AdrCnt+1;
-	  if ((ErgMode==ModInd16) AND (MomCPU!=CPU65C02) AND (BAsmCode[1]==0xff))
-	   BEGIN
+	  if ((ErgMode==ModInd16) && (MomCPU!=CPU65C02) && (BAsmCode[1]==0xff))
+	   {
 	    WrError(1900); CodeLen=0;
-	   END
-	 END
-       END
+	   }
+	 }
+       }
       ChkFlags(); return;
-     END
+     }
 
    /* relativer Sprung ? */
 
    if (ErgMode==ModZA)
-    BEGIN
+    {
      ErgMode=ModA; AdrVals[1]=0;
-    END
+    }
    if (ErgMode==ModA)
     for (OrderZ=0; OrderZ<CondOrderCount; OrderZ++)
      if (Memo(CondOrders[OrderZ].Name))
-      BEGIN
+      {
        AdrInt=(((Integer)AdrVals[1])<<8)+AdrVals[0];
        AdrInt-=EProgCounter()+2;
-       if (NOT CPUAllowed(CondOrders[OrderZ].CPUFlag)) WrError(1500);
-       else if (((AdrInt>127) OR (AdrInt<-128)) AND (NOT SymbolQuestionable)) WrError(1370);
+       if (! CPUAllowed(CondOrders[OrderZ].CPUFlag)) WrError(1500);
+       else if (((AdrInt>127) || (AdrInt<-128)) && (! SymbolQuestionable)) WrError(1370);
        else
-        BEGIN
+        {
          BAsmCode[0]=CondOrders[OrderZ].Code; BAsmCode[1]=AdrInt & 0xff;
          CodeLen=2;
-        END
+        }
        ChkFlags(); return;
-      END
+      }
 
    WrXError(1200,OpPart);
-END
+}
 
 	static void InitCode_65(void)
-BEGIN
+{
    SaveInitProc();
-   CLI_SEI_Flag=False;
-   ADC_SBC_Flag=False;
-END
+   CLI_SEI_Flag=false;
+   ADC_SBC_Flag=false;
+}
 
-	static Boolean ChkPC_65(void)
-BEGIN
+	static bool ChkPC_65(void)
+{
    if (ActPC==SegCode) return (ProgCounter()<0x10000);
-   else return False;
-END
+   else return false;
+}
 
-	static Boolean IsDef_65(void)
-BEGIN
-   return False;
-END
+	static bool IsDef_65(void)
+{
+   return false;
+}
 
         static void SwitchFrom_65(void)
-BEGIN
+{
    DeinitFields();
-END
+}
 
 	static void SwitchTo_65(void)
-BEGIN
-   TurnWords=False; ConstMode=ConstModeMoto; SetIsOccupied=(MomCPU==CPUM740);
+{
+   TurnWords=false; ConstMode=ConstModeMoto; SetIsOccupied=(MomCPU==CPUM740);
 
    PCSymbol="*";  HeaderID=0x11; NOPCode=0xea;
-   DivideChars=","; HasAttrs=False;
+   DivideChars=","; HasAttrs=false;
 
    ValidSegs=1<<SegCode;
    Grans[SegCode]=1; ListGrans[SegCode]=1; SegInits[SegCode]=0;
 
    MakeCode=MakeCode_65; ChkPC=ChkPC_65; IsDef=IsDef_65;
    SwitchFrom=SwitchFrom_65; InitFields();
-END
+}
 
 	void code65_init(void)
-BEGIN
+{
    CPU6502  =AddCPU("6502"    ,SwitchTo_65);
    CPU65SC02=AddCPU("65SC02"  ,SwitchTo_65);
    CPU65C02 =AddCPU("65C02"   ,SwitchTo_65);
    CPUM740  =AddCPU("MELPS740",SwitchTo_65);
 
    SaveInitProc=InitPassProc; InitPassProc=InitCode_65;
-END
+}
