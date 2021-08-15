@@ -2,10 +2,10 @@
 /*****************************************************************************/
 /* AS-Portierung                                                             */
 /*                                                                           */
-/* Definition Fehlermeldungs-Strings                                         */                    
+/* Definition Fehlermeldungs-Strings                                         */
 /* englische Version                                                         */
 /*                                                                           */
-/* Historie:  6. 9.1996 Grundsteinlegung                                     */                    
+/* Historie:  6. 9.1996 Grundsteinlegung                                     */
 /*           19. 9.1996 ...EACCESS                                           */
 /*                                                                           */
 /*****************************************************************************/
@@ -34,11 +34,11 @@
 #define IoErr_EINVAL            "Invalid argument"
 #define IoErr_ENFILE            "File table overflow"
 #define IoErr_EMFILE            "Too many open files"
-#define IoErr_ENOTTY            "Not a typewriter"   
+#define IoErr_ENOTTY            "Not a typewriter"
 #define IoErr_ETXTBSY           "Text file busy"
-#define IoErr_EFBIG             "File too large"   
-#define IoErr_ENOSPC            "No space left on device" 
-#define IoErr_ESPIPE            "Illegal seek"     
+#define IoErr_EFBIG             "File too large"
+#define IoErr_ENOSPC            "No space left on device"
+#define IoErr_ESPIPE            "Illegal seek"
 #define IoErr_EROFS             "Read-only file system"
 #define IoErr_EMLINK            "Too many links"
 #define IoErr_EPIPE             "Broken pipe"
