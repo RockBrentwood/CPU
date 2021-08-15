@@ -200,7 +200,7 @@ DTCR{Name}B     equ     Base+15         ; Data transfer control register
 DTE             equ     7               ; Data transfer enable
 DTSZ            equ     6               ; Data transfer size
 DTID            equ     5               ; Data transfer inc/dec
-RPE             equ     4               ; Repeat enable 
+RPE             equ     4               ; Repeat enable
 DTIE            equ     3               ; Data transfer interrupt enable
 DTS2            equ     2               ; Data transfer select
 DTS1            equ     1

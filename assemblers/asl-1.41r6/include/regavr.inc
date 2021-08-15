@@ -244,7 +244,7 @@ acd		equ	7		;  Strom abschalten
 		if MomCPU>=$908515
 eearl		 port	 $1e		; Adreﬂregister
 eearh		 port	 $1f
-		elseif 
+		elseif
 eear             port    $1e
 		endif
 

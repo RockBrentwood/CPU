@@ -209,7 +209,7 @@ P1H              equ     0ff06h
 DP1L             equ     0f104h         ; Port 1 Datenrichtungsregister
 DP1H             equ     0f106h
                 elseif
-P1               equ     0ff04h 
+P1               equ     0ff04h
 DP1              equ     0ff06h
                 endif
 

@@ -176,7 +176,7 @@ TA		 SFR	0c7h		; nacheinander AA 55 schreiben, um Zugriff auf
 
 ;- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ;
-                          
+
                 if      MOMCPU=80C320H
 SADDR0           SFR    0a9h            ; Slave-Adresse für seriellen Port 0
 SADDR1           SFR    0aah            ; Slave-Adresse für seriellen Port 1

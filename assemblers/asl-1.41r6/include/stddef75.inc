@@ -518,7 +518,7 @@ VIT1             label   000ah          ; Interruptvektoradresse INTT1
                  if      MOMCPU<75108h   ; RAM-Größe
 RAMEnd            sfr     320
                  elseif
-RAMEnd            sfr     512         
+RAMEnd            sfr     512
                  endif
                 endif
 
@@ -590,7 +590,7 @@ RAMEnd            sfr     396
                  elseif  MOMCPU<75212h
 RAMEnd            sfr     497
                  elseif
-RAMEnd            sfr     512         
+RAMEnd            sfr     512
                  endif
                 endif
 

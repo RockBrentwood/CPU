@@ -9,7 +9,7 @@
 ;           (Ableitung aus STDDEF51.INC)                                    *
 ;* 									    *
 ;*   letzte Änderungen : 26. 3.1997 Grundsteinlegung                        *
-;*                        8. 6.1997 Korrekturen von Herrn Schmid            * 
+;*                        8. 6.1997 Korrekturen von Herrn Schmid            *
 ;*                                                                          *
 ;****************************************************************************
 
