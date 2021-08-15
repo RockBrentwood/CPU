@@ -1,9 +1,9 @@
 # -------------------------------------------------------------------------
 # choose your compiler (must be ANSI-compliant!) and linker command, plus
 # any additionally needed flags
-         
+
 CC = cc
-LD = cc 
+LD = cc
 CFLAGS = -xO4 -xcg92
 
 # -------------------------------------------------------------------------

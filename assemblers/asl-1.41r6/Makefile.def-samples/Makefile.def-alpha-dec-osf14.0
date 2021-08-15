@@ -1,7 +1,7 @@
 # -------------------------------------------------------------------------
 # choose your compiler (must be ANSI-compliant!) and linker command, plus
 # any additionally needed flags
-         
+
 CC = cc
 LD = cc -non_shared -om
 CFLAGS = -std1 -O5 -Olimit 3000 -tune ev5 -fast

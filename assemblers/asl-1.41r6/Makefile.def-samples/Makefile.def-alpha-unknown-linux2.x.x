@@ -4,7 +4,7 @@
 
 CC = gcc
 LD = gcc
-CFLAGS = -O3 -fomit-frame-pointer -D__USE_GNU -Wall 
+CFLAGS = -O3 -fomit-frame-pointer -D__USE_GNU -Wall
 LDFLAGS =
 
 # -------------------------------------------------------------------------
