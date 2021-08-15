@@ -54,7 +54,7 @@ END
 	static void PushIF(LongInt IfExpr)
 BEGIN
    PIfSave NewSave;
-   
+
    NewSave=(PIfSave) malloc(sizeof(TIfSave));
    NewSave->NestLevel=SaveIFs()+1;
    NewSave->Next=FirstIfSave; NewSave->SaveIfAsm=IfAsm;
@@ -159,12 +159,12 @@ BEGIN
 END
 
 
-	static void CodeIFB(void)	
+	static void CodeIFB(void)
 BEGIN
    Boolean Blank=True;
    LongInt IfExpr;
    Integer z;
-   
+
    ActiveIF=IfAsm;
 
    if (NOT IfAsm) IfExpr=1;
@@ -176,7 +176,7 @@ BEGIN
      if (Memo("IFB")) IfExpr=(Blank)?1:0;
      else IfExpr=(Blank)?0:1;
     END
-   PushIF(IfExpr); 
+   PushIF(IfExpr);
 END
 
 
@@ -255,8 +255,8 @@ BEGIN
    NewSave->CaseFound=False; NewSave->State=IfState_CASESWITCH;
    if (ArgCnt!=1)
     BEGIN
-     NewSave->SaveExpr.Typ=TempInt; 
-     NewSave->SaveExpr.Contents.Int=1; 
+     NewSave->SaveExpr.Typ=TempInt;
+     NewSave->SaveExpr.Contents.Int=1;
      if (IfAsm) WrError(1110);
     END
    else
@@ -276,7 +276,7 @@ BEGIN
 
    if (FirstIfSave==Nil) WrError(1840);
    else if (ArgCnt==0) WrError(1110);
-   else 
+   else
     BEGIN
      if ((FirstIfSave->State!=IfState_CASESWITCH) AND (FirstIfSave->State!=IfState_CASECASE)) WrError(1480);
      else
@@ -335,10 +335,10 @@ BEGIN
 
    if (ArgCnt!=0) WrError(1110);
    if (FirstIfSave==Nil) WrError(1840);
-   else 
+   else
     BEGIN
-     if ((FirstIfSave->State!=IfState_CASESWITCH) 
-     AND (FirstIfSave->State!=IfState_CASECASE) 
+     if ((FirstIfSave->State!=IfState_CASESWITCH)
+     AND (FirstIfSave->State!=IfState_CASECASE)
      AND (FirstIfSave->State!=IfState_CASEELSE)) WrError(1480);
      else
       BEGIN

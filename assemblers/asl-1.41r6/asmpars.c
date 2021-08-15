@@ -361,11 +361,11 @@ BEGIN
    Name[l-1]=']';
    if (Name+strlen(Name)-q<=2)
     BEGIN
-     WrXError(1020,Name); return False; 
+     WrXError(1020,Name); return False;
     END
 
    Name[strlen(Name)-1]='\0';
-   strmaxcpy(Part,q+1,255); 
+   strmaxcpy(Part,q+1,255);
    *q='\0';
 
    return IdentifySection(Part,Erg);
@@ -444,7 +444,7 @@ BEGIN
      switch (ActMode)
       BEGIN
        case ConstModeIntel:
-        for (Search=0; Search<3; Search++) 
+        for (Search=0; Search<3; Search++)
          if (toupper(Asc[strlen(Asc)-1])==BaseLetters[Search])
           BEGIN
            Base=BaseVals[Search]; Asc[strlen(Asc)-1]='\0'; break;
@@ -495,7 +495,7 @@ BEGIN
 
    *Ok=RangeCheck(Wert,Typ);
    if (Ok) return Wert;
-   else 
+   else
     BEGIN
      WrError(1320);
      return -1;
@@ -514,7 +514,7 @@ BEGIN
      Erg=strtod(Asc_O,&end);
      *Ok=(*end=='\0');
     END
-   else 
+   else
     BEGIN
      Erg=0.0;
      *Ok=True;
@@ -543,8 +543,8 @@ BEGIN
      strmaxcat(tmp,Asc,255); *z=Save; strcpy(Asc,z);
      if (*Asc=='\\')
       BEGIN
-       if (strlen(Asc)<2) return; 
-       l=strlen(tmp); 
+       if (strlen(Asc)<2) return;
+       l=strlen(tmp);
        switch (toupper(Asc[1]))
         BEGIN
          case '\'':
@@ -580,7 +580,7 @@ BEGIN
           FirstPassUnknown=False;
           *(z++)='\0'; strmaxcpy(Part,Asc+2,255); KillBlanks(Part);
           EvalExpression(Part,&t);
-          if (FirstPassUnknown) 
+          if (FirstPassUnknown)
            BEGIN
             WrXError(1820,Part); return;
            END
@@ -756,7 +756,7 @@ static Operator Operators[OpCnt+1]=
        case '}': if (NOT (InHyp OR InQuot)) WKlamm--; break;
        case '"': if (NOT InHyp) InQuot=NOT InQuot; break;
        case '\'':if (NOT InQuot) InHyp=NOT InHyp; break;
-       default: 
+       default:
         if ((LKlamm==RKlamm) AND (WKlamm==0) AND (NOT InHyp) AND (NOT InQuot))
          BEGIN
           OpFnd=False; OpLen=0; LocOpMax=0;
@@ -836,11 +836,11 @@ static Operator Operators[OpCnt+1]=
           END
          else
           BEGIN
-           EvalExpression_ChgFloat(&RVal); 
+           EvalExpression_ChgFloat(&RVal);
            if (Op->Dyadic) EvalExpression_ChgFloat(&LVal);
           END
         break;
-       case TempFloat: 
+       case TempFloat:
         if (NOT Op->MayFloat)
          BEGIN
           WrError(1135); return;
@@ -948,7 +948,7 @@ static Operator Operators[OpCnt+1]=
           case TempFloat:Erg->Contents.Float=LVal.Contents.Float*RVal.Contents.Float; break;
           default: break;
          END
-        break; 
+        break;
        case 10:                                         /* / */
         switch (LVal.Typ)
          BEGIN
@@ -967,7 +967,7 @@ static Operator Operators[OpCnt+1]=
              Erg->Typ=TempFloat;
              Erg->Contents.Float=LVal.Contents.Float/RVal.Contents.Float;
             END
-          default: 
+          default:
            break;
          END
         break;
@@ -982,11 +982,11 @@ static Operator Operators[OpCnt+1]=
        case 12:                                         /* + */
         switch (Erg->Typ=LVal.Typ)
          BEGIN
-          case TempInt   : 
+          case TempInt   :
            Erg->Contents.Int=LVal.Contents.Int+RVal.Contents.Int; break;
           case TempFloat :
             Erg->Contents.Float=LVal.Contents.Float+RVal.Contents.Float; break;
-          case TempString: 
+          case TempString:
            strmaxcpy(Erg->Contents.Ascii,LVal.Contents.Ascii,255);
            strmaxcat(Erg->Contents.Ascii,RVal.Contents.Ascii,255); break;
           default: break;
@@ -1036,13 +1036,13 @@ static Operator Operators[OpCnt+1]=
          Erg->Typ=TempInt;
          switch (LVal.Typ)
           BEGIN
-           case TempInt: 
+           case TempInt:
             Erg->Contents.Int=(LVal.Contents.Int==RVal.Contents.Int)?1:0; break;
            case TempFloat:
             Erg->Contents.Int=(LVal.Contents.Float==RVal.Contents.Float)?1:0; break;
            case TempString:
             Erg->Contents.Int=(strcmp(LVal.Contents.Ascii,RVal.Contents.Ascii)==0)?1:0; break;
-           default: 
+           default:
             break;
           END
          break;
@@ -1050,13 +1050,13 @@ static Operator Operators[OpCnt+1]=
          Erg->Typ=TempInt;
          switch (LVal.Typ)
           BEGIN
-           case TempInt: 
+           case TempInt:
             Erg->Contents.Int=(LVal.Contents.Int>RVal.Contents.Int)?1:0; break;
            case TempFloat:
             Erg->Contents.Int=(LVal.Contents.Float>RVal.Contents.Float)?1:0; break;
            case TempString:
             Erg->Contents.Int=(strcmp(LVal.Contents.Ascii,RVal.Contents.Ascii)>0)?1:0; break;
-           default: 
+           default:
             break;
           END
          break;
@@ -1064,13 +1064,13 @@ static Operator Operators[OpCnt+1]=
          Erg->Typ=TempInt;
          switch (LVal.Typ)
           BEGIN
-           case TempInt: 
+           case TempInt:
             Erg->Contents.Int=(LVal.Contents.Int<RVal.Contents.Int)?1:0; break;
            case TempFloat:
             Erg->Contents.Int=(LVal.Contents.Float<RVal.Contents.Float)?1:0; break;
            case TempString:
             Erg->Contents.Int=(strcmp(LVal.Contents.Ascii,RVal.Contents.Ascii)<0)?1:0; break;
-           default: 
+           default:
             break;
           END
          break;
@@ -1078,13 +1078,13 @@ static Operator Operators[OpCnt+1]=
          Erg->Typ=TempInt;
          switch (LVal.Typ)
           BEGIN
-           case TempInt: 
+           case TempInt:
             Erg->Contents.Int=(LVal.Contents.Int<=RVal.Contents.Int)?1:0; break;
            case TempFloat:
             Erg->Contents.Int=(LVal.Contents.Float<=RVal.Contents.Float)?1:0; break;
            case TempString:
             Erg->Contents.Int=(strcmp(LVal.Contents.Ascii,RVal.Contents.Ascii)<=0)?1:0; break;
-           default: 
+           default:
             break;
           END
          break;
@@ -1092,13 +1092,13 @@ static Operator Operators[OpCnt+1]=
          Erg->Typ=TempInt;
          switch (LVal.Typ)
           BEGIN
-           case TempInt: 
+           case TempInt:
             Erg->Contents.Int=(LVal.Contents.Int>=RVal.Contents.Int)?1:0; break;
            case TempFloat:
             Erg->Contents.Int=(LVal.Contents.Float>=RVal.Contents.Float)?1:0; break;
            case TempString:
             Erg->Contents.Int=(strcmp(LVal.Contents.Ascii,RVal.Contents.Ascii)>=0)?1:0; break;
-           default: 
+           default:
             break;
           END
          break;
@@ -1106,13 +1106,13 @@ static Operator Operators[OpCnt+1]=
          Erg->Typ=TempInt;
          switch (LVal.Typ)
           BEGIN
-           case TempInt: 
+           case TempInt:
             Erg->Contents.Int=(LVal.Contents.Int!=RVal.Contents.Int)?1:0; break;
            case TempFloat:
             Erg->Contents.Int=(LVal.Contents.Float!=RVal.Contents.Float)?1:0; break;
            case TempString:
             Erg->Contents.Int=(strcmp(LVal.Contents.Ascii,RVal.Contents.Ascii)!=0)?1:0; break;
-           default: 
+           default:
             break;
           END
          break;
@@ -1132,7 +1132,7 @@ static Operator Operators[OpCnt+1]=
      /* Funktionsnamen abschneiden */
 
      *KlPos='\0'; strmaxcpy(ftemp,Asc,255);
-     strcpy(Asc,KlPos+1); Asc[strlen(Asc)-1]='\0'; 
+     strcpy(Asc,KlPos+1); Asc[strlen(Asc)-1]='\0';
 
      /* Nullfunktion: nur Argument */
 
@@ -1162,11 +1162,11 @@ static Operator Operators[OpCnt+1]=
             sprintf(stemp,"%s",LargeString(LVal.Contents.Int));
             break;
            case TempFloat:
-            sprintf(stemp,"%0.16e",LVal.Contents.Float); 
+            sprintf(stemp,"%0.16e",LVal.Contents.Float);
             KillBlanks(stemp);
             break;
            case TempString:
-            strcpy(stemp,"\""); 
+            strcpy(stemp,"\"");
             strmaxcat(stemp,LVal.Contents.Ascii,255);
             strmaxcat(stemp,"\"",255);
             break;
@@ -1395,7 +1395,7 @@ static Operator Operators[OpCnt+1]=
         BEGIN
          /* Typkonvertierung */
 
-         EvalExpression_ChgFloat(&LVal); 
+         EvalExpression_ChgFloat(&LVal);
          Erg->Typ=TempFloat;
 
          /* Integerwandlung */
@@ -1427,7 +1427,7 @@ static Operator Operators[OpCnt+1]=
 
          else if (strcmp(ftemp,"SIN")==0) Erg->Contents.Float=sin(LVal.Contents.Float);
          else if (strcmp(ftemp,"COS")==0) Erg->Contents.Float=cos(LVal.Contents.Float);
-         else if (strcmp(ftemp,"TAN")==0) 
+         else if (strcmp(ftemp,"TAN")==0)
           BEGIN
            if (cos(LVal.Contents.Float)==0.0)
             BEGIN
@@ -1554,7 +1554,7 @@ static Operator Operators[OpCnt+1]=
             END
            else Erg->Contents.Float=log(LVal.Contents.Float)/log(2.0);
           END
-         else if (strcmp(ftemp,"ASINH")==0) 
+         else if (strcmp(ftemp,"ASINH")==0)
           Erg->Contents.Float=log(LVal.Contents.Float+sqrt(LVal.Contents.Float*LVal.Contents.Float+1));
          else if (strcmp(ftemp,"ACOSH")==0)
           BEGIN
@@ -1636,7 +1636,7 @@ static Operator Operators[OpCnt+1]=
    if (NOT ExpandSymbol(Asc)) return;
 
    KlPos=strchr(Asc,'[');
-   if (KlPos!=Nil) 
+   if (KlPos!=Nil)
     BEGIN
      Save=(*KlPos); *KlPos='\0';
     END
@@ -1907,9 +1907,9 @@ BEGIN
         if (DoCross)
          BEGIN
           sprintf(snum,"%d",(*Node)->LineNum);
-          strmaxcat(serr,", ",255); 
+          strmaxcat(serr,", ",255);
           strmaxcat(serr,PrevDefMsg,255);
-          strmaxcat(serr," ",255); 
+          strmaxcat(serr," ",255);
           strmaxcat(serr,GetFileName((*Node)->FileNum),255);
           strmaxcat(serr,":",255);
           strmaxcat(serr,snum,255);
@@ -1934,7 +1934,7 @@ BEGIN
              if ((MsgIfRepass) AND (PassNo>=PassNoForMessage))
               BEGIN
                strmaxcpy(serr,Neu->SymName,255);
-               if (Neu->Attribute!=(-1)) 
+               if (Neu->Attribute!=(-1))
                 BEGIN
                  strmaxcat(serr,"[",255);
                  strmaxcat(serr,GetSectionName(Neu->Attribute),255);
@@ -1944,7 +1944,7 @@ BEGIN
               END
             END
          END;
-        Neu->Left=(*Node)->Left; Neu->Right=(*Node)->Right; 
+        Neu->Left=(*Node)->Left; Neu->Right=(*Node)->Right;
         Neu->Balance=(*Node)->Balance;
         if (DoCross)
          BEGIN
@@ -2028,7 +2028,7 @@ BEGIN
        Copy=(SymbolPtr) malloc(sizeof(SymbolEntry)); *Copy=(*Neu);
        Copy->SymName=strdup(CombName);
        Copy->Attribute=Lauf->DestSection;
-       if (Copy->SymWert.Typ==TempString) 
+       if (Copy->SymWert.Typ==TempString)
         Copy->SymWert.Contents.SWert=strdup(Neu->SymWert.Contents.SWert);
        EnterTreeNode(&FirstSymbol,Copy,MayChange,MakeCrossList);
       END
@@ -2053,7 +2053,7 @@ END
         void EnterIntSymbol(char *Name_O, LargeInt Wert, Byte Typ, Boolean MayChange)
 BEGIN
    SymbolPtr Neu;
-   LongInt DestHandle;   
+   LongInt DestHandle;
    String Name;
 
    strmaxcpy(Name,Name_O,255);
@@ -2175,13 +2175,13 @@ BEGIN
     END
 END
 
-        static Boolean FindNode_FNode(char *Name, TempType SearchType, 
+        static Boolean FindNode_FNode(char *Name, TempType SearchType,
                                       SymbolPtr *FindNode_Result, LongInt Handle)
 BEGIN
    SymbolPtr Lauf=FirstSymbol;
    ShortInt SErg=(-1);
    Boolean Result=False;
- 
+
    while ((Lauf!=Nil) AND (SErg!=0))
     BEGIN
      SErg=StrCmp(Name,Lauf->SymName,Handle,Lauf->Attribute);
@@ -2194,7 +2194,7 @@ BEGIN
       *FindNode_Result=Lauf; Result=True;
       if (MakeCrossList AND DoRefs) AddReference(Lauf);
      END
-   
+
    return Result;
 END
 
@@ -2275,7 +2275,7 @@ BEGIN
    RunLocHandle=FirstLocHandle;
    while ((RunLocHandle!=Nil) AND (RunLocHandle->Cont!=(-1)))
     BEGIN
-     if (FindLocNode_FNode(Name,SearchType,&FindLocNode_Result,RunLocHandle->Cont)) 
+     if (FindLocNode_FNode(Name,SearchType,&FindLocNode_Result,RunLocHandle->Cont))
       return FindLocNode_Result;
      RunLocHandle=RunLocHandle->Next;
     END
@@ -2371,7 +2371,7 @@ BEGIN
    Boolean HRef;
    String NName;
 
-   strmaxcpy(NName,Name,255); 
+   strmaxcpy(NName,Name,255);
    if (NOT ExpandSymbol(NName)) return;
    HRef=DoRefs; DoRefs=False;
    Lauf=FindLocNode(NName,TempInt);
@@ -2384,7 +2384,7 @@ END
 BEGIN
    SymbolPtr Lauf;
    String NName;
-   
+
    strmaxcpy(NName,Name,255);
    if (NOT ExpandSymbol(NName)) return -1;
    Lauf=FindLocNode(NName,TempInt);
@@ -2501,7 +2501,7 @@ BEGIN
    ConvertSymbolVal(&(Node->SymWert),&t); StrSym(&t,False,s1);
 
    strmaxcpy(sh,Node->SymName,255);
-   if (Node->Attribute!=(-1)) 
+   if (Node->Attribute!=(-1))
     BEGIN
      strmaxcat(sh," [",255);
      strmaxcat(sh,GetSectionName(Node->Attribute),255);
@@ -2596,7 +2596,7 @@ BEGIN
    ChkIO(10004);
    if (Node->SymWert.Typ==TempString)
     BEGIN
-     l1=0; 
+     l1=0;
      for (p=Node->SymWert.Contents.SWert; *p!='\0'; p++)
       BEGIN
        if ((*p=='\\') OR (*p<=' '))
@@ -2740,7 +2740,7 @@ BEGIN
    Dest=FindNode(SymName,TempInt);
    if (Dest==Nil) Dest=FindNode(SymName,TempFloat);
    if (Dest==Nil) Dest=FindNode(SymName,TempString);
-   if (Dest==Nil) 
+   if (Dest==Nil)
     BEGIN
      WrXError(1010,SymName); return False;
     END
@@ -2831,14 +2831,14 @@ END
 
         PFunction FindFunction(char *Name)
 BEGIN
-   PFunction Lauf=FirstFunction;  
+   PFunction Lauf=FirstFunction;
    String Name_N;
 
    if (NOT CaseSensitive)
     BEGIN
      strmaxcpy(Name_N,Name,255); NLS_UpString(Name_N); Name=Name_N;
     END
- 
+
    while ((Lauf!=Nil) AND (strcmp(Lauf->Name,Name)!=0)) Lauf=Lauf->Next;
    return Lauf;
 END
@@ -2934,7 +2934,7 @@ END
         void RemoveDefSymbol(char *Name)
 BEGIN
   PDefSymbol Save,Lauf;
- 
+
   if (FirstDefSymbol==Nil) return;
 
   if (strcmp(FirstDefSymbol->SymName,Name)==0)
@@ -3062,9 +3062,9 @@ BEGIN
    String h;
 
    ChkStack();
-   if (Handle!=(-1)) 
+   if (Handle!=(-1))
     BEGIN
-     strmaxcpy(h,Blanks(Indent<<1),255); 
+     strmaxcpy(h,Blanks(Indent<<1),255);
      strmaxcat(h,GetSectionName(Handle),255);
      WrLstLine(h);
     END
@@ -3252,7 +3252,7 @@ BEGIN
 
    OldLocHandle=FirstLocHandle;
    if (OldLocHandle==Nil) return;
-   MomLocHandle=OldLocHandle->Cont; 
+   MomLocHandle=OldLocHandle->Cont;
    FirstLocHandle=OldLocHandle->Next;
    free(OldLocHandle);
 END

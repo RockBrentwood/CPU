@@ -81,7 +81,7 @@ char **argv;
      /* condition for a function header:
         1. body begins with '{' or 'BEGIN' in first column
         2. header searched backward until blank, comment, or preprocessor
-           line detected */  
+           line detected */
 
      if ((strcmp(lines[BufferFill-1],"BEGIN")==0)||(strcmp(lines[BufferFill-1],"{")==0))
       {
@@ -93,13 +93,13 @@ char **argv;
        start++;
 
        /* found: assemble source lines into a single line */
- 
+
        for (z=start,*orig='\0'; z<=BufferFill-2; z++)
         {
          p=lines[z]; while (isspace(*p)) p++; strcat(orig,p);
          if (z!=BufferFill-2) strcat(orig," ");
         }
-       
+
        /* cut function name+prefixes: parameter list starts at first '(' */
 
        p=strchr(orig,'('); *p='\0';
@@ -108,13 +108,13 @@ char **argv;
        /* cut trailing ')' */
 
        for (p=orig+strlen(orig)-1; *p!=')'; p--); *p='\0';
-       
+
        /* loop through parameters: discard 'void' entries */
 
        *params=0; flag=0;
        while (*orig!='\0')
         {
-         p=strchr(orig,','); 
+         p=strchr(orig,',');
          if (p==NULL)
           {
            strcpy(single,orig); *orig='\0';
@@ -129,7 +129,7 @@ char **argv;
          if (strcmp(single,"void")!=0)
           {
            strcat(params,single); strcat(params,";\n");
-           for (p=single+strlen(single)-1; (isalnum(*p))||(*p=='_'); p--); 
+           for (p=single+strlen(single)-1; (isalnum(*p))||(*p=='_'); p--);
            if (flag) strcat(dest,","); strcat(dest,p+1); flag=1;
           }
         }
@@ -156,7 +156,7 @@ char **argv;
      else if (linestartswidth(lines[BufferFill-1],"extern "))
       {
        /* find opening parenthesis.  if none, it's a variable definition */
- 
+
        p=strchr(lines[BufferFill-1],'(');
        if (p!=NULL)
         {
@@ -168,13 +168,13 @@ char **argv;
          /* copy out first part, extend by ');' and write the 'prototype'.
             flush line buffer before. */
 
-         save=p[1]; 
+         save=p[1];
          p[1]='\0'; strcpy(dest,lines[BufferFill-1]); strcat(dest,");");
          p[1]=save;
 
          for (z=0; z<BufferFill-1; fprintf(outfile,"%s\n",lines[z++]));
          fprintf(outfile,"%s\n",dest);
-         
+
          /* discard lines until end of prototype */
 
          strcpy(dest,lines[BufferFill-1]); BufferFill=0;

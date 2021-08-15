@@ -22,7 +22,7 @@
 #include "asmdebug.h"
 
 
-typedef struct 
+typedef struct
          {
           Boolean InASM;
           LongInt LineNum;
@@ -129,8 +129,8 @@ BEGIN
        ModZ=0;
        errno=0; fprintf(MAPFile,"File %s\n",GetFileName(Run->Contents.FileName)); ChkIO(10004);
       END;
-     errno=0; 
-     fprintf(MAPFile,"%5d:%08x ",Run->Contents.LineNum,Run->Contents.Address); 
+     errno=0;
+     fprintf(MAPFile,"%5d:%08x ",Run->Contents.LineNum,Run->Contents.Address);
      ChkIO(10004);
      if (++ModZ==5)
       BEGIN

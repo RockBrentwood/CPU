@@ -90,7 +90,7 @@ END
 
         static void ClearIncludeList_ClearNode(PFileNode Node)
 BEGIN
-   Integer z; 
+   Integer z;
 
    ChkStack();
 

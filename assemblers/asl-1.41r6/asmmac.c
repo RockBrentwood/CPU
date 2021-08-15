@@ -75,7 +75,7 @@ BEGIN
    PDefinement Lauf,Del;
    String Name;
 
-   strmaxcpy(Name,Name_O,255); 
+   strmaxcpy(Name,Name_O,255);
    if (NOT CaseSensitive) NLS_UpString(Name);
 
    Del=Nil;
@@ -180,7 +180,7 @@ BEGIN
 
    PDefinement Lauf;
    Integer LPos,Diff,p,p2,p3,z,z2,FromLen,ToLen,LineLen;
-   
+
    Lauf=FirstDefine;
    while (Lauf!=Nil)
     BEGIN
@@ -195,10 +195,10 @@ BEGIN
        p2=LPos;
        do
         BEGIN
-         z2=0; 
+         z2=0;
          while ((z2>=0) AND (p2<=p-FromLen))
           BEGIN
-           z2=FromLen-1; z=p2+z2; 
+           z2=FromLen-1; z=p2+z2;
            while ((z2>=0) AND (t_toupper(Line[z])==Lauf->TransFrom[z2]))
             BEGIN
              z2--; z--;
@@ -244,7 +244,7 @@ typedef struct _TMacroNode
 
 static PMacroNode MacroRoot;
 
-        static Boolean AddMacro_AddNode(PMacroNode *Node, PMacroRec Neu, 
+        static Boolean AddMacro_AddNode(PMacroNode *Node, PMacroRec Neu,
                                         LongInt DefSect, Boolean Protest)
 BEGIN
    Boolean Grown;
@@ -257,7 +257,7 @@ BEGIN
    if (*Node==Nil)
     BEGIN
      *Node=(PMacroNode) malloc(sizeof(TMacroNode));
-     (*Node)->Left=Nil; (*Node)->Right=Nil; 
+     (*Node)->Left=Nil; (*Node)->Right=Nil;
      (*Node)->Balance=0; (*Node)->Defined=True;
      (*Node)->DefSection=DefSect; (*Node)->Contents=Neu;
      return True;
@@ -306,7 +306,7 @@ BEGIN
           (*Node)->Balance=0;
           break;
          case 0:
-          (*Node)->Balance=(-1); Result=True; 
+          (*Node)->Balance=(-1); Result=True;
           break;
          case -1:
           p1=(*Node)->Left;
@@ -336,7 +336,7 @@ BEGIN
 	 ClearMacroRec(&((*Node)->Contents)); (*Node)->Contents=Neu;
 	 (*Node)->DefSection=DefSect;
         END
-      else 
+      else
        BEGIN
         ClearMacroRec(&((*Node)->Contents)); (*Node)->Contents=Neu;
         (*Node)->DefSection=DefSect; (*Node)->Defined=True;
@@ -393,7 +393,7 @@ BEGIN
 
    if (*Node==Nil) return;
 
-   ClearMacroList_ClearNode(&((*Node)->Left)); 
+   ClearMacroList_ClearNode(&((*Node)->Left));
    ClearMacroList_ClearNode(&((*Node)->Right));
 
    ClearMacroRec(&((*Node)->Contents)); free(*Node); *Node=Nil;
@@ -410,7 +410,7 @@ BEGIN
 
    if (Node==Nil) return;
 
-   ResetMacroDefines_ResetNode(Node->Left); 
+   ResetMacroDefines_ResetNode(Node->Left);
    ResetMacroDefines_ResetNode(Node->Right);
    Node->Defined=False;
 END
@@ -473,7 +473,7 @@ BEGIN
    WrLstLine(ListMacListHead2);
    WrLstLine("");
 
-   OneS[0]='\0'; cnt=False; Sum=0; 
+   OneS[0]='\0'; cnt=False; Sum=0;
    PrintMacroList_PrintNode(MacroRoot,&Sum,&cnt,OneS);
    if (cnt)
     BEGIN

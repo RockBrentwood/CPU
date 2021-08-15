@@ -30,7 +30,7 @@ BEGIN
    if (*Node==Nil)
     BEGIN
      *Node=(PInstTreeNode) malloc(sizeof(TInstTreeNode));
-     (*Node)->Left=Nil; (*Node)->Right=Nil; 
+     (*Node)->Left=Nil; (*Node)->Right=Nil;
      (*Node)->Proc=NProc; (*Node)->Index=NIndex;
      (*Node)->Balance=0;
      (*Node)->Name=strdup(NName);

@@ -142,13 +142,13 @@ BEGIN
    for (z=0; z<(Rest>>1); z++)
     BEGIN
      strmaxcat(h,HexString(WAsmCode[(*n)>>1],4),255);
-     strmaxcat(h," ",255); 
+     strmaxcat(h," ",255);
      (*n)+=2;
     END
    if ((Rest&1)!=0)
     BEGIN
      strmaxcat(h,HexString(BAsmCode[*n],2),255);
-     strmaxcat(h,"   ",255); 
+     strmaxcat(h,"   ",255);
      (*n)++;
     END
    for (z=1; z<=(8-Rest)>>1; z++)
@@ -178,7 +178,7 @@ BEGIN
      strmaxcat(h,Retracted?"  R ":" : ",255);
 
      /* Extrawurst in Listing ? */
-     
+
      if (*ListLine!='\0')
       BEGIN
        strmaxcat(h,ListLine,255);
@@ -248,7 +248,7 @@ BEGIN
             BEGIN
              strmaxcpy(h,"                    ",255);
              for (k=0; k<6; k++)
-              if (EffLen>i*6+k) 
+              if (EffLen>i*6+k)
                BEGIN
                 strmaxcat(h,HexString(BAsmCode[i*6+k+6],2),255);
                 strmaxcat(h," ",255);
@@ -373,7 +373,7 @@ BEGIN
    StringRecPtr Lauf;
    Integer z;
    Boolean Result;
-   
+
    Result=True;
 
    Lauf=PInp->Lines; for (z=1; z<=PInp->LineZ-1; z++) Lauf=Lauf->Next;
@@ -387,7 +387,7 @@ BEGIN
    if (HasAttrs) ExpandLine(PInp->SaveAttr,ParMax+1,erg);
 
    CurrLine=PInp->StartLine;
-   sprintf(ErrorPos,"%s %s(%d)",PInp->OrigPos,PInp->SpecName,PInp->LineZ);   
+   sprintf(ErrorPos,"%s %s(%d)",PInp->OrigPos,PInp->SpecName,PInp->LineZ);
 
    if (PInp->LineZ==1) PushLocHandle(GetLocHandle());
 
@@ -418,7 +418,7 @@ BEGIN
    String Test,Sect;
 
    strmaxcpy(Test,Test_O,255); KillBlanks(Test);
-   p=strchr(Test,':'); 
+   p=strchr(Test,':');
    if (p==Nil) *Sect='\0';
    else
     BEGIN
@@ -477,7 +477,7 @@ BEGIN
      BEGIN
       strcpy(ArgStr[z1],ArgStr[z1]+1); ArgStr[z1][strlen(ArgStr[z1])-1]='\0';
       if (ReadMacro_SearchArg(ArgStr[z1],"EXPORT",&(Neu->DoExport)));
-      else if (ReadMacro_SearchArg(ArgStr[z1],"EXPAND",&DoMacExp)) 
+      else if (ReadMacro_SearchArg(ArgStr[z1],"EXPAND",&DoMacExp))
        BEGIN
         strmaxcat(PList,",",255); strmaxcat(PList,ArgStr[z1],255);
        END
@@ -524,12 +524,12 @@ BEGIN
 
    OneMacro=(PMacroRec) malloc(sizeof(MacroRec)); Neu->Mac=OneMacro;
    if ((MacroOutput) AND (Neu->DoExport))
-    BEGIN 
+    BEGIN
      if (strlen(PList)!=0) strcpy(PList,PList+1);
      errno=0;
      if (Neu->DoGlobCopy) fprintf(MacroFile,"%s MACRO %s\n",Neu->GName,PList);
      else fprintf(MacroFile,"%s MACRO %s\n",LabPart,PList);
-     ChkIO(10004); 
+     ChkIO(10004);
     END
    OneMacro->Used=False;
    OneMacro->Name=strdup(LabPart);
@@ -645,7 +645,7 @@ END
 
         static void IRP_Cleanup(PInputTag PInp)
 BEGIN
-   ClearStringList(&(PInp->Lines)); 
+   ClearStringList(&(PInp->Lines));
    ClearStringList(&(PInp->Params));
 END
 
@@ -677,7 +677,7 @@ BEGIN
 
    if (++(PInp->LineZ)>PInp->LineCnt)
     BEGIN
-     PInp->LineZ=1; 
+     PInp->LineZ=1;
      if (++(PInp->ParZ)>PInp->ParCnt) Result=False;
     END
 
@@ -1261,7 +1261,7 @@ BEGIN
 
      if (IfAsm)
       BEGIN
-       if (NOT CodeGlobalPseudo()) MakeCode(); 
+       if (NOT CodeGlobalPseudo()) MakeCode();
        if ((MacProOutput) AND (strlen(OpPart)!=0))
         BEGIN
          errno=0; fprintf(MacProFile,"%s\n",OneLine); ChkIO(10002);
@@ -1319,12 +1319,12 @@ BEGIN
 
    strmaxcpy(h,OneLine,255); i=QuotPos(h,';');
    if (i!=Nil)
-    BEGIN   
-     strmaxcpy(CommPart,i+1,255); 
+    BEGIN
+     strmaxcpy(CommPart,i+1,255);
      *i='\0';
     END
-   else *CommPart='\0'; 
-   
+   else *CommPart='\0';
+
    /* alles in Grossbuchstaben wandeln, Praeprozessor laufen lassen */
 
    ExpandDefines(h);
@@ -1366,7 +1366,7 @@ BEGIN
      k=Nil; AttrSplit=' ';
      for (z=0; z<strlen(AttrChars); z++)
       BEGIN
-       p=strchr(OpPart,AttrChars[z]); 
+       p=strchr(OpPart,AttrChars[z]);
        if (p!=Nil) if ((k==Nil) OR (p<k)) k=p;
       END
      if (k!=Nil)
@@ -1376,7 +1376,7 @@ BEGIN
        if ((*OpPart=='\0') AND (*AttrPart!='\0'))
         BEGIN
          strmaxcpy(OpPart,AttrPart,255); *AttrPart='\0';
-        END 
+        END
       END
      else *AttrPart='\0';
     END
@@ -1469,20 +1469,20 @@ BEGIN
    String Num;
    /*Integer z;*/
    char *Name;
-   
+
    sprintf(OneLine," INCLUDE \"%s\"",FileName); MasterFile=False;
    NextIncDepth=IncDepth;
    SplitLine();
    IncDepth=NextIncDepth;
-  
+
    ListTime=GTime();
 
    while ((NOT InputEnd()) AND (NOT ENDOccured))
     BEGIN
      /* Zeile lesen */
-     
+
      GetNextLine(OneLine);
-     
+
      /* Ergebnisfelder vorinitialisieren */
 
      DontPrint=False; CodeLen=0; *ListLine='\0';
@@ -1492,7 +1492,7 @@ BEGIN
 
      if (*OneLine=='#') Preprocess();
      else SplitLine();
-     
+
      MakeList();
      DoLst=NextDoLst;
      IncDepth=NextIncDepth;
@@ -1551,7 +1551,7 @@ BEGIN
    h=(int) floor(DTime/3600.0);
    if (h>0)
     BEGIN
-     sprintf(s,"%d",h); 
+     sprintf(s,"%d",h);
      strcat(dest,s);
      strcat(dest,ListHourName);
      strcat(dest,TWrite_Plur(h));
@@ -1561,7 +1561,7 @@ BEGIN
    h=(int) floor(DTime/60.0);
    if (h>0)
     BEGIN
-     sprintf(s,"%d",h); 
+     sprintf(s,"%d",h);
      strcat(dest,s);
      strcat(dest,ListMinuName);
      strcat(dest,TWrite_Plur(h));
@@ -1578,7 +1578,7 @@ END
 BEGIN
    static char DateS[31],TimeS[31];
    Integer z;
-   
+
    FirstInputTag=Nil; FirstOutputTag=Nil;
 
    ErrorPos[0]='\0'; MomLineCounter=0;
@@ -1589,7 +1589,7 @@ BEGIN
    FirstSaveState=Nil;
 
    InitPassProc();
-     
+
    ActPC=SegCode; PCs[ActPC]=0; ENDOccured=False;
    ErrorCount=0; WarnCount=0; LineSum=0; MacLineSum=0;
    for (z=1; z<=PCMax; z++)
@@ -1599,15 +1599,15 @@ BEGIN
      InitChunk(&SegChunks[z]);
     END
    for (z=0; z<256; z++) CharTransTable[z]=z;
-   
-   strmaxcpy(CurrFileName,"INTERNAL",255); 
+
+   strmaxcpy(CurrFileName,"INTERNAL",255);
    AddFile(CurrFileName); CurrLine=0;
-   
+
    IncDepth=(-1);
    DoLst=True;
 
    /* Pseudovariablen initialisieren */
-   
+
    ResetSymbolDefines(); ResetMacroDefines();
    EnterIntSymbol(FlagTrueName,1,0,True);
    EnterIntSymbol(FlagFalseName,0,0,True);
@@ -1617,7 +1617,7 @@ BEGIN
    EnterIntSymbol(Has64Name,1,0,True);
 #else
    EnterIntSymbol(Has64Name,0,0,True);
-#endif   
+#endif
    EnterIntSymbol(CaseSensName,Ord(CaseSensitive),0,True);
    if (PassNo==0)
     BEGIN
@@ -1635,11 +1635,11 @@ BEGIN
    SetFlag(&LstMacroEx,LstMacroExName,True);
    SetFlag(&RelaxedMode,RelaxedName,False);
    CopyDefSymbols();
-   
+
    ResetPageCounter();
-   
+
    StartAdrPresent=False;
-   
+
    Repass=False; PassNo++;
 END
 
@@ -1727,18 +1727,18 @@ BEGIN
    /* Listdatei eroeffnen */
 
    if (NOT QuietMode) printf("%s%s\n",InfoMessAssembling,SourceFile);
-   
+
    do
     BEGIN
     /* Durchlauf initialisieren */
 
-    AssembleFile_InitPass(); AsmSubInit(); 
+    AssembleFile_InitPass(); AsmSubInit();
     if (NOT QuietMode) printf("%s%d%s\n",InfoMessPass,PassNo,ClrEol);
 
     /* Dateien oeffnen */
-    
+
     if (CodeOutput) OpenFile();
-    
+
     if (ShareMode!=0)
      BEGIN
       ShareFile=fopen(ShareName,"w");
@@ -1816,7 +1816,7 @@ BEGIN
 
    if (ErrorCount!=0)
     BEGIN
-     if (CodeOutput) unlink(OutName); 
+     if (CodeOutput) unlink(OutName);
      if (MacProOutput) unlink(MacProName);
      if ((MacroOutput) AND (PassNo==1))  unlink(MacroName);
      if (ShareMode!=0) unlink(ShareName);
@@ -1885,8 +1885,8 @@ BEGIN
    if (NOT QuietMode) printf("\n%s%s%s\n\n",s,InfoMessAssTime,ClrEol);
    if (ListMode==2)
     BEGIN
-     WrLstLine(""); 
-     strmaxcat(s,InfoMessAssTime,255); WrLstLine(s); 
+     WrLstLine("");
+     strmaxcat(s,InfoMessAssTime,255); WrLstLine(s);
      WrLstLine("");
     END
 
@@ -1952,7 +1952,7 @@ BEGIN
       Search:SearchRec;**/
 
    AddSuffix(FileMask,SrcSuffix);
-   strmaxcpy(SourceFile,FileMask,255); 
+   strmaxcpy(SourceFile,FileMask,255);
    AssembleFile();
 
 /**   FileMask:=FExpand(FileMask);
@@ -2004,7 +2004,7 @@ END
         static CMDResult CMD_DebugMode(Boolean Negate, char *Arg)
 BEGIN
    if (Arg==Nil); /* satisfy some compilers */
-   
+
    /*UpString(Arg);
 
    if (Negate)
@@ -2105,7 +2105,7 @@ BEGIN
    if (NOT Negate)
     BEGIN
      MakeDebug=True;
-     errno=0; Debug=fopen("as.deb","w"); 
+     errno=0; Debug=fopen("as.deb","w");
      if (Debug==Nil) ChkIO(10002);
     END
    else if (MakeDebug)
@@ -2230,7 +2230,7 @@ BEGIN
      strncpy(Copy,Arg,255);
      do
       BEGIN
-       p=strrchr(Copy,':'); 
+       p=strrchr(Copy,':');
        if (p==Nil)
         BEGIN
          strmaxcpy(part,Copy,255);
@@ -2239,7 +2239,7 @@ BEGIN
        else
         BEGIN
          *p='\0'; strmaxcpy(part,p+1,255);
-        END 
+        END
        if (Negate) RemoveIncludeList(part); else AddIncludeList(part);
       END
      while (Copy[0]!='\0');
@@ -2249,7 +2249,7 @@ END
 
         static CMDResult CMD_ListMask(Boolean Negate, char *Arg)
 BEGIN
-   Byte erg; 
+   Byte erg;
    Boolean OK;
 
    if (Arg[0]=='\0') return CMDErr;
@@ -2371,7 +2371,7 @@ BEGIN
      if (p==Nil) return CMDErr;
      else
       BEGIN
-       *p='\0'; 
+       *p='\0';
        strmaxcpy(s1,Arg,255); UpString(s1);
        strmaxcpy(s2,p+1,255); UpString(s2);
        *p='=';
@@ -2452,7 +2452,7 @@ BEGIN
     BEGIN
      LineZ=0;
      if (Redirected!=NoRedir) return;
-     printf("%s",KeyWaitMsg); while (getchar()!='\n'); 
+     printf("%s",KeyWaitMsg); while (getchar()!='\n');
      printf("%s%s",CursUp,ClrEol);
     END
 END
@@ -2484,16 +2484,16 @@ BEGIN
    endian_init(); nls_init(); bpemu_init(); stdhandl_init();
    stringutil_init(); stringlists_init(); chunks_init();
 
-   asmfnums_init(); asminclist_init(); asmitree_init(); 
+   asmfnums_init(); asminclist_init(); asmitree_init();
 
-   asmdef_init(); asmsub_init(); asmpars_init(); 
+   asmdef_init(); asmsub_init(); asmpars_init();
 
-   asmmac_init(); asmif_init(); asmcode_init(); asmdebug_init(); 
+   asmmac_init(); asmif_init(); asmcode_init(); asmdebug_init();
 
    codeallg_init(); codepseudo_init();
 
    code68k_init();
-   code56k_init(); 
+   code56k_init();
    code601_init();
    code68_init(); code6805_init(); code6809_init(); code6812_init(); code6816_init();
    codeh8_3_init(); codeh8_5_init(); code7000_init();
@@ -2512,7 +2512,7 @@ BEGIN
    code78c10_init(); code75k0_init(); code78k0_init();
    codescmp_init(); codecop8_init();
    /*as1750_init();*/
- 
+
 #ifdef __sunos__
    on_exit(GlobExitProc,(caddr_t) Nil);
 #else

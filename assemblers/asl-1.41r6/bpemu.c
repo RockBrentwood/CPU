@@ -31,7 +31,7 @@ BEGIN
    String DrvPart;
 #ifdef __EMX__
    ULONG DrvNum,Dummy;
-#else      
+#else
    int DrvNum;
 #endif
 #endif
@@ -66,13 +66,13 @@ BEGIN
    Dummy=255; DosQueryCurrentDir(DrvNum,(PBYTE) CurrentDir,&Dummy);
 #else
    getcwd(CurrentDir,255);
-#endif   
+#endif
 #endif
 
    if (CurrentDir[strlen(CurrentDir)-1]!=PATHSEP) strmaxcat(CurrentDir,SPATHSEP,255);
    if (*CurrentDir!=PATHSEP) strmaxprep(CurrentDir,SPATHSEP,255);
 
-   if (*Copy==PATHSEP) 
+   if (*Copy==PATHSEP)
     BEGIN
      strmaxcpy(CurrentDir,SPATHSEP,255); strcpy(Copy,Copy+1);
     END
@@ -100,15 +100,15 @@ BEGIN
 
    strmaxcat(CurrentDir,Copy,255);
 
-   return CurrentDir; 
+   return CurrentDir;
 END
 
 	char *FSearch(char *File, char *Path)
 BEGIN
    static String Component;
    char *p,*start,Save='\0';
-   FILE *Dummy; 
-   Boolean OK;  
+   FILE *Dummy;
+   Boolean OK;
 
    Dummy=fopen(File,"r"); OK=(Dummy!=Nil);
    if (OK)
@@ -122,7 +122,7 @@ BEGIN
     BEGIN
      if (*start=='\0') break;
      p=strchr(start,':');
-     if (p!=Nil) 
+     if (p!=Nil)
       BEGIN
        Save=(*p); *p='\0';
       END
@@ -130,7 +130,7 @@ BEGIN
      strmaxcat(Component,SPATHSEP,255);
      strmaxcat(Component,File,255);
      if (p!=Nil) *p=Save;
-     Dummy=fopen(Component,"r"); OK=(Dummy!=Nil); 
+     Dummy=fopen(Component,"r"); OK=(Dummy!=Nil);
      if (OK)
       BEGIN
        fclose(Dummy);
@@ -147,7 +147,7 @@ END
 BEGIN
    long Save=ftell(file),Size;
 
-   fseek(file,0,SEEK_END); 
+   fseek(file,0,SEEK_END);
    Size=ftell(file);
    fseek(file,Save,SEEK_SET);
    return Size;

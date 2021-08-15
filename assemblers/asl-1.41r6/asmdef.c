@@ -133,7 +133,7 @@ char *InfoMessCopyright="(C) 1992,1997 Alfred Arnold";
    FILE *MacProFile;		    /* Makroprozessorausgabe */
    FILE *MacroFile;		    /* Ausgabedatei Makroliste */
    String LstName;		    /* Name der Listdatei */
-   String MacroName,MacProName;   
+   String MacroName,MacProName;
    Boolean DoLst,NextDoLst;         /* Listing an */
    String ShareName;                /* Name des Sharefiles */
 /**   PrgName:String;                  { Name der Codedatei }**/

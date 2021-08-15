@@ -61,8 +61,8 @@ BEGIN
 
     switch (ListGran())
      BEGIN
-      case 2: 
-       for (z=0; z<(l>>1); z++) 
+      case 2:
+       for (z=0; z<(l>>1); z++)
         WAsmCode[z]=((WAsmCode[z]&0xff)<<8)+((WAsmCode[z]&0xff00)>>8);
        break;
       case 4:
@@ -176,7 +176,7 @@ BEGIN
    Head=FileHeaderEnd;
    if (fwrite(&Head,sizeof(Head),1,PrgFile)!=1) ChkIO(10004);
    if (fwrite(h,1,strlen(h),PrgFile)!=strlen(h)) ChkIO(10004);
-   fclose(PrgFile); if (Magic!=0) unlink(OutName); 
+   fclose(PrgFile); if (Magic!=0) unlink(OutName);
 END
 
 /*--- erzeugten Code einer Zeile in Datei ablegen ---------------------------*/

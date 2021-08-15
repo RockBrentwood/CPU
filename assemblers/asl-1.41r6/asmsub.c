@@ -52,7 +52,7 @@ BEGIN
    char *p;
 
    Neu=(PCPUDef) malloc(sizeof(TCPUDef));
-   Neu->Name=strdup(NewName); 
+   Neu->Name=strdup(NewName);
    /* kein UpString, weil noch nicht initialisiert ! */
    for (p=Neu->Name; *p!='\0'; p++) *p=toupper(*p);
    Neu->SwitchProc=Switcher;
@@ -80,7 +80,7 @@ BEGIN
    else
     BEGIN
      Neu=(PCPUDef) malloc(sizeof(TCPUDef));
-     Neu->Next=Nil; 
+     Neu->Next=Nil;
      Neu->Name=strdup(AliasName);
      Neu->Number=CPUCnt++;
      Neu->Orig=Lauf->Orig;
@@ -115,13 +115,13 @@ END
 	void ClearCPUList(void)
 BEGIN
    PCPUDef Save;
-   
+
    while (FirstCPUDef!=Nil)
     BEGIN
      Save=FirstCPUDef; FirstCPUDef=Save->Next;
      free(Save->Name); free(Save);
     END
-END	
+END
 
 /****************************************************************************/
 /* Copyrightlistenverwaltung */
@@ -135,10 +135,10 @@ END
 BEGIN
    StringRecPtr Lauf;
 
-   if (NOT StringListEmpty(CopyrightList)) 
+   if (NOT StringListEmpty(CopyrightList))
     BEGIN
      printf("%s\n",GetStringListFirst(CopyrightList,&Lauf)); NxtProc();
-     while (Lauf!=Nil) 
+     while (Lauf!=Nil)
       BEGIN
        printf("%s\n",GetStringListNext(&Lauf)); NxtProc();
       END
@@ -170,7 +170,7 @@ BEGIN
       case ']': if ((Brack|Flag)==0) AngBrack--; break;
      END
 
-   return Nil;    
+   return Nil;
 END
 
         char *RQuotPos(char *s, char Zeichen)
@@ -204,7 +204,7 @@ END
 BEGIN
    char *h,*Min=Nil;
 
-   h=strchr(s,' ');  
+   h=strchr(s,' ');
    if (h!=Nil) if ((Min==Nil) OR (h<Min)) Min=h;
    h=strchr(s,Char_HT);
    if (h!=Nil) if ((Min==Nil) OR (h<Min)) Min=h;
@@ -302,8 +302,8 @@ END
 BEGIN
    ShortInt tmp;
 
-   tmp=strcmp(s1,s2); 
-   if (tmp<0) return -1; 
+   tmp=strcmp(s1,s2);
+   if (tmp<0) return -1;
    else if (tmp>0) return 1;
    else if (Hand1<Hand2) return -1;
    else if (Hand1>Hand2) return 1;
@@ -384,12 +384,12 @@ BEGIN
 
    /* 1. mit Maximallaenge wandeln, fuehrendes Vorzeichen weg */
 
-   sprintf(s,"%27.15e",f); 
+   sprintf(s,"%27.15e",f);
    while ((s[0]==' ') OR (s[0]=='+')) strcpy(s,s+1);
 
    /* 2. Exponenten soweit als moeglich kuerzen, evtl. ganz streichen */
 
-   p=strchr(s,'e'); 
+   p=strchr(s,'e');
    switch (*(++p))
     BEGIN
      case '+': strcpy(p,p+1); break;
@@ -403,7 +403,7 @@ BEGIN
    /* 3. Nullen am Ende der Mantisse entfernen, Komma bleibt noch */
 
    if (WithE) p=strchr(s,'e'); else p=s+strlen(s); p--;
-   while (*p=='0') 
+   while (*p=='0')
     BEGIN
      strcpy(p,p+1); p--;
     END
@@ -445,7 +445,7 @@ BEGIN
       BEGIN
        *p='\0';
        d=strchr(s,'.'); strcpy(d,d+1);
-       if (nzeroes!=0) 
+       if (nzeroes!=0)
         BEGIN
          memmove(s+strlen(s)+nzeroes+1,s+strlen(s)+nzeroes,-nzeroes);
          s[strlen(s)-1+nzeroes]='.';
@@ -457,11 +457,11 @@ BEGIN
 
      else
       BEGIN
-       n=strlen(p)+1+(MaxLen-strlen(s)); /* = Anzahl freizubekommender Zeichen+Gutschrift */ 
+       n=strlen(p)+1+(MaxLen-strlen(s)); /* = Anzahl freizubekommender Zeichen+Gutschrift */
        if (n>=nzeroes)
         BEGIN
          *p='\0'; d=strchr(s,'.'); strcpy(d,d+1);
-         d=s+strlen(s); 
+         d=s+strlen(s);
          for (n=0; n<nzeroes; n++) *(d++)='0'; *d='\0';
         END
       END
@@ -486,7 +486,7 @@ BEGIN
 
    /* 9. Ueberfluessiges Komma entfernen */
 
-   if (WithE) 
+   if (WithE)
     BEGIN
      p=strchr(s,'e'); if (p!=Nil) *p='E';
     END
@@ -583,7 +583,7 @@ BEGIN
     while (strlen(Header)>PageWidth)
      BEGIN
       Save=Header[PageWidth]; Header[PageWidth]='\0';
-      errno=0; fprintf(LstFile,"%s\n",Header); ChkIO(10002); 
+      errno=0; fprintf(LstFile,"%s\n",Header); ChkIO(10002);
       Header[PageWidth]=Save; strcpy(Header,Header+PageWidth);
      END
    errno=0; fprintf(LstFile,"%s\n",Header); ChkIO(10002);
@@ -640,7 +640,7 @@ BEGIN
         BEGIN
          hlen=PageWidth; if (blen-Start<hlen) hlen=blen-Start;
          memcpy(LLine,bbuf+Start,hlen); LLine[hlen]='\0';
-         errno=0; fprintf(LstFile,"%s\n",LLine); 
+         errno=0; fprintf(LstFile,"%s\n",LLine);
          if ((++LstCounter)==PageLength) NewPage(0,True);
          Start+=hlen;
         END
@@ -776,7 +776,7 @@ END
 BEGIN
    String h;
    char Add[11];
-   
+
    if ((NOT CodeOutput) AND (Num==1200)) return;
 
    if ((SuppWarns) AND (Num<1000)) return;
@@ -861,8 +861,8 @@ BEGIN
      case 1489: strmaxcpy(h,ErrMsgContForward,255); break;
      case 1490: strmaxcpy(h,ErrMsgInvFuncArgCnt,255); break;
      case 1495: strmaxcpy(h,ErrMsgMissingLTORG,255); break;
-     case 1500: strmaxcpy(h,ErrMsgNotOnThisCPU1,255); 
-                strmaxcat(h,MomCPUIdent,255); 
+     case 1500: strmaxcpy(h,ErrMsgNotOnThisCPU1,255);
+                strmaxcat(h,MomCPUIdent,255);
                 strmaxcat(h,ErrMsgNotOnThisCPU2,255); break;
      case 1505: strmaxcpy(h,ErrMsgNotOnThisCPU3,255);
                 strmaxcat(h,MomCPUIdent,255);
@@ -919,7 +919,7 @@ BEGIN
 
    if (((Num==1910) OR (Num==1370)) AND (NOT Repass)) JmpErrors++;
 
-   if (NumericErrors) sprintf(Add,"#%d",Num); 
+   if (NumericErrors) sprintf(Add,"#%d",Num);
    else *Add='\0';
    WrErrorString(h,Add,Num<1000,Num>=10000);
 END
@@ -955,7 +955,7 @@ BEGIN
 
    if (Value<Min)
     BEGIN
-     strmaxcpy(s1,LargeString(Value),99); 
+     strmaxcpy(s1,LargeString(Value),99);
      strmaxcpy(s2,LargeString(Min),99);
      strmaxcat(s1,"<",99); strmaxcat(s1,s2,99);
      WrXError(1315,s1); return False;
@@ -1025,8 +1025,8 @@ BEGIN
 
    NewMin=0; BufferZ=0; *BufferS='\0';
 
-   do  
-    BEGIN 
+   do
+    BEGIN
      /* niedrigsten Start finden, der ueberhalb des letzten Endes liegt */
      Found=False;
 #ifdef __STDC__
@@ -1045,7 +1045,7 @@ BEGIN
       BEGIN
        strmaxcat(BufferS,HexString(NChunk->Chunks[p].Start,0),255);
        if (NChunk->Chunks[p].Length!=1)
-        BEGIN 
+        BEGIN
          strmaxcat(BufferS,"-",255);
          strmaxcat(BufferS,HexString(NChunk->Chunks[p].Start+NChunk->Chunks[p].Length-1,0),255);
         END
@@ -1181,17 +1181,17 @@ BEGIN
    z=0; tlen=strlen(TokNam); llen=strlen(Line);
    while (z<=llen-tlen)
     BEGIN
-     e=z+strlen(TokNam); 
+     e=z+strlen(TokNam);
      SFound=(CaseSensitive) ? (strncmp(Line+z,TokNam,tlen)==0)
                             : (strncasecmp(Line+z,TokNam,tlen)==0);
-     if  ( (SFound) 
+     if  ( (SFound)
      AND   ((z==0) OR (NOT CompressLine_NErl(Line[z-1])))
      AND   ((e>=strlen(Line)) OR (NOT CompressLine_NErl(Line[e]))) )
       BEGIN
        strcpy(Line+z+1,Line+e); Line[z]=Num;
        llen=strlen(Line);
       END;
-     z++; 
+     z++;
     END
 END
 
@@ -1204,7 +1204,7 @@ BEGIN
       z=strchr(Line,Num);
       if (z!=Nil)
        BEGIN
-        strcpy(z,z+1); 
+        strcpy(z,z+1);
         strmaxins(Line,TokNam,z-Line,255);
        END
      END
@@ -1214,7 +1214,7 @@ END
         void KillCtrl(char *Line)
 BEGIN
    char *z;
-   
+
    if (*(z=Line)=='\0') return;
    do
     BEGIN
@@ -1264,7 +1264,7 @@ END
         long GTime(void)
 BEGIN
    struct timeval tv;
-  
+
    gettimeofday(&tv,Nil);
    return (tv.tv_sec*100)+(tv.tv_usec/10000);
 END
@@ -1293,7 +1293,7 @@ unsigned _stklen=65520;
 BEGIN
 #ifdef __TURBOC__
    LongWord avail=stackavail();
-   if (avail<MinStack) WrError(10007);   
+   if (avail<MinStack) WrError(10007);
    if (avail<LowStack) LowStack=avail;
 #endif
 END
