@@ -33,7 +33,6 @@
    on other machines, please write to the e-mail contact address given above.
  */
 
-
 #include "codeflt1750.h"
 #include <math.h>
 #define dfrexp     frexp
@@ -47,112 +46,96 @@
 #define FLOATING_TWO_TO_THE_THIRTYONE     2147483648.0
 #define FLOATING_TWO_TO_THE_THIRTYNINE  549755813888.0
 
+double from_1750flt(short *input) { /* input : array of 2 shorts */
+   long int_mant;
+   double flt_mant, flt_exp;
+   signed char int_exp;
 
-
-double
-from_1750flt (short *input)	/* input : array of 2 shorts */
-{
-  long int_mant;
-  double flt_mant, flt_exp;
-  signed char int_exp;
-
-  int_exp = (signed char) (input[1] & 0xFF);
-  int_mant = ((long) input[0] << 8) | (((long) input[1] & 0xFF00L) >> 8);
-  /* printf("int_mant = 0x%08lx\n",int_mant); */
-  flt_mant = (double) int_mant / FLOATING_TWO_TO_THE_TWENTYTHREE;
-  flt_exp = pow2 (int_exp);
-  return flt_mant * flt_exp;
+   int_exp = (signed char)(input[1] & 0xFF);
+   int_mant = ((long)input[0] << 8) | (((long)input[1] & 0xFF00L) >> 8);
+/* printf("int_mant = 0x%08lx\n",int_mant); */
+   flt_mant = (double)int_mant / FLOATING_TWO_TO_THE_TWENTYTHREE;
+   flt_exp = pow2(int_exp);
+   return flt_mant * flt_exp;
 }
 
-int
-to_1750flt (double input, short output[2])
-{
-  int exp;
-  long mant;
+int to_1750flt(double input, short output[2]) {
+   int exp;
+   long mant;
 
-  input = dfrexp (input, &exp);
+   input = dfrexp(input, &exp);
 
-  if (exp < -128)
-    return -1;			/* signalize underflow */
-  else if (exp > 127)
-    return 1;			/* signalize overflow */
+   if (exp < -128)
+      return -1; /* signalize underflow */
+   else if (exp > 127)
+      return 1; /* signalize overflow */
 
-  if (input < 0.0 && input >= -0.5)	/* prompted by UNIX frexp */
-    {
+   if (input < 0.0 && input >= -0.5) { /* prompted by UNIX frexp */
       input *= 2.0;
       exp--;
-    }
+   }
 
-  mant = (long) (input * FLOATING_TWO_TO_THE_THIRTYONE);
+   mant = (long)(input * FLOATING_TWO_TO_THE_THIRTYONE);
 
-  /* printf("\n\tmant=%08lx\n",mant); */
-  output[0] = (short) (mant >> 16);
-  output[1] = (short) (mant & 0xFF00) | (exp & 0xFF);
+/* printf("\n\tmant=%08lx\n",mant); */
+   output[0] = (short)(mant >> 16);
+   output[1] = (short)(mant & 0xFF00) | (exp & 0xFF);
 
-  return 0;			/* success status */
+   return 0; /* success status */
 }
 
-double
-from_1750eflt (short *input)	/* input : array of 3 shorts */
-{
-  long int_mant_hi, int_mant_lo;
-  double flt_mant, flt_exp;
-  signed char int_exp;
+double from_1750eflt(short *input) { /* input : array of 3 shorts */
+   long int_mant_hi, int_mant_lo;
+   double flt_mant, flt_exp;
+   signed char int_exp;
 
-  int_exp = (signed char) (input[1] & 0xFF);
+   int_exp = (signed char)(input[1] & 0xFF);
 
-  int_mant_hi = (((long) input[0] << 16) | ((long) input[1] & 0xFF00L)) >> 8;
-  int_mant_lo = ((long) input[2] & 0xFFFFL);
+   int_mant_hi = (((long)input[0] << 16) | ((long)input[1] & 0xFF00L)) >> 8;
+   int_mant_lo = ((long)input[2] & 0xFFFFL);
 
-  flt_mant = (double) int_mant_hi / FLOATING_TWO_TO_THE_TWENTYTHREE
-    + (double) int_mant_lo / FLOATING_TWO_TO_THE_THIRTYNINE;
-  flt_exp = pow2 (int_exp);
+   flt_mant = (double)int_mant_hi / FLOATING_TWO_TO_THE_TWENTYTHREE + (double)int_mant_lo / FLOATING_TWO_TO_THE_THIRTYNINE;
+   flt_exp = pow2(int_exp);
 /*  printf ("\tfrom: mant=%.12g, exp=%g\n", flt_mant, flt_exp);  */
 
-  return flt_mant * flt_exp;
+   return flt_mant * flt_exp;
 }
 
-int
-to_1750eflt (double input, short output[3])
-{
-  int exp;
-  int is_neg = 0;
-  ushort hlp;
+int to_1750eflt(double input, short output[3]) {
+   int exp;
+   int is_neg = 0;
+   ushort hlp;
 
-  if (input < 0.0)
-    {
+   if (input < 0.0) {
       is_neg = 1;
       input = -input - .03125 / FLOATING_TWO_TO_THE_THIRTYNINE;
-    }
+   }
 
-  input = dfrexp (input, &exp);	/* input is now normalized mantissa */
+   input = dfrexp(input, &exp); /* input is now normalized mantissa */
 
-  if (input == 1.0)		/* prompted by VAX frexp */
-    {
+   if (input == 1.0) { /* prompted by VAX frexp */
       input = 0.5;
       exp++;
-    }
+   }
 
-  if (exp < -128)
-    return -1;			/* signalize underflow */
-  else if (exp > 127)
-    return 1;			/* signalize overflow */
+   if (exp < -128)
+      return -1; /* signalize underflow */
+   else if (exp > 127)
+      return 1; /* signalize overflow */
 
-  output[0] = (short) (input * FLOATING_TWO_TO_THE_FIFTEEN);
-  input -= (double) output[0] / FLOATING_TWO_TO_THE_FIFTEEN;
-  hlp = (ushort) (input * FLOATING_TWO_TO_THE_TWENTYTHREE);
-  output[1] = (short) ((hlp << 8) | (exp & 0xFF));
-  input -= (double) hlp / FLOATING_TWO_TO_THE_TWENTYTHREE;
-  hlp = (ushort) (input * FLOATING_TWO_TO_THE_THIRTYNINE);
-  output[2] = (short) hlp;
+   output[0] = (short)(input * FLOATING_TWO_TO_THE_FIFTEEN);
+   input -= (double)output[0] / FLOATING_TWO_TO_THE_FIFTEEN;
+   hlp = (ushort) (input * FLOATING_TWO_TO_THE_TWENTYTHREE);
+   output[1] = (short)((hlp << 8) | (exp & 0xFF));
+   input -= (double)hlp / FLOATING_TWO_TO_THE_TWENTYTHREE;
+   hlp = (ushort) (input * FLOATING_TWO_TO_THE_THIRTYNINE);
+   output[2] = (short)hlp;
 
-  if (is_neg)
-    {
+   if (is_neg) {
       output[0] = ~output[0];
       output[1] = (~output[1] & 0xFF00) | (output[1] & 0x00FF);
       output[2] = ~output[2];
-    }
+   }
 
-  return 0;			/* success status */
+   return 0; /* success status */
 }
-

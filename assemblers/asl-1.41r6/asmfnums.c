@@ -17,97 +17,77 @@
 
 #include "asmfnums.h"
 
-
-typedef struct _TToken
-         {
-          struct _TToken *Next;
-          char *Name;
-         } TToken,*PToken;
+typedef struct _TToken {
+   struct _TToken *Next;
+   char *Name;
+} TToken, *PToken;
 
 static PToken FirstFile;
 
-
-        void InitFileList(void)
-{
-   FirstFile=NULL;
+void InitFileList(void) {
+   FirstFile = NULL;
 }
 
-
-        void ClearFileList(void)
-{
+void ClearFileList(void) {
    PToken F;
 
-   while (FirstFile!=NULL)
-    {
-     F=FirstFile->Next;
-     free(FirstFile->Name);
-     free(FirstFile);
-     FirstFile=F;
-    }
+   while (FirstFile != NULL) {
+      F = FirstFile->Next;
+      free(FirstFile->Name);
+      free(FirstFile);
+      FirstFile = F;
+   }
 }
 
+void AddFile(char *FName) {
+   PToken Lauf, Neu;
 
-        void AddFile(char *FName)
-{
-   PToken Lauf,Neu;
+   if (GetFileNum(FName) != -1) return;
 
-   if (GetFileNum(FName)!=-1) return;
-
-   Neu=(PToken) malloc(sizeof(TToken));
-   Neu->Next=NULL;
-   Neu->Name=strdup(FName);
-   if (FirstFile==NULL) FirstFile=Neu;
-   else
-    {
-     Lauf=FirstFile;
-     while (Lauf->Next!=NULL) Lauf=Lauf->Next;
-     Lauf->Next=Neu;
-    }
+   Neu = (PToken) malloc(sizeof(TToken));
+   Neu->Next = NULL;
+   Neu->Name = strdup(FName);
+   if (FirstFile == NULL) FirstFile = Neu;
+   else {
+      Lauf = FirstFile;
+      while (Lauf->Next != NULL) Lauf = Lauf->Next;
+      Lauf->Next = Neu;
+   }
 }
 
+Integer GetFileNum(char *Name) {
+   PToken FLauf = FirstFile;
+   Integer Cnt = 0;
 
-        Integer GetFileNum(char *Name)
-{
-   PToken FLauf=FirstFile;
-   Integer Cnt=0;
-
-   while ((FLauf!=NULL) && (strcmp(FLauf->Name,Name)!=0))
-    {
-     Cnt++;
-     FLauf=FLauf->Next;
-    }
-   return (FLauf==NULL)?(-1):(Cnt);
+   while ((FLauf != NULL) && (strcmp(FLauf->Name, Name) != 0)) {
+      Cnt++;
+      FLauf = FLauf->Next;
+   }
+   return (FLauf == NULL) ? (-1) : (Cnt);
 }
 
-
-        char *GetFileName(Byte Num)
-{
+char *GetFileName(Byte Num) {
    PToken Lauf;
    Integer z;
-   static char *Dummy="";
+   static char *Dummy = "";
 
-   Lauf=FirstFile;
-   for (z=0; z<Num; z++)
-    if (Lauf!=NULL) Lauf=Lauf->Next;
-   return (Lauf==NULL)?(Dummy):(Lauf->Name);
+   Lauf = FirstFile;
+   for (z = 0; z < Num; z++)
+      if (Lauf != NULL) Lauf = Lauf->Next;
+   return (Lauf == NULL) ? (Dummy) : (Lauf->Name);
 }
 
+Integer GetFileCount(void) {
+   PToken Lauf = FirstFile;
+   Integer z = 0;
 
-        Integer GetFileCount(void)
-{
-   PToken Lauf=FirstFile;
-   Integer z=0;
-
-   while (Lauf!=NULL)
-    {
-     z++; Lauf=Lauf->Next;
-    };
+   while (Lauf != NULL) {
+      z++;
+      Lauf = Lauf->Next;
+   };
    return z;
 }
 
-
-	void asmfnums_init(void)
-{
-   FirstFile=NULL;
+void asmfnums_init(void) {
+   FirstFile = NULL;
 }
-

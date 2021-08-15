@@ -7,3 +7,6 @@
 2021/08/15	Layout normalization round 2: removal of the Pascalisms from the C code.
 		The "C in Pascal" re-defines interfere with the layout phase and readibility of the code.
 		No degredation: 4/55 tests succeed.
+2021/08/15	Layout normalization round 3: normalized C indentation and layout.
+		Locking in function prototypes, removing "PROTOS".
+		No degredation: 4/55 tests succeed.

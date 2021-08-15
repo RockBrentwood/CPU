@@ -8,23 +8,18 @@
 /*                                                                           */
 /*****************************************************************************/
 
-typedef void (*InstProc)(
-#ifdef __PROTOS__
-Word Index
-#endif
-);
-typedef struct _TInstTreeNode
-         {
-          struct _TInstTreeNode *Left,*Right;
-          InstProc Proc;
-          char *Name;
-          Word Index;
-          ShortInt Balance;
-         } TInstTreeNode,*PInstTreeNode;
+typedef void (*InstProc)(Word Index);
+typedef struct _TInstTreeNode {
+   struct _TInstTreeNode *Left, *Right;
+   InstProc Proc;
+   char *Name;
+   Word Index;
+   ShortInt Balance;
+} TInstTreeNode, *PInstTreeNode;
 
-extern void AddInstTree(PInstTreeNode *Root, char *NName, InstProc NProc, Word NIndex);
+extern void AddInstTree(PInstTreeNode * Root, char *NName, InstProc NProc, Word NIndex);
 
-extern void ClearInstTree(PInstTreeNode *Root);
+extern void ClearInstTree(PInstTreeNode * Root);
 
 extern bool SearchInstTree(PInstTreeNode Root);
 
