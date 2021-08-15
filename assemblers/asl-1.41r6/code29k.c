@@ -537,7 +537,7 @@ BEGIN
          else OK=DecodeReg(ArgStr[1],&Dest);
          if (OK)
           BEGIN
-           AdrLong=EvalIntExpression(ArgStr[ArgCnt],Int32,&OK); 
+           AdrLong=EvalIntExpression(ArgStr[ArgCnt],Int32,&OK);
            AdrInt=AdrLong-EProgCounter();
            if (OK)
             if ((AdrLong & 3)!=0) WrError(1325);

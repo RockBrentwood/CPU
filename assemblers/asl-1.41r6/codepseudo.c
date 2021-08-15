@@ -58,7 +58,7 @@ BEGIN
     END
    return -1;
 #endif
-END      
+END
 
 
 	Boolean IsIndirect(char *Asc)
@@ -125,7 +125,7 @@ BEGIN
         Result=True;
        END;
       break;
-     case TempFloat: 
+     case TempFloat:
       WrError(1135);
       break;
      case TempString:
@@ -195,7 +195,7 @@ BEGIN
    if (strcmp(Asc,"?")==0)
     BEGIN
      if (DSFlag==DSConstant) WrError(1930);
-     else 
+     else
       BEGIN
        Result=True; DSFlag=DSSpace; CodeLen+=4;
       END
@@ -213,7 +213,7 @@ BEGIN
    if (CodeLen+4>MaxCodeLen)
     BEGIN
      WrError(1920); return Result;
-    END  
+    END
 
    KillBlanks(Asc); EvalExpression(Asc,&erg);
    switch (erg.Typ)
@@ -322,7 +322,7 @@ BEGIN
       WrError(1135);
       return Result;
     END
- 
+
    if (Turn)
     for (z=0; z<4; z++)
      BEGIN
@@ -427,7 +427,7 @@ BEGIN
 
      /* Einzelteile bilden & evaluieren */
 
-     strcpy(Asc,Asc+Fnd+3); KillPrefBlanks(Asc); SumCnt=0; 
+     strcpy(Asc,Asc+Fnd+3); KillPrefBlanks(Asc); SumCnt=0;
      if ((strlen(Asc)>=2) AND (*Asc=='(') AND (Asc[strlen(Asc)-1]==')'))
       BEGIN
        strcpy(Asc,Asc+1); Asc[strlen(Asc)-1]='\0';
@@ -457,7 +457,7 @@ BEGIN
          strcpy(Asc,Asc+Fnd+1);
         END
        if (NOT DecodeIntelPseudo_LayoutMult(Part,&ECnt,LayoutFunc,Turn))
-        return False; 
+        return False;
        SumCnt+=ECnt;
       END
      while (*Asc!='\0');
@@ -604,7 +604,7 @@ BEGIN
              END
             break;
            default:
-            OK=False; 
+            OK=False;
             break;
           END
          z++;
@@ -778,7 +778,7 @@ static ONOFFRec ONOFFMoto16s[ONOFFMoto16Count]=
    Boolean OK,ValOK;
 
    if (Turn); /* satisfy some compilers */
- 
+
    if (OpSize<0) OpSize=1;
 
    if (CodeONOFF(ONOFFMoto16s,ONOFFMoto16Count)) return True;
@@ -796,7 +796,7 @@ static ONOFFRec ONOFFMoto16s[ONOFFMoto16Count]=
 	 else
 	  BEGIN
 	   strcpy(ArgStr[z],ArgStr[z]+1); p=QuotPos(ArgStr[z],']');
-           if (p==Nil) 
+           if (p==Nil)
             BEGIN
              WrError(1300); OK=False;
             END
@@ -838,7 +838,7 @@ static ONOFFRec ONOFFMoto16s[ONOFFMoto16Count]=
 		   BEGIN
 		    WrError(1920); OK=False;
 	           END
-		  else 
+		  else
                    for (z2=0; z2<Rep; z2++)
 	            for (zp=t.Contents.Ascii; *zp!='\0'; EnterByte(CharTransTable[(unsigned int) *(zp++)]));
                   break;
@@ -848,7 +848,7 @@ static ONOFFRec ONOFFMoto16s[ONOFFMoto16Count]=
 	      case 1:
 	       HVal16=EvalIntExpression(ArgStr[z],Int16,&OK);
 	       if (OK)
-	        if (CodeLen+(Rep<<1)>MaxCodeLen)		
+	        if (CodeLen+(Rep<<1)>MaxCodeLen)
                  BEGIN
 		  WrError(1920); OK=False;
 		 END
@@ -859,10 +859,10 @@ static ONOFFRec ONOFFMoto16s[ONOFFMoto16Count]=
                     BEGIN
                      BAsmCode[(WLen<<1)  ]=Hi(HVal16);
                      BAsmCode[(WLen<<1)+1]=Lo(HVal16);
-                     WLen++;  
+                     WLen++;
                     END
                   else
-                   for (z2=0; z2<Rep; z2++) WAsmCode[WLen++]=HVal16; 
+                   for (z2=0; z2<Rep; z2++) WAsmCode[WLen++]=HVal16;
                   CodeLen+=Rep<<1;
 		 END
 	       break;
@@ -877,7 +877,7 @@ static ONOFFRec ONOFFMoto16s[ONOFFMoto16Count]=
 		 BEGIN
                   if (ListGran()==1)
                    for (z2=0; z2<Rep; z2++)
-                    BEGIN   
+                    BEGIN
                      BAsmCode[(WLen<<1)  ]=(HVal >> 24) & 0xff;
                      BAsmCode[(WLen<<1)+1]=(HVal >> 16) & 0xff;
                      BAsmCode[(WLen<<1)+2]=(HVal >>  8) & 0xff;
@@ -937,7 +937,7 @@ static ONOFFRec ONOFFMoto16s[ONOFFMoto16Count]=
 		 END
 	        else
 		 BEGIN
-                  memcpy(TurnField,&FVal,4); 
+                  memcpy(TurnField,&FVal,4);
                   if (BigEndian) DWSwap((void*) TurnField,4);
                   if (ListGran()==1)
                    for (z2=0; z2<Rep; z2++)
@@ -969,7 +969,7 @@ static ONOFFRec ONOFFMoto16s[ONOFFMoto16Count]=
 		  memcpy(TurnField,&DVal,8);
                   if (BigEndian) QWSwap((void *) TurnField,8);
                   if (ListGran()==1)
-                   for (z2=0; z2<Rep; z2++)   
+                   for (z2=0; z2<Rep; z2++)
                     BEGIN
                      BAsmCode[(WLen<<1)  ]=Hi(TurnField[3]);
                      BAsmCode[(WLen<<1)+1]=Lo(TurnField[3]);

@@ -29,7 +29,7 @@ typedef struct
           Byte Code;
          } BaseOrder;
 
-typedef struct 
+typedef struct
          {
           char *Name;
           CPUVar MinCPU;
@@ -38,7 +38,7 @@ typedef struct
           ShortInt Size;
          } ALUOrder;
 
-typedef struct 
+typedef struct
          {
           char *Name;
           CPUVar MinCPU;
@@ -619,7 +619,7 @@ BEGIN
          BEGIN
           switch (AdrMode)
            BEGIN
-            case ModImm : 
+            case ModImm :
              BAsmCode[0]=0xa0+ALUOrders[z].Code; CodeLen=1;
              break;
             case ModDir :

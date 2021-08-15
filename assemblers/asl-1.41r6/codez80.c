@@ -37,13 +37,13 @@ typedef struct
          {
           char *Name;
           Byte Code;
-         } Condition; 
+         } Condition;
 
 typedef struct
          {
           char *Name;
           Byte Code;
-         } ALUOrder; 
+         } ALUOrder;
 
 /*-------------------------------------------------------------------------*/
 /* Praefixtyp */
@@ -211,7 +211,7 @@ BEGIN
    AddALU("CP" , 7);
 
    InstrZ=0; ShiftOrders=(char **) malloc(sizeof(char *)*ShiftOrderCnt);
-   AddShift("RLC"); AddShift("RRC"); AddShift("RL"); AddShift("RR"); 
+   AddShift("RLC"); AddShift("RRC"); AddShift("RL"); AddShift("RR");
    AddShift("SLA"); AddShift("SRA"); AddShift("SLIA"); AddShift("SRL");
 
    InstrZ=0; BitOrders=(char **) malloc(sizeof(char *)*BitOrderCnt);
@@ -277,7 +277,7 @@ BEGIN
      case Pref_IB_W:
      case Pref_IW_W:  SPart=1; break;
      case Pref_IN_LW:
-     case Pref_IB_LW: 
+     case Pref_IB_LW:
      case Pref_IW_LW: SPart=2; break;
      default: SPart=0;
     END
@@ -451,7 +451,7 @@ BEGIN
 
    /* 3. 16-Bit-Register indirekt ? */
 
-   if ((strlen(Asc_O)>=4) AND (*Asc_O=='(') AND (Asc_O[strlen(Asc_O)-1]==')')) 
+   if ((strlen(Asc_O)>=4) AND (*Asc_O=='(') AND (Asc_O[strlen(Asc_O)-1]==')'))
     for (z=0; z<Reg16Cnt; z++)
      if ((strncasecmp(Asc_O+1,Reg16Names[z],2)==0)
      AND (NOT IsSym(Asc_O[3])))
@@ -1430,7 +1430,7 @@ BEGIN
 	     END
 	    if ((Memo("SBC")) AND (CodeLen!=0)) BAsmCode[PrefixCnt]+=0x10;
 	   END
-          break; 
+          break;
          case ModReg16:
 	  if ((AdrPart!=2) OR (PrefixCnt!=0)) WrError(1350);
 	  else
@@ -1650,7 +1650,7 @@ BEGIN
               END
 	    END
            break;
-          default: if (AdrMode!=ModNone) WrError(1350); 
+          default: if (AdrMode!=ModNone) WrError(1350);
 	 END
        END
       return True;
@@ -2092,7 +2092,7 @@ BEGIN
 	         END
 	       else if (PrefixCnt==1)
 	        BEGIN
-	         if (AdrPart==2) AdrPart=3; 
+	         if (AdrPart==2) AdrPart=3;
 	         BAsmCode[1]=((BAsmCode[0] >> 2) & 8)+3+(AdrPart << 4);
 	         BAsmCode[0]=0xed;
 	         CodeLen=2;
@@ -2630,7 +2630,7 @@ BEGIN
       BEGIN
        FirstPassUnknown=False;
        AdrByte=EvalIntExpression(ArgStr[1],Int8,&OK);
-       if (FirstPassUnknown) AdrByte=AdrByte & 0x38;  
+       if (FirstPassUnknown) AdrByte=AdrByte & 0x38;
        if (OK)
         if ((AdrByte>0x38) OR ((AdrByte & 7)!=0)) WrError(1320);
         else

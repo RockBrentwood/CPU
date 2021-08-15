@@ -218,7 +218,7 @@ BEGIN
     BEGIN
      switch (OpSize)
       BEGIN
-       case 0: 
+       case 0:
         AdrVals[0]=EvalIntExpression(Asc+1,Int8,&OK);
         break;
        case 1:
@@ -1049,7 +1049,7 @@ BEGIN
       END
      else
       BEGIN
-       if (*ArgStr[1]=='!') 
+       if (*ArgStr[1]=='!')
         BEGIN
          strcpy(ArgStr[1],ArgStr[1]+1); HReg=1;
         END

@@ -100,7 +100,7 @@ BEGIN
    AddFixed("SLEEP" , 0x0063);
    AddFixed("RETFIE", 0x0009);
    AddFixed("RETURN", 0x0008);
-  
+
    LitOrders=(FixedOrder *) malloc(sizeof(FixedOrder)*LitOrderCnt); InstrZ=0;
    AddLit("ADDLW", 0x3e00);
    AddLit("ANDLW", 0x3900);
@@ -225,7 +225,7 @@ BEGIN
 	      else BAsmCode[CodeLen++]=t.Contents.Int & MaxV;
              break;
 	    case TempFloat:
-	     WrError(1135); ValOK=False; 
+	     WrError(1135); ValOK=False;
              break;
 	    case TempString:
 	     for (p=t.Contents.Ascii; *p!='\0'; p++)

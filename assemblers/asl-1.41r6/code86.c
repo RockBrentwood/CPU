@@ -48,7 +48,7 @@ typedef struct
 #define FPUStOrderCnt 2
 #define FPU16OrderCnt 5
 #define ALU2OrderCnt 8
-#define MulOrderCnt 4 
+#define MulOrderCnt 4
 #define Bit1OrderCnt 4
 
 #define SegRegCnt 3
@@ -98,7 +98,7 @@ static char **Bit1Orders;
 
 	static void AddFixed(char *NName, CPUVar NMin, Word NCode)
 BEGIN
-   if (InstrZ>=FixedOrderCnt) exit(255); 
+   if (InstrZ>=FixedOrderCnt) exit(255);
    FixedOrders[InstrZ].Name=NName;
    FixedOrders[InstrZ].MinCPU=NMin;
    FixedOrders[InstrZ++].Code=NCode;
@@ -106,7 +106,7 @@ END
 
         static void AddFPUFixed(char *NName, CPUVar NMin, Word NCode)
 BEGIN
-   if (InstrZ>=FPUFixedOrderCnt) exit(255); 
+   if (InstrZ>=FPUFixedOrderCnt) exit(255);
    FPUFixedOrders[InstrZ].Name=NName;
    FPUFixedOrders[InstrZ].MinCPU=NMin;
    FPUFixedOrders[InstrZ++].Code=NCode;
@@ -114,7 +114,7 @@ END
 
         static void AddFPUSt(char *NName, CPUVar NMin, Word NCode)
 BEGIN
-   if (InstrZ>=FPUStOrderCnt) exit(255); 
+   if (InstrZ>=FPUStOrderCnt) exit(255);
    FPUStOrders[InstrZ].Name=NName;
    FPUStOrders[InstrZ].MinCPU=NMin;
    FPUStOrders[InstrZ++].Code=NCode;
@@ -130,7 +130,7 @@ END
 
 	static void AddString(char *NName, CPUVar NMin, Word NCode)
 BEGIN
-   if (InstrZ>=StringOrderCnt) exit(255); 
+   if (InstrZ>=StringOrderCnt) exit(255);
    StringOrders[InstrZ].Name=NName;
    StringOrders[InstrZ].MinCPU=NMin;
    StringOrders[InstrZ++].Code=NCode;
@@ -146,7 +146,7 @@ END
 
 	static void AddRel(char *NName, CPUVar NMin, Word NCode)
 BEGIN
-   if (InstrZ>=RelOrderCnt) exit(255); 
+   if (InstrZ>=RelOrderCnt) exit(255);
    RelOrders[InstrZ].Name=NName;
    RelOrders[InstrZ].MinCPU=NMin;
    RelOrders[InstrZ++].Code=NCode;
@@ -155,8 +155,8 @@ END
         static void AddModReg(char *NName, CPUVar NMin, Word NCode)
 BEGIN
    if (InstrZ>=ModRegOrderCnt) exit(255);
-   ModRegOrders[InstrZ].Name=NName; 
-   ModRegOrders[InstrZ].MinCPU=NMin; 
+   ModRegOrders[InstrZ].Name=NName;
+   ModRegOrders[InstrZ].MinCPU=NMin;
    ModRegOrders[InstrZ++].Code=NCode;
 END
 
@@ -164,7 +164,7 @@ END
 BEGIN
    if (InstrZ>=ShiftOrderCnt) exit(255);
    ShiftOrders[InstrZ].Name=NName;
-   ShiftOrders[InstrZ].MinCPU=NMin; 
+   ShiftOrders[InstrZ].MinCPU=NMin;
    ShiftOrders[InstrZ++].Code=NCode;
 END
 
@@ -200,7 +200,7 @@ BEGIN
    AddFixed("FINT",  CPUV35,   0x0f92);  AddFixed("MOVSPA",CPUV35,   0x0f25);
    AddFixed("SEGES", CPU8086,  0x0026);  AddFixed("SEGCS", CPU8086,  0x002e);
    AddFixed("SEGSS", CPU8086,  0x0036);  AddFixed("SEGDS", CPU8086,  0x003e);
-   AddFixed("FWAIT", CPU8086,  0x009b);  
+   AddFixed("FWAIT", CPU8086,  0x009b);
 
    FPUFixedOrders=(FixedOrder *) malloc(sizeof(FixedOrder)*FPUFixedOrderCnt); InstrZ=0;
    AddFPUFixed("FCOMPP", CPU8086, 0xded9); AddFPUFixed("FTST",   CPU8086, 0xd9e4);
@@ -677,7 +677,7 @@ END
 BEGIN
    String tmp;
 
-   if (Memo(Name)) 
+   if (Memo(Name))
     BEGIN
      AddPrefix(0x9b); return True;
     END
@@ -1013,7 +1013,7 @@ BEGIN
 	    CodeLen+=2+AdrCnt;
 	   END;
           break;
-         default: 
+         default:
           if (AdrType!=TypeNone) WrError(1350);
         END
       END
@@ -1148,7 +1148,7 @@ BEGIN
              END
 	   END
           break;
-         default: 
+         default:
           if (AdrType!=TypeNone) WrError(1350);
         END
       END
@@ -1655,7 +1655,7 @@ BEGIN
               if (AdrType!=TypeNone) WrError(1350);
 	    END
 	   break;
-	  default: 
+	  default:
            if (AdrType!=TypeNone) WrError(1350);
 	 END
        END
@@ -2527,7 +2527,7 @@ END
 
 	static Boolean ChkPC_86(void)
 BEGIN
-   switch (ActPC) 
+   switch (ActPC)
     BEGIN
      case SegCode:
      case SegData:

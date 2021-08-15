@@ -25,12 +25,12 @@ Boolean InEnv, char *Arg
 
 typedef struct
          {
-          char Ident[11]; 
+          char Ident[11];
           CMDCallback Callback;
          } CMDRec;
-         
+
 #define MAXPARAM 256
-typedef Boolean CMDProcessed[MAXPARAM+1];         
+typedef Boolean CMDProcessed[MAXPARAM+1];
 
 extern LongInt ParamCount;
 extern char **ParamStr;

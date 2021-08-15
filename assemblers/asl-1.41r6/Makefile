@@ -36,7 +36,7 @@ ASM_SRCS = asmdef.c asmsub.c asmpars.c asmmac.c asmcode.c asmdebug.c asmif.c \
 ASM_OBJECTS = $(ASM_SRCS:.c=.o)
 
 AS_SRCS = endian.c bpemu.c nls.c chunks.c decodecmd.c ioerrors.c
-          
+
 AS_OBJECTS = $(AS_SRCS:.c=.o)
 
 PLIST_SRCS = endian.c bpemu.c hex.c nls.c stringutil.c decodecmd.c ioerrors.c \
@@ -83,7 +83,7 @@ ALLOBJECTS = $(CODE_OBJECTS) $(AS_OBJECTS) $(PLIST_OBJECTS) $(P2HEX_OBJECTS) $(P
 
 ALLASMSRCS = $(ALLOBJECTS:.o=.s)
 
-# set EXEXTENSION im Makefile.def if you need a specific extension for 
+# set EXEXTENSION im Makefile.def if you need a specific extension for
 # the executables (e.g. .exe for OS/2)
 
 ASLTARGET = asl$(EXEXTENSION)
@@ -166,7 +166,7 @@ unjunk:
 
 
 .SUFFIXES: .c
-.c.o: 
+.c.o:
 	$(CC) $(CFLAGS) -D$(CHARSET) -I$(LANGRSC) -DSTDINCLUDES=\"${INCDIR}\" -c -o $*.o $*.c
 #.c.s:
 #	$(CC) $(CFLAGS) -D$(CHARSET) -I$(LANGRSC) -DSTDINCLUDES=\"${INCDIR}\" -S $*.c

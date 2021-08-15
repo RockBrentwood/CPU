@@ -184,7 +184,7 @@ BEGIN
     BEGIN
      if (toupper(Asc[l-1])=='B')
       BEGIN
-       Size=I8; Asc[l-2]='\0'; 
+       Size=I8; Asc[l-2]='\0';
       END
      else if (toupper(Asc[l-1])=='W')
       BEGIN

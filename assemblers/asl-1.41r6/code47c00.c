@@ -225,7 +225,7 @@ END
 BEGIN
    Byte NMask=(1 << (MomCPU-CPU47C00));
 
-   /* Don't ask me why, but NetBSD/Sun3 doesn't like writing 
+   /* Don't ask me why, but NetBSD/Sun3 doesn't like writing
       everything in one formula when using -O3 :-( */
 
    if ((Mask & NMask)==0)

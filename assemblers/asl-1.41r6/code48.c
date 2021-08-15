@@ -106,7 +106,7 @@ BEGIN
    ClrCplCodes=(Byte *) malloc(sizeof(Byte)*ClrCplCnt);
    ClrCplVals[0]="A"; ClrCplVals[1]="C"; ClrCplVals[2]="F0"; ClrCplVals[3]="F1";
    ClrCplCodes[0]=0x27; ClrCplCodes[1]=0x97; ClrCplCodes[2]=0x85; ClrCplCodes[3]=0xa5;
-   
+
    CondOrders=(CondOrder *) malloc(sizeof(CondOrder)*CondOrderCnt); InstrZ=0;
    AddCond("JTF"  ,0x16, 2, 3); AddCond("JNI"  ,0x86, 0, 2);
    AddCond("JC"   ,0xf6, 2, 3); AddCond("JNC"  ,0xe6, 2, 3);
@@ -139,7 +139,7 @@ END
 
 	static void DeinitFields(void)
 BEGIN
-   free(ClrCplVals); 
+   free(ClrCplVals);
    free(ClrCplCodes);
    free(CondOrders);
    free(AccOrders);
@@ -956,7 +956,7 @@ BEGIN
 
    switch (ActPC)
     BEGIN
-     case SegCode: 
+     case SegCode:
       switch (MomCPU-CPU8021)
        BEGIN
 	case D_CPU8041: ok=(ProgCounter() <  0x400); break;
@@ -965,10 +965,10 @@ BEGIN
        END
       break;
      case SegXData:
-     case SegIData: 
+     case SegIData:
       ok=(ProgCounter() <  0x100);
       break;
-     default: 
+     default:
       ok=False;
     END
    return (ok);

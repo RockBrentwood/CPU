@@ -72,7 +72,7 @@ BEGIN
    struct stat stdout_stat;
 
 #endif
-#endif   
+#endif
 
    /* wohin zeigt die Standardausgabe ? */
 
@@ -96,5 +96,5 @@ BEGIN
    else Redirected=NoRedir;
 
 #endif
-#endif   
+#endif
 END

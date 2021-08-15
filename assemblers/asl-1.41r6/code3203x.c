@@ -2,9 +2,9 @@
 /*****************************************************************************/
 /* AS-Portierung                                                             */
 /*                                                                           */
-/* Codegenerator TMS320C3x-Familie                                           */               
+/* Codegenerator TMS320C3x-Familie                                           */
 /*                                                                           */
-/* Historie: 12.12.1996 Grundsteinlegung                                     */               
+/* Historie: 12.12.1996 Grundsteinlegung                                     */
 /*                                                                           */
 /*****************************************************************************/
 
@@ -912,7 +912,7 @@ BEGIN
       Is3=(OpPart[strlen(OpPart)-1]=='3');
       if ((GenOrders[z].SwapOps) AND (NOT Is3))
        BEGIN
-        strcpy(ArgStr[3],ArgStr[1]); 
+        strcpy(ArgStr[3],ArgStr[1]);
         strcpy(ArgStr[1],ArgStr[2]);
         strcpy(ArgStr[2],ArgStr[3]);
        END
@@ -978,7 +978,7 @@ BEGIN
              CurrSrc2Mode=AdrMode; CurrSrc2Part=AdrPart;
             END
            break;
-          case ModNone: 
+          case ModNone:
            return;
          END
        END

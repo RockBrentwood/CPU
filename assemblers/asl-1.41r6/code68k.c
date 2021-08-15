@@ -23,7 +23,7 @@
 #include "codevars.h"
 
 
-typedef struct 
+typedef struct
          {
 	  char *Name;
 	  Word Code;
@@ -57,7 +57,7 @@ typedef struct
 #define Madr 2
 #define Madri 4
 #define Mpost 8
-#define Mpre 16       
+#define Mpre 16
 #define Mdadri 32
 #define Maix 64
 #define Mpc 128
@@ -150,7 +150,7 @@ BEGIN
    AddCtReg("MSP"  ,0x803, CPU68020);
    AddCtReg("ISP"  ,0x804, CPU68020);
 
-   CondNams=(char **) malloc(sizeof(char *)*CondCnt); 
+   CondNams=(char **) malloc(sizeof(char *)*CondCnt);
    CondVals=(Byte *) malloc(sizeof(Byte)*CondCnt); InstrZ=0;
    AddCond("T" , 0);  AddCond("F" , 1);  AddCond("HI", 2);  AddCond("LS", 3);
    AddCond("CC", 4);  AddCond("CS", 5);  AddCond("NE", 6);  AddCond("EQ", 7);
@@ -194,10 +194,10 @@ BEGIN
    AddFPUCond("OR"  , 0x07); AddFPUCond("UN"  , 0x08);
 
    PMMUConds=(char **) malloc(sizeof(char *)*PMMUCondCnt); InstrZ=0;
-   AddPMMUCond("BS"); AddPMMUCond("BC"); AddPMMUCond("LS"); AddPMMUCond("LC"); 
-   AddPMMUCond("SS"); AddPMMUCond("SC"); AddPMMUCond("AS"); AddPMMUCond("AC"); 
-   AddPMMUCond("WS"); AddPMMUCond("WC"); AddPMMUCond("IS"); AddPMMUCond("IC"); 
-   AddPMMUCond("GS"); AddPMMUCond("GC"); AddPMMUCond("CS"); AddPMMUCond("CC"); 
+   AddPMMUCond("BS"); AddPMMUCond("BC"); AddPMMUCond("LS"); AddPMMUCond("LC");
+   AddPMMUCond("SS"); AddPMMUCond("SC"); AddPMMUCond("AS"); AddPMMUCond("AC");
+   AddPMMUCond("WS"); AddPMMUCond("WC"); AddPMMUCond("IS"); AddPMMUCond("IC");
+   AddPMMUCond("GS"); AddPMMUCond("GC"); AddPMMUCond("CS"); AddPMMUCond("CC");
 
    PMMURegNames=(char **) malloc(sizeof(char *)*PMMURegCnt);
    PMMURegSizes=(Byte *) malloc(sizeof(Byte)*PMMURegCnt);
@@ -208,7 +208,7 @@ BEGIN
    AddPMMUReg("SCC"  ,0,22); AddPMMUReg("AC"   ,1,23);
    AddPMMUReg("PSR"  ,1,24); AddPMMUReg("PCSR" ,1,25);
    AddPMMUReg("TT0"  ,2, 2); AddPMMUReg("TT1"  ,2, 3);
-   AddPMMUReg("MMUSR",1,24); 
+   AddPMMUReg("MMUSR",1,24);
 END
 
 	static void DeinitFields(void)
@@ -235,7 +235,7 @@ BEGIN
    Boolean Result=True;
 
    if (strcasecmp(s,"SP")==0) *Erg=15;
-   else if (ValReg(s[1])) 
+   else if (ValReg(s[1]))
     if (toupper(*s)=='D') *Erg=s[1]-'0';
     else if (toupper(*s)=='A') *Erg=s[1]-'0'+8;
     else Result=False;
@@ -278,7 +278,7 @@ END
 /*-------------------------------------------------------------------------*/
 
 typedef enum {PC,AReg,Index,indir,Disp,None} CompType;
-typedef struct 
+typedef struct
          {
           String Name;
           CompType Art;
@@ -298,20 +298,20 @@ BEGIN
      C->Art=indir; return True;
     END
 
-   if (strcasecmp(C->Name,"PC")==0) 
+   if (strcasecmp(C->Name,"PC")==0)
     BEGIN
      C->Art=PC; return True;
     END
 
    sh[0]=C->Name[0]; sh[1]=C->Name[1]; sh[2]='\0';
-   if (CodeReg(sh,&C->ANummer)) 
-    if ((C->ANummer>7) AND (strlen(C->Name)==2)) 
+   if (CodeReg(sh,&C->ANummer))
+    if ((C->ANummer>7) AND (strlen(C->Name)==2))
      BEGIN
       C->Art=AReg; C->ANummer-=8; return True;
      END
     else
      BEGIN
-      if ((strlen(C->Name)>3) AND (C->Name[2]=='.')) 
+      if ((strlen(C->Name)>3) AND (C->Name[2]=='.'))
        BEGIN
 	switch (toupper(C->Name[3]))
          BEGIN
@@ -322,7 +322,7 @@ BEGIN
 	strcpy(C->Name+2,C->Name+4);
        END
       else C->Long=False;
-      if ((strlen(C->Name)>3) AND (C->Name[2]=='*')) 
+      if ((strlen(C->Name)>3) AND (C->Name[2]=='*'))
        BEGIN
 	switch (C->Name[3])
          BEGIN
@@ -339,7 +339,7 @@ BEGIN
      END
 
    C->Art=Disp;
-   if (C->Name[strlen(C->Name)-2]=='.') 
+   if (C->Name[strlen(C->Name)-2]=='.')
     BEGIN
      switch (toupper(C->Name[strlen(C->Name)-1]))
       BEGIN
@@ -356,7 +356,7 @@ END
 
 	static void ACheckCPU(CPUVar MinCPU)
 BEGIN
-   if (MomCPU<MinCPU) 
+   if (MomCPU<MinCPU)
     BEGIN
      WrError(1505); AdrNum=0; AdrCnt=0;
     END
@@ -364,7 +364,7 @@ END
 
 	static void ChkAdr(Word Erl)
 BEGIN
-   if ((Erl & Masks[AdrNum])==0) 
+   if ((Erl & Masks[AdrNum])==0)
     BEGIN
      WrError(1350); AdrNum=0;
     END
@@ -373,7 +373,7 @@ END
 	static Boolean IsShortAdr(LongInt Adr)
 BEGIN
    Word WHi=(Adr>>16)&0xffff,WLo=Adr&0xffff;
- 
+
    return ((WHi==0     ) AND (WLo<=0x7fff))
        OR ((WHi==0xffff) AND (WLo>=0x8000));
 END
@@ -428,7 +428,7 @@ BEGIN
 
    /* immediate : */
 
-   if (*Asc=='#') 
+   if (*Asc=='#')
     BEGIN
      strcpy(Asc,Asc+1);
      AdrNum=11;
@@ -448,7 +448,7 @@ BEGIN
        case 2:
 	AdrCnt=4;
 	HVal=EvalIntExpression(Asc,Int32,&ValOK);
-	if (ValOK) 
+	if (ValOK)
 	 BEGIN
 	  AdrVals[0]=HVal >> 16;
 	  AdrVals[1]=HVal & 0xffff;
@@ -458,7 +458,7 @@ BEGIN
        case 3:
 	AdrCnt=8;
 	QVal=EvalIntExpression(Asc,Int64,&ValOK);
-	if (ValOK) 
+	if (ValOK)
 	 BEGIN
 	  AdrVals[0]=(QVal >> 48) & 0xffff;
 	  AdrVals[1]=(QVal >> 32) & 0xffff;
@@ -470,9 +470,9 @@ BEGIN
        case 4:
 	AdrCnt=4;
 	FVal=EvalFloatExpression(Asc,Float32,&ValOK);
-	if (ValOK) 
+	if (ValOK)
 	 BEGIN
-          memcpy(SwapField,&FVal,4); 
+          memcpy(SwapField,&FVal,4);
           if (BigEndian) DWSwap((Byte *) SwapField,4);
 	  AdrVals[0]=SwapField[1];
 	  AdrVals[1]=SwapField[0];
@@ -481,7 +481,7 @@ BEGIN
        case 5:
 	AdrCnt=8;
 	DVal=EvalFloatExpression(Asc,Float64,&ValOK);
-	if (ValOK) 
+	if (ValOK)
 	 BEGIN
           memcpy(SwapField,&DVal,8);
           if (BigEndian) QWSwap((Byte *) SwapField,8);
@@ -494,7 +494,7 @@ BEGIN
        case 6:
 	AdrCnt=12;
 	DVal=EvalFloatExpression(Asc,Float64,&ValOK);
-	if (ValOK) 
+	if (ValOK)
 	 BEGIN
           Double_2_TenBytes(DVal,(Byte *) SwapField);
 	  if (BigEndian) WSwap((Byte *) SwapField,10);
@@ -509,7 +509,7 @@ BEGIN
        case 7:
 	AdrCnt=12;
 	DVal=EvalFloatExpression(Asc,Float64,&ValOK);
-	if (ValOK) 
+	if (ValOK)
 	 BEGIN
 	  ConvertDec(DVal,SwapField);
 	  AdrVals[0]=SwapField[5];
@@ -526,28 +526,28 @@ BEGIN
 
    /* CPU-Register direkt: */
 
-   if (CodeReg(Asc,&AdrMode)) 
+   if (CodeReg(Asc,&AdrMode))
     BEGIN
      AdrCnt=0; AdrNum=(AdrMode >> 3)+1; ChkAdr(Erl); return;
     END
 
    /* Gleitkommaregister direkt: */
 
-   if (strncasecmp(Asc,"FP",2)==0) 
+   if (strncasecmp(Asc,"FP",2)==0)
     BEGIN
-     if ((strlen(Asc)==3) AND (ValReg(Asc[2]))) 
+     if ((strlen(Asc)==3) AND (ValReg(Asc[2])))
       BEGIN
        AdrMode=Asc[2]-'0'; AdrCnt=0; AdrNum=12; ChkAdr(Erl); return;
       END;
-     if (strcasecmp(Asc,"FPCR")==0) 
+     if (strcasecmp(Asc,"FPCR")==0)
       BEGIN
        AdrMode=4; AdrNum=13; ChkAdr(Erl); return;
       END
-     if (strcasecmp(Asc,"FPSR")==0) 
+     if (strcasecmp(Asc,"FPSR")==0)
       BEGIN
        AdrMode=2; AdrNum=13; ChkAdr(Erl); return;
       END
-     if (strcasecmp(Asc,"FPIAR")==0) 
+     if (strcasecmp(Asc,"FPIAR")==0)
       BEGIN
        AdrMode=1; AdrNum=13; ChkAdr(Erl); return;
       END
@@ -558,8 +558,8 @@ BEGIN
    if ((l==5) AND (*Asc=='-') AND (Asc[1]=='(') AND (Asc[4]==')'))
     BEGIN
      strcpy(CReg,Asc+2); CReg[2]='\0';
-     if (CodeReg(CReg,&rerg)) 
-      if (rerg>7) 
+     if (CodeReg(CReg,&rerg))
+      if (rerg>7)
        BEGIN
         AdrMode=rerg+24; AdrCnt=0; AdrNum=5; ChkAdr(Erl); return;
        END
@@ -567,11 +567,11 @@ BEGIN
 
    /* Adressregister indirekt mit Postinkrement */
 
-   if ((l==5) AND (*Asc=='(') AND (Asc[3]==')') AND (Asc[4]=='+')) 
+   if ((l==5) AND (*Asc=='(') AND (Asc[3]==')') AND (Asc[4]=='+'))
     BEGIN
      strcpy(CReg,Asc+1); CReg[2]='\0';
-     if (CodeReg(CReg,&rerg)) 
-      if (rerg>7) 
+     if (CodeReg(CReg,&rerg))
+      if (rerg>7)
        BEGIN
         AdrMode=rerg+16; AdrCnt=0; AdrNum=4; ChkAdr(Erl); return;
        END
@@ -584,21 +584,21 @@ BEGIN
     BEGIN
      if (*p=='[') doklamm=False;
      if (*p==']') doklamm=True;
-     if (doklamm) 
+     if (doklamm)
       if (*p=='(') lklamm++;
-      else if (*p==')') 
+      else if (*p==')')
        BEGIN
 	rklamm++; lastrklamm=p-Asc;
        END
     END
 
-   if ((lklamm==1) AND (rklamm==1) AND (lastrklamm==strlen(Asc)-1)) 
+   if ((lklamm==1) AND (rklamm==1) AND (lastrklamm==strlen(Asc)-1))
     BEGIN
 
      /* aeusseres Displacement abspalten, Klammern loeschen: */
 
      p=strchr(Asc,'('); *p='\0'; strmaxcpy(OutDisp,Asc,255); strcpy(Asc,p+1);
-     if ((strlen(OutDisp)>2) AND (OutDisp[strlen(OutDisp)-2]=='.')) 
+     if ((strlen(OutDisp)>2) AND (OutDisp[strlen(OutDisp)-2]=='.'))
       BEGIN
        switch (toupper(OutDisp[strlen(OutDisp)-1]))
         BEGIN
@@ -635,42 +635,42 @@ BEGIN
         BEGIN
          *p='\0'; strcpy(AdrComps[CompCnt].Name,Asc); strcpy(Asc,p+1);
         END
-       if (NOT ClassComp(AdrComps+CompCnt)) 
+       if (NOT ClassComp(AdrComps+CompCnt))
 	BEGIN
 	 WrError(1350); return;
 	END
-       if ((CompCnt==1) AND (AdrComps[CompCnt].Art==AReg)) 
+       if ((CompCnt==1) AND (AdrComps[CompCnt].Art==AReg))
 	BEGIN
-	 AdrComps[CompCnt].Art=Index; 
-         AdrComps[CompCnt].INummer=AdrComps[CompCnt].ANummer+8; 
-         AdrComps[CompCnt].Long=False; 
+	 AdrComps[CompCnt].Art=Index;
+         AdrComps[CompCnt].INummer=AdrComps[CompCnt].ANummer+8;
+         AdrComps[CompCnt].Long=False;
          AdrComps[CompCnt].Scale=0;
 	END
-       if ((AdrComps[CompCnt].Art==Disp) OR ((AdrComps[CompCnt].Art!=Index) AND (CompCnt!=0))) 
+       if ((AdrComps[CompCnt].Art==Disp) OR ((AdrComps[CompCnt].Art!=Index) AND (CompCnt!=0)))
 	BEGIN
 	 WrError(1350); return;
 	END
        CompCnt++;
       END
      while (*Asc!='\0');
-     if ((CompCnt>2) OR ((AdrComps[0].Art==Index) AND (CompCnt!=1))) 
+     if ((CompCnt>2) OR ((AdrComps[0].Art==Index) AND (CompCnt!=1)))
       BEGIN
        WrError(1350); return;
       END
 
      /* 1. Variante (An....), d(An....) */
 
-     if (AdrComps[0].Art==AReg) 
+     if (AdrComps[0].Art==AReg)
       BEGIN
 
        /* 1.1. Variante (An), d(An) */
 
-       if (CompCnt==1) 
+       if (CompCnt==1)
 	BEGIN
 
          /* 1.1.1. Variante (An) */
 
-	 if ((*OutDisp=='\0') AND ((Madri & Erl)!=0)) 
+	 if ((*OutDisp=='\0') AND ((Madri & Erl)!=0))
 	  BEGIN
 	   AdrMode=0x10+AdrComps[0].ANummer; AdrNum=3; AdrCnt=0;
 	   ChkAdr(Erl); return;
@@ -682,11 +682,11 @@ BEGIN
 	  BEGIN
 	   if (OutDispLen>=2) HVal=EvalIntExpression(OutDisp,Int32,&ValOK);
            else HVal=EvalIntExpression(OutDisp,SInt16,&ValOK);
-	   if (NOT ValOK) 
+	   if (NOT ValOK)
 	    BEGIN
 	     WrError(1350); return;
 	    END
-	   if ((ValOK) AND (HVal==0) AND ((Madri & Erl)!=0) AND (OutDispLen==0)) 
+	   if ((ValOK) AND (HVal==0) AND ((Madri & Erl)!=0) AND (OutDispLen==0))
 	    BEGIN
              AdrMode=0x10+AdrComps[0].ANummer; AdrNum=3; AdrCnt=0;
 	     ChkAdr(Erl); return;
@@ -717,7 +717,7 @@ BEGIN
           BEGIN
 	   case 0:
 	    HVal8=EvalIntExpression(OutDisp,SInt8,&ValOK);
-	    if (ValOK) 
+	    if (ValOK)
 	     BEGIN
 	      AdrNum=7; AdrCnt=2; AdrVals[0]+=((Byte)HVal8);
 	      if (AdrComps[1].Scale!=0) ACheckCPU(CPU68332);
@@ -725,7 +725,7 @@ BEGIN
 	    ChkAdr(Erl); return;
 	   case 1:
 	    HVal16=EvalIntExpression(OutDisp,SInt16,&ValOK);
-	    if (ValOK) 
+	    if (ValOK)
 	     BEGIN
 	      AdrNum=7; AdrCnt=4;
 	      AdrVals[0]+=0x120; AdrVals[1]=HVal16;
@@ -734,7 +734,7 @@ BEGIN
 	    ChkAdr(Erl); return;
 	   case 2:
 	    HVal=EvalIntExpression(OutDisp,Int32,&ValOK);
-	    if (ValOK) 
+	    if (ValOK)
 	     BEGIN
 	      AdrNum=7; AdrCnt=6; AdrVals[0]+=0x130;
 	      AdrVals[1]=HVal >> 16; AdrVals[2]=HVal & 0xffff;
@@ -747,16 +747,16 @@ BEGIN
 
      /* 2. Variante d(PC....) */
 
-     else if (AdrComps[0].Art==PC) 
+     else if (AdrComps[0].Art==PC)
       BEGIN
 
        /* 2.1. Variante d(PC) */
 
-       if (CompCnt==1) 
+       if (CompCnt==1)
 	BEGIN
 	 if (OutDispLen==0) OutDispLen=1;
 	 HVal=EvalIntExpression(OutDisp,Int32,&ValOK)-(EProgCounter()+RelPos);
-	 if (NOT ValOK) 
+	 if (NOT ValOK)
 	  BEGIN
 	   WrError(1350); return;
 	  END
@@ -765,7 +765,7 @@ BEGIN
 	   case 1:
 	    AdrMode=0x3a;
 	    HVal16=HVal;
-	    if (NOT IsDisp16(HVal)) 
+	    if (NOT IsDisp16(HVal))
 	     BEGIN
 	      WrError(1330); return;
 	     END
@@ -785,7 +785,7 @@ BEGIN
 	BEGIN
          AdrVals[0]=(AdrComps[1].INummer << 12)+(Ord(AdrComps[1].Long) << 11)+(AdrComps[1].Scale << 9);
 	 HVal=EvalIntExpression(OutDisp,Int32,&ValOK)-(EProgCounter()+RelPos);
-	 if (NOT ValOK) 
+	 if (NOT ValOK)
 	  BEGIN
 	   WrError(1350); return;
 	  END;
@@ -794,7 +794,7 @@ BEGIN
           BEGIN
 	   case 0:
 	    HVal8=HVal;
-	    if (NOT IsDisp8(HVal)) 
+	    if (NOT IsDisp8(HVal))
 	     BEGIN
 	      WrError(1330); return;
 	     END
@@ -803,7 +803,7 @@ BEGIN
 	    ChkAdr(Erl); return;
 	   case 1:
 	    HVal16=HVal;
-	    if (NOT IsDisp16(HVal)) 
+	    if (NOT IsDisp16(HVal))
 	     BEGIN
 	      WrError(1330); return;
 	     END
@@ -822,11 +822,11 @@ BEGIN
 
      /* 3. Variante (Xi), d(Xi) */
 
-     else if (AdrComps[0].Art==Index) 
+     else if (AdrComps[0].Art==Index)
       BEGIN
        AdrVals[0]=(AdrComps[0].INummer << 12)+(Ord(AdrComps[0].Long) << 11)+(AdrComps[0].Scale << 9)+0x180;
        AdrMode=0x30;
-       if (*OutDisp=='\0') 
+       if (*OutDisp=='\0')
 	BEGIN
 	 AdrVals[0]=AdrVals[0]+0x0010; AdrCnt=2;
 	 AdrNum=7; ACheckCPU(CPU68332); ChkAdr(Erl); return;
@@ -836,7 +836,7 @@ BEGIN
          case 0:
          case 1:
 	  HVal16=EvalIntExpression(OutDisp,Int16,&ValOK);
-	  if (ValOK) 
+	  if (ValOK)
 	   BEGIN
 	    AdrVals[0]=AdrVals[0]+0x0020; AdrVals[1]=HVal16;
 	    AdrNum=7; AdrCnt=4; ACheckCPU(CPU68332);
@@ -844,7 +844,7 @@ BEGIN
 	  ChkAdr(Erl); return;
          case 2:
 	  HVal=EvalIntExpression(OutDisp,Int32,&ValOK);
-	  if (ValOK) 
+	  if (ValOK)
 	   BEGIN
 	    AdrVals[0]=AdrVals[0]+0x0030; AdrNum=7; AdrCnt=6;
 	    AdrVals[1]=HVal >> 16; AdrVals[2]=HVal & 0xffff;
@@ -856,19 +856,19 @@ BEGIN
 
      /* 4. Variante indirekt: */
 
-     else if (AdrComps[0].Art==indir) 
+     else if (AdrComps[0].Art==indir)
       BEGIN
 
        /* erst ab 68020 erlaubt */
 
-       if (MomCPU<CPU68020) 
+       if (MomCPU<CPU68020)
         BEGIN
          WrError(1505); return;
         END
 
        /* Unterscheidung Vor- <---> Nachindizierung: */
 
-       if (CompCnt==2) 
+       if (CompCnt==2)
 	BEGIN
 	 PreInd=False;
 	 AdrComps[2]=AdrComps[1];
@@ -904,16 +904,16 @@ BEGIN
           BEGIN
            *p='\0'; strcpy(OneComp.Name,Asc); strcpy(Asc,p+1);
           END
-	 if (NOT ClassComp(&OneComp)) 
+	 if (NOT ClassComp(&OneComp))
 	  BEGIN
 	   WrError(1350); return;
 	  END
 
 	/* passend einsortieren: */
 
-	 if ((AdrComps[1].Art!=None) AND (OneComp.Art==AReg)) 
+	 if ((AdrComps[1].Art!=None) AND (OneComp.Art==AReg))
 	  BEGIN
-	   OneComp.Art=Index; OneComp.INummer=OneComp.ANummer+8; 
+	   OneComp.Art=Index; OneComp.INummer=OneComp.ANummer+8;
            OneComp.Long=False; OneComp.Scale=0;
 	  END
 	 switch (OneComp.Art)
@@ -924,7 +924,7 @@ BEGIN
 	   case Index : i=2; break;
            default    : i=(-1);
 	  END
-	 if (AdrComps[i].Art!=None) 
+	 if (AdrComps[i].Art!=None)
 	  BEGIN
 	   WrError(1350); return;
 	  END
@@ -943,7 +943,7 @@ BEGIN
 
        /* 4.1 Variante d([...PC...]...) */
 
-       if (AdrComps[1].Art==PC) 
+       if (AdrComps[1].Art==PC)
 	BEGIN
 	 HVal=EvalIntExpression(AdrComps[0].Name,Int32,&ValOK)-(EProgCounter()+RelPos);
 	 if (NOT ValOK) return;
@@ -952,7 +952,7 @@ BEGIN
           BEGIN
 	   case 1:
 	    HVal16=HVal;
-	    if (NOT IsDisp16(HVal)) 
+	    if (NOT IsDisp16(HVal))
 	     BEGIN
 	      WrError(1330); return;
 	     END
@@ -975,7 +975,7 @@ BEGIN
 	  END
 	 else AdrMode=0x30+AdrComps[1].ANummer;
 
-	 if (AdrComps[0].Art==None) 
+	 if (AdrComps[0].Art==None)
 	  BEGIN
 	   AdrNum=7; AdrCnt=2; AdrVals[0]+=0x10;
 	  END
@@ -1006,7 +1006,7 @@ BEGIN
         BEGIN
          case 1:
 	  HVal16=EvalIntExpression(OutDisp,Int16,&ValOK);
-	  if (NOT ValOK) 
+	  if (NOT ValOK)
 	   BEGIN
 	    AdrNum=0; AdrCnt=0; return;
 	   END
@@ -1014,7 +1014,7 @@ BEGIN
 	  break;
          case 2:
 	  HVal=EvalIntExpression(OutDisp,Int32,&ValOK);
-	  if (NOT ValOK) 
+	  if (NOT ValOK)
 	   BEGIN
 	    AdrNum=0; AdrCnt=0; return;
 	   END
@@ -1035,11 +1035,11 @@ BEGIN
    else
     BEGIN
      AdrCnt=0;
-     if (strcasecmp(Asc+strlen(Asc)-2,".W")==0) 
+     if (strcasecmp(Asc+strlen(Asc)-2,".W")==0)
       BEGIN
        AdrCnt=2; Asc[strlen(Asc)-2]='\0';
       END
-     else if (strcasecmp(Asc+strlen(Asc)-2,".L")==0) 
+     else if (strcasecmp(Asc+strlen(Asc)-2,".L")==0)
       BEGIN
        AdrCnt=4; Asc[strlen(Asc)-2]='\0';
       END
@@ -1049,14 +1049,14 @@ BEGIN
      if ((NOT FirstPassUnknown) AND (OpSize>0)) ChkEven(HVal);
      HVal16=HVal;
 
-     if (ValOK) 
+     if (ValOK)
       BEGIN
-       if (AdrCnt==0) AdrCnt=(IsShortAdr(HVal))?2:4; 
+       if (AdrCnt==0) AdrCnt=(IsShortAdr(HVal))?2:4;
        AdrNum=10;
 
-       if (AdrCnt==2) 
+       if (AdrCnt==2)
 	BEGIN
-	 if (NOT IsShortAdr(HVal)) 
+	 if (NOT IsShortAdr(HVal))
 	  BEGIN
 	   WrError(1340); AdrNum=0;
 	  END
@@ -1170,7 +1170,7 @@ BEGIN
       END
      if (*Asc=='/') strcpy(Asc,Asc+1);
      p=strchr(s,'-');
-     if (p==Nil) 
+     if (p==Nil)
       BEGIN
        if ((h=OneReg(s))==16) return False;
        *Erg|=Masks[h];
@@ -1182,7 +1182,7 @@ BEGIN
        if ((h2=OneReg(p+1))==16) return False;
        for (z=h; z<=h2; *Erg|=Masks[z++]);
       END
-    END    
+    END
    while (*Asc!='\0');
    return True;
 END
@@ -1241,7 +1241,7 @@ END
 
         static void CheckCPU(CPUVar Level)
 BEGIN
-   if (MomCPU<Level) 
+   if (MomCPU<Level)
     BEGIN
      WrError(1500); CodeLen=0;
     END
@@ -2070,7 +2070,7 @@ BEGIN
               if (ArgCnt==4)
                BEGIN
                 DecodeAdr(ArgStr[4],Madr);
-                if (AdrNum==0) CodeLen=0; else WAsmCode[1]|=AdrMode << 5; 
+                if (AdrNum==0) CodeLen=0; else WAsmCode[1]|=AdrMode << 5;
                 CheckSup();
                END
              END
@@ -2151,7 +2151,7 @@ BEGIN
     BEGIN
      for (z=0; z<PMMUCondCnt; z++)
       if (strcmp(OpPart+2,PMMUConds[z])==0) break;
-     if (z==PMMUCondCnt) WrError(1360);  
+     if (z==PMMUCondCnt) WrError(1360);
      else
       BEGIN
        if ((OpSize!=1) AND (*AttrPart!='\0')) WrError(1130);
@@ -2167,8 +2167,8 @@ BEGIN
            if (ValOK)
             BEGIN
              HVal16=HVal; WAsmCode[2]=HVal16;
-             if ((NOT IsDisp16(HVal)) AND (NOT SymbolQuestionable)) WrError(1370); 
-             else CodeLen=6; 
+             if ((NOT IsDisp16(HVal)) AND (NOT SymbolQuestionable)) WrError(1370);
+             else CodeLen=6;
              CheckSup();
             END
           END
@@ -2181,7 +2181,7 @@ BEGIN
     BEGIN
      for (z=0; z<PMMUCondCnt; z++)
       if (strcmp(OpPart+1,PMMUConds[z])==0) break;
-     if (z==PMMUCondCnt) WrError(1360);  
+     if (z==PMMUCondCnt) WrError(1360);
      else
       BEGIN
        if ((OpSize!=0) AND (*AttrPart!='\0')) WrError(1130);
@@ -2204,7 +2204,7 @@ BEGIN
     BEGIN
      for (z=0; z<PMMUCondCnt; z++)
       if (strcmp(OpPart+4,PMMUConds[z])==0) break;
-     if (z==PMMUCondCnt) WrError(1360);  
+     if (z==PMMUCondCnt) WrError(1360);
      else
       BEGIN
        if (*AttrPart=='\0') OpSize=0;
@@ -2239,7 +2239,7 @@ END
 
 	static Boolean CodeSingle(void)
 BEGIN
-   if (Memo("PEA")) 
+   if (Memo("PEA"))
     BEGIN
      if ((*AttrPart!='\0') AND (OpSize!=2)) WrError(1100);
      else if (ArgCnt!=1) WrError(1110);
@@ -2247,7 +2247,7 @@ BEGIN
       BEGIN
        OpSize=0;
        DecodeAdr(ArgStr[1],Madri+Mdadri+Maix+Mpc+Mpcidx+Mabs);
-       if (AdrNum!=0) 
+       if (AdrNum!=0)
 	BEGIN
 	 CodeLen=2+AdrCnt;
 	 WAsmCode[0]=0x4840 | AdrMode;
@@ -2264,7 +2264,7 @@ BEGIN
      else
       BEGIN
        DecodeAdr(ArgStr[1],Mdata+Madri+Mpost+Mpre+Mdadri+Maix+Mabs);
-       if (AdrNum!=0) 
+       if (AdrNum!=0)
 	BEGIN
 	 CodeLen=2+AdrCnt;
 	 WAsmCode[0]=(Memo("TST")) ? 0x4a00 : 0x4200;
@@ -2275,14 +2275,14 @@ BEGIN
      return True;
     END
 
-   if ((Memo("JMP")) OR (Memo("JSR"))) 
+   if ((Memo("JMP")) OR (Memo("JSR")))
     BEGIN
      if (*AttrPart!='\0') WrError(1130);
      else if (ArgCnt!=1) WrError(1110);
      else
       BEGIN
        DecodeAdr(ArgStr[1],Madri+Mdadri+Maix+Mpc+Mpcidx+Mabs);
-       if (AdrNum!=0) 
+       if (AdrNum!=0)
 	BEGIN
 	 CodeLen=2+AdrCnt;
 	 WAsmCode[0]=(Memo("JMP"))?0x4ec0:0x4e80;
@@ -2293,7 +2293,7 @@ BEGIN
      return True;
     END
 
-   if ((Memo("NBCD")) OR (Memo("TAS"))) 
+   if ((Memo("NBCD")) OR (Memo("TAS")))
     BEGIN
      if ((*AttrPart!='\0') AND (OpSize!=0)) WrError(1130);
      else if (ArgCnt!=1) WrError(1110);
@@ -2301,7 +2301,7 @@ BEGIN
       BEGIN
        OpSize=0;
        DecodeAdr(ArgStr[1],Mdata+Madri+Mpost+Mpre+Mdadri+Maix+Mabs);
-       if (AdrNum!=0) 
+       if (AdrNum!=0)
 	BEGIN
 	 CodeLen=2+AdrCnt;
 	 WAsmCode[0]=(Memo("NBCD"))?0x4800:0x4ac0;
@@ -2312,7 +2312,7 @@ BEGIN
      return True;
     END
 
-   if ((Memo("NEG")) OR (Memo("NOT")) OR (Memo("NEGX"))) 
+   if ((Memo("NEG")) OR (Memo("NOT")) OR (Memo("NEGX")))
     BEGIN
      if (OpSize>2) WrError(1130);
      else if (ArgCnt!=1) WrError(1110);
@@ -2331,14 +2331,14 @@ BEGIN
      return True;
     END
 
-   if (Memo("SWAP")) 
+   if (Memo("SWAP"))
     BEGIN
      if ((*AttrPart!='\0') AND (OpSize!=2)) WrError(1130);
      else if (ArgCnt!=1) WrError(1110);
      else
       BEGIN
        DecodeAdr(ArgStr[1],Mdata);
-       if (AdrNum!=0) 
+       if (AdrNum!=0)
 	BEGIN
 	 CodeLen=2; WAsmCode[0]=0x4840 | AdrMode;
 	END
@@ -2346,14 +2346,14 @@ BEGIN
      return True;
     END
 
-   if (Memo("UNLK")) 
+   if (Memo("UNLK"))
     BEGIN
      if (*AttrPart!='\0') WrError(1130);
      else if (ArgCnt!=1) WrError(1110);
      else
       BEGIN
        DecodeAdr(ArgStr[1],Madr);
-       if (AdrNum!=0) 
+       if (AdrNum!=0)
 	BEGIN
 	 CodeLen=2; WAsmCode[0]=0x4e58 | AdrMode;
 	END
@@ -2361,14 +2361,14 @@ BEGIN
      return True;
     END
 
-   if (Memo("EXT")) 
+   if (Memo("EXT"))
     BEGIN
      if (ArgCnt!=1) WrError(1110);
      else if ((OpSize==0) OR (OpSize>2)) WrError(1130);
      else
       BEGIN
        DecodeAdr(ArgStr[1],Mdata);
-       if (AdrNum==1) 
+       if (AdrNum==1)
 	BEGIN
 	 WAsmCode[0]=0x4880 | AdrMode | (((Word)OpSize-1) << 6);
 	 CodeLen=2;
@@ -2385,40 +2385,40 @@ BEGIN
    Boolean ValOK;
    ShortInt HVal8;
 
-   if ((Memo("MOVE")) OR (Memo("MOVEA"))) 
+   if ((Memo("MOVE")) OR (Memo("MOVEA")))
     BEGIN
      if (ArgCnt!=2) WrError(1110);
-     else if (strcasecmp(ArgStr[1],"USP")==0) 
+     else if (strcasecmp(ArgStr[1],"USP")==0)
       BEGIN
        if ((*AttrPart!='\0') AND (OpSize!=2)) WrError(1130);
        else
 	BEGIN
 	 DecodeAdr(ArgStr[2],Madr);
-	 if (AdrNum!=0) 
+	 if (AdrNum!=0)
 	  BEGIN
 	   CodeLen=2; WAsmCode[0]=0x4e68 | (AdrMode & 7); CheckSup();
 	  END
 	END
       END
-     else if (strcasecmp(ArgStr[2],"USP")==0) 
+     else if (strcasecmp(ArgStr[2],"USP")==0)
       BEGIN
        if ((*AttrPart!='\0') AND (OpSize!=2)) WrError(1130);
        else
 	BEGIN
 	 DecodeAdr(ArgStr[1],Madr);
-	 if (AdrNum!=0) 
+	 if (AdrNum!=0)
 	  BEGIN
 	   CodeLen=2; WAsmCode[0]=0x4e60 | (AdrMode & 7); CheckSup();
 	  END
 	END
       END
-     else if (strcasecmp(ArgStr[1],"SR")==0) 
+     else if (strcasecmp(ArgStr[1],"SR")==0)
       BEGIN
        if (OpSize!=1) WrError(1130);
        else
 	BEGIN
 	 DecodeAdr(ArgStr[2],Mdata+Madri+Mpost+Mpre+Mdadri+Maix+Mabs);
-	 if (AdrNum!=0) 
+	 if (AdrNum!=0)
 	  BEGIN
 	   CodeLen=2+AdrCnt; WAsmCode[0]=0x40c0 | AdrMode;
 	   CopyAdrVals(WAsmCode+1);
@@ -2426,41 +2426,41 @@ BEGIN
 	  END
 	END
       END
-     else if (strcasecmp(ArgStr[1],"CCR")==0) 
+     else if (strcasecmp(ArgStr[1],"CCR")==0)
       BEGIN
        if ((*AttrPart!='\0') AND (OpSize!=0)) WrError(1130);
        else
 	BEGIN
          OpSize=0;
 	 DecodeAdr(ArgStr[2],Mdata+Madri+Mpost+Mpre+Mdadri+Maix+Mabs);
-	 if (AdrNum!=0) 
+	 if (AdrNum!=0)
 	  BEGIN
 	   CodeLen=2+AdrCnt; WAsmCode[0]=0x42c0 | AdrMode;
 	   CopyAdrVals(WAsmCode+1); CheckCPU(CPU68010);
 	  END
 	END
       END
-     else if (strcasecmp(ArgStr[2],"SR")==0) 
+     else if (strcasecmp(ArgStr[2],"SR")==0)
       BEGIN
        if (OpSize!=1) WrError(1130);
        else
 	BEGIN
 	 DecodeAdr(ArgStr[1],Mdata+Madri+Mpost+Mpre+Mdadri+Maix+Mpc+Mpcidx+Mabs+Mimm);
-	 if (AdrNum!=0) 
+	 if (AdrNum!=0)
 	  BEGIN
 	   CodeLen=2+AdrCnt; WAsmCode[0]=0x46c0 | AdrMode;
 	   CopyAdrVals(WAsmCode+1); CheckSup();
 	  END
 	END
       END
-     else if (strcasecmp(ArgStr[2],"CCR")==0) 
+     else if (strcasecmp(ArgStr[2],"CCR")==0)
       BEGIN
        if ((*AttrPart!='\0') AND (OpSize!=0)) WrError(1130);
        else
 	BEGIN
          OpSize=0;
 	 DecodeAdr(ArgStr[1],Mdata+Madri+Mpost+Mpre+Mdadri+Maix+Mpc+Mpcidx+Mabs+Mimm);
-	 if (AdrNum!=0) 
+	 if (AdrNum!=0)
 	  BEGIN
 	   CodeLen=2+AdrCnt; WAsmCode[0]=0x44c0 | AdrMode;
 	   CopyAdrVals(WAsmCode+1);
@@ -2473,7 +2473,7 @@ BEGIN
        else
 	BEGIN
 	 DecodeAdr(ArgStr[1],Mdata+Madr+Madri+Mpost+Mpre+Mdadri+Maix+Mpc+Mpcidx+Mabs+Mimm);
-	 if (AdrNum!=0) 
+	 if (AdrNum!=0)
 	  BEGIN
 	   CodeLen=2+AdrCnt; CopyAdrVals(WAsmCode+1);
 	   if (OpSize==0) WAsmCode[0]=0x1000;
@@ -2481,7 +2481,7 @@ BEGIN
 	   else WAsmCode[0]=0x2000;
 	   WAsmCode[0]|=AdrMode;
 	   DecodeAdr(ArgStr[2],Mdata+Madr+Madri+Mpost+Mpre+Mdadri+Maix+Mabs);
-	   if (AdrMode!=0) 
+	   if (AdrMode!=0)
 	    BEGIN
 	     AdrMode=((AdrMode & 7) << 3) | (AdrMode >> 3);
 	     WAsmCode[0]|=AdrMode << 6;
@@ -2494,19 +2494,19 @@ BEGIN
      return True;
     END
 
-   if (Memo("LEA")) 
+   if (Memo("LEA"))
     BEGIN
      if ((*AttrPart!='\0') AND (OpSize!=2)) WrError(1130);
      else if (ArgCnt!=2) WrError(1110);
      else
       BEGIN
        DecodeAdr(ArgStr[2],Madr);
-       if (AdrNum!=0) 
+       if (AdrNum!=0)
 	BEGIN
          OpSize=0;
 	 WAsmCode[0]=0x41c0 | ((AdrMode & 7) << 9);
 	 DecodeAdr(ArgStr[1],Madri+Mdadri+Maix+Mpc+Mpcidx+Mabs);
-	 if (AdrNum!=0) 
+	 if (AdrNum!=0)
 	  BEGIN
 	   WAsmCode[0]|=AdrMode; CodeLen=2+AdrCnt;
 	   CopyAdrVals(WAsmCode+1);
@@ -2517,9 +2517,9 @@ BEGIN
     END
 
    if ((Memo("ASL")) OR (Memo("ASR")) OR (Memo("LSL" )) OR (Memo("LSR" ))
-    OR (Memo("ROL")) OR (Memo("ROR")) OR (Memo("ROXL")) OR (Memo("ROXR"))) 
+    OR (Memo("ROL")) OR (Memo("ROR")) OR (Memo("ROXL")) OR (Memo("ROXR")))
     BEGIN
-     if (ArgCnt==1) 
+     if (ArgCnt==1)
       BEGIN
        strcpy(ArgStr[2],ArgStr[1]); strcpy(ArgStr[1],"#1");
        ArgCnt=2;
@@ -2528,7 +2528,7 @@ BEGIN
      else
       BEGIN
        DecodeAdr(ArgStr[2],Mdata+Madri+Mpost+Mpre+Mdadri+Maix+Mabs);
-       if (AdrNum==1) 
+       if (AdrNum==1)
 	BEGIN
 	 if (OpSize>2) WrError(1130);
 	 else
@@ -2545,7 +2545,7 @@ BEGIN
            else WrError(1380);
 	  END
 	END
-       else if (AdrNum!=0) 
+       else if (AdrNum!=0)
 	BEGIN
 	 if (OpSize!=1) WrError(1130);
 	 else
@@ -2563,21 +2563,21 @@ BEGIN
      return True;
     END
 
-   if ((Memo("ADDQ")) OR (Memo("SUBQ"))) 
+   if ((Memo("ADDQ")) OR (Memo("SUBQ")))
     BEGIN
      if (OpSize>2) WrError(1130);
      else if (ArgCnt!=2) WrError(1110);
      else
       BEGIN
        DecodeAdr(ArgStr[2],Mdata+Madr+Madri+Mpost+Mpre+Mdadri+Maix+Mabs);
-       if (AdrNum!=0) 
+       if (AdrNum!=0)
 	BEGIN
 	 WAsmCode[0]=0x5000 | AdrMode | (OpSize << 6);
 	 if (Memo("SUBQ")) WAsmCode[0]|=0x100;
 	 CopyAdrVals(WAsmCode+1);
 	 if (*ArgStr[1]=='#') strcpy(ArgStr[1],ArgStr[1]+1);
 	 HVal8=EvalIntExpression(ArgStr[1],Int8,&ValOK);
-	 if ((ValOK) AND (HVal8>=1) AND (HVal8<=8)) 
+	 if ((ValOK) AND (HVal8>=1) AND (HVal8<=8))
 	  BEGIN
 	   CodeLen=2+AdrCnt;
 	   WAsmCode[0]|=(((Word) HVal8 & 7) << 9);
@@ -2588,7 +2588,7 @@ BEGIN
      return True;
     END
 
-   if ((Memo("ADDX")) OR (Memo("SUBX"))) 
+   if ((Memo("ADDX")) OR (Memo("SUBX")))
     BEGIN
      if (OpSize>2) WrError(1130);
      else if (ArgCnt!=2) WrError(1110);
@@ -2601,7 +2601,7 @@ BEGIN
 	 if (AdrNum==5) WAsmCode[0]|=8;
 	 if (strcmp(OpPart,"ADDX")==0) WAsmCode[0]|=0x4000;
 	 DecodeAdr(ArgStr[2],Masks[AdrNum]);
-	 if (AdrNum!=0) 
+	 if (AdrNum!=0)
 	  BEGIN
 	   CodeLen=2;
 	   WAsmCode[0]|= (AdrMode & 7) << 9;
@@ -2611,18 +2611,18 @@ BEGIN
      return True;
     END
 
-   if (Memo("CMPM")) 
+   if (Memo("CMPM"))
     BEGIN
      if (OpSize>2) WrError(1130);
      else if (ArgCnt!=2) WrError(1110);
      else
       BEGIN
        DecodeAdr(ArgStr[1],Mpost);
-       if (AdrNum==4) 
+       if (AdrNum==4)
 	BEGIN
 	 WAsmCode[0]=0xb108 | (OpSize << 6) | (AdrMode & 7);
 	 DecodeAdr(ArgStr[2],Mpost);
-	 if (AdrNum==4) 
+	 if (AdrNum==4)
 	  BEGIN
 	   WAsmCode[0]|=(AdrMode & 7) << 9;
 	   CodeLen=2;
@@ -2649,7 +2649,7 @@ BEGIN
 	  else if (strcmp(OpPart,"CMP")==0) WAsmCode[0]|=0x2000;
 	  if (OpSize==2) WAsmCode[0]|=0x100;
 	  DecodeAdr(ArgStr[1],Mdata+Madr+Madri+Mpost+Mpre+Mdadri+Maix+Mpc+Mpcidx+Mabs+Mimm);
-	  if (AdrNum!=0) 
+	  if (AdrNum!=0)
 	   BEGIN
 	    WAsmCode[0]|=AdrMode; CodeLen=2+AdrCnt;
 	    CopyAdrVals(WAsmCode+1);
@@ -2661,7 +2661,7 @@ BEGIN
 	 if (strcmp(OpPart,"ADD")==0) WAsmCode[0]|=0x4000;
 	 else if (strcmp(OpPart,"CMP")==0) WAsmCode[0]|=0x2000;
 	 DecodeAdr(ArgStr[1],Mdata+Madr+Madri+Mpost+Mpre+Mdadri+Maix+Mpc+Mpcidx+Mabs+Mimm);
-	 if (AdrNum!=0) 
+	 if (AdrNum!=0)
 	  BEGIN
 	   CodeLen=2+AdrCnt; CopyAdrVals(WAsmCode+1);
 	   WAsmCode[0]|=AdrMode;
@@ -2678,7 +2678,7 @@ BEGIN
 	   CodeLen=2+AdrCnt;
 	   CopyAdrVals(WAsmCode+1);
 	   DecodeAdr(ArgStr[2],Mdata+Madri+Mpost+Mpre+Mdadri+Maix+Mabs);
-	   if (AdrNum!=0) 
+	   if (AdrNum!=0)
 	    BEGIN
 	     WAsmCode[0]|=AdrMode;
 	     CopyAdrVals(WAsmCode+(CodeLen >> 1));
@@ -2694,7 +2694,7 @@ BEGIN
 	     WAsmCode[0]=0x9100 | (OpSize << 6) | (AdrMode << 9);
 	     if (strcmp(OpPart,"ADD")==0) WAsmCode[0]|=0x4000;
 	     DecodeAdr(ArgStr[2],Madri+Mpost+Mpre+Mdadri+Maix+Mabs);
-	     if (AdrNum!=0) 
+	     if (AdrNum!=0)
 	      BEGIN
 	       CodeLen=2+AdrCnt; CopyAdrVals(WAsmCode+1);
 	       WAsmCode[0]|=AdrMode;
@@ -2706,13 +2706,13 @@ BEGIN
      return True;
     END
 
-   if ((strncmp(OpPart,"AND",3)==0) OR (strncmp(OpPart,"OR",2)==0)) 
+   if ((strncmp(OpPart,"AND",3)==0) OR (strncmp(OpPart,"OR",2)==0))
     BEGIN
      if (ArgCnt!=2) WrError(1110);
      else if (OpSize>2) WrError(1130);
      else
       BEGIN
-       if ((strcasecmp(ArgStr[2],"CCR")!=0) AND (strcasecmp(ArgStr[2],"SR")!=0)) 
+       if ((strcasecmp(ArgStr[2],"CCR")!=0) AND (strcasecmp(ArgStr[2],"SR")!=0))
         DecodeAdr(ArgStr[2],Mdata+Madri+Mpost+Mpre+Mdadri+Maix+Mabs);
        if (strcasecmp(ArgStr[2],"CCR")==0)     /* AND #...,CCR */
 	BEGIN
@@ -2721,7 +2721,7 @@ BEGIN
 	  BEGIN
 	   WAsmCode[0] = (strncmp(OpPart,"AND",3)==0) ? 0x023c : 0x003c;
 	   OpSize=0; DecodeAdr(ArgStr[1],Mimm);
-	   if (AdrNum!=0) 
+	   if (AdrNum!=0)
 	    BEGIN
 	     CodeLen=4; WAsmCode[1]=AdrVals[0];
 	     CheckCPU(CPU68000);
@@ -2735,7 +2735,7 @@ BEGIN
 	  BEGIN
 	   WAsmCode[0] = (strncmp(OpPart,"AND",3)==0) ? 0x027c : 0x007c;
 	   OpSize=1; DecodeAdr(ArgStr[1],Mimm);
-	   if (AdrNum!=0) 
+	   if (AdrNum!=0)
 	    BEGIN
 	     CodeLen=4; WAsmCode[1]=AdrVals[0]; CheckSup();
 	     CheckCPU(CPU68000);
@@ -2747,7 +2747,7 @@ BEGIN
 	 WAsmCode[0]=0x8000 | (OpSize << 6) | (AdrMode << 9);
 	 if (strncmp(OpPart,"AND",3)==0) WAsmCode[0]|=0x4000;
 	 DecodeAdr(ArgStr[1],Mdata+Madri+Mpost+Mpre+Mdadri+Maix+Mpc+Mpcidx+Mabs+Mimm);
-	 if (AdrNum!=0) 
+	 if (AdrNum!=0)
 	  BEGIN
 	   WAsmCode[0]|=AdrMode;
 	   CodeLen=2+AdrCnt; CopyAdrVals(WAsmCode+1);
@@ -2787,10 +2787,10 @@ BEGIN
      return True;
     END
 
-   if (strncmp(OpPart,"EOR",3)==0) 
+   if (strncmp(OpPart,"EOR",3)==0)
     BEGIN
      if (ArgCnt!=2) WrError(1110);
-     else if (strcasecmp(ArgStr[2],"CCR")==0) 
+     else if (strcasecmp(ArgStr[2],"CCR")==0)
       BEGIN
        if ((*AttrPart!='\0') AND (OpSize!=0)) WrError(1130);
        else
@@ -2803,14 +2803,14 @@ BEGIN
 	  END
 	END
       END
-     else if (strcasecmp(ArgStr[2],"SR")==0) 
+     else if (strcasecmp(ArgStr[2],"SR")==0)
       BEGIN
        if (OpSize!=1) WrError(1130);
        else
 	BEGIN
 	 WAsmCode[0]=0xa7c;
 	 DecodeAdr(ArgStr[1],Mimm);
-	 if (AdrNum!=0) 
+	 if (AdrNum!=0)
 	  BEGIN
 	   CodeLen=4; WAsmCode[1]=AdrVals[0]; CheckSup();
 	   CheckCPU(CPU68000);
@@ -2821,7 +2821,7 @@ BEGIN
      else
       BEGIN
        DecodeAdr(ArgStr[1],Mdata+Mimm);
-       if (AdrNum==1) 
+       if (AdrNum==1)
 	BEGIN
 	 WAsmCode[0]=0xb100 | (AdrMode << 9) | (OpSize << 6);
 	 DecodeAdr(ArgStr[2],Mdata+Madri+Mpost+Mpre+Mdadri+Maix+Mabs);
@@ -2831,7 +2831,7 @@ BEGIN
 	   WAsmCode[0]|=AdrMode;
 	  END
 	END
-       else if (AdrNum==11) 
+       else if (AdrNum==11)
 	BEGIN
 	 WAsmCode[0]=0x0a00 | (OpSize << 6);
 	 CopyAdrVals(WAsmCode+1); CodeLen=2+AdrCnt;
@@ -2853,7 +2853,7 @@ END
 
 	static Boolean CodeBits(void)
 BEGIN
-   if ((Memo("BSET")) OR (Memo("BCLR")) OR (Memo("BCHG")) OR (Memo("BTST"))) 
+   if ((Memo("BSET")) OR (Memo("BCLR")) OR (Memo("BCHG")) OR (Memo("BTST")))
     BEGIN
      if (ArgCnt!=2) WrError(1110);
      else
@@ -2874,17 +2874,17 @@ BEGIN
            CodeLen=2+AdrCnt; CopyAdrVals(WAsmCode+1);
            OpSize=0;
            DecodeAdr(ArgStr[1],Mdata+Mimm);
-           if (AdrNum==1) 
+           if (AdrNum==1)
             BEGIN
              WAsmCode[0]|=0x100 | (AdrMode << 9);
             END
-           else if (AdrNum==11) 
+           else if (AdrNum==11)
             BEGIN
              memmove(WAsmCode+2,WAsmCode+1,CodeLen-2); WAsmCode[1]=AdrVals[0];
              WAsmCode[0]|=0x800;
              CodeLen+=2;
              if ((AdrVals[0]>31)
-             OR  (((WAsmCode[0] & 0x38)!=0) AND (AdrVals[0]>7))) 
+             OR  (((WAsmCode[0] & 0x38)!=0) AND (AdrVals[0]>7)))
               BEGIN
                CodeLen=0; WrError(1510);
               END
@@ -2897,7 +2897,7 @@ BEGIN
     END
 
    if ((Memo("BFSET")) OR (Memo("BFCLR"))
-    OR (Memo("BFCHG")) OR (Memo("BFTST"))) 
+    OR (Memo("BFCHG")) OR (Memo("BFTST")))
     BEGIN
      if (ArgCnt!=1) WrError(1110);
      else if (*AttrPart!='\0') WrError(1130);
@@ -2908,7 +2908,7 @@ BEGIN
        OpSize=0;
        if (Memo("BFTST")) DecodeAdr(ArgStr[1],Mdata+Madri+Mdadri+Maix+Mpc+Mpcidx+Mabs);
        else DecodeAdr(ArgStr[1],Mdata+Madri+Mdadri+Maix+Mabs);
-       if (AdrNum!=0) 
+       if (AdrNum!=0)
 	BEGIN
 	 WAsmCode[0]=0xe8c0 | AdrMode;
 	 CopyAdrVals(WAsmCode+2); CodeLen=4+AdrCnt;
@@ -2921,7 +2921,7 @@ BEGIN
      return True;
     END
 
-   if ((Memo("BFEXTS")) OR (Memo("BFEXTU")) OR (Memo("BFFFO"))) 
+   if ((Memo("BFEXTS")) OR (Memo("BFEXTU")) OR (Memo("BFFFO")))
     BEGIN
      if (ArgCnt!=2) WrError(1110);
      else if (*AttrPart!='\0') WrError(1130);
@@ -2949,7 +2949,7 @@ BEGIN
      return True;
     END
 
-   if (Memo("BFINS")) 
+   if (Memo("BFINS"))
     BEGIN
      if (ArgCnt!=2) WrError(1110);
      else if (*AttrPart!='\0') WrError(1130);
@@ -3042,7 +3042,7 @@ BEGIN
      return;
     END
 
-   if (Memo("RESET")) 
+   if (Memo("RESET"))
     BEGIN
      if (*AttrPart!='\0') WrError(1100);
      else if (ArgCnt!=0) WrError(1110);
@@ -3053,7 +3053,7 @@ BEGIN
      return;
     END
 
-   if (Memo("ILLEGAL")) 
+   if (Memo("ILLEGAL"))
     BEGIN
      if (*AttrPart!='\0') WrError(1100);
      else if (ArgCnt!=0) WrError(1110);
@@ -3064,7 +3064,7 @@ BEGIN
      return;
     END
 
-   if (Memo("TRAPV")) 
+   if (Memo("TRAPV"))
     BEGIN
      if (*AttrPart!='\0') WrError(1100);
      else if (ArgCnt!=0) WrError(1110);
@@ -3075,7 +3075,7 @@ BEGIN
      return;
     END
 
-   if (Memo("RTE")) 
+   if (Memo("RTE"))
     BEGIN
      if (*AttrPart!='\0') WrError(1100);
      else if (ArgCnt!=0) WrError(1110);
@@ -3086,7 +3086,7 @@ BEGIN
      return;
     END
 
-   if (Memo("RTR")) 
+   if (Memo("RTR"))
     BEGIN
      if (*AttrPart!='\0') WrError(1100);
      else if (ArgCnt!=0) WrError(1110);
@@ -3097,7 +3097,7 @@ BEGIN
      return;
     END
 
-   if (Memo("RTS")) 
+   if (Memo("RTS"))
     BEGIN
      if (*AttrPart!='\0') WrError(1100);
      else if (ArgCnt!=0) WrError(1110);
@@ -3108,7 +3108,7 @@ BEGIN
      return;
     END
 
-   if (Memo("BGND")) 
+   if (Memo("BGND"))
     BEGIN
      if (*AttrPart!='\0') WrError(1100);
      else if (ArgCnt!=0) WrError(1110);
@@ -3122,7 +3122,7 @@ BEGIN
 
    /* Anweisungen mit konstantem Argument */
 
-   if (Memo("STOP")) 
+   if (Memo("STOP"))
     BEGIN
      if (*AttrPart!='\0') WrError(1100);
      else if (ArgCnt!=1) WrError(1110);
@@ -3130,7 +3130,7 @@ BEGIN
      else
       BEGIN
        HVal=EvalIntExpression(ArgStr[1]+1,Int16,&ValOK);
-       if (ValOK) 
+       if (ValOK)
 	BEGIN
 	 CodeLen=4; WAsmCode[0]=0x4e72; WAsmCode[1]=HVal; CheckSup();
 	END
@@ -3138,7 +3138,7 @@ BEGIN
      return;
     END
 
-   if (Memo("LPSTOP")) 
+   if (Memo("LPSTOP"))
     BEGIN
      if (*AttrPart!='\0') WrError(1100);
      else if (ArgCnt!=1) WrError(1110);
@@ -3146,7 +3146,7 @@ BEGIN
      else
       BEGIN
        HVal=EvalIntExpression(ArgStr[1]+1,Int16,&ValOK);
-       if (ValOK) 
+       if (ValOK)
 	BEGIN
 	 CodeLen=6;
 	 WAsmCode[0]=0xf800;
@@ -3158,7 +3158,7 @@ BEGIN
      return;
     END
 
-   if (Memo("TRAP")) 
+   if (Memo("TRAP"))
     BEGIN
      if (*AttrPart!='\0') WrError(1100);
      else if (ArgCnt!=1) WrError(1110);
@@ -3166,7 +3166,7 @@ BEGIN
      else
       BEGIN
        HVal=EvalIntExpression(ArgStr[1]+1,Int4,&ValOK);
-       if (ValOK) 
+       if (ValOK)
 	BEGIN
 	 HVal8=HVal;
 	 CodeLen=2; WAsmCode[0]=0x4e40+(HVal8 & 15);
@@ -3175,7 +3175,7 @@ BEGIN
      return;
     END
 
-   if (Memo("BKPT")) 
+   if (Memo("BKPT"))
     BEGIN
      if (*AttrPart!='\0') WrError(1100);
      else if (ArgCnt!=1) WrError(1110);
@@ -3183,7 +3183,7 @@ BEGIN
      else
       BEGIN
        HVal=EvalIntExpression(ArgStr[1]+1,UInt3,&ValOK);
-       if (ValOK) 
+       if (ValOK)
 	BEGIN
 	 HVal8=HVal;
 	 CodeLen=2; WAsmCode[0]=0x4848+(HVal8 & 7);
@@ -3193,7 +3193,7 @@ BEGIN
      return;
     END
 
-   if (Memo("RTD")) 
+   if (Memo("RTD"))
     BEGIN
      if (*AttrPart!='\0') WrError(1100);
      else if (ArgCnt!=1) WrError(1110);
@@ -3201,7 +3201,7 @@ BEGIN
      else
       BEGIN
        HVal=EvalIntExpression(ArgStr[1]+1,Int16,&ValOK);
-       if (ValOK) 
+       if (ValOK)
 	BEGIN
 	 CodeLen=4; WAsmCode[0]=0x4e74; WAsmCode[1]=HVal;
 	 CheckCPU(CPU68010);
@@ -3221,7 +3221,7 @@ BEGIN
 
    if (CodeBits()) return;
 
-   if (Memo("MOVEM")) 
+   if (Memo("MOVEM"))
     BEGIN
      if (ArgCnt!=2) WrError(1110);
      else if ((OpSize!=1) AND (OpSize!=2)) WrError(1130);
@@ -3236,14 +3236,14 @@ BEGIN
 	   CodeLen=4+AdrCnt; CopyAdrVals(WAsmCode+2);
 	  END
 	END
-       else if (DecodeRegList(ArgStr[1],WAsmCode+1)) 
+       else if (DecodeRegList(ArgStr[1],WAsmCode+1))
 	BEGIN
 	 DecodeAdr(ArgStr[2],Madri+Mpre+Mdadri+Maix+Mabs);
-	 if (AdrNum!=0) 
+	 if (AdrNum!=0)
 	  BEGIN
 	   WAsmCode[0]=0x4880 | AdrMode | ((OpSize-1) << 6);
 	   CodeLen=4+AdrCnt; CopyAdrVals(WAsmCode+2);
-	   if (AdrNum==5) 
+	   if (AdrNum==5)
 	    BEGIN
 	     WAsmCode[9]=WAsmCode[1]; WAsmCode[1]=0;
 	     for (z=0; z<16; z++)
@@ -3260,7 +3260,7 @@ BEGIN
      return;
     END
 
-   if (Memo("MOVEQ")) 
+   if (Memo("MOVEQ"))
     BEGIN
      if (ArgCnt!=2) WrError(1110);
      else if ((*AttrPart!='\0') AND (OpSize!=2)) WrError(1130);
@@ -3272,7 +3272,7 @@ BEGIN
 	 WAsmCode[0]=0x7000 | (AdrMode << 9);
 	 OpSize=0;
 	 DecodeAdr(ArgStr[1],Mimm);
-	 if (AdrNum!=0) 
+	 if (AdrNum!=0)
 	  BEGIN
 	   CodeLen=2; WAsmCode[0]|=AdrVals[0];
 	  END
@@ -3281,7 +3281,7 @@ BEGIN
      return;
     END
 
-   if (Memo("EXG")) 
+   if (Memo("EXG"))
     BEGIN
      if ((*AttrPart!='\0') AND (OpSize!=2)) WrError(1130);
      else if (ArgCnt!=2) WrError(1110);
@@ -3318,7 +3318,7 @@ BEGIN
      return;
     END
 
-   if ((Memo("DIVSL")) OR (Memo("DIVUL"))) 
+   if ((Memo("DIVSL")) OR (Memo("DIVUL")))
     BEGIN
      if (*AttrPart=='\0') OpSize=2;
      if (ArgCnt!=2) WrError(1110);
@@ -3340,10 +3340,10 @@ BEGIN
      return;
     END
 
-   if ((strncmp(OpPart,"MUL",3)==0) OR (strncmp(OpPart,"DIV",3)==0)) 
+   if ((strncmp(OpPart,"MUL",3)==0) OR (strncmp(OpPart,"DIV",3)==0))
     BEGIN
      if (ArgCnt!=2) WrError(1110);
-     else if (OpSize==1) 
+     else if (OpSize==1)
       BEGIN
        DecodeAdr(ArgStr[2],Mdata);
        if (AdrNum!=0)
@@ -3387,7 +3387,7 @@ BEGIN
      return;
     END
 
-   if ((Memo("ABCD")) OR (Memo("SBCD"))) 
+   if ((Memo("ABCD")) OR (Memo("SBCD")))
     BEGIN
      if ((OpSize!=0) AND (*AttrPart!='\0')) WrError(1130);
      else if (ArgCnt!=2) WrError(1110);
@@ -3411,7 +3411,7 @@ BEGIN
      return;
     END
 
-   if (Memo("CHK")) 
+   if (Memo("CHK"))
     BEGIN
      if (OpSize!=1) WrError(1130);
      else if (ArgCnt!=2) WrError(1110);
@@ -3430,7 +3430,7 @@ BEGIN
      return;
     END
 
-   if (Memo("LINK")) 
+   if (Memo("LINK"))
     BEGIN
      if ((OpSize<1) OR (OpSize>2)) WrError(1130);
      else if ((OpSize==2) AND (MomCPU<CPU68332)) WrError(1500);
@@ -3452,7 +3452,7 @@ BEGIN
      return;
     END
 
-   if (Memo("MOVEP")) 
+   if (Memo("MOVEP"))
     BEGIN
      if ((OpSize==0) OR (OpSize>2)) WrError(1130);
      else if (ArgCnt!=2) WrError(1110);
@@ -3484,12 +3484,12 @@ BEGIN
      return;
     END
 
-   if (Memo("MOVEC")) 
+   if (Memo("MOVEC"))
     BEGIN
      if ((*AttrPart!='\0') AND (OpSize!=2)) WrError(1130);
      else if (ArgCnt!=2) WrError(1110);
       BEGIN
-       if (DecodeCtrlReg(ArgStr[1],WAsmCode+1)) 
+       if (DecodeCtrlReg(ArgStr[1],WAsmCode+1))
 	BEGIN
 	 DecodeAdr(ArgStr[2],Mdata+Madr);
 	 if (AdrNum!=0)
@@ -3498,10 +3498,10 @@ BEGIN
 	   WAsmCode[1]|=AdrMode << 12; CheckSup();
 	  END
 	END
-       else if (DecodeCtrlReg(ArgStr[2],WAsmCode+1)) 
+       else if (DecodeCtrlReg(ArgStr[2],WAsmCode+1))
 	BEGIN
 	 DecodeAdr(ArgStr[1],Mdata+Madr);
-	 if (AdrNum!=0) 
+	 if (AdrNum!=0)
 	  BEGIN
 	   CodeLen=4; WAsmCode[0]=0x4e7b;
 	   WAsmCode[1]|=AdrMode << 12; CheckSup();
@@ -3512,14 +3512,14 @@ BEGIN
      return;
     END
 
-   if (Memo("MOVES")) 
+   if (Memo("MOVES"))
     BEGIN
      if (ArgCnt!=2) WrError(1110);
      else if (OpSize>2) WrError(1130);
      else
       BEGIN
        DecodeAdr(ArgStr[1],Mdata+Madr+Madri+Mpost+Mpre+Mdadri+Maix+Mabs);
-       if ((AdrNum==1) OR (AdrNum==2)) 
+       if ((AdrNum==1) OR (AdrNum==2))
 	BEGIN
 	 WAsmCode[1]=0x800 | (AdrMode << 12);
 	 DecodeAdr(ArgStr[2],Madri+Mpost+Mpre+Mdadri+Maix+Mabs);
@@ -3547,7 +3547,7 @@ BEGIN
      return;
     END
 
-   if (Memo("CALLM")) 
+   if (Memo("CALLM"))
     BEGIN
      if (*AttrPart!='\0') WrError(1130);
      else if (ArgCnt!=2) WrError(1110);
@@ -3570,7 +3570,7 @@ BEGIN
      return;
     END
 
-   if (Memo("CAS")) 
+   if (Memo("CAS"))
     BEGIN
      if (OpSize>2) WrError(1130);
      else if (ArgCnt!=3) WrError(1110);
@@ -3598,7 +3598,7 @@ BEGIN
      return;
     END
 
-   if (Memo("CAS2")) 
+   if (Memo("CAS2"))
     BEGIN
      if ((OpSize!=1) AND (OpSize!=2)) WrError(1130);
      else if (ArgCnt!=3) WrError(1110);
@@ -3645,7 +3645,7 @@ BEGIN
      return;
     END
 
-   if (Memo("EXTB")) 
+   if (Memo("EXTB"))
     BEGIN
      if ((OpSize!=2) AND (*AttrPart!='\0')) WrError(1130);
      else if (ArgCnt!=1) WrError(1110);
@@ -3661,7 +3661,7 @@ BEGIN
      return;
     END
 
-   if ((Memo("PACK")) OR (Memo("UNPK"))) 
+   if ((Memo("PACK")) OR (Memo("UNPK")))
     BEGIN
      if (ArgCnt!=3) WrError(1110);
      else if (*AttrPart!='\0') WrError(1130);
@@ -3688,7 +3688,7 @@ BEGIN
      return;
     END
 
-   if (Memo("RTM")) 
+   if (Memo("RTM"))
     BEGIN
      if (*AttrPart!='\0') WrError(1130);
      else if (ArgCnt!=1) WrError(1110);
@@ -3704,7 +3704,7 @@ BEGIN
      return;
     END
 
-   if ((Memo("TBLS")) OR (Memo("TBLSN")) OR (Memo("TBLU")) OR (Memo("TBLUN"))) 
+   if ((Memo("TBLS")) OR (Memo("TBLSN")) OR (Memo("TBLU")) OR (Memo("TBLUN")))
     BEGIN
      if (ArgCnt!=2) WrError(1110);
      else if (OpSize>2) WrError(1130);
@@ -3719,7 +3719,7 @@ BEGIN
          if (p==0)
           BEGIN
            DecodeAdr(ArgStr[1],Madri+Mdadri+Maix+Mabs+Mpc+Mpcidx);
-           if (AdrNum!=0) 
+           if (AdrNum!=0)
             BEGIN
              WAsmCode[0]=0xf800+AdrMode;
              WAsmCode[1]=0x0100+(OpSize << 6)+(HVal << 12);
@@ -3754,11 +3754,11 @@ BEGIN
 
    /* bedingte Befehle */
 
-   if ((strlen(OpPart)<=3) AND (*OpPart=='B')) 
+   if ((strlen(OpPart)<=3) AND (*OpPart=='B'))
     BEGIN
      /* .W, .S, .L, .X erlaubt */
 
-     if ((OpSize!=1) AND (OpSize!=2) AND (OpSize!=4) AND (OpSize!=6)) 
+     if ((OpSize!=1) AND (OpSize!=2) AND (OpSize!=4) AND (OpSize!=6))
       WrError(1130);
 
      /* nur ein Operand erlaubt */
@@ -3782,7 +3782,7 @@ BEGIN
 
 	 /* Bei Automatik Groesse festlegen */
 
-	 if (OpSize==1) 
+	 if (OpSize==1)
 	  BEGIN
 	   if (IsDisp8(HVal)) OpSize=4;
 	   else if (IsDisp16(HVal)) OpSize=2;
@@ -3851,7 +3851,7 @@ BEGIN
       END
     END
 
-   if ((strlen(OpPart)<=3) AND (*OpPart=='S')) 
+   if ((strlen(OpPart)<=3) AND (*OpPart=='S'))
     BEGIN
      if ((*AttrPart!='\0') AND (OpSize!=0)) WrError(1130);
      else if (ArgCnt!=1) WrError(1130);
@@ -3874,7 +3874,7 @@ BEGIN
      return;
     END
 
-   if ((strlen(OpPart)<=4) AND (strncmp(OpPart,"DB",2)==0)) 
+   if ((strlen(OpPart)<=4) AND (strncmp(OpPart,"DB",2)==0))
     BEGIN
      if (OpSize!=1) WrError(1130);
      else if (ArgCnt!=2) WrError(1110);
@@ -3905,7 +3905,7 @@ BEGIN
       END
     END
 
-   if ((strlen(OpPart)<=6) AND (strncmp(OpPart,"TRAP",4)==0)) 
+   if ((strlen(OpPart)<=6) AND (strncmp(OpPart,"TRAP",4)==0))
     BEGIN
      if (*AttrPart=='\0') OpSize=0;
      i=(OpSize==0) ? 0 : 1;
@@ -3953,8 +3953,8 @@ END
 	static Boolean ChkPC_68K(void)
 BEGIN
 #ifdef HAS64
-   return ((ActPC==SegCode) AND (ProgCounter()<=0xffffffffll)); 
-#else  
+   return ((ActPC==SegCode) AND (ProgCounter()<=0xffffffffll));
+#else
    return (ActPC==SegCode);
 #endif
 END

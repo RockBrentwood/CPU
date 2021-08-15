@@ -9,4 +9,4 @@ static unsigned char specchars[][2]=
              {0375,0262},        /* 2-exp */
              {0346,0265},        /* mu */
              {0000,0000}};
-             
+

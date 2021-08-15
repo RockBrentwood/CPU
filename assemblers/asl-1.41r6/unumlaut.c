@@ -46,7 +46,7 @@
           fputc(13,dest); fputc(10,dest); crcnt++; break;
          default:
           for (z2=0; *specchars[z2]!=0000; z2++)
-           if (ch==specchars[z2][1]) 
+           if (ch==specchars[z2][1])
             { fputc(specchars[z2][0],dest); metacnt++; break; }
           if (*specchars[z2]==0000) fputc(ch,dest);
         }
@@ -59,7 +59,7 @@
       }
      printf("%s: %ld char(s), %ld cr(s) added, %ld meta char(s) reconverted\n",
             argv[z],charcnt,crcnt,metacnt);
-    } 
+    }
 
    exit(0);
 }

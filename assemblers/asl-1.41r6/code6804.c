@@ -56,14 +56,14 @@ BEGIN
    FixedOrders[InstrZ++].Code=NCode;
 END
 
-        static void AddRel(char *NName, LongInt NCode)   
+        static void AddRel(char *NName, LongInt NCode)
 BEGIN
    if (InstrZ>=RelOrderCnt) exit(255);
    RelOrders[InstrZ].Name=NName;
    RelOrders[InstrZ++].Code=NCode;
 END
 
-        static void AddALU(char *NName, LongInt NCode)   
+        static void AddALU(char *NName, LongInt NCode)
 BEGIN
    if (InstrZ>=ALUOrderCnt) exit(255);
    ALUOrders[InstrZ].Name=NName;

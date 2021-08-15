@@ -22,7 +22,7 @@ BEGIN
 
    sprintf(Buffers[z],"%01x",inp&0xf);
    for (ret=Buffers[z]; *ret!='\0'; ret++) *ret=toupper(*ret);
-   ret=Buffers[z]; 
+   ret=Buffers[z];
    z=(z+1)%BUFFERCNT;
    return ret;
 END
@@ -34,7 +34,7 @@ BEGIN
 
    sprintf(Buffers[z],"%02x",inp&0xff);
    for (ret=Buffers[z]; *ret!='\0'; ret++) *ret=toupper(*ret);
-   ret=Buffers[z]; 
+   ret=Buffers[z];
    z=(z+1)%BUFFERCNT;
    return ret;
 END
@@ -46,7 +46,7 @@ BEGIN
 
    sprintf(Buffers[z],"%04x",inp&0xffff);
    for (ret=Buffers[z]; *ret!='\0'; ret++) *ret=toupper(*ret);
-   ret=Buffers[z]; 
+   ret=Buffers[z];
    z=(z+1)%BUFFERCNT;
    return ret;
 END
@@ -62,7 +62,7 @@ BEGIN
    sprintf(Buffers[z],"%08x",inp&0xffffffff);
 #endif
    for (ret=Buffers[z]; *ret!='\0'; ret++) *ret=toupper(*ret);
-   ret=Buffers[z]; 
+   ret=Buffers[z];
    z=(z+1)%BUFFERCNT;
    return ret;
 END

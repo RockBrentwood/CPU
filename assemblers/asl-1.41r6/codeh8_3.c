@@ -56,13 +56,13 @@
 #define MModInd (MModInd16+MModInd24)
 
 typedef struct
-         { 
+         {
           char *Name;
           Word Code;
          } FixedOrder;
 
 typedef struct
-         { 
+         {
           char *Name;
           Byte Code;
          } Condition;
@@ -488,7 +488,7 @@ BEGIN
          else
           BEGIN
            *p='\0'; strmaxcpy(Part,Asc,255); strmaxcpy(Asc,p+1,255);
-          END 
+          END
 	 switch (DecodeBaseReg(Part,&HReg))
           BEGIN
 	   case 2:
@@ -503,7 +503,7 @@ BEGIN
 	   case 0:
             CutSize(Part);
 	    DispAcc+=EvalIntExpression(Part,Int32,&OK);
-	    if (NOT OK) 
+	    if (NOT OK)
              BEGIN
               ChkAdr(Mask); return;
              END
@@ -943,7 +943,7 @@ BEGIN
       BEGIN
        if (Memo("MOVTPE"))
 	BEGIN
-	 strcpy(ArgStr[3],ArgStr[2]); strcpy(ArgStr[2],ArgStr[1]); 
+	 strcpy(ArgStr[3],ArgStr[2]); strcpy(ArgStr[2],ArgStr[1]);
          strcpy(ArgStr[1],ArgStr[3]);
 	END
        DecodeAdr(ArgStr[2],MModReg);
@@ -1030,7 +1030,7 @@ BEGIN
 	    WAsmCode[1]=0x6b00+z;
 	    break;
 	   case ModAbs24:
-	    CodeLen=8; WAsmCode[0]=0x0140; 
+	    CodeLen=8; WAsmCode[0]=0x0140;
 	    WAsmCode[1]=0x6b20+z; memcpy(WAsmCode+2,AdrVals,AdrCnt);
 	    break;
 	   case ModImm:

@@ -29,7 +29,7 @@ typedef char Char;
 typedef double Double;
 typedef float Single;
 
-typedef Byte Boolean; 
+typedef Byte Boolean;
 
 typedef char String[256];
 

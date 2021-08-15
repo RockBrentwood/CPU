@@ -1,5 +1,5 @@
 /*
- * AS-Portierung 
+ * AS-Portierung
  *
  * AS-Codegeneratormodul fuer die Texas Instruments TMS320C2x-Familie
  *
@@ -68,7 +68,7 @@ static const struct cmd_fixed_order {
 		       {NULL, 0}};
 
 
-static const struct cmd_fixed_order 
+static const struct cmd_fixed_order
 cmd_jmp_order[] = {{"B",      0xff80},
 		   {"BANZ",   0xfb80},
 		   {"BBNZ",   0xf980},
@@ -138,7 +138,7 @@ static const struct cmd_adr_order {
 		     {"SST1",   0x7900, True},
 		     {NULL,     0,      False}};
 
-static const struct cmd_adr_order 
+static const struct cmd_adr_order
 cmd_adr_2ndadr_order[] = {{"BLKD",   0xfd00, False},
 			  {"BLKP",   0xfc00, False},
 			  {"MAC",    0x5d00, False},
@@ -193,7 +193,7 @@ static CPUVar cpu_32025, cpu_32026, cpu_32028;
 static Word eval_ar_expression(char *asc, Boolean *ok)
 {
 	*ok = True;
-	if ((toupper(asc[0]) == 'A') && (toupper(asc[1]) == 'R') && (asc[2] >= '0') && 
+	if ((toupper(asc[0]) == 'A') && (toupper(asc[1]) == 'R') && (asc[2] >= '0') &&
 	    (asc[2] <= '7') && (asc[3] == '\0'))
 		return asc[2] - '0';
 	return EvalIntExpression(asc, UInt3, ok);
@@ -228,21 +228,21 @@ static void decode_adr(char *arg, Integer aux, Boolean must1)
 			return;
 		}
 		h = EvalIntExpression(arg, Int16, &adr_ok);
-		if (!adr_ok) 
+		if (!adr_ok)
 			return;
 		if (must1 && (h >= 0x80) && (!FirstPassUnknown)) {
-			WrError(1315); 
+			WrError(1315);
 			adr_ok = False;
 			return;
 		}
-		adr_mode = h & 0x7f; 
+		adr_mode = h & 0x7f;
 		ChkSpace(SegData);
 		return;
 	}
 	adr_mode = am->mode;
 	if (aux <= ArgCnt) {
 		h = eval_ar_expression(ArgStr[aux], &adr_ok);
-		if (adr_ok) 
+		if (adr_ok)
 			adr_mode |= 0x8 | h;
 	} else
 		adr_ok = True;
@@ -360,9 +360,9 @@ static void wr_code_byte_hilo(Boolean *ok, Integer *adr, LongInt val)
 		*ok = False;
 		return;
 	}
-	if ((*adr) & 1) 
+	if ((*adr) & 1)
 		WAsmCode[((*adr)++)/2] |= val & 0xff;
-	else 
+	else
 		WAsmCode[((*adr)++)/2] = val << 8;
 	CodeLen = ((*adr)+1)/2;
 }
@@ -376,9 +376,9 @@ static void wr_code_byte_lohi(Boolean *ok, Integer *adr, LongInt val)
 		*ok = False;
 		return;
 	}
-	if ((*adr) & 1) 
+	if ((*adr) & 1)
 		WAsmCode[((*adr)++)/2] |= val << 8;
-	else 
+	else
 		WAsmCode[((*adr)++)/2] = val & 0xff;
 	CodeLen = ((*adr)+1)/2;
 }
@@ -417,7 +417,7 @@ static void pseudo_store(tcallback callback)
 			return;
 		case TempString:
 			cp = (unsigned char *)t.Contents.Ascii;
-			while (*cp) 
+			while (*cp)
 				callback(&ok, &adr, CharTransTable[*cp++]);
 			break;
 		default:
@@ -446,7 +446,7 @@ static Boolean decode_pseudo(void)
 		CodeEquate(SegIO, 0, 15);
 		return True;
 	}
-	
+
 	if (Memo("RES") || Memo("BSS")) {
 		if (ArgCnt != 1) {
 			WrError(1110);
@@ -460,7 +460,7 @@ static Boolean decode_pseudo(void)
 			WrError(1820);
 			return True;
 		}
-		if (!ok) 
+		if (!ok)
 			return True;
 		DontPrint = True;
 		CodeLen = size;
@@ -480,17 +480,17 @@ static Boolean decode_pseudo(void)
 		for(z = 1; (z <= ArgCnt) && ok; z++) {
 			EvalExpression(ArgStr[z], &t);
 			switch(t.Typ) {
-			case TempInt:  
-				if((t.Contents.Int < -32768) || 
+			case TempInt:
+				if((t.Contents.Int < -32768) ||
 				   (t.Contents.Int > 0xffff)) {
-					WrError(1320); 
+					WrError(1320);
 					ok = False;
 				} else
 					WAsmCode[CodeLen++] = t.Contents.Int;
 				break;
 			default:
 			case TempFloat:
-				WrError(1135); 
+				WrError(1135);
 				ok = False;
 				break;
 			case TempString:
@@ -498,11 +498,11 @@ static Boolean decode_pseudo(void)
 				cp = (unsigned char *)t.Contents.Ascii;
 				while (*cp) {
 					if (z2 & 1)
-						WAsmCode[CodeLen++] |= 
+						WAsmCode[CodeLen++] |=
 							(CharTransTable[*cp++]
 							 << 8);
 					else
-						WAsmCode[CodeLen] = 
+						WAsmCode[CodeLen] =
 							CharTransTable[*cp++];
 					z2++;
 				}
@@ -517,23 +517,23 @@ static Boolean decode_pseudo(void)
 	}
 
 	if(Memo("STRING")) {
-		pseudo_store(wr_code_byte_hilo); 
+		pseudo_store(wr_code_byte_hilo);
 		return True;
 	}
 	if(Memo("RSTRING")) {
-		pseudo_store(wr_code_byte_lohi); 
+		pseudo_store(wr_code_byte_lohi);
 		return True;
 	}
 	if(Memo("BYTE")) {
-		pseudo_store(wr_code_byte); 
+		pseudo_store(wr_code_byte);
 		return True;
 	}
 	if(Memo("WORD")) {
-		pseudo_store(wr_code_word); 
+		pseudo_store(wr_code_word);
 		return True;
 	}
 	if(Memo("LONG")) {
-		pseudo_store(wr_code_long); 
+		pseudo_store(wr_code_long);
 		return True;
 	}
 
@@ -547,8 +547,8 @@ static Boolean decode_pseudo(void)
 
 	/* LQxx */
 
-	if((OpPart[0] == 'L') && (OpPart[1] == 'Q') && (OpPart[2] >= '0') && 
-	   (OpPart[2] <= '9') && (OpPart[3] >= '0') && (OpPart[3] <= '9') && 
+	if((OpPart[0] == 'L') && (OpPart[1] == 'Q') && (OpPart[2] >= '0') &&
+	   (OpPart[2] <= '9') && (OpPart[3] >= '0') && (OpPart[3] <= '9') &&
 	   (OpPart[4] == '\0')) {
 		pseudo_lqxx(10*(OpPart[2]-'0')+OpPart[3]-'0');
 		return True;
@@ -672,7 +672,7 @@ static Boolean decode_pseudo(void)
 
 /* ---------------------------------------------------------------------- */
 
-static void make_code_3202x(void) 
+static void make_code_3202x(void)
 {
 	Boolean ok;
 	Word adr_word;
@@ -682,17 +682,17 @@ static void make_code_3202x(void)
 	const struct cmd_adr_shift_order *aso;
 	const struct cmd_imm_order *io;
 
-	CodeLen = 0; 
+	CodeLen = 0;
 	DontPrint = False;
 
 	/* zu ignorierendes */
 
-	if(Memo("")) 
+	if(Memo(""))
 		return;
 
 	/* Pseudoanweisungen */
 
-	if(decode_pseudo()) 
+	if(decode_pseudo())
 		return;
 
 	/* prozessorspezifische Befehle */
@@ -706,8 +706,8 @@ static void make_code_3202x(void)
 			WrError(1500);
 			return;
 		}
-		CodeLen = 1; 
-		WAsmCode[0] = 0xce04; 
+		CodeLen = 1;
+		WAsmCode[0] = 0xce04;
 		return;
 	}
 
@@ -720,7 +720,7 @@ static void make_code_3202x(void)
 			WrError(1500);
 			return;
 		}
-		CodeLen = 1; 
+		CodeLen = 1;
 		WAsmCode[0] = 0xce05;
 		return;
 	}
@@ -741,7 +741,7 @@ static void make_code_3202x(void)
 	}
 
 	/* kein Argument */
-	
+
 	for(fo = cmd_fixed_order; fo->name; fo++) {
 		if (Memo(fo->name)) {
 			if(ArgCnt) {
@@ -768,12 +768,12 @@ static void make_code_3202x(void)
 				if(adr_mode < 0x80)
 					WrError(1350);
 			}
-			WAsmCode[1] = EvalIntExpression(ArgStr[1], 
+			WAsmCode[1] = EvalIntExpression(ArgStr[1],
 							Int16, &ok);
 			if(ok) {
-				CodeLen = 2; 
+				CodeLen = 2;
 				WAsmCode[0] = fo->code | (adr_mode & 0x7f);
-			}	
+			}
 			return;
 		}
 	}
@@ -806,7 +806,7 @@ static void make_code_3202x(void)
 			WAsmCode[1] = EvalIntExpression(ArgStr[1], Int16, &ok);
 			decode_adr(ArgStr[2], 3, ao->must1);
 			if(ok && adr_ok) {
-				CodeLen = 2; 
+				CodeLen = 2;
 				WAsmCode[0] = ao->code | adr_mode;
 			}
 			return;
@@ -822,24 +822,24 @@ static void make_code_3202x(void)
 				return;
 			}
 			decode_adr(ArgStr[1], 3, False);
-			if(!adr_ok) 
+			if(!adr_ok)
 				return;
 			if(ArgCnt < 2) {
-				ok = True; 
+				ok = True;
 				adr_word = 0;
 			} else {
-				adr_word = EvalIntExpression(ArgStr[2], Int4, 
+				adr_word = EvalIntExpression(ArgStr[2], Int4,
 							     &ok);
-				if (ok && FirstPassUnknown) 
+				if (ok && FirstPassUnknown)
 					adr_word = 0;
 			}
-			if(!ok) 
+			if(!ok)
 				return;
 			if(aso->allow_shifts < adr_word) {
 				WrError(1380);
 				return;
 			}
-			CodeLen = 1; 
+			CodeLen = 1;
 			WAsmCode[0] = aso->code | adr_mode | (adr_word << 8);
 			return;
 		}
@@ -847,7 +847,7 @@ static void make_code_3202x(void)
 
 	/* Ein/Ausgabe */
 
-	if((Memo("IN")) || (Memo("OUT"))) {		
+	if((Memo("IN")) || (Memo("OUT"))) {
 		if((ArgCnt < 2) || (ArgCnt > 3)) {
 			WrError(1110);
 			return;
@@ -860,7 +860,7 @@ static void make_code_3202x(void)
 			return;
 		ChkSpace(SegIO);
 		CodeLen = 1;
-		WAsmCode[0] = ((Memo("OUT")) ? 0xe000 : 0x8000) | adr_mode | 
+		WAsmCode[0] = ((Memo("OUT")) ? 0xe000 : 0x8000) | adr_mode |
 			(adr_word << 8);
 		return;
 	}
@@ -869,7 +869,7 @@ static void make_code_3202x(void)
 
 	for(io = cmd_imm_order; io->name; io++) {
 		if (Memo(io->name)) {
-			if((ArgCnt < 1) || (ArgCnt > 2) || 
+			if((ArgCnt < 1) || (ArgCnt > 2) ||
 			   ((ArgCnt == 2) && (io->mask != 0xffff))) {
 				WrError(1110);
 				return;
@@ -892,13 +892,13 @@ static void make_code_3202x(void)
 				ok = True;
 				if(ArgCnt == 2) {
 					adr_word = EvalIntExpression(ArgStr[2],
-								     Int4, 
+								     Int4,
 								     &ok);
-					if(ok && FirstPassUnknown) 
+					if(ok && FirstPassUnknown)
 						adr_word = 0;
 				}
 				if(!ok)
-					return;                
+					return;
 				CodeLen = 2;
 				WAsmCode[0] = io->code | (adr_word << 8);
 				WAsmCode[1] = adr_long;
@@ -912,7 +912,7 @@ static void make_code_3202x(void)
 				WrError(1320);
 				return;
 			}
-			CodeLen = 1; 
+			CodeLen = 1;
 			WAsmCode[0] = io->code | (adr_long & io->mask);
 			return;
 		}
@@ -928,7 +928,7 @@ static void make_code_3202x(void)
 		adr_word = eval_ar_expression(ArgStr[1], &ok);
 		if(!ok)
 			return;
-		CodeLen = 1; 
+		CodeLen = 1;
 		WAsmCode[0] = 0x5588 | adr_word;
 		return;
 	}
@@ -943,9 +943,9 @@ static void make_code_3202x(void)
 			return;
 		decode_adr(ArgStr[2], 3, False);
 		if(!adr_ok)
-			return;	  
+			return;
 		CodeLen = 1;
-		WAsmCode[0] = ((Memo("SAR")) ? 0x7000 : 0x3000) | adr_mode | 
+		WAsmCode[0] = ((Memo("SAR")) ? 0x7000 : 0x3000) | adr_mode |
 			(adr_word << 8);
 		return;
 	}
@@ -1027,10 +1027,10 @@ static void make_code_3202x(void)
 static Boolean check_pc_3202x(void)
 {
 	switch(ActPC) {
-	case SegCode: 
-	case SegData: 
+	case SegCode:
+	case SegData:
 		return (ProgCounter() <=0xffff);
-	case SegIO: 
+	case SegIO:
 		return (ProgCounter() <=0xf);
 	default:
 		return False;
@@ -1041,10 +1041,10 @@ static Boolean check_pc_3202x(void)
 
 static Boolean is_def_3202x(void)
 {
-	static const char *defs[] = { "BSS", "PORT", "STRING", "RSTRING", 
+	static const char *defs[] = { "BSS", "PORT", "STRING", "RSTRING",
 					      "BYTE", "WORD", "LONG", "FLOAT",
-					      "DOUBLE", "EFLOAT", "BFLOAT", 
-					      "TFLOAT", NULL }; 
+					      "DOUBLE", "EFLOAT", "BFLOAT",
+					      "TFLOAT", NULL };
 	const char **cp = defs;
 
 	while(*cp) {
@@ -1065,22 +1065,22 @@ static void switch_from_3202x(void)
 
 static void switch_to_3202x(void)
 {
-	TurnWords = False; 
-	ConstMode = ConstModeIntel; 
+	TurnWords = False;
+	ConstMode = ConstModeIntel;
 	SetIsOccupied = False;
-	
+
 	PCSymbol = "$";
-	HeaderID = 0x75; 
+	HeaderID = 0x75;
 	NOPCode = 0x5500;
 	DivideChars = ",";
 	HasAttrs = False;
-	
+
 	ValidSegs = (1 << SegCode) | (1 << SegData) | (1 << SegIO);
 	Grans[SegCode] = 2; ListGrans[SegCode] = 2; SegInits[SegCode] = 0;
 	Grans[SegData] = 2; ListGrans[SegData] = 2; SegInits[SegData] = 0;
 	Grans[SegIO  ] = 2; ListGrans[SegIO  ] = 2; SegInits[SegIO  ] = 0;
-	
-	MakeCode = make_code_3202x; ChkPC = check_pc_3202x; 
+
+	MakeCode = make_code_3202x; ChkPC = check_pc_3202x;
 	IsDef = is_def_3202x; SwitchFrom = switch_from_3202x;
 }
 
@@ -1091,6 +1091,6 @@ void code3202x_init(void)
 	cpu_32025 = AddCPU("320C25", switch_to_3202x);
 	cpu_32026 = AddCPU("320C26", switch_to_3202x);
 	cpu_32028 = AddCPU("320C28", switch_to_3202x);
-	
+
 	AddCopyright("TMS320C2x-Generator (C) 1994/96 Thomas Sailer");
 }

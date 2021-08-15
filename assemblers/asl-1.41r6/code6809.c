@@ -523,7 +523,7 @@ BEGIN
          AdrCnt=1; AdrVals[0]=0x80+(EReg << 5)+(Ord(IndFlag) << 4);
          AdrMode=ModInd;
         END
-       return; 
+       return;
       END
     END
 

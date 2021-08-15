@@ -1,3 +1,4 @@
 2021/08/14	Unpacked the archive.
 		Untangling the system-dependency matrix.
 2021/08/15	Attempt to establish initial configuration for operational baseline.
+		Layout normalization round 1: trimming line-end whitespace.

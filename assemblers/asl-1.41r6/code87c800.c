@@ -8,7 +8,7 @@
 /*                                                                           */
 /*****************************************************************************/
 
-#include "stdinc.h" 
+#include "stdinc.h"
 
 #include <ctype.h>
 #include <string.h>
@@ -118,7 +118,7 @@ BEGIN
    AddReg("ROLC", 0x1e);  AddReg("RORC", 0x1f);
    AddReg("SWAP", 0x01);
 
-   ALUOrders=(char **) malloc(sizeof(char *)*ALUOrderCnt); InstrZ=0; 
+   ALUOrders=(char **) malloc(sizeof(char *)*ALUOrderCnt); InstrZ=0;
    ALUOrders[InstrZ++]="ADDC";
    ALUOrders[InstrZ++]="ADD";
    ALUOrders[InstrZ++]="SUBB";

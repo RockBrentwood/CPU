@@ -36,7 +36,7 @@ static String TargName;
 BEGIN
    TargFile=fopen(TargName,OPENWRMODE);
    if (TargFile==Nil) ChkIO(TargName);
-   if (NOT Write2(TargFile,&FileID)) ChkIO(TargName); 
+   if (NOT Write2(TargFile,&FileID)) ChkIO(TargName);
 END
 
 	static void CloseTarget(void)
@@ -61,7 +61,7 @@ BEGIN
    Byte Buffer[BufferSize];
 
    SrcFile=fopen(FileName,OPENRDMODE);
-   if (SrcFile==Nil) ChkIO(FileName);  
+   if (SrcFile==Nil) ChkIO(FileName);
 
    if (NOT Read2(SrcFile,&TestID)) ChkIO(FileName);
    if (TestID!=FileMagic) FormatError(FileName,FormatInvHeaderMsg);
@@ -108,7 +108,7 @@ BEGIN
          if (fseek(SrcFile,InpLen,SEEK_CUR)==-1) ChkIO(FileName);
         END
       END
-    END 
+    END
    while (InpHeader!=FileHeaderEnd);
 
    errno=0; printf("  (%d Byte",SumLen); ChkIO(OutName);

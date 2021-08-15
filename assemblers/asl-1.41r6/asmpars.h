@@ -108,7 +108,7 @@ extern Boolean PushSymbol(char *SymName_O, char *StackName_O);
 extern Boolean PopSymbol(char *SymName_O, char *StackName_O);
 
 extern void ClearStacks(void);
- 
+
 
 extern void EnterFunction(char *FName, char *FDefinition, Byte NewCnt);
 

@@ -19,7 +19,7 @@
 
         void InitChunk(ChunkList *NChunk)
 BEGIN
-   NChunk->RealLen=0; 
+   NChunk->RealLen=0;
    NChunk->AllocLen=0;
    NChunk->Chunks=Nil;
 END
@@ -40,7 +40,7 @@ BEGIN
           OR ((Start1>Start2) AND (Start2+Len2>=Start1)));
 END
 
-        static void SetChunk(OneChunk *NChunk, LargeWord Start1, LargeWord Len1, 
+        static void SetChunk(OneChunk *NChunk, LargeWord Start1, LargeWord Len1,
                                                LargeWord Start2, LargeWord Len2)
 BEGIN
    NChunk->Start =min(Start1,Start2);
@@ -51,7 +51,7 @@ END
 BEGIN
    if (NChunk->RealLen+1>NChunk->AllocLen)
     BEGIN
-     if (NChunk->RealLen==0) 
+     if (NChunk->RealLen==0)
       NChunk->Chunks=(OneChunk *) malloc(sizeof(OneChunk));
      else
       NChunk->Chunks=(OneChunk *) realloc(NChunk->Chunks,sizeof(OneChunk)*(NChunk->RealLen+1));
@@ -115,8 +115,8 @@ BEGIN
    else
     BEGIN
      IncChunk(NChunk);
-     
-     NChunk->Chunks[NChunk->RealLen].Length=NewLen; 
+
+     NChunk->Chunks[NChunk->RealLen].Length=NewLen;
      NChunk->Chunks[NChunk->RealLen].Start=NewStart;
      NChunk->RealLen++;
     END

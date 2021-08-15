@@ -29,7 +29,7 @@ char *LargeIntFormat;
 BEGIN
    register unsigned char *Run=(unsigned char *) Field,Swap;
    register int z;
-   
+
    for (z=0; z<Cnt/2; z++,Run+=2)
     BEGIN
      Swap=Run[0]; Run[0]=Run[1]; Run[1]=Swap;
@@ -107,7 +107,7 @@ BEGIN
    for (z=7; z>=2; z--)
     dest[z]=((Buffer[z-1]&0x1f)<<3)|((Buffer[z-2]&0xe0)>>5);
    dest[1]=(Buffer[0]&0x1f)<<3;
-   dest[0]=0;   
+   dest[0]=0;
 END
 
 
@@ -115,21 +115,21 @@ END
 BEGIN
    if (fread(Ptr,1,2,file)!=2) return False;
    if (BigEndian) WSwap(Ptr,2);
-   return True; 
+   return True;
 END
 
 	Boolean Read4(FILE *file, void *Ptr)
 BEGIN
    if (fread(Ptr,1,4,file)!=4) return False;
    if (BigEndian) DSwap(Ptr,4);
-   return True; 
+   return True;
 END
 
 	Boolean Read8(FILE *file, void *Ptr)
 BEGIN
    if (fread(Ptr,1,8,file)!=8) return False;
    if (BigEndian) QSwap(Ptr,8);
-   return True; 
+   return True;
 END
 
 
@@ -137,31 +137,31 @@ END
 	Boolean Write2(FILE *file, void *Ptr)
 BEGIN
    Boolean OK;
- 
+
    if (BigEndian) WSwap(Ptr,2);
    OK=(fwrite(Ptr,1,2,file)==2);
    if (BigEndian) WSwap(Ptr,2);
-   return OK; 
+   return OK;
 END
 
 	Boolean Write4(FILE *file, void *Ptr)
 BEGIN
-   Boolean OK; 
+   Boolean OK;
 
    if (BigEndian) DSwap(Ptr,4);
    OK=(fwrite(Ptr,1,4,file)==4);
    if (BigEndian) DSwap(Ptr,4);
-   return OK; 
+   return OK;
 END
 
 	Boolean Write8(FILE *file, void *Ptr)
 BEGIN
-   Boolean OK; 
+   Boolean OK;
 
    if (BigEndian) QSwap(Ptr,8);
    OK=(fwrite(Ptr,1,8,file)==8);
    if (BigEndian) QSwap(Ptr,8);
-   return OK; 
+   return OK;
 END
 
 
@@ -208,12 +208,12 @@ BEGIN
              "Configuration error: cannot assign format string for integer of size %d\n",size);
      exit(255);
      return "";
-    END               
+    END
 END
 
 	static void AssignFormats(void)
 BEGIN
-#ifdef HAS16   
+#ifdef HAS16
    IntegerFormat=Integ16Format=AssignSingle(2);
 #endif
    LongIntFormat=Integ32Format=AssignSingle(4);
@@ -245,7 +245,7 @@ BEGIN
 
    CheckDataTypes(); AssignFormats();
 
-   memset(TwoFace.field,0,sizeof(int)); 
+   memset(TwoFace.field,0,sizeof(int));
    TwoFace.field[0]=1;
    BigEndian=((TwoFace.test)!=1);
    /*if (BigEndian)

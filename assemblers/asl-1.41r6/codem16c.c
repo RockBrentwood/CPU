@@ -1268,7 +1268,7 @@ BEGIN
      case 'D': OpSize=5; break;
      case 'X': OpSize=6; break;
      case 'A': OpSize=7; break;
-     default: 
+     default:
       WrError(1107); return;
     END
    NLS_UpString(Format);
@@ -1469,7 +1469,7 @@ BEGIN
                    CodeLen=2+AdrCnt2;
                   END
                 END
-               break; 
+               break;
               case 3:
                if (OpSize!=0) WrError(1130);
                else if (NOT IsShort(AdrMode2,&SMode)) WrError(1350);

@@ -78,7 +78,7 @@ BEGIN
    LongWord Rest,Trans;
 
    TargFile=fopen(TargName,OPENWRMODE);
-   if (TargFile==Nil) ChkIO(TargName); 
+   if (TargFile==Nil) ChkIO(TargName);
    RealFileLen=((StopAdr-StartAdr+1)*MaxGran)/SizeDiv;
 
    memset(Buffer,FillVal,BufferSize);
@@ -249,11 +249,11 @@ BEGIN
    f=fopen(FileName,OPENRDMODE);
    if (f==Nil) ChkIO(FileName);
 
-   if (NOT Read2(f,&TestID)) ChkIO(FileName); 
+   if (NOT Read2(f,&TestID)) ChkIO(FileName);
    if (TestID!=FileMagic) FormatError(FileName,FormatInvHeaderMsg);
 
    do
-    BEGIN 
+    BEGIN
      ReadRecordHeader(&Header,&Segment,&Gran,FileName,f);
 
      if (Header==FileHeaderStartAdr)
@@ -301,7 +301,7 @@ BEGIN
     BEGIN
      p=strchr(Arg,'-'); if (p==Nil) return CMDErr;
 
-     Save=(*p); *p='\0'; 
+     Save=(*p); *p='\0';
      if ((StartAuto=(strcmp(Arg,"$")==0))) err=True;
      else StartAdr=ConstLongInt(Arg,&err);
      *p=Save;
@@ -375,7 +375,7 @@ static CMDRec P2BINParams[P2BINParamCnt]=
 		{"m", CMD_ByteMode},
 		{"l", CMD_FillVal}};
 
-	int main(int argc, char **argv)	
+	int main(int argc, char **argv)
 BEGIN
    ParamStr=argv; ParamCount=argc-1;
    endian_init();
@@ -448,6 +448,6 @@ BEGIN
    else for (z=1; z<=ParamCount; z++)
     if (ParProcessed[z]) ProcessGroup(ParamStr[z],ProcessFile);
 
-   CloseTarget(); 
+   CloseTarget();
    return 0;
 END

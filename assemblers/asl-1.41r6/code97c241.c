@@ -29,7 +29,7 @@ typedef struct
           Word Code;
          } FixedOrder;
 
-typedef struct 
+typedef struct
          {
           char *Name;
           Byte Code;
@@ -44,7 +44,7 @@ typedef struct
           enum {Equal,FirstCounts,SecondCounts,Op2Half} SizeType;
           Boolean ImmKorr,ImmErl,RegErl;
          } GAOrder;
-	   
+
 
 #define ConditionCount 20
 #define FixedOrderCount 20
@@ -135,7 +135,7 @@ BEGIN
    if (InstrZ>=GASecondOrderCount) exit(255);
    GASecondOrders[InstrZ].Name=NName;
    GASecondOrders[InstrZ++].Code=NCode;
-END                               
+END
 
         static void InitFields(void)
 BEGIN
@@ -246,7 +246,7 @@ BEGIN
    AddGASecond("BS0F" , 0x55);
    AddGASecond("BS1B" , 0x56);
    AddGASecond("BS1F" , 0x57);
-   
+
    StringOrders=(char **) malloc(sizeof(char *)*StringOrderCount); InstrZ=0;
    StringOrders[InstrZ++]="CPSZ";
    StringOrders[InstrZ++]="CPSN";
@@ -481,7 +481,7 @@ BEGIN
          strcpy(tmp,AdrPart); tmp[EPos-AdrPart]='\0';
         END
        l=strlen(AdrPart);
-       if ((EPos==AdrPart+l-2) 
+       if ((EPos==AdrPart+l-2)
        AND ((AdrPart[l-1]=='1') OR (AdrPart[l-1]=='2') OR (AdrPart[l-1]=='4') OR (AdrPart[l-1]=='8'))
        AND (DecodeReg(tmp,&Reg)))
 	BEGIN

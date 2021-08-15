@@ -63,14 +63,14 @@ END
         char *HexBlankString(LargeWord i, Byte Stellen)
 BEGIN
    static String temp;
-   
+
    strmaxcpy(temp,HexString(i,0),255);
    if (strlen(temp)<Stellen) strmaxprep(temp,Blanks(Stellen-strlen(temp)),255);
    return temp;
 END
 
 /*---------------------------------------------------------------------------*/
-/* Da manche Systeme (SunOS) Probleme mit der Asugabe extra langer Ints 
+/* Da manche Systeme (SunOS) Probleme mit der Asugabe extra langer Ints
    haben, machen wir das jetzt zu Fuss :-( */
 
 	char *LargeString(LargeInt i)
@@ -79,12 +79,12 @@ BEGIN
    static String s;
    String tmp;
    char *p,*p2;
-   
+
    if (i<0)
     BEGIN
      i=(-i); SignFlag=True;
     END
-    
+
    p=tmp;
    do
     BEGIN
@@ -92,7 +92,7 @@ BEGIN
      i/=10;
     END
    while (i>0);
-   
+
    p2=s; if (SignFlag) *(p2++)='-';
    while (p>tmp) *(p2++)=(*(--p));
    *p2='\0'; return s;
@@ -120,7 +120,7 @@ BEGIN
      src1++; src2++;
     END
    return ((int) toupper(*src1))-((int) toupper(*src2));
-END	
+END
 
 	int strncasecmp(const char *src1, const char *src2, int len)
 BEGIN
@@ -131,7 +131,7 @@ BEGIN
      src1++; src2++;
     END
    return ((int) toupper(*src1))-((int) toupper(*src2));
-END	
+END
 #endif
 
 #ifdef NEEDS_STRSTR
@@ -191,7 +191,7 @@ END
 	void strmaxprep(char *Dest, const char *Src, int MaxLen)
 BEGIN
    int RLen;
-   
+
    RLen=strlen(Src); if (RLen>MaxLen-strlen(Dest)) RLen=MaxLen-strlen(Dest);
    memmove(Dest+RLen,Dest,strlen(Dest)+1);
    memmove(Dest,Src,RLen);
@@ -217,7 +217,7 @@ END
 
         void ReadLn(FILE *Datei, char *Zeile)
 BEGIN
-   int Zeichen='\0'; 
+   int Zeichen='\0';
    char *Run=Zeile;
 
    while ((Zeichen!='\n') AND (Zeichen!=EOF) AND (!feof(Datei)))

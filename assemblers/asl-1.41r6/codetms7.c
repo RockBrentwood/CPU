@@ -414,7 +414,7 @@ BEGIN
          case ModReg:
 	  BAsmCode[1]=BAsmCode[2]=AdrVals[0];
 	  DecodeAdr(ArgStr[1],MModAccA+MModAccB+MModReg+MModPort+MModImm);
-	  switch (AdrType) 
+	  switch (AdrType)
            BEGIN
 	    case ModAccA:
 	     BAsmCode[0]=0xd0; CodeLen=2;
@@ -697,7 +697,7 @@ BEGIN
      END
 
    for (z=0; z<ALU2OrderCount; z++)
-    if ((strncmp(OpPart,ALU2Orders[z].Name,ALU2Orders[z].Length)==0) 
+    if ((strncmp(OpPart,ALU2Orders[z].Name,ALU2Orders[z].Length)==0)
     AND ((OpPart[ALU2Orders[z].Length]=='P') OR (OpPart[ALU2Orders[z].Length]=='\0')))
      BEGIN
       Rela=strncmp(OpPart,"BTJ",3)==0;

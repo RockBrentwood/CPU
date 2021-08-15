@@ -338,7 +338,7 @@ static ONOFFRec ONOFF430s[ONOFF430Count]=
               for (p=t.Contents.Ascii; *p!='\0'; PutByte(*(p++)));
              END
             break;
-           case TempNone: 
+           case TempNone:
             OK=False; break;
           END
          z++;
@@ -350,7 +350,7 @@ static ONOFFRec ONOFF430s[ONOFF430Count]=
      return True;
     END
 
-   if (Memo("WORD")) 
+   if (Memo("WORD"))
     BEGIN
      if (ArgCnt==0) WrError(1110);
      else

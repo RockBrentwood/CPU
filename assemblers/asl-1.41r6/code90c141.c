@@ -24,12 +24,12 @@
 
 
 typedef struct
-         { 
+         {
           Byte Code;
          } FixedOrder;
 
 typedef struct
-         { 
+         {
           Byte Code;
           Boolean MayReg;
          } ShiftOrder;
@@ -165,10 +165,10 @@ BEGIN
       BEGIN
        ppos=QuotPos(Asc,'+');
        mpos=QuotPos(Asc,'-');
-       if (ppos==Nil) p=mpos; 
+       if (ppos==Nil) p=mpos;
        else if (mpos==Nil) p=ppos;
        else p=min(mpos,ppos);
-       NNegFlag=((p!=Nil) AND (*p=='-')); 
+       NNegFlag=((p!=Nil) AND (*p=='-'));
        if (p==Nil)
         BEGIN
          strmaxcpy(Part,Asc,255); *Asc='\0';

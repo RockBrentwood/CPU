@@ -22,14 +22,14 @@
 
 #include "code56k.h"
 
-typedef struct 
+typedef struct
          {
           char *Name;
           LongWord Code;
          } FixedOrder;
 
 typedef enum {ParAB,ParXYAB,ParABXYnAB,ParABBA,ParXYnAB,ParMul} ParTyp;
-typedef struct 
+typedef struct
          {
           char *Name;
           ParTyp Typ;
@@ -90,18 +90,18 @@ static ParOrder *ParOrders;
 
 /*----------------------------------------------------------------------------------------------*/
 
-	static void AddFixed(char *Name, LongWord Code) 
+	static void AddFixed(char *Name, LongWord Code)
 BEGIN
    if (InstrZ>=FixedOrderCnt) exit(255);
-   
+
    FixedOrders[InstrZ].Name=Name;
    FixedOrders[InstrZ++].Code=Code;
 END
 
-	static void AddPar(char *Name, ParTyp Typ, LongWord Code) 
+	static void AddPar(char *Name, ParTyp Typ, LongWord Code)
 BEGIN
    if (InstrZ>=ParOrderCnt) exit(255);
-   
+
    ParOrders[InstrZ].Name=Name;
    ParOrders[InstrZ].Typ=Typ;
    ParOrders[InstrZ++].Code=Code;
@@ -253,7 +253,7 @@ BEGIN
      AdrVal=EvalIntExpression(Asc+1,Int24,&OK);
      if (OK)
       BEGIN
-       AdrType=ModImm; AdrCnt=1; AdrMode=0x34; 
+       AdrType=ModImm; AdrCnt=1; AdrMode=0x34;
        ChkMask(Erl,ErlSeg); return;
       END
     END
@@ -292,7 +292,7 @@ BEGIN
    return False;
 END
 
-	static Boolean DecodeALUReg(char *Asc, LongInt *Erg, 
+	static Boolean DecodeALUReg(char *Asc, LongInt *Erg,
                                     Boolean MayX, Boolean MayY, Boolean MayAcc)
 BEGIN
    Boolean Result=False;
@@ -559,7 +559,7 @@ BEGIN
      else if (AdrType!=ModNone)
       BEGIN
        Result=True;
-       DAsmCode[0] = 0x404000 + MixErg + (AdrMode << 8); 
+       DAsmCode[0] = 0x404000 + MixErg + (AdrMode << 8);
        DAsmCode[1] = AdrVal;
        CodeLen=1+AdrCnt;
       END
@@ -581,7 +581,7 @@ BEGIN
      else
       BEGIN
        Result=True;
-       DAsmCode[0] = 0x40c000 + MixErg + (AdrMode << 8); 
+       DAsmCode[0] = 0x40c000 + MixErg + (AdrMode << 8);
        DAsmCode[1] = AdrVal;
        CodeLen=1+AdrCnt;
       END
@@ -603,7 +603,7 @@ BEGIN
      else
       BEGIN
        Result=True;
-       DAsmCode[0] = 0x404000 + MixErg + (AdrMode << 8); 
+       DAsmCode[0] = 0x404000 + MixErg + (AdrMode << 8);
        DAsmCode[1] = AdrVal;
        CodeLen=1+AdrCnt;
       END
@@ -687,7 +687,7 @@ BEGIN
 	BEGIN
 	 DAsmCode[0] = 0x100000 + (Reg1L << 18) + ((Reg2L-2) << 17) + (Reg2R << 16) +
 		       (Dir1 << 15) + (Mode1 << 8);
-	 DAsmCode[1] = Val1; 
+	 DAsmCode[1] = Val1;
          CodeLen=1+Cnt1; Result=True;
 	END
       END
@@ -698,7 +698,7 @@ BEGIN
 	BEGIN
 	 DAsmCode[0] = 0x104000 + (Reg2L << 16) + ((Reg1L-2) << 19) + (Reg1R << 18) +
 		       (Dir2 << 15) + (Mode2 << 8);
-	 DAsmCode[1] = Val2; 
+	 DAsmCode[1] = Val2;
          CodeLen=1+Cnt2; Result=True;
 	END
       END
@@ -717,7 +717,7 @@ BEGIN
      case 1: return DecodeMOVE_1(Start);
      case 2: return DecodeMOVE_2(Start);
      default:
-      WrError(1110); 
+      WrError(1110);
       return False;
     END
 END
@@ -748,7 +748,7 @@ BEGIN
    LongInt HInt;
 
 
-   if (Memo("XSFR")) 
+   if (Memo("XSFR"))
     BEGIN
      CodeEquate(SegXData,0,0xffff);
      return True;
@@ -961,7 +961,7 @@ BEGIN
        else if ((Reg1<4) OR (Reg1>7)) WrError(1350);
        else
 	BEGIN
-	 CodeLen=1; 
+	 CodeLen=1;
          DAsmCode[0] = 0x018040 + (Reg2 << 3) + (TurnXY(Reg1) << 4);
 	END
       END
@@ -1002,7 +1002,7 @@ BEGIN
        else if ((Reg1<16) OR (Reg1>23)) WrError(1350);
        else
 	BEGIN
-	 CodeLen=1; 
+	 CodeLen=1;
          DAsmCode[0] = 0x01d815 + ((Reg1 & 7) << 8) + (Reg2 << 3);
 	END
       END
@@ -1139,7 +1139,7 @@ BEGIN
 	  END
 	 else if (AdrType!=ModNone)
 	  BEGIN
-	   CodeLen=1+AdrCnt; 
+	   CodeLen=1+AdrCnt;
            DAsmCode[1] = AdrVal;
 	   DAsmCode[0] = 0x074080 + Reg1 + (AdrMode << 8);
 	  END
@@ -1155,7 +1155,7 @@ BEGIN
 	  END
 	 else if (AdrType!=ModNone)
 	  BEGIN
-	   CodeLen = 1+AdrCnt; 
+	   CodeLen = 1+AdrCnt;
            DAsmCode[1] = AdrVal;
 	   DAsmCode[0] = 0x07c080 + Reg2 + (AdrMode << 8);
 	  END
@@ -1205,14 +1205,14 @@ BEGIN
 	   if (AdrType!=ModNone)
 	    if (AdrSeg==SegCode)
 	     BEGIN
-	      CodeLen=1+AdrCnt; 
+	      CodeLen=1+AdrCnt;
               DAsmCode[1] = AdrVal;
 	      DAsmCode[0] = 0x084040 + HVal + (AdrMode << 8) +
 			    (Ord(HSeg==SegYData) << 16);
 	     END
 	    else
 	     BEGIN
-	      CodeLen=1+AdrCnt; 
+	      CodeLen=1+AdrCnt;
               DAsmCode[1] = AdrVal;
 	      DAsmCode[0] = 0x084080 + HVal + (AdrMode << 8) +
 			    (Ord(HSeg==SegYData) << 16) +
@@ -1227,7 +1227,7 @@ BEGIN
 	    if ((AdrVal<0xffc0) OR (AdrVal>0xffff)) WrError(1315);
 	    else if (HSeg==SegCode)
 	     BEGIN
-	      CodeLen=1+HCnt; 
+	      CodeLen=1+HCnt;
               DAsmCode[1] = HVal;
 	      DAsmCode[0] = 0x08c040 + (AdrVal & 0x3f) + (HMode << 8) +
 			    (Ord(AdrSeg==SegYData) << 16);
@@ -1327,7 +1327,7 @@ BEGIN
 	 END
 	else
 	 BEGIN
-	  CodeLen=2; DAsmCode[0] = 0x0af080 + AddVal; 
+	  CodeLen=2; DAsmCode[0] = 0x0af080 + AddVal;
           DAsmCode[1] = AdrVal;
 	 END
        else if (AdrType!=ModNone)
@@ -1347,18 +1347,18 @@ BEGIN
        if (AdrType==ModAbs)
 	if ((AdrVal & 0xf000)==0)
 	 BEGIN
-	  CodeLen=1; 
+	  CodeLen=1;
           DAsmCode[0] = 0x0e0000 + (Condition << 12) + AdrVal;
 	 END
 	else
 	 BEGIN
-	  CodeLen=2; 
-          DAsmCode[0] = 0x0af0a0 + Condition; 
+	  CodeLen=2;
+          DAsmCode[0] = 0x0af0a0 + Condition;
           DAsmCode[1] = AdrVal;
 	 END
        else if (AdrType!=ModNone)
 	BEGIN
-	 CodeLen=1; 
+	 CodeLen=1;
          DAsmCode[0] = 0x0ac0a0 + Condition + (AdrMode << 8);
 	END
       END
@@ -1374,18 +1374,18 @@ BEGIN
        if (AdrType==ModAbs)
 	if ((AdrVal & 0xf000)==0)
 	 BEGIN
-	  CodeLen=1; 
+	  CodeLen=1;
           DAsmCode[0] = 0x0f0000 + (Condition << 12) + AdrVal;
 	 END
 	else
 	 BEGIN
-	  CodeLen=2; 
-          DAsmCode[0] = 0x0bf0a0 + Condition; 
+	  CodeLen=2;
+          DAsmCode[0] = 0x0bf0a0 + Condition;
           DAsmCode[1] = AdrVal;
 	 END
        else if (AdrType!=ModNone)
 	BEGIN
-	 CodeLen=1; 
+	 CodeLen=1;
          DAsmCode[0] = 0x0bc0a0 + Condition + (AdrMode << 8);
 	END
       END
@@ -1520,7 +1520,7 @@ BEGIN
 	END
        else
 	BEGIN
-	 CodeLen=1+AdrCnt; 
+	 CodeLen=1+AdrCnt;
          DAsmCode[1] = AdrVal;
 	 DAsmCode[0] = 0x064020 + (AdrMode << 8) + (Ord(AdrSeg==SegYData) << 6);
 	END

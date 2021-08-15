@@ -101,7 +101,7 @@ BEGIN
 
    OutFormat ActFormat;
 
-   SrcFile=fopen(FileName,OPENRDMODE); 
+   SrcFile=fopen(FileName,OPENRDMODE);
    if (SrcFile==Nil) ChkIO(FileName);
 
    if (NOT Read2(SrcFile,&TestID)) ChkIO(FileName);
@@ -125,7 +125,7 @@ BEGIN
      else if (InpHeader!=FileHeaderEnd)
       BEGIN
        Gran=InpGran;
-       
+
        if ((ActFormat=DestFormat)==Default)
         switch (InpHeader)
          BEGIN
@@ -145,7 +145,7 @@ BEGIN
            ActFormat=MOSHex; break;
           case 0x74: case 0x75: case 0x77:
            ActFormat=TiDSK; break;
-          default: 
+          default:
            FormatError(FileName,FormatInvRecordHeaderMsg);
          END
 
@@ -273,7 +273,7 @@ BEGIN
               errno=0; fprintf(TargFile,"%s%s\n",DSKHeaderLine,TargName); ChkIO(TargName);
   	     END
             break;
-           default: 
+           default:
             break;
  	  END
 
@@ -351,7 +351,7 @@ BEGIN
  	      errno=0; fprintf(TargFile,"00"); ChkIO(TargName);
  	      break;
  	     case TekHex:
- 	      errno=0; 
+ 	      errno=0;
               fprintf(TargFile,"/%s%s%s",HexWord(ErgStart),HexByte(TransLen),
  		                         HexByte(Lo(ErgStart)+Hi(ErgStart)+TransLen));
  	      ChkIO(TargName);
@@ -459,7 +459,7 @@ BEGIN
  	        errno=0; fprintf(TargFile,"%s",HexByte(0)); ChkIO(TargName);
                END
               errno=0;
-              fprintf(TargFile,"%s\n",HexByte(0xff-3-MotRecType)); 
+              fprintf(TargFile,"%s\n",HexByte(0xff-3-MotRecType));
               ChkIO(TargName);
              END
             break;
@@ -520,11 +520,11 @@ BEGIN
 
    f=fopen(FileName,OPENRDMODE); if (f==Nil) ChkIO(FileName);
 
-   if (NOT Read2(f,&TestID)) ChkIO(FileName); 
+   if (NOT Read2(f,&TestID)) ChkIO(FileName);
    if (TestID!=FileMagic) FormatError(FileName,FormatInvHeaderMsg);
 
    do
-    BEGIN 
+    BEGIN
      ReadRecordHeader(&Header,&Segment,&Gran,FileName,f);
 
      if (Header==FileHeaderStartAdr)
@@ -569,7 +569,7 @@ BEGIN
     BEGIN
      p=strchr(Arg,'-'); if (p==Nil) return CMDErr;
 
-     Save=(*p); *p='\0'; 
+     Save=(*p); *p='\0';
      if ((StartAuto=(strcmp(Arg,"$")==0))) err=True;
      else StartAdr=ConstLongInt(Arg,&err);
      *p=Save;

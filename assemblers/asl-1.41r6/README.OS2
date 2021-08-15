@@ -16,7 +16,7 @@ Additional hints for OS/2 users:
   - a make utility to process the Makefile.  A port of GNU's make should
     be perfect.
 
-  
+
 - If you make a binary distribution, don't forget to include the emx
   runtime libaries...
 

@@ -58,7 +58,7 @@ BEGIN
     END
 
    InternSymbol=Default_InternSymbol;
-   if (NOT NotPrev) SwitchFrom(); 
+   if (NOT NotPrev) SwitchFrom();
    Lauf->SwitchProc();
 
    DontPrint=True;
@@ -254,7 +254,7 @@ BEGIN
    if (ShareMode==0) WrError(30);
    else if ((ArgCnt==0) AND (*CommPart!='\0'))
     BEGIN
-     CodeSHARED_BuildComment(c); 
+     CodeSHARED_BuildComment(c);
      errno=0; fprintf(ShareFile,"%s\n",c); ChkIO(10004);
     END
    else
@@ -263,7 +263,7 @@ BEGIN
       if (IsSymbolString(ArgStr[z]))
        BEGIN
 	ValOK=GetStringSymbol(ArgStr[z],s);
-	if (ShareMode==1) 
+	if (ShareMode==1)
          BEGIN
           strmaxprep(s,"\'",255); strmaxcat(s,"\'",255);
          END
@@ -297,9 +297,9 @@ BEGIN
 	errno=0;
 	switch (ShareMode)
          BEGIN
-          case 1: 
+          case 1:
            fprintf(ShareFile,"%s = %s;%s\n",ArgStr[z],s,c); break;
-          case 2: 
+          case 2:
            fprintf(ShareFile,"#define %s %s%s\n",ArgStr[z],s,c); break;
           case 3:
            strmaxprep(s,IsSymbolChangeable(ArgStr[z])?"set ":"equ ",255);
@@ -557,7 +557,7 @@ BEGIN
        ActPC=Old->SavePC; DontPrint=True;
       END
      if (Old->SaveCPU!=MomCPU) SetCPU(Old->SaveCPU,False);
-     EnterIntSymbol(ListOnName,ListOn=Old->SaveListOn,0,True); 
+     EnterIntSymbol(ListOnName,ListOn=Old->SaveListOn,0,True);
      SetFlag(&LstMacroEx,LstMacroExName,Old->SaveLstMacroEx);
      free(Old);
     END
@@ -629,7 +629,7 @@ BEGIN
       END
      if (OK)
       BEGIN
-       setbuf(stdout,Nil); printf("%s",Exp); 
+       setbuf(stdout,Nil); printf("%s",Exp);
        fgets(Exp,255,stdin); UpString(Exp);
        FirstPassUnknown=False;
        EvalExpression(Exp,&Erg);
@@ -888,7 +888,7 @@ BEGIN
 	  Lauf=CodePPSyms_SearchSym(*Orig,Sym);
 	  if (Lauf==Nil)
 	   BEGIN
-	    Lauf=(PForwardSymbol) malloc(sizeof(TForwardSymbol)); 
+	    Lauf=(PForwardSymbol) malloc(sizeof(TForwardSymbol));
             Lauf->Next=(*Orig); *Orig=Lauf;
 	    Lauf->Name=strdup(Sym);
 	   END
@@ -943,7 +943,7 @@ static PseudoOrder Pseudos[]=
                     {""       ,    Nil           }};
 
 typedef struct
-         { 
+         {
           char *Name;
           char *p;
          } PseudoStrOrder;

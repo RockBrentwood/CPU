@@ -143,7 +143,7 @@ END
         static void AddExt(char *NName, Word NCode)
 BEGIN
    if (InstrZ>=ExtOrderCnt) exit(255);
-   ExtOrders[InstrZ].Name=NName; 
+   ExtOrders[InstrZ].Name=NName;
    ExtOrders[InstrZ++].Code=NCode;
 END
 
@@ -705,7 +705,7 @@ BEGIN
         switch (AdrMode)
          BEGIN
           case ModDisp8:
-           BAsmCode[0]=GenOrders[z].Code+AdrPart; 
+           BAsmCode[0]=GenOrders[z].Code+AdrPart;
            BAsmCode[1]=AdrVals[0]; CodeLen=2;
            break;
           case ModDisp16:

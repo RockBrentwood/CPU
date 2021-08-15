@@ -26,7 +26,7 @@ typedef struct
           Word Code;
          } FixedOrder;
 
-typedef struct 
+typedef struct
          {
           char *Name;
           Word Code;
@@ -211,7 +211,7 @@ BEGIN
 	      else BAsmCode[CodeLen++]=t.Contents.Int & MaxV;
              break;
 	    case TempFloat:
-	     WrError(1135); ValOK=False; 
+	     WrError(1135); ValOK=False;
              break;
 	    case TempString:
 	     for (p=t.Contents.Ascii; *p!='\0'; p++)
@@ -237,7 +237,7 @@ BEGIN
        FirstPassUnknown=False;
        Size=EvalIntExpression(ArgStr[1],Int16,&ValOK);
        if (FirstPassUnknown) WrError(1820);
-       if ((ValOK) AND (NOT FirstPassUnknown)) 
+       if ((ValOK) AND (NOT FirstPassUnknown))
         if ((Size << 1)>MaxCodeLen) WrError(1920);
 	else
 	 BEGIN

@@ -39,7 +39,7 @@ BEGIN
    StringRecPtr Neu;
 
    Neu=(StringRecPtr) malloc(sizeof(StringRec));
-   Neu->Content=strdup(NewStr); 
+   Neu->Content=strdup(NewStr);
    Neu->Next=(*List);
    *List=Neu;
 END
@@ -48,7 +48,7 @@ END
 BEGIN
    StringRecPtr Neu,Lauf;
 
-   Neu=(StringRecPtr) malloc(sizeof(StringRec)); 
+   Neu=(StringRecPtr) malloc(sizeof(StringRec));
    Neu->Content=strdup(NewStr); Neu->Next=Nil;
    if (*List==Nil) *List=Neu;
    else

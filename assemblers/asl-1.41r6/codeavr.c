@@ -2,9 +2,9 @@
 /*****************************************************************************/
 /* AS-Portierung                                                             */
 /*                                                                           */
-/* Codegenerator Atmel AVR                                                   */             
+/* Codegenerator Atmel AVR                                                   */
 /*                                                                           */
-/* Historie: 26.12.1996 Grundsteinlegung                                     */             
+/* Historie: 26.12.1996 Grundsteinlegung                                     */
 /*                                                                           */
 /*****************************************************************************/
 
@@ -75,7 +75,7 @@ BEGIN
    Reg1Orders[InstrZ].MinCPU=NMin;
    Reg1Orders[InstrZ++].Code=NCode;
 END
-   
+
         static void AddReg2(char *NName, CPUVar NMin, Word NCode)
 BEGIN
    if (InstrZ>=Reg2OrderCnt) exit(255);
@@ -519,7 +519,7 @@ BEGIN
 	 if (OK)
 	  BEGIN
            ChkSpace(SegData);
-	   WAsmCode[0]=0x9000+z+(Reg1 << 4); 
+	   WAsmCode[0]=0x9000+z+(Reg1 << 4);
 	   CodeLen=2;
 	  END
 	END

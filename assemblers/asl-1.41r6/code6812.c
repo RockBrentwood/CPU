@@ -66,7 +66,7 @@ typedef struct
 
 #define FixedOrderCount 87
 #define BranchOrderCount 20
-#define GenOrderCount 56 
+#define GenOrderCount 56
 #define LoopOrderCount 6
 #define LEAOrderCount 3
 #define JmpOrderCount 2
@@ -365,7 +365,7 @@ BEGIN
     AdrMode=ModNone; AdrCnt=0; WrError(1350);
    END
 END
-	
+
         static void DecodeAdr(Integer Start, Integer Stop, Word Mask)
 BEGIN
    Integer AdrWord,ShortMode,l;
@@ -648,7 +648,7 @@ BEGIN
           END
          else
           BEGIN
-           BAsmCode[0]=Hi(GenOrders[z].Code); 
+           BAsmCode[0]=Hi(GenOrders[z].Code);
            BAsmCode[1]=Lo(GenOrders[z].Code); CodeLen=2;
           END;
         switch (AdrMode)

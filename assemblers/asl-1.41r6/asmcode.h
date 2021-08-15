@@ -23,5 +23,5 @@ extern void CloseFile(void);
 extern void WriteBytes(void);
 
 extern void RetractWords(Word Cnt);
- 
+
 extern void asmcode_init(void);

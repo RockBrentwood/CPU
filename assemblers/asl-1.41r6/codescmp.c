@@ -144,7 +144,7 @@ BEGIN
 
    if ((l>=4) AND (Asc[l-1]==')') AND (Asc[l-4]=='('))
     BEGIN
-     Asc[l-1]='\0'; 
+     Asc[l-1]='\0';
      if (DecodeReg(Asc+l-3,Arg))
       BEGIN
        Asc[l-4]='\0';

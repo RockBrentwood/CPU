@@ -23,7 +23,7 @@
 
 
 typedef struct
-         { 
+         {
           char *Name;
           Word Code;
          } FixedOrder;
@@ -209,7 +209,7 @@ BEGIN
         END
        if (Lev!=-1) p--;
       END
-     if (p<Asc) 
+     if (p<Asc)
       BEGIN
        WrXError(1300,Asc); return Nil;
       END
@@ -299,8 +299,8 @@ BEGIN
               BEGIN
                AdrCnt=2; AdrType=ModImmRegRel;
               END
-            END  
-          END 
+            END
+          END
         END
       END
      ChkAdr(Mask); return;

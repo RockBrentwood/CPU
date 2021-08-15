@@ -98,7 +98,7 @@ BEGIN
    if (InstrZ>=AdrShiftOrderCnt) exit(255);
    AdrShiftOrders[InstrZ].Name=NName;
    AdrShiftOrders[InstrZ].Code=NCode;
-   AdrShiftOrders[InstrZ++].AllowShifts=NAllow; 
+   AdrShiftOrders[InstrZ++].AllowShifts=NAllow;
 END
 
         static void AddImm(char *NName, Word NCode, Integer NMin, Integer NMax, Word NMask)
@@ -380,11 +380,11 @@ BEGIN
            BEGIN
             HasSh=True; Cnt=3;
            END
-         else 
+         else
           BEGIN
            HasSh=True; Cnt=3;
           END
-        else 
+        else
          BEGIN
           Cnt=3; HasSh=(ArgCnt==2);
          END

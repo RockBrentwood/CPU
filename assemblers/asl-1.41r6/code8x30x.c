@@ -28,7 +28,7 @@
 typedef struct
          {
           char *Name;
-          Word Code; 
+          Word Code;
          } FixedOrder;
 
 static CPUVar CPU8x300,CPU8x305;
@@ -411,7 +411,7 @@ BEGIN
       BEGIN
        p=HasDisp(ArgStr[1]);
        if (p==Nil) WrError(1350);
-       else 
+       else
         BEGIN
          strcpy(tmp,p+1); tmp[strlen(tmp)-1]='\0';
          if (DecodeReg(tmp,&SrcReg,&SrcLen))
@@ -440,7 +440,7 @@ BEGIN
              if (OK)
               BEGIN
                if (Rot==0xffff)
-                Rot=(SrcLen==-1) ? 0 : SrcLen; 
+                Rot=(SrcLen==-1) ? 0 : SrcLen;
                if ((SrcLen!=-1) AND (Rot!=SrcLen)) WrError(1131);
                else
                 BEGIN

@@ -21,5 +21,5 @@ mkdirhier $3/man1
 chmod 755 $3
 for i in *.1; do
  cp $i $3/man1
- chmod 644 $3/man1/$i 
+ chmod 644 $3/man1/$i
 done

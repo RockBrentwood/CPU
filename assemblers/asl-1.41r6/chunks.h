@@ -16,7 +16,7 @@ typedef struct
 	  LargeWord Start,Length;
 	 } OneChunk;
 
-typedef struct 
+typedef struct
          {
 	  Word RealLen,AllocLen;
 	  OneChunk *Chunks;

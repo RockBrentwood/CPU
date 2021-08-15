@@ -1,5 +1,5 @@
 /*
- * AS-Portierung 
+ * AS-Portierung
  *
  * AS-Codegeneratormodul fuer die Texas Instruments TMS320C5x-Familie
  *
@@ -160,7 +160,7 @@ static Word eval_ar_expression(char *asc, Boolean *ok)
 {
 	*ok = True;
 
-	if ((toupper(asc[0]) == 'A') && (toupper(asc[1]) == 'R') && (asc[2] >= '0') && 
+	if ((toupper(asc[0]) == 'A') && (toupper(asc[1]) == 'R') && (asc[2] >= '0') &&
 	    (asc[2] <= '7') && (asc[3] <= '\0'))
 		return asc[2] - '0';
 	return EvalIntExpression(asc, UInt3, ok);
@@ -198,18 +198,18 @@ static void decode_adr(char *arg, Integer aux, Boolean must1)
 		if (!adr_ok)
 			return;
 		if (must1 && (h >= 0x80) && (!FirstPassUnknown)) {
-			WrError(1315); 
+			WrError(1315);
 			adr_ok = False;
 			return;
 		}
-		adr_mode = h & 0x7f; 
+		adr_mode = h & 0x7f;
 		ChkSpace(SegData);
 		return;
 	}
 	adr_mode = am->mode;
 	if (aux <= ArgCnt) {
 		h = eval_ar_expression(ArgStr[aux], &adr_ok);
-		if (adr_ok) 
+		if (adr_ok)
 			adr_mode |= 0x8 | h;
 	} else
 		adr_ok = True;
@@ -247,7 +247,7 @@ static Word decode_cond(Integer argp)
 	Word ret = 0x300;
 
 	while(argp <= ArgCnt) {
-		for(cndp = cond_tab; 
+		for(cndp = cond_tab;
 		    cndp->name && strcasecmp(cndp->name, ArgStr[argp]); cndp++);
 		if (!cndp->name) {
 			WrError(1360);
@@ -261,7 +261,7 @@ static Word decode_cond(Integer argp)
 		cnttp += cndp->istp;
 		argp++;
 	}
-	if((cnttp > 1) || (cntzl > 1) || (cntv > 1) || (cntc > 1)) 
+	if((cnttp > 1) || (cntzl > 1) || (cntv > 1) || (cntc > 1))
 		WrError(1200); /* invalid condition */
 	return ret;
 }
@@ -378,9 +378,9 @@ static void wr_code_byte_hilo(Boolean *ok, Integer *adr, LongInt val)
 		*ok = False;
 		return;
 	}
-	if ((*adr) & 1) 
+	if ((*adr) & 1)
 		WAsmCode[((*adr)++)/2] |= val & 0xff;
-	else 
+	else
 		WAsmCode[((*adr)++)/2] = val << 8;
 	CodeLen = ((*adr)+1)/2;
 }
@@ -394,9 +394,9 @@ static void wr_code_byte_lohi(Boolean *ok, Integer *adr, LongInt val)
 		*ok = False;
 		return;
 	}
-	if ((*adr) & 1) 
+	if ((*adr) & 1)
 		WAsmCode[((*adr)++)/2] |= val << 8;
-	else 
+	else
 		WAsmCode[((*adr)++)/2] = val & 0xff;
 	CodeLen = ((*adr)+1)/2;
 }
@@ -435,7 +435,7 @@ static void pseudo_store(tcallback callback)
 			return;
 		case TempString:
 			cp = (unsigned char *)t.Contents.Ascii;
-			while (*cp) 
+			while (*cp)
 				callback(&ok, &adr, CharTransTable[*cp++]);
 			break;
 		default:
@@ -478,7 +478,7 @@ static Boolean decode_pseudo(void)
 			WrError(1820);
 			return True;
 		}
-		if (!ok) 
+		if (!ok)
 			return True;
 		DontPrint = True;
 		CodeLen = size;
@@ -498,17 +498,17 @@ static Boolean decode_pseudo(void)
 		for(z = 1; (z <= ArgCnt) && ok; z++) {
 			EvalExpression(ArgStr[z], &t);
 			switch(t.Typ) {
-			case TempInt:  
-				if((t.Contents.Int < -32768) || 
+			case TempInt:
+				if((t.Contents.Int < -32768) ||
 				   (t.Contents.Int > 0xffff)) {
-					WrError(1320); 
+					WrError(1320);
 					ok = False;
 				} else
 					WAsmCode[CodeLen++] = t.Contents.Int;
 				break;
 			default:
 			case TempFloat:
-				WrError(1135); 
+				WrError(1135);
 				ok = False;
 				break;
 			case TempString:
@@ -516,11 +516,11 @@ static Boolean decode_pseudo(void)
 				cp = (unsigned char *)t.Contents.Ascii;
 				while (*cp) {
 					if (z2 & 1)
-						WAsmCode[CodeLen++] |= 
+						WAsmCode[CodeLen++] |=
 							(CharTransTable[*cp++]
 							 << 8);
 					else
-						WAsmCode[CodeLen] = 
+						WAsmCode[CodeLen] =
 							CharTransTable[*cp++];
 					z2++;
 				}
@@ -535,23 +535,23 @@ static Boolean decode_pseudo(void)
 	}
 
 	if(Memo("STRING")) {
-		pseudo_store(wr_code_byte_hilo); 
+		pseudo_store(wr_code_byte_hilo);
 		return True;
 	}
 	if(Memo("RSTRING")) {
-		pseudo_store(wr_code_byte_lohi); 
+		pseudo_store(wr_code_byte_lohi);
 		return True;
 	}
 	if(Memo("BYTE")) {
-		pseudo_store(wr_code_byte); 
+		pseudo_store(wr_code_byte);
 		return True;
 	}
 	if(Memo("WORD")) {
-		pseudo_store(wr_code_word); 
+		pseudo_store(wr_code_word);
 		return True;
 	}
 	if(Memo("LONG")) {
-		pseudo_store(wr_code_long); 
+		pseudo_store(wr_code_long);
 		return True;
 	}
 
@@ -565,8 +565,8 @@ static Boolean decode_pseudo(void)
 
 	/* LQxx */
 
-	if((OpPart[0] == 'L') && (OpPart[1] == 'Q') && (OpPart[2] >= '0') && 
-	   (OpPart[2] <= '9') && (OpPart[3] >= '0') && (OpPart[3] <= '9') && 
+	if((OpPart[0] == 'L') && (OpPart[1] == 'Q') && (OpPart[2] >= '0') &&
+	   (OpPart[2] <= '9') && (OpPart[3] >= '0') && (OpPart[3] <= '9') &&
 	   (OpPart[4] == '\0')) {
 		pseudo_lqxx(10*(OpPart[2]-'0')+OpPart[3]-'0');
 		return True;
@@ -711,30 +711,30 @@ static void make_code_3205x(void)
 			 {NULL,   0      }};
 	const struct bit_table *bitp;
 
-	CodeLen = 0; 
+	CodeLen = 0;
 	DontPrint = False;
 
 	/* zu ignorierendes */
-	   
+
 	if(Memo(""))
 		return;
 
 	/* Pseudoanweisungen */
-	
-	if(decode_pseudo()) 
+
+	if(decode_pseudo())
 		return;
 
 	/* prozessorspezifische Befehle */
 
 	/* kein Argument */
-	
+
 	for(fo = cmd_fixed_order; fo->name; fo++) {
 		if(Memo(fo->name)) {
 			if(ArgCnt) {
 				WrError(1110);
 				return;
 			}
-			CodeLen = 1; 
+			CodeLen = 1;
 			WAsmCode[0] = fo->code;
 			return;
 		}
@@ -746,7 +746,7 @@ static void make_code_3205x(void)
 		adr_long = EvalIntExpression((ArgStr[1])+1, Int16, &ok);
 		if(!ok)
 			return;
-		if(FirstPassUnknown || (adr_long < -4096) || 
+		if(FirstPassUnknown || (adr_long < -4096) ||
 		   (adr_long > 4095)) {
 			CodeLen = 2;
 			WAsmCode[0] = 0xbe80;
@@ -765,7 +765,7 @@ static void make_code_3205x(void)
 				WAsmCode[1] = EvalIntExpression((ArgStr[1])+1,
 								Int16, &ok);
 				if((!ok) || (!adr_ok))
-					return;        
+					return;
 				CodeLen = 2;
 				WAsmCode[0] = fo->code | adr_mode;
 				return;
@@ -775,26 +775,26 @@ static void make_code_3205x(void)
 
 	if(Memo("LDP") && (ArgCnt == 1) && (ArgStr[1][0] == '#')) {
 		adr_word = EvalIntExpression((ArgStr[1])+1, UInt16, &ok);
-		if((adr_word >= 0x200) && (!FirstPassUnknown)) 
+		if((adr_word >= 0x200) && (!FirstPassUnknown))
 			WrError(1200); /* out of range */
 		if(!ok)
-			return;      
+			return;
 		CodeLen = 1;
-		WAsmCode[0] = (adr_word & 0x1ff) | 0xbc00;	
+		WAsmCode[0] = (adr_word & 0x1ff) | 0xbc00;
 		return;
 	}
 
-	if((Memo("AND") || Memo("OR") || Memo("XOR")) && (ArgCnt >= 1) && 
+	if((Memo("AND") || Memo("OR") || Memo("XOR")) && (ArgCnt >= 1) &&
 	   (ArgCnt <= 2) && (ArgStr[1][0] == '#')) {
 		WAsmCode[1] = EvalIntExpression((ArgStr[1])+1, Int16, &ok);
 		adr_word = 0;
 		adr_ok = True;
-		if(ArgCnt >= 2) 
-			adr_word = EvalIntExpression(ArgStr[2], UInt5, 
+		if(ArgCnt >= 2)
+			adr_word = EvalIntExpression(ArgStr[2], UInt5,
 						     &adr_ok);
 		if((!ok) || (!adr_ok))
 			return;
-		if((adr_word>16) && (!FirstPassUnknown)) 
+		if((adr_word>16) && (!FirstPassUnknown))
 			WrError(1200); /* invalid shift */
 		CodeLen = 2;
 		if (adr_word >= 16) {
@@ -802,7 +802,7 @@ static void make_code_3205x(void)
 				WAsmCode[0] = 0xbe81;
 			else if(Memo("OR"))
 				WAsmCode[0] = 0xbe82;
-			else 
+			else
 				WAsmCode[0] = 0xbe83;
 			return;
 		}
@@ -810,7 +810,7 @@ static void make_code_3205x(void)
 			WAsmCode[0] = 0xbfb0;
 		else if(Memo("OR"))
 			WAsmCode[0] = 0xbfc0;
-		else 
+		else
 			WAsmCode[0] = 0xbfd0;
 		WAsmCode[0] |= adr_word & 0xf;
 		return;
@@ -821,7 +821,7 @@ static void make_code_3205x(void)
 		if(!ok)
 			return;
 		CodeLen = 1;
-		WAsmCode[0] = (adr_word & 0xff) | 0xb900;	
+		WAsmCode[0] = (adr_word & 0xff) | 0xb900;
 		return;
 	}
 
@@ -837,7 +837,7 @@ static void make_code_3205x(void)
 			return;
 		}
 		CodeLen = 1;
-		WAsmCode[0] = 0xbb00 | (adr_long & 0xff);            
+		WAsmCode[0] = 0xbb00 | (adr_long & 0xff);
 		return;
 	}
 
@@ -851,8 +851,8 @@ static void make_code_3205x(void)
 			}
 			decode_adr(ArgStr[1], 2, False);
 			if(!adr_ok)
-				return;	
-			CodeLen = 1; 
+				return;
+			CodeLen = 1;
 			WAsmCode[0] = fo->code | adr_mode;
 			return;
 		}
@@ -868,7 +868,7 @@ static void make_code_3205x(void)
 		decode_adr(ArgStr[1], 2, True);
 		if(!adr_ok)
 			return;
-		CodeLen = 1; 
+		CodeLen = 1;
 		WAsmCode[0] = ((Memo("SAMM")) ? 0x8800 : 0x0800) | adr_mode;
 		return;
 	}
@@ -887,7 +887,7 @@ static void make_code_3205x(void)
 		if((!ok) || (!adr_ok))
 			return;
 		CodeLen = 1;
-		WAsmCode[0] = ((Memo("SST")) ? 0x8e00 : 0x0e00) | 
+		WAsmCode[0] = ((Memo("SST")) ? 0x8e00 : 0x0e00) |
 			((adr_word & 1) << 8) | adr_mode;
 		return;
 	}
@@ -930,15 +930,15 @@ static void make_code_3205x(void)
 			}
 			WAsmCode[1] = EvalIntExpression(ArgStr[1], Int16, &ok);
 			if(!ok)
-				return;         
-			CodeLen = 2; 
+				return;
+			CodeLen = 2;
 			WAsmCode[0] = jo->code | adr_mode;
 			return;
 		}
 	}
 
 	if(Memo("XC")) {
-		if(ArgCnt < 1) { 
+		if(ArgCnt < 1) {
 			WrError(1110);
 			return;
 		}
@@ -948,7 +948,7 @@ static void make_code_3205x(void)
 		if(!ok)
 			return;
 		CodeLen = 1;
-		WAsmCode[0] = ((adr_mode == 2) ? 0xf400 : 0xe400) | 
+		WAsmCode[0] = ((adr_mode == 2) ? 0xf400 : 0xe400) |
 			decode_cond(2);
 		return;
 	}
@@ -990,7 +990,7 @@ static void make_code_3205x(void)
 			if(!adr_ok)
 				return;
 			CodeLen = 1;
-			WAsmCode[0] = 0xac00 | adr_mode;		
+			WAsmCode[0] = 0xac00 | adr_mode;
 			return;
 		}
 		if(!strcasecmp(ArgStr[2], "BMAR")) {
@@ -1008,11 +1008,11 @@ static void make_code_3205x(void)
 			if((!adr_ok) || (!ok))
 				return;
 			CodeLen = 2;
-			WAsmCode[0] = 0xa800 | adr_mode;          
+			WAsmCode[0] = 0xa800 | adr_mode;
 			return;
 		}
 		if(ArgStr[2][0] == '#') {
-			WAsmCode[1] = EvalIntExpression((ArgStr[2])+1, Int16, 
+			WAsmCode[1] = EvalIntExpression((ArgStr[2])+1, Int16,
 							&ok);
 			decode_adr(ArgStr[1], 3, False);
 			if((!adr_ok) || (!ok))
@@ -1035,7 +1035,7 @@ static void make_code_3205x(void)
 			if(!adr_ok)
 				return;
 			CodeLen = 1;
-			WAsmCode[0] = 0xa400 | adr_mode;		
+			WAsmCode[0] = 0xa400 | adr_mode;
 			return;
 		}
 		if(ArgStr[1][0] == '#') {
@@ -1045,7 +1045,7 @@ static void make_code_3205x(void)
 			if((!adr_ok) || (!ok))
 				return;
 			CodeLen = 2;
-			WAsmCode[0] = 0xa500 | adr_mode;          
+			WAsmCode[0] = 0xa500 | adr_mode;
 			return;
 		}
 		WrError(1200); /* invalid instruction */
@@ -1121,19 +1121,19 @@ static void make_code_3205x(void)
 		}
 		ok = True;
 		adr_word = 0;
-		if(ArgCnt >= 2) 
+		if(ArgCnt >= 2)
 			adr_word = EvalIntExpression(ArgStr[2], UInt3, &ok);
 		decode_adr(ArgStr[1],3,False);
 		if((!adr_ok) || (!ok))
 			return;
 		CodeLen = 1;
-		WAsmCode[0] = ((Memo("SACH")) ? 0x9800 : 0x9000) | adr_mode | 
+		WAsmCode[0] = ((Memo("SACH")) ? 0x9800 : 0x9000) | adr_mode |
 			((adr_word & 7) << 8);
 		return;
 	}
 
 	/* Auxregisterbefehle */
-	
+
 	if(Memo("ADRK") || Memo("SBRK")) {
 		if(ArgCnt != 1) {
 			WrError(1110);
@@ -1147,7 +1147,7 @@ static void make_code_3205x(void)
 		if(!ok)
 			return;
 		CodeLen = 1;
-		WAsmCode[0] = ((Memo("SBRK")) ? 0x7c00 : 0x7800) | 
+		WAsmCode[0] = ((Memo("SBRK")) ? 0x7c00 : 0x7800) |
 			(adr_word & 0xff);
 		return;
 	}
@@ -1173,7 +1173,7 @@ static void make_code_3205x(void)
 		}
 		adr_word = eval_ar_expression(ArgStr[1], &ok);
 		if(ArgStr[2][0] == '#') {
-			if(ArgCnt > 2) 
+			if(ArgCnt > 2)
 				WrError(1110);
 			adr_long = EvalIntExpression((ArgStr[2])+1, Int16,
 						     &adr_ok) & 0xffff;
@@ -1223,51 +1223,51 @@ static void make_code_3205x(void)
 			return;
 		}
 		if(ArgStr[1][0] == '#') {
-			if(ArgCnt > 2) 
+			if(ArgCnt > 2)
 				WrError(1110);
-			adr_long = EvalIntExpression((ArgStr[1])+1, Int16, 
+			adr_long = EvalIntExpression((ArgStr[1])+1, Int16,
 						     &ok);
 			adr_word = 0;
 			adr_ok = True;
-			if((ArgCnt > 1) || FirstPassUnknown || (adr_long < 0) 
+			if((ArgCnt > 1) || FirstPassUnknown || (adr_long < 0)
 			   || (adr_long > 255)) {
-				if(ArgCnt > 1) 
+				if(ArgCnt > 1)
 					adr_word = EvalIntExpression(ArgStr[2],
 								     UInt4,
 								     &adr_ok);
 				if((!adr_ok) || (!ok))
 					return;
 				CodeLen = 2;
-				WAsmCode[0] = ((Memo("SUB")) ? 0xbfa0 : 
+				WAsmCode[0] = ((Memo("SUB")) ? 0xbfa0 :
 					       0xbf90) | (adr_word & 0xf);
 				WAsmCode[1] = adr_long;
 				return;
-			}				
+			}
 			if(!ok)
 				return;
 			CodeLen = 1;
-			WAsmCode[0] = ((Memo("SUB")) ? 0xba00 : 
+			WAsmCode[0] = ((Memo("SUB")) ? 0xba00 :
 				       0xb800) | (adr_long & 0xff);
-			return;			
+			return;
 		}
 		adr_word = 0;
 		ok = True;
 		decode_adr(ArgStr[1], 3, False);
-		if(ArgCnt >= 2) 
+		if(ArgCnt >= 2)
 			adr_word = EvalIntExpression(ArgStr[2], UInt5, &ok);
 		if(!ok)
-			return;          
+			return;
 		if((adr_word > 16) && (!FirstPassUnknown)) {
 			WrError(1200); /* shift out of range */
-			return;          
+			return;
 		}
 		CodeLen = 1;
 		if (adr_word >= 16) {
-			WAsmCode[0] = ((Memo("SUB")) ? 0x6500 : 0x6100) | 
+			WAsmCode[0] = ((Memo("SUB")) ? 0x6500 : 0x6100) |
 				adr_mode;
 			return;
 		}
-		WAsmCode[0] = ((Memo("SUB")) ? 0x3000 : 0x2000) | 
+		WAsmCode[0] = ((Memo("SUB")) ? 0x3000 : 0x2000) |
 			((adr_word & 0xf) << 8) | adr_mode;
 		return;
 	}
@@ -1278,13 +1278,13 @@ static void make_code_3205x(void)
 			return;
 		}
 		if(ArgStr[1][0] == '#') {
-			if(ArgCnt > 2) 
+			if(ArgCnt > 2)
 				WrError(1110);
-			adr_long = EvalIntExpression((ArgStr[1])+1, Int16, 
+			adr_long = EvalIntExpression((ArgStr[1])+1, Int16,
 						     &ok);
 			adr_word = 0;
 			adr_ok = True;
-			if(ArgCnt > 1) 
+			if(ArgCnt > 1)
 				adr_word = EvalIntExpression(ArgStr[2], UInt4,
 							     &adr_ok);
 			if((!adr_ok) || (!ok))
@@ -1297,7 +1297,7 @@ static void make_code_3205x(void)
 		adr_word = 0;
 		ok = True;
 		decode_adr(ArgStr[1], 3, False);
-		if(ArgCnt >= 2) 
+		if(ArgCnt >= 2)
 			adr_word = EvalIntExpression(ArgStr[2], UInt5, &ok);
 		if(!ok)
 			return;
@@ -1313,7 +1313,7 @@ static void make_code_3205x(void)
 		WAsmCode[0] = 0x1000 | ((adr_word & 0xf) << 8) | adr_mode;
 		return;
 	}
-	
+
 	if(Memo("BSAR")) {
 		if(ArgCnt != 1) {
 			WrError(1110);
@@ -1389,8 +1389,8 @@ static void make_code_3205x(void)
 static Boolean chk_pc_3205x(void)
 {
 	switch(ActPC) {
-	case SegCode: 
-	case SegData: 
+	case SegCode:
+	case SegData:
 	case SegIO:
 		return (ProgCounter() <= 0xffff);
 	default:
@@ -1403,10 +1403,10 @@ static Boolean chk_pc_3205x(void)
 
 static Boolean is_def_3205x(void)
 {
-	static const char *defs[] = { "BSS", "PORT", "STRING", "RSTRING", 
+	static const char *defs[] = { "BSS", "PORT", "STRING", "RSTRING",
 					      "BYTE", "WORD", "LONG", "FLOAT",
-					      "DOUBLE", "EFLOAT", "BFLOAT", 
-					      "TFLOAT", NULL }; 
+					      "DOUBLE", "EFLOAT", "BFLOAT",
+					      "TFLOAT", NULL };
 	const char **cp = defs;
 
 	while(*cp) {
@@ -1428,11 +1428,11 @@ static void switch_from_3205x(void)
 static void switch_to_3205x(void)
 {
 	TurnWords = False;
-	ConstMode = ConstModeIntel; 
+	ConstMode = ConstModeIntel;
 	SetIsOccupied = False;
 
 	PCSymbol = "$";
-	HeaderID = 0x77; 
+	HeaderID = 0x77;
 	NOPCode = 0x8b00;
 	DivideChars = ",";
 	HasAttrs = False;
@@ -1441,8 +1441,8 @@ static void switch_to_3205x(void)
 	Grans[SegCode] = 2; ListGrans[SegCode] = 2; SegInits[SegCode] = 0;
 	Grans[SegData] = 2; ListGrans[SegData] = 2; SegInits[SegData] = 0;
 	Grans[SegIO  ] = 2; ListGrans[SegIO  ] = 2; SegInits[SegIO  ] = 0;
-	
-	MakeCode = make_code_3205x; ChkPC = chk_pc_3205x; 
+
+	MakeCode = make_code_3205x; ChkPC = chk_pc_3205x;
 	IsDef = is_def_3205x; SwitchFrom = switch_from_3205x;
 }
 

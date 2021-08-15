@@ -19,22 +19,22 @@
 #include "codepseudo.h"
 #include "codevars.h"
 
-typedef struct 
+typedef struct
          {
           char *Name;
           Byte Code;
          } FixedOrder;
 
-typedef struct 
+typedef struct
          {
           char *Name;
           Byte Code;
           CPUVar MinCPU,MaxCPU;
          } BaseOrder;
 
-typedef struct 
+typedef struct
          {
-          char *Name; 
+          char *Name;
           Byte Code;
           Boolean Reloc;
          } MacOrder;
@@ -212,7 +212,7 @@ BEGIN
 
    MacOrders=(MacOrder *) malloc(sizeof(MacOrder)*MacOrderCnt); InstrZ=0;
    AddMac("MAC"   ,0x00,False); AddMac("SMAC"  ,0x01,False);
-   AddMac("MACR"  ,0x04,True ); AddMac("SMACR" ,0x05,True ); 
+   AddMac("MACR"  ,0x04,True ); AddMac("SMACR" ,0x05,True );
    AddMac("MACZ"  ,0x08,False); AddMac("SMACZ" ,0x09,False);
    AddMac("MACRZ" ,0x0c,True ); AddMac("SMACRZ",0x0d,True );
 
@@ -365,7 +365,7 @@ BEGIN
 	  else
 	   BEGIN
             *p='\0';
-	    if (NOT AddrWide) AdrInt=EvalIntExpression(Asc,Int16,&OK); 
+	    if (NOT AddrWide) AdrInt=EvalIntExpression(Asc,Int16,&OK);
             else AdrInt=EvalIntExpression(Asc,Int24,&OK);
 	    if (OK)
 	     if (AdrInt==0)
@@ -410,7 +410,7 @@ BEGIN
         else if (AddrWide)
          BEGIN
           AdrType=ModMem; AdrMode=3; AdrCnt=4; AdrVals[0]=0;
-          AdrVals[1]=AdrWord & 0xff; 
+          AdrVals[1]=AdrWord & 0xff;
           AdrVals[2]=(AdrWord >> 8) & 0xff;
           AdrVals[3]=(AdrWord >> 16) & 0xff;
          END
@@ -720,7 +720,7 @@ BEGIN
            BAsmCode[1]=AdrVals[0];
            if (Memo("BMOVI")) BAsmCode[0]=0xad;
            else if (Memo("BMOV")) BAsmCode[0]=0xc1;
-           else BAsmCode[0]=0xe4;          
+           else BAsmCode[0]=0xe4;
            CodeLen=3;
           END
         END
@@ -880,7 +880,7 @@ BEGIN
     END
 
    if ((BMemo("ELD")) OR (BMemo("EST")))
-    BEGIN 
+    BEGIN
      if (ArgCnt!=2) WrError(1110);
      else if (MomCPU<CPU80196N) WrError(1500);
      else
@@ -895,10 +895,10 @@ BEGIN
                          else BAsmCode[0]+=0x1c;
           memcpy(BAsmCode+1,AdrVals,AdrCnt); HReg=1+AdrCnt;
           DecodeAdr(ArgStr[1],MModDir,False);
-          if (AdrType==ModDir)  
+          if (AdrType==ModDir)
            BEGIN
             BAsmCode[HReg]=AdrVals[0]; CodeLen=HReg+1;
-           END; 
+           END;
          END;
       END;
      return;
@@ -930,7 +930,7 @@ BEGIN
            BEGIN
             BAsmCode[HReg]=MacOrders[z].Code; CodeLen=1+HReg;
            END
-         END  
+         END
        END
       return;
      END
@@ -955,10 +955,10 @@ BEGIN
            case ModDir:
             if (AdrVals[0]<32) WrError(1315); else CodeLen=3;
           END
-        END 
-      END      
-     return;  
-    END        
+        END
+      END
+     return;
+    END
 
    for (z=0; z<RptOrderCnt; z++)
     if (Memo(RptOrders[z].Name))
@@ -970,7 +970,7 @@ BEGIN
         OpSize=1; DecodeAdr(ArgStr[1],MModImm+MModMem,False);
         if (AdrType!=ModNone)
          if (AdrMode==3) WrError(1350);
-         else   
+         else
           BEGIN
            BAsmCode[0]=0x40+AdrMode;
            memcpy(BAsmCode+1,AdrVals,AdrCnt);
@@ -1154,14 +1154,14 @@ BEGIN
     BEGIN
      if (ArgCnt!=1) WrError(1110);
      else if (MomCPU<CPU80196N) WrError(1500);
-     else  
+     else
       BEGIN
        AdrInt=EvalIntExpression(ArgStr[1],MemInt,&OK)-(EProgCounter()+4);
        if (OK)
         BEGIN
          BAsmCode[0]=0xf1;
          BAsmCode[1]=AdrInt & 0xff;
-         BAsmCode[2]=(AdrInt >> 8) & 0xff; 
+         BAsmCode[2]=(AdrInt >> 8) & 0xff;
          BAsmCode[3]=(AdrInt >> 16) & 0xff;
          CodeLen=4;
         END
@@ -1197,9 +1197,9 @@ BEGIN
          BAsmCode[3]=(AdrInt >> 16) & 0xff;
          CodeLen=4;
         END
-      END  
+      END
      return;
-    END    
+    END
 
    WrXError(1200,OpPart);
 END

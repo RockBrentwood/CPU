@@ -33,13 +33,13 @@ END
 	Boolean ProcessedEmpty(CMDProcessed Processed)
 BEGIN
    Integer z;
-   
+
    for (z=1; z<=ParamCount; z++)
     if (Processed[z]) return False;
-   return True; 
+   return True;
 END
 
-	static CMDResult ProcessParam(CMDRec *Def, Integer Cnt, 
+	static CMDResult ProcessParam(CMDRec *Def, Integer Cnt,
                                       char *O_Param, char *O_Next)
 BEGIN
    Integer Start;
@@ -48,11 +48,11 @@ BEGIN
    CMDResult TempRes;
    String s,Param,Next;
 
-   strncpy(Param,O_Param,255); 
+   strncpy(Param,O_Param,255);
    strncpy(Next,O_Next,255);
 
    if ((*Next=='-') OR (*Next=='+')) *Next='\0';
-   if ((*Param=='-') OR (*Param=='+')) 
+   if ((*Param=='-') OR (*Param=='+'))
     BEGIN
      Negate=(*Param=='+'); Start=1;
 
@@ -74,11 +74,11 @@ BEGIN
      for (z=0; z<strlen(s); z++) s[z]=toupper(s[z]);
      for (Search=0; Search<Cnt; Search++)
       if ((strlen(Def[Search].Ident)>1) AND (strcmp(s,Def[Search].Ident)==0)) break;
-     if (Search<Cnt) 
+     if (Search<Cnt)
       TempRes=Def[Search].Callback(Negate,Next);
 
      else
-      for (z=Start; z<strlen(Param); z++) 
+      for (z=Start; z<strlen(Param); z++)
        if (TempRes!=CMDErr)
         BEGIN
          Search=0;
@@ -106,7 +106,7 @@ BEGIN
    char *EnvStr[256],*start,*p;
    Integer EnvCnt=0;
 
-   ClrBlanks(OneLine); 
+   ClrBlanks(OneLine);
    if ((*OneLine!='\0') AND (*OneLine!=';'))
     BEGIN
      start=OneLine;

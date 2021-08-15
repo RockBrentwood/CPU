@@ -62,7 +62,7 @@ BEGIN
    nls_init();
    decodecmd_init();
    toolutils_init();
- 
+
    NLS_Initialize(); WrCopyRight("PLIST/C V1.41r5");
 
    if (ParamCount==0)
@@ -104,7 +104,7 @@ BEGIN
      if (Header==FileHeaderEnd)
       BEGIN
        errno=0; printf(MessGenerator); ChkIO(OutName);
-       do 
+       do
         BEGIN
   	 errno=0; Ch=fgetc(ProgFile); ChkIO(ProgName);
          if (Ch!=EOF)

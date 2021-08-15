@@ -35,7 +35,7 @@ ASM_SRCS = asmdef.c asmsub.c asmpars.c asmmac.c asmcode.c asmdebug.c asmif.c \
 ASM_OBJECTS = $(ASM_SRCS:.c=.obj)
 
 AS_SRCS = endian.c bpemu.c nls.c chunks.c decodecm.c ioerrors.c
-          
+
 AS_OBJECTS = $(AS_SRCS:.c=.obj)
 
 PLIST_SRCS = endian.c bpemu.c hex.c nls.c stringutil.c decodecmd.c ioerrors.c \
@@ -159,5 +159,5 @@ unjunk:
 
 
 .SUFFIXES: .c
-.c.obj: 
+.c.obj:
 	$(CC) $(CFLAGS) -D$(CHARSET) -I$(LANGRSC) -DSTDINCLUDES="${INCDIR}" -c -o$*.obj $*.c

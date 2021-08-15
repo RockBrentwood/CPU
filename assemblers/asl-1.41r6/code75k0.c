@@ -149,7 +149,7 @@ BEGIN
     BEGIN
      WrError(1350); AdrMode=ModNone;
     END
-END 
+END
 
 	static void DecodeAdr(char *Asc, Byte Mask)
 BEGIN
@@ -575,7 +575,7 @@ BEGIN
 	      BEGIN
 	       BAsmCode[0]=0x93; BAsmCode[1]=HReg; CodeLen=2;
               END
-             break; 
+             break;
             case ModReg8:
              if (AdrPart!=0) WrError(1350);
 	     else
@@ -608,7 +608,7 @@ BEGIN
              if (HReg==0) PutCode(0xd8+AdrPart);
              else if (AdrPart==0) PutCode(0xd8+HReg);
              else WrError(1350);
-             break; 
+             break;
             case ModAbs:
              if (HReg!=0) WrError(1350);
              else
@@ -626,7 +626,7 @@ BEGIN
           HReg=AdrPart;
           DecodeAdr(ArgStr[2],MModReg8+MModAbs+MModInd);
           switch (AdrMode)
-           BEGIN 
+           BEGIN
             case ModReg8:
              if (HReg==0)
 	      BEGIN
@@ -681,7 +681,7 @@ BEGIN
           HReg=AdrPart;
           DecodeAdr(ArgStr[2],MModReg4+MModReg8);
           switch (AdrMode)
-           BEGIN 
+           BEGIN
             case ModReg4:
              if (AdrPart!=0) WrError(1350);
              else PutCode(0xe8+HReg);
@@ -795,7 +795,7 @@ BEGIN
             DecodeAdr(ArgStr[2],MModImm+MModInd);
             switch (AdrMode)
              BEGIN
-              case ModImm: 
+              case ModImm:
                PutCode(0x60+AdrPart); break;
               case ModInd:
                if (AdrPart==1) PutCode(0xd2); else WrError(1350);
@@ -1412,7 +1412,7 @@ BEGIN
    SwitchFrom=SwitchFrom_75K0; InitFields();
 END
 
-	void code75k0_init(void) 
+	void code75k0_init(void)
 BEGIN
    CPU75402=AddCPU("75402",SwitchTo_75K0);
    CPU75004=AddCPU("75004",SwitchTo_75K0);

@@ -397,7 +397,7 @@ BEGIN
      p=QuotPos(Asc,',');
      if (p==Nil)
       BEGIN
-       strmaxcpy(Part,Asc,255); *Asc='\0'; 
+       strmaxcpy(Part,Asc,255); *Asc='\0';
       END
      else
       BEGIN
@@ -1717,7 +1717,7 @@ BEGIN
                       CodeLen=2+AdrCnt1[2];
                      END
 	           END
-                  break; 
+                  break;
                 END
               END
             END
@@ -2160,7 +2160,7 @@ BEGIN
    /* zwei Operanden */
 
    if (CodeAri()) return;
-   
+
    /* drei Operanden */
 
    if ((Memo("CHK/N")) OR (Memo("CHK/S")) OR (Memo("CHK")))

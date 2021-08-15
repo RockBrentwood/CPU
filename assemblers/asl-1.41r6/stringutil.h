@@ -39,7 +39,7 @@ extern void strmaxcat(char *Dest, const char *Src, int MaxLen);
 extern void strprep(char *Dest, const char *Src);
 extern void strmaxprep(char *Dest, const char *Src, int MaxLen);
 extern void strins(char *Dest, const char *Src, int Pos);
-extern void strmaxins(char *Dest, const char *Src, int Pos, int MaxLen); 
+extern void strmaxins(char *Dest, const char *Src, int Pos, int MaxLen);
 
 extern void ReadLn(FILE *Datei, char *Zeile);
 

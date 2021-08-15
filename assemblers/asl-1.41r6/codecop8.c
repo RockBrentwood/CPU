@@ -472,7 +472,7 @@ BEGIN
              CodeLen=2;
              break;
             case ModDir:
-             BAsmCode[0]=DirPrefix; BAsmCode[1]=AdrVal; 
+             BAsmCode[0]=DirPrefix; BAsmCode[1]=AdrVal;
              BAsmCode[2]=AccMemOrders[z].Code;
              CodeLen=3;
              break;
@@ -515,7 +515,7 @@ BEGIN
           switch (AdrMode)
            BEGIN
             case ModDir:
-             BAsmCode[0]=DirPrefix; BAsmCode[1]=AdrVal; BAsmCode[2]=0x82; 
+             BAsmCode[0]=DirPrefix; BAsmCode[1]=AdrVal; BAsmCode[2]=0x82;
              CodeLen=3;
              break;
             case ModBInd:
@@ -552,7 +552,7 @@ BEGIN
           switch (AdrMode)
            BEGIN
             case ModDir:
-             BAsmCode[0]=DirPrefix; BAsmCode[1]=AdrVal; BAsmCode[2]=0xb9; 
+             BAsmCode[0]=DirPrefix; BAsmCode[1]=AdrVal; BAsmCode[2]=0xb9;
              CodeLen=3;
              break;
             case ModBInd:
@@ -598,7 +598,7 @@ BEGIN
           switch (AdrMode)
            BEGIN
             case ModDir:
-             BAsmCode[0]=DirPrefix; BAsmCode[1]=AdrVal; 
+             BAsmCode[0]=DirPrefix; BAsmCode[1]=AdrVal;
              BAsmCode[2]=BitOrders[z].Code+HReg; CodeLen=3;
              break;
             case ModBInd:

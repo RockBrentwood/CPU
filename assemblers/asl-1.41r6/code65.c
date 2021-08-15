@@ -96,9 +96,9 @@ BEGIN
    NormOrders[InstrZ].Codes[ModA]=ACode;
    NormOrders[InstrZ].Codes[ModZIX]=ZIXCode;
    NormOrders[InstrZ].Codes[ModIX]=IXCode;
-   NormOrders[InstrZ].Codes[ModZIY]=ZIYCode;  
+   NormOrders[InstrZ].Codes[ModZIY]=ZIYCode;
    NormOrders[InstrZ].Codes[ModIY]=IYCode;
-   NormOrders[InstrZ].Codes[ModIndX]=IndXCode;  
+   NormOrders[InstrZ].Codes[ModIndX]=IndXCode;
    NormOrders[InstrZ].Codes[ModIndY]=IndYCode;
    NormOrders[InstrZ].Codes[ModInd16]=Ind16Code;
    NormOrders[InstrZ].Codes[ModImm]=ImmCode;
@@ -300,7 +300,7 @@ BEGIN
         if (Memo("BRK")) BAsmCode[CodeLen++]=NOPCode;
         else if (MomCPU==CPUM740)
 	 BEGIN
-          if (Memo("PLP")) BAsmCode[CodeLen++]=NOPCode; 
+          if (Memo("PLP")) BAsmCode[CodeLen++]=NOPCode;
 	  if ((ADC_SBC_Flag) AND (Memo("SEC") OR Memo("CLC") OR Memo("CLD"))) InsNOP();
 	 END
        END
@@ -572,7 +572,7 @@ BEGIN
 
      else
       BEGIN
-       strcpy(s1,ArgStr[1]); 
+       strcpy(s1,ArgStr[1]);
        ChkZero(s1,&ZeroMode);
        if (ZeroMode==2)
 	BEGIN
@@ -624,7 +624,7 @@ BEGIN
 	else if (NOT CPUAllowed(Hi(NormOrders[OrderZ].Codes[ErgMode]))) WrError(1500);
 	else
 	 BEGIN
-	  BAsmCode[0]=Lo(NormOrders[OrderZ].Codes[ErgMode]); 
+	  BAsmCode[0]=Lo(NormOrders[OrderZ].Codes[ErgMode]);
           memcpy(BAsmCode+1,AdrVals,AdrCnt);
 	  CodeLen=AdrCnt+1;
 	  if ((ErgMode==ModInd16) AND (MomCPU!=CPU65C02) AND (BAsmCode[1]==0xff))
@@ -652,7 +652,7 @@ BEGIN
        else if (((AdrInt>127) OR (AdrInt<-128)) AND (NOT SymbolQuestionable)) WrError(1370);
        else
         BEGIN
-         BAsmCode[0]=CondOrders[OrderZ].Code; BAsmCode[1]=AdrInt & 0xff; 
+         BAsmCode[0]=CondOrders[OrderZ].Code; BAsmCode[1]=AdrInt & 0xff;
          CodeLen=2;
         END
        ChkFlags(); return;

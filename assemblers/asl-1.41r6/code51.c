@@ -24,7 +24,7 @@
 /*-------------------------------------------------------------------------*/
 
 typedef struct
-         { 
+         {
           char *Name;
           CPUVar MinCPU;
           Word Code;
@@ -87,16 +87,16 @@ static CPUVar CPU87C750,CPU8051,CPU8052,CPU80C320,
    	static void AddFixed(char *NName, Word NCode, CPUVar NCPU)
 BEGIN
    if (InstrZ>=FixedOrderCnt) exit(255);
-   FixedOrders[InstrZ].Name=NName; 
-   FixedOrders[InstrZ].Code=NCode; 
+   FixedOrders[InstrZ].Name=NName;
+   FixedOrders[InstrZ].Code=NCode;
    FixedOrders[InstrZ++].MinCPU=NCPU;
 END
 
    	static void AddAcc(char *NName, Word NCode, CPUVar NCPU)
 BEGIN
    if (InstrZ>=AccOrderCnt) exit(255);
-   AccOrders[InstrZ].Name=NName; 
-   AccOrders[InstrZ].Code=NCode; 
+   AccOrders[InstrZ].Name=NName;
+   AccOrders[InstrZ].Code=NCode;
    AccOrders[InstrZ++].MinCPU=NCPU;
 END
 
@@ -118,7 +118,7 @@ END
 
 	static void InitFields(void)
 BEGIN
-   FixedOrders=(FixedOrder *) malloc(FixedOrderCnt*sizeof(FixedOrder)); 
+   FixedOrders=(FixedOrder *) malloc(FixedOrderCnt*sizeof(FixedOrder));
    InstrZ=0;
    AddFixed("NOP" ,0x0000,CPU87C750);
    AddFixed("RET" ,0x0022,CPU87C750);
@@ -126,7 +126,7 @@ BEGIN
    AddFixed("ERET",0x01aa,CPU80251);
    AddFixed("TRAP",0x01b9,CPU80251);
 
-   AccOrders=(FixedOrder *) malloc(AccOrderCnt*sizeof(FixedOrder)); 
+   AccOrders=(FixedOrder *) malloc(AccOrderCnt*sizeof(FixedOrder));
    InstrZ=0;
    AddAcc("DA"  ,0x00d4,CPU87C750);
    AddAcc("RL"  ,0x0023,CPU87C750);
@@ -295,9 +295,9 @@ BEGIN
         if (FirstPassUnknown) H32 &= 0xffff;
         if (OK)
          BEGIN
-          AdrVals[1] = H32 & 0xff; 
+          AdrVals[1] = H32 & 0xff;
           AdrVals[0] = (H32 >> 8) & 0xff;
-          H32 >>= 16; 
+          H32 >>= 16;
           if (H32==0) AdrMode=ModImm;
           else if ((H32==1) OR (H32==0xffff)) AdrMode=ModImmEx;
           else WrError(1132);
@@ -322,7 +322,7 @@ BEGIN
     BEGIN
      PPos=strchr(Asc,'+'); MPos=strchr(Asc,'-');
      if ((MPos!=Nil) AND ((MPos<PPos) OR (PPos==Nil))) PPos=MPos;
-     if (PPos!=Nil) 
+     if (PPos!=Nil)
       BEGIN
        Save=(*PPos); *PPos='\0';
       END
@@ -352,7 +352,7 @@ BEGIN
            else
             BEGIN
              AdrMode=ModInd; AdrSize=0;
-             AdrVals[1] = H32 & 0xff; 
+             AdrVals[1] = H32 & 0xff;
              AdrVals[0] = (H32 >> 8) & 0xff;
              AdrCnt=2;
             END
@@ -365,7 +365,7 @@ BEGIN
            else
             BEGIN
              AdrMode=ModInd; AdrSize=2;
-             AdrVals[1] = H32 & 0xff; 
+             AdrVals[1] = H32 & 0xff;
              AdrVals[0] = (H32 >> 8) & 0xff;
              AdrCnt=2;
             END
@@ -435,7 +435,7 @@ BEGIN
      else
       BEGIN
        AdrMode=ModDir16; AdrCnt=2;
-       AdrVals[1] = H32 & 0xff; 
+       AdrVals[1] = H32 & 0xff;
        AdrVals[0] = (H32 >> 8) & 0xff;
       END
     END
@@ -727,9 +727,9 @@ BEGIN
            if ((OpSize==0) AND (AdrPart==AccReg) AND (HReg<8)) PutCode(0xf8+HReg);
            else if ((OpSize==0) AND (HReg==AccReg) AND (AdrPart<8)) PutCode(0xe8+AdrPart);
            else if (MomCPU<CPU80251) WrError(1505);
-           else             
+           else
             BEGIN
-             PutCode(0x17c+OpSize); 
+             PutCode(0x17c+OpSize);
              if (OpSize==2) BAsmCode[CodeLen-1]++;
              BAsmCode[CodeLen++] = (HReg << 4) + AdrPart;
             END
@@ -783,7 +783,7 @@ BEGIN
              BAsmCode[CodeLen++] = AdrVals[0];
             END
            break;
-          case ModDir16: 
+          case ModDir16:
            PutCode(0x17e);
            BAsmCode[CodeLen++] = 0x03 + (HReg << 4) + (OpSize << 2);
            if (OpSize==2) BAsmCode[CodeLen-1]+=4;
@@ -1393,7 +1393,7 @@ BEGIN
         DecodeAdr(ArgStr[1],MModAcc);
         switch (AdrMode)
          BEGIN
-          case ModAcc: 
+          case ModAcc:
            PutCode(AccOrders[z].Code);
            break;
          END
@@ -1459,7 +1459,7 @@ BEGIN
 
    if ((Memo("ECALL")) OR (Memo("EJMP")))
     BEGIN
-     z=Ord(Memo("ECALL")); 
+     z=Ord(Memo("ECALL"));
      if (ArgCnt!=1) WrError(1110);
      else if (MomCPU<CPU80251) WrError(1500);
      else if (*ArgStr[1]=='@')
@@ -1551,7 +1551,7 @@ BEGIN
 	 else if (((EProgCounter()+3) >> 16)==(AdrLong >> 16))
 	  BEGIN
 	   PutCode(0x02);
-	   BAsmCode[CodeLen++] = Hi(AdrLong); 
+	   BAsmCode[CodeLen++] = Hi(AdrLong);
            BAsmCode[CodeLen++] = Lo(AdrLong);
 	  END
          else if (MomCPU<CPU80251) WrError(1910);
@@ -1649,7 +1649,7 @@ BEGIN
      if (ArgCnt!=2) WrError(1110);
      else
       BEGIN
-       AdrLong=EvalIntExpression(ArgStr[2],UInt24,&OK); 
+       AdrLong=EvalIntExpression(ArgStr[2],UInt24,&OK);
        Questionable=SymbolQuestionable;
        if (OK)
         BEGIN
@@ -1835,7 +1835,7 @@ BEGIN
                 END
                break;
               case ModReg:
-               PutCode(0x12c+OpSize); 
+               PutCode(0x12c+OpSize);
                if (OpSize==2) BAsmCode[CodeLen-1]++;
 	       BAsmCode[CodeLen++] = (HReg << 4) + AdrPart;
                break;
@@ -2062,7 +2062,7 @@ BEGIN
     BEGIN
      z=Ord(Memo("MUL")) << 5;
      if ((ArgCnt<1) OR (ArgCnt>2)) WrError(1110);
-     else if (ArgCnt==1) 
+     else if (ArgCnt==1)
       BEGIN
        if (strcasecmp(ArgStr[1],"AB")!=0) WrError(1350);
        else PutCode(0x84+z);
@@ -2114,7 +2114,7 @@ BEGIN
       END
      else if ((strcasecmp(ArgStr[1],"C")==0) OR (strcasecmp(ArgStr[1],"CY")==0))
       PutCode(0xb3+z);
-     else 
+     else
       switch (DecodeBitAdr(ArgStr[1],&AdrLong,True))
        BEGIN
         case ModBit51:
@@ -2193,7 +2193,7 @@ BEGIN
       case SegIO:
        ok=(ProgCounter()<0x200);
        break;
-      default: 
+      default:
        ok=False;
      END
 

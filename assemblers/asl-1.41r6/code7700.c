@@ -36,7 +36,7 @@ typedef struct
          } RelOrder;
 
 typedef struct
-         {   
+         {
           char *Name;
           Byte Code;
          } AccOrder;
@@ -561,7 +561,7 @@ END
 BEGIN
    String tmp;
 
-   if (Memo(s)) 
+   if (Memo(s))
     BEGIN
      LFlag=False; return True;
     END

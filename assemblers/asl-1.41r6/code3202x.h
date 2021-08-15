@@ -1,5 +1,5 @@
 /*
- * AS-Portierung 
+ * AS-Portierung
  *
  * AS-Codegeneratormodul fuer die Texas Instruments TMS320C2x-Familie
  *

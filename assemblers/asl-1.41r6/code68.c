@@ -1,4 +1,4 @@
-/* code68.cc */ 
+/* code68.cc */
 /*****************************************************************************/
 /* AS-Portierung                                                             */
 /*                                                                           */
@@ -42,7 +42,7 @@ typedef struct
 	  Byte Code;
 	 } ALU8Order;
 
-typedef struct 
+typedef struct
          {
           char *Name;
           Boolean MayImm;
@@ -64,7 +64,7 @@ typedef struct
 #define MModInd (1<<ModInd)
 #define ModImm  4
 #define MModImm (1<<ModImm)
- 
+
 #define Page2Prefix 0x18
 #define Page3Prefix 0x1a
 #define Page4Prefix 0xcd
@@ -224,7 +224,7 @@ BEGIN
    AddSing8("ROR", 0x46); AddSing8("TST", 0x4d);
 
    Bit63Orders=(BaseOrder *) malloc(sizeof(BaseOrder)*Bit63OrderCnt); InstrZ=0;
-   AddBit63("AIM", 0x61); AddBit63("EIM", 0x65); 
+   AddBit63("AIM", 0x61); AddBit63("EIM", 0x65);
    AddBit63("OIM", 0x62); AddBit63("TIM", 0x6b);
 END
 
@@ -490,7 +490,7 @@ BEGIN
        END
       else
        BEGIN
-        CodeLen=1; 
+        CodeLen=1;
         BAsmCode[0]=Lo(forder->Code);
        END
       return;
@@ -558,7 +558,7 @@ BEGIN
          BEGIN
 	  switch (ALU16Orders[z].PageShift)
            BEGIN
-	    case 1: 
+	    case 1:
              if (PrefCnt==1) BAsmCode[PrefCnt-1]=Page4Prefix;
              else AddPrefix(Page3Prefix);
              break;

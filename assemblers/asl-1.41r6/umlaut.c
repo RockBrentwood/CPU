@@ -46,7 +46,7 @@
           crcnt++; break;
          default:
           for (z2=0; *specchars[z2]!=0000; z2++)
-           if (ch==specchars[z2][0]) 
+           if (ch==specchars[z2][0])
             { fputc(specchars[z2][1],dest); metacnt++; break; }
           if (*specchars[z2]==0000) fputc(ch,dest);
         }
@@ -59,7 +59,7 @@
       }
      printf("%s: %ld char(s), %ld cr(s) stripped, %ld meta char(s) converted\n",
             argv[z],charcnt,crcnt,metacnt);
-    } 
+    }
 
    exit(0);
 }

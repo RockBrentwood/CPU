@@ -64,7 +64,7 @@ BEGIN
    COUNTRYCODE ccode;
    COUNTRYINFO cinfo;
    ULONG erglen;
-#endif   
+#endif
 
    /* get currency format, separators */
 
@@ -99,15 +99,15 @@ BEGIN
 #ifdef OS2_NLS
    ccode.country=0; ccode.codepage=0;
    DosQueryCtryInfo(sizeof(cinfo),&ccode,&cinfo,&erglen);
-   
+
    NLSInfo.DecSep=strdup(cinfo.szDecimal);
-   
+
    NLSInfo.ThouSep=strdup(cinfo.szThousandsSeparator);
-   
+
    NLSInfo.Currency=strdup(cinfo.szCurrency);
-   
+
    NLSInfo.CurrDecimals=cinfo.cDecimalPlace;
-   
+
    NLSInfo.CurrFmt=(CurrFormat) cinfo.fsCurrencyFmt;
 #endif
 
@@ -160,7 +160,7 @@ BEGIN
    tmpstr="%H:%M:%S"; DidDate=False;
 #endif
 
-#ifdef LOCALE_NLS 
+#ifdef LOCALE_NLS
    tmpstr=nl_langinfo(T_FMT); DidDate=False;
 #endif
 
@@ -193,11 +193,11 @@ BEGIN
        END
       else run++;
       NLSInfo.TimeFmt=TimeFormatEurope;
-     END 
+     END
 
     /* get lower->upper case table */
 
-#if defined(NO_NLS) || defined(LOCALE_NLS) 
+#if defined(NO_NLS) || defined(LOCALE_NLS)
     for (z=0; z<256; z++) UpCaseTable[z]=toupper(z);
 #endif
 

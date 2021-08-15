@@ -168,7 +168,7 @@ static ErrorDef ErrorDefs[]={
      {ENOCSI      , IoErr_ENOCSI},
 #endif
      {-1,NULL}};
-       
+
 	char *GetErrorMsg(int number)
 BEGIN
    static String hs;

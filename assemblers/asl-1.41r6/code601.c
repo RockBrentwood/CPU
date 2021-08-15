@@ -20,7 +20,7 @@
 #include "codepseudo.h"
 #include "codevars.h"
 
-typedef struct 
+typedef struct
          {
           char *Name;
           LongWord Code;
@@ -159,12 +159,12 @@ BEGIN
     END
    if (WithFL)
     BEGIN
-     strcat(NName,"."); 
+     strcat(NName,".");
      AddSReg2(strdup(NName),NCode | 0x001,NMask);
      NName[strlen(NName)-1]='\0';
      if (WithOE)
       BEGIN
-       strcat(NName,"O."); 
+       strcat(NName,"O.");
        AddSReg2(strdup(NName),NCode | 0x401,NMask);
       END
     END
@@ -195,7 +195,7 @@ BEGIN
    AddSFReg2(strdup(NName),NCode,NMask);
    if (WithFL)
     BEGIN
-     strcat(NName,"."); 
+     strcat(NName,".");
      AddSFReg2(strdup(NName),NCode | 0x001,NMask);
     END
 END
@@ -231,12 +231,12 @@ BEGIN
     END
    if (WithFL)
     BEGIN
-     strcat(NName,"."); 
+     strcat(NName,".");
      AddSReg2Swap(strdup(NName),NCode | 0x001,NMask);
      NName[strlen(NName)-1]='\0';
      if (WithOE)
       BEGIN
-       strcat(NName,"O."); 
+       strcat(NName,"O.");
        AddSReg2Swap(strdup(NName),NCode | 0x401,NMask);
       END
     END
@@ -273,12 +273,12 @@ BEGIN
     END
    if (WithFL)
     BEGIN
-     strcat(NName,"."); 
+     strcat(NName,".");
      AddSReg3(strdup(NName),NCode | 0x001,NMask);
      NName[strlen(NName)-1]='\0';
      if (WithOE)
       BEGIN
-       strcat(NName,"O."); 
+       strcat(NName,"O.");
        AddSReg3(strdup(NName),NCode | 0x401,NMask);
       END
     END
@@ -309,7 +309,7 @@ BEGIN
    AddSFReg3(strdup(NName),NCode,NMask);
    if (WithFL)
     BEGIN
-     strcat(NName,"."); 
+     strcat(NName,".");
      AddSFReg3(strdup(NName),NCode | 0x001,NMask);
     END
 END
@@ -331,7 +331,7 @@ BEGIN
    AddSReg3Swap(strdup(NName),NCode,NMask);
    if (WithFL)
     BEGIN
-     strcat(NName,"."); 
+     strcat(NName,".");
      AddSReg3Swap(strdup(NName),NCode | 0x001,NMask);
     END
 END
@@ -361,7 +361,7 @@ BEGIN
    AddSFReg4(strdup(NName),NCode,NMask);
    if (WithFL)
     BEGIN
-     strcat(NName,"."); 
+     strcat(NName,".");
      AddSFReg4(strdup(NName),NCode | 0x001,NMask);
     END
 END
@@ -399,7 +399,7 @@ BEGIN
    AddSReg2Imm(strdup(NName),NCode,NMask);
    if (WithFL)
     BEGIN
-     strcat(NName,"."); 
+     strcat(NName,".");
      AddSReg2Imm(strdup(NName),NCode | 0x001,NMask);
     END
 END
@@ -935,7 +935,7 @@ END
 BEGIN
    String tmp;
 
-   if (Memo(Name)) return True;   
+   if (Memo(Name)) return True;
 
    strmaxcpy(tmp,Name,255); strmaxcat(tmp,".",255);
    return (Memo(tmp));

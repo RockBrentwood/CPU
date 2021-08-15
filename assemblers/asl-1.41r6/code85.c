@@ -70,14 +70,14 @@ BEGIN
    if (InstrZ>=Op8OrderCnt) exit(255);
    Op8Orders[InstrZ].Name=NName;
    Op8Orders[InstrZ++].Code=NCode;
-END                         
+END
 
         static void AddALU(char *NName, Byte NCode)
 BEGIN
    if (InstrZ>=ALUOrderCnt) exit(255);
    ALUOrders[InstrZ].Name=NName;
    ALUOrders[InstrZ++].Code=NCode;
-END           
+END
 
 	static void InitFields(void)
 BEGIN

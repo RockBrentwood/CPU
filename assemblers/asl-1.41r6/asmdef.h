@@ -57,7 +57,7 @@ typedef enum {DebugNone,DebugMAP,DebugAOUT,DebugCOFF,DebugELF} DebugType;
 
 extern char *SrcSuffix,*IncSuffix,*PrgSuffix,*LstSuffix,
             *MacSuffix,*PreSuffix,*LogSuffix,*MapSuffix;
-            
+
 #define MomCPUName       "MOMCPU"     /* mom. Prozessortyp */
 #define MomCPUIdentName  "MOMCPUNAME" /* mom. Prozessortyp */
 #define SupAllowedName   "INSUPMODE"  /* privilegierte Befehle erlaubt */
@@ -167,7 +167,7 @@ extern Word ListGrans[PCMax+1];
 extern ChunkList SegChunks[PCMax+1];
 extern Integer ActPC;
 extern Boolean PCsUsed[PCMax+1];
-extern LongInt SegInits[PCMax+1]; 
+extern LongInt SegInits[PCMax+1];
 extern LongInt ValidSegs;
 extern Boolean ENDOccured;
 extern Boolean Retracted;

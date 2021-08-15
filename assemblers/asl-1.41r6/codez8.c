@@ -112,7 +112,7 @@ BEGIN
    Conditions[InstrZ].Name=NName;
    Conditions[InstrZ++].Code=NCode;
 END
-   
+
 	static void InitFields(void)
 BEGIN
    FixedOrders=(FixedOrder *) malloc(sizeof(FixedOrder)*FixedOrderCnt); InstrZ=0;
@@ -172,7 +172,7 @@ BEGIN
    free(Conditions);
 END
 
-/*--------------------------------------------------------------------------*/ 
+/*--------------------------------------------------------------------------*/
 
 	static Boolean IsWReg(char *Asc, Byte *Erg)
 BEGIN
@@ -220,7 +220,7 @@ BEGIN
     BEGIN
      WrError(1350); AdrType=ModNone;
     END
-END	
+END
 
 	static void DecodeAdr(char *Asc, Byte Mask, Boolean Is16)
 BEGIN
@@ -303,7 +303,7 @@ BEGIN
      ChkAdr(Mask,Is16); return;
     END
 
-   ChkAdr(Mask,Is16); 
+   ChkAdr(Mask,Is16);
 END
 
 /*---------------------------------------------------------------------*/

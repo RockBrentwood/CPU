@@ -384,7 +384,7 @@ BEGIN
       BEGIN
        if (Memo("MOVFP"))
 	BEGIN
-	 strcpy(ArgStr[3],ArgStr[1]); 
+	 strcpy(ArgStr[3],ArgStr[1]);
          strcpy(ArgStr[1],ArgStr[2]);
          strcpy(ArgStr[2],ArgStr[3]);
 	END

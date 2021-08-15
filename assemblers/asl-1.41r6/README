@@ -9,7 +9,7 @@ of 16-bit-integers, but that's so far the price of portability...
 This version is still a bit beta!  Use on your own risk!
 
 This file is only for the purpose of getting AS compiled and installed,
-and lists the differences of the C version to the BP version.  It 
+and lists the differences of the C version to the BP version.  It
 is not meant to be the user's manual for AS.  Unfortunately, the english
 version of this manual currently only exists in ASCII format (see the
 doc_EN directory).
@@ -60,19 +60,19 @@ DIFFERENCES / THINGS TO DO
 The portable C version of AS has the following, known differences to
 the original BP version:
 
-- Floating point values are internally only stored as IEEE double 
-  precision values, not in the 80-bit format Intel NPUs use. 
+- Floating point values are internally only stored as IEEE double
+  precision values, not in the 80-bit format Intel NPUs use.
   Therefore, floating point ranges and accuracy are not as good as in
   the BP version.  Currently, there seems to be no portable,
   standardized 128-bit-format for FP numbers.  Every vendor (IBM,
   SUN, CRAY, SGI...) uses his own format, so supporting them all
   looks like a lot of work...
 
-+ On most systems, integer arithmetic is done with 64-bit-numbers. 
++ On most systems, integer arithmetic is done with 64-bit-numbers.
   This should hurt only programs that explicitly exploit overflow
   and sign effects on 32-bit-versions of AS.
 
-- String variables must not contain NUL characters.  This is due to 
+- String variables must not contain NUL characters.  This is due to
   the fact that C uses the NUL character as an end-of-string marker,
   and is probably the hardest thing to resolve :-(
 
@@ -249,8 +249,8 @@ HP         HP9000/715              PA7100          50         64K+64K           
 
 Note for the 486's: To avoid confusion, I named the 486 CPU's according
 to the factor they physically use in multiplying the external clock.
-E.g., an Am486DX4/100 which physically triples the clock is named 
-Am486DX3, and an Am5x86 which physically quadruples the clock is named 
+E.g., an Am486DX4/100 which physically triples the clock is named
+Am486DX3, and an Am5x86 which physically quadruples the clock is named
 Am486DX4!
 
 Vendor     Machine                 CPU            Clock(MHz)  Cache [on]offchip   Memory(MB)  OS                Compiler     |  BUF32   FL900    MIC51    Index   rel.
@@ -281,7 +281,7 @@ Vendor     Machine                 CPU            Clock(MHz)  Cache [on]offchip 
 <Noname>   UMC 481A/482A-Chipset   i486SX          36         [8K]/256K(WB)         5         Linux 2.0.27      gcc 2.7.2    |   9.83s   5.15s   57.31s    6.47   0.179
 <Noname>   VIA 481/495-Chipset     i486SX          33.3       [8K]/256K(WB)         4         Linux 2.0.27      gcc 2.7.2    |   9.66s   5.45s   55.59s    6.45   0.194
 <Noname>   UMC 481A/482A-Chipset   i486SX          36         [8K]/128K(WB)         5         Linux 2.0.27      gcc 2.7.2    |  10.63s   5.28s   60.21s    6.15   0.171
-<Noname>   No Chipset              i486DX2         50         [8K]                 16         Linux 2.0.27      gcc 2.7.2    |  11.53s   5.41s   66.61s    5.75   0.115  
+<Noname>   No Chipset              i486DX2         50         [8K]                 16         Linux 2.0.27      gcc 2.7.2    |  11.53s   5.41s   66.61s    5.75   0.115
 <Noname>   VIA 486/482-Chipset     i486DX2         66.7       [8K]/64K              4         Linux 2.0.27      gcc 2.7.2    |  11.72s   6.00s   62.43s    5.63   0.085
 <Noname>   Eteq 491/492-Chipset    i486SX          33.3       [8K]/64K              5         Linux 2.0.27      gcc 2.7.2    |  11.79s   5.93s   65.39s    5.55   0.167
 <Noname>   Eteq 491/492-Chipset    Cx486DX2        66.7       [8K]                  5         Linux 2.0.27      gcc 2.7.2    |  12.20s   5.80s   66.51s    5.51   0.083
@@ -376,12 +376,12 @@ some numbers from an older version of AS which is slightly faster (thanks Thomso
 
 Vendor     Machine                 CPU            Clock(MHz)  Cache [on]offchip   Memory(MB)  OS                Compiler     |  BUF32   FL900    MIC51
 -----------------------------------------------------------------------------------------------------------------------------+------------------------
-<Noname>   Natoma-Chipset          PPro           200         [16K+16K]/256K       32         Linux             pent-gcc     |  0.9s    0.4s     4.7s 
-Sun        Ultra 1/170             UltraSparc-1   167         [16K+16K]/512K       64         Solaris 2.5       Sun-C 3.0.1  |  1.0s    0.5s     5.2s 
+<Noname>   Natoma-Chipset          PPro           200         [16K+16K]/256K       32         Linux             pent-gcc     |  0.9s    0.4s     4.7s
+Sun        Ultra 1/170             UltraSparc-1   167         [16K+16K]/512K       64         Solaris 2.5       Sun-C 3.0.1  |  1.0s    0.5s     5.2s
 Sun        SPARCstation 20/71      SuperSparc-2    75         [20K+16K]/1M         64         Solaris 2.5       gcc 2.7.2    |  2.3s    1.1s    11.7s
-<Noname>   Neptun-Chipset          Pentium         90         [8K+8K]/256K(async)  48         Linux 2.0.20      gcc 2.7.2.1  |  2.8s    1.4s    16.2s 
-Intel      Paragon XPS/10 (4)      2xi860XP        50         [16K+16K]            32         Paragon-OS 1.4    PGC          |  14.6s   12.7s   124.4s 
-CBM        A3000                   MC68030+MC68882 25         [0.25K+0.25K]        14+2       Linux 1.2.13pl9   gcc 2.7.2    |  35.6s   18.8s   184.9s 
+<Noname>   Neptun-Chipset          Pentium         90         [8K+8K]/256K(async)  48         Linux 2.0.20      gcc 2.7.2.1  |  2.8s    1.4s    16.2s
+Intel      Paragon XPS/10 (4)      2xi860XP        50         [16K+16K]            32         Paragon-OS 1.4    PGC          |  14.6s   12.7s   124.4s
+CBM        A3000                   MC68030+MC68882 25         [0.25K+0.25K]        14+2       Linux 1.2.13pl9   gcc 2.7.2    |  35.6s   18.8s   184.9s
 CBM        A2000+68030 Card        MC68030+MC68882 28         [0.25K+0.25K]         8 (5)     Linux 2.0.21      gcc 2.7.2    |  91.37s  39.88s  377.31s
 
 Notes:

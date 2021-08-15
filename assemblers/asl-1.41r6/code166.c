@@ -29,7 +29,7 @@ typedef struct
          } BaseOrder;
 
 typedef struct
-         { 
+         {
           char *Name;
           Byte Code;
          } SimpOrder;
@@ -1227,7 +1227,7 @@ BEGIN
    if ((Memo("BFLDH")) OR (Memo("BFLDL")))
     BEGIN
      if (ArgCnt!=3) WrError(1110);
-     else 
+     else
       BEGIN
        strmaxcat(ArgStr[1],".0",255);
        if (DecodeBitAddr(ArgStr[1],&BAdr1,&BOfs1,False))
@@ -1275,7 +1275,7 @@ BEGIN
 	      CodeLen=2+AdrCnt; BAsmCode[0]=0xfa; BAsmCode[1]=AdrMode;
 	      memcpy(BAsmCode+2,AdrVals,AdrCnt);
 	     END
-            break;       
+            break;
 	   case ModAbs:
 	    AdrLong=WordVal()-(EProgCounter()+2);
 	    if ((AdrLong<=254) AND (AdrLong>=-256) AND ((AdrLong&1)==0))

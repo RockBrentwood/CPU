@@ -43,13 +43,13 @@
 #define StackOrderCount 4
 
 typedef struct
-         {   
+         {
           char *Name;
           Word Code;
          } FixedOrder;
 
 typedef struct
-         {   
+         {
           char *Name;
           Byte SizeMask;
           Byte Code;
@@ -1102,7 +1102,7 @@ BEGIN
              break;
            END
           break;
-        END 
+        END
       END
      return;
     END

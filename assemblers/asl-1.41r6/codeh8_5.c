@@ -266,7 +266,7 @@ BEGIN
      else
       BEGIN
        p=strchr(Part,'-');
-       if (p==Nil) return False; *p='\0'; 
+       if (p==Nil) return False; *p='\0';
        if (NOT DecodeReg(Part,&Reg1)) return False;
        if (NOT DecodeReg(p+1,&Reg2)) return False;
        if (Reg1>Reg2) Reg2+=8;
@@ -1131,7 +1131,7 @@ BEGIN
         if (OpSize==-1) SetOpSize(OneRegOrders[z].DefSize);
         if (((1 << OpSize) & OneRegOrders[z].SizeMask)==0) WrError(1130);
         else
-         BEGIN 
+         BEGIN
           BAsmCode[0]=0xa0+HReg+(OpSize << 3);
           BAsmCode[1]=OneRegOrders[z].Code;
           CodeLen=2;

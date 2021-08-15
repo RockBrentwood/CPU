@@ -50,7 +50,7 @@
 
 #if defined __m68k
 /*---------------------------------------------------------------------------*/
-/* SUN/3 with SunOS 4.x: 
+/* SUN/3 with SunOS 4.x:
    see my SunOS quarrels in the Sparc section... */
 #   if defined __sunos__
 #      define DEFSMADE
@@ -74,7 +74,7 @@ typedef unsigned long long Card64;
 #      define NO_NLS
 #   endif
 /*---------------------------------------------------------------------------*/
-/* SUN/3 with NetBSD 1.x: 
+/* SUN/3 with NetBSD 1.x:
    quite a normal 32-Bit-UNIX system */
 #   if defined __NetBSD__
 #      define DEFSMADE
@@ -116,7 +116,7 @@ extern double strtod();
 #      define NO_NLS
 #   endif
 /*---------------------------------------------------------------------------*/
-/* Linux/68K: 
+/* Linux/68K:
    quite a normal 32-Bit-UNIX system */
 #   if defined __linux__
 #      define DEFSMADE
@@ -141,17 +141,17 @@ typedef unsigned long long Card64;
 /* SPARC platforms */
 #if defined __sparc
 /*---------------------------------------------------------------------------*/
-/* SUN Sparc with SunOS 4.1.x: 
-   don't try cc, use gcc, it's hopeless without an ANSI-compliant compiler... 
+/* SUN Sparc with SunOS 4.1.x:
+   don't try cc, use gcc, it's hopeless without an ANSI-compliant compiler...
    SunOS does have NLS support, but it does not have D_FMT and T_FMT
-   I should change this ... 
+   I should change this ...
    Though the manual pages claim that memmove and atexit exist, I could not
    find them in any library :-(  Fortunately, bcopy claims to be safe for
    overlapping arrays, we just have to reverse source and destination pointers.
    The sources themselves contain a switch to use on_exit instead of atexit
-   (it uses a different callback scheme, so we cannot just make a #define here... 
-   To get rid of most of the messages about missing prototypes, add 
-   -D__USE_FIXED_PROTOTYPES__ to your compiler flags! 
+   (it uses a different callback scheme, so we cannot just make a #define here...
+   To get rid of most of the messages about missing prototypes, add
+   -D__USE_FIXED_PROTOTYPES__ to your compiler flags!
    Apart from these few points, one could claim SunOS to be quite a normal
    32-bit-UNIX... */
 #   if defined __sunos__
@@ -181,7 +181,7 @@ extern void bcopy();
 #      define NO_NLS
 #   endif
 /*---------------------------------------------------------------------------*/
-/* SUN Sparc with Solaris 2.x: 
+/* SUN Sparc with Solaris 2.x:
    quite a normal 32-Bit-UNIX system */
 #   if defined __solaris__
 #      define DEFSMADE
@@ -206,9 +206,9 @@ typedef unsigned long long Card64;
 /* Mips platforms */
 #if defined __mips
 /*---------------------------------------------------------------------------*/
-/* R3000 with Ultrix 4.3: 
-   nl_langinfo prototype is there, but no function in library ?! 
-   use long long only if you have gcc, c89 doesn't like them ! 
+/* R3000 with Ultrix 4.3:
+   nl_langinfo prototype is there, but no function in library ?!
+   use long long only if you have gcc, c89 doesn't like them !
    cc isn't worth trying, believe me! */
 #   if defined __ultrix
 #      define DEFSMADE
@@ -233,7 +233,7 @@ typedef unsigned long long Card64;
 #      define NO_NLS
 #   endif
 /*---------------------------------------------------------------------------*/
-/* R2000/3000 with NetBSD 1.2: 
+/* R2000/3000 with NetBSD 1.2:
    quite a normal 32-Bit-UNIX system */
 #   if defined __NetBSD__
 #      define DEFSMADE
@@ -253,7 +253,7 @@ typedef unsigned long long Card64;
 #      define LOCALE_NLS
 #   endif
 /*---------------------------------------------------------------------------*/
-/* R3000/4x00 with Irix 5.x: 
+/* R3000/4x00 with Irix 5.x:
   quite a normal 32-Bit-UNIX system
   seems also to work with 6.2... */
 #   if defined __sgi
@@ -349,7 +349,7 @@ typedef unsigned long Card64;
 #   endif
 /*---------------------------------------------------------------------------*/
 /* DEC Alpha with Linux and GCC:
-   see OSF... 
+   see OSF...
    NLS still missing...well, my Linux/Alpha is stone-age and still
    ECOFF-based... */
 #   if defined __linux__
@@ -395,7 +395,7 @@ typedef unsigned long long Card64;
 #      define LOCALE_NLS
 #   endif
 /*---------------------------------------------------------------------------*/
-/* Intel i386 with FreeBSD and GCC:                                          
+/* Intel i386 with FreeBSD and GCC:
    principally, a normal 32-bit *NIX */
 #   if defined __FreeBSD__
 #      define DEFSMADE
