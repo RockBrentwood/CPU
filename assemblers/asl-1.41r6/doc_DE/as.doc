@@ -545,7 +545,7 @@ mittels eines Compilers selbst die Binaries erzeugen.  Dies ist aber
 Maschinen vorzukompilieren, auf die ich auch nicht immer Zugriff
 habe...
 
-+-----+                          
++-----+
 | ??? |
 +-----+
 Wer die bisherige Aufzählung liest, wird feststellen, daß das meist-
@@ -798,14 +798,14 @@ c:\as\demos
 
 Als erstes kopieren Sie alle EXE- sowie OVR-Dateien aus dem Archiv in
 das bin-Verzeichnis; um dieses Verzeichnis ergänzen Sie dann auch die
-PATH-Anweisung in Ihrer AUTOEXEC.BAT.  In das include-Verzeichnis 
+PATH-Anweisung in Ihrer AUTOEXEC.BAT.  In das include-Verzeichnis
 kommen alle INC-Dateien.  In dem lib-Verzeichnis erzeugen Sie eine
 Datei AS.RC mit folgendem Inhalt:
 
 -i c:\as\include
 
-Diese sogenannte Key-Datei zeigt AS, in welchem Verzeichnis er seine 
-Include-Dateien suchen soll.  Damit AS diese Key-Datei bei Start 
+Diese sogenannte Key-Datei zeigt AS, in welchem Verzeichnis er seine
+Include-Dateien suchen soll.  Damit AS diese Key-Datei bei Start
 auch beachtet, muß noch folgende Anweisung in die AUTOEXEC.BAT:
 
 set ASCMD=@c:\as\lib\as.rc
@@ -828,12 +828,12 @@ tiert werden:
 
   machine not in database (run DPMIINST)
 
-Da bei der Programmausführung ständig zwischen Real und Protected   
+Da bei der Programmausführung ständig zwischen Real und Protected
 Mode hin- und hergeschaltet wird, ist es sehr wichtig, die effizien-
 teste Möglichkeit dafür zu finden. Zu diesem Zweck (und nur zu die-
-sen) müssen Sie einmal das Programm DPMIINST starten.  Da DPMIINST 
+sen) müssen Sie einmal das Programm DPMIINST starten.  Da DPMIINST
 alleiniger Herr über den Protected Mode sein möchte, müssen Sie für
-die Installation wahrscheinlich einen installierten HIMEM-Treiber  
+die Installation wahrscheinlich einen installierten HIMEM-Treiber
 herausnehmen (nach dem Lauf darf HIMEM aber wieder hinein).  Folgen
 Sie einfach den Anweisungen, die DPMIINST ausgibt.  Nach dieser Pro-
 zedur benötigen Sie dieses Programm nicht mehr, sondern nur noch fol-
@@ -862,18 +862,18 @@ files anzupassen, die Übersetzung anzuwerfen, einen Testlauf durchzu-
 führen und die entstandenen Executables sowie die Include-Dateien und
 Dokumentation zu installieren.  Die Details finden sich in der Datei
 README.  OS/2-Benutzer sollten unbedingt auch einen Blick in
-README.OS2 werfen, um Schiffbruch zu vermeiden! 
+README.OS2 werfen, um Schiffbruch zu vermeiden!
 
 
 	2.4. Aufruf, Parameter
 	----------------------
 
 AS ist ein kommandozeilengesteuertes Programm, d.h. alle Parameter
-und Dateiangaben sind in der Kommandozeile anzugeben.  
+und Dateiangaben sind in der Kommandozeile anzugeben.
 
 +-----+
 | DOS |
-+-----+ 
++-----+
 Um den Speicherbedarf von AS unter DOS überhaupt befriedigen zu kön-
 nen, wurden die verschiedenen Codegeneratormodule in der DOS-Version
 in eine Overlaydatei verlegt, deren Existenz der Assembler sofortnach
@@ -894,7 +894,7 @@ die Verwendung von extended memory verhindern.
 Da AS alle Ein-und Ausgaben über das Betriebssystem abwickelt (und
 daher unter DOS auch auf nicht ganz so kompatiblen PC's laufen sol-
 lte) und eine rudimentäre Bildschirmsteuerung benötigt, gibt er
-während der Assemblierung ANSI-Steuersequenzen aus.  
+während der Assemblierung ANSI-Steuersequenzen aus.
 
 +----------+
 | DOS/DPMI |
@@ -1111,7 +1111,7 @@ Zu Sinn und Funktion der SHARED-Symbole siehe Kapitel 2.8. bzw. 3.8.1.
 	Ist er ausgeschaltet, wird die Datei zwar assembliert, aber
         keine Code-Datei geschrieben.  Dieser Schalter ist defaultmäßig
 	aktiviert (logisch, sonst bekäme man ja auch gar kein Code-
-	file).  
+	file).
 
  -  r [n] : Warnungen ausgeben, falls Situationen eintreten, die
             einen weiteren Pass erfordern.  Diese Information kann
@@ -1219,7 +1219,7 @@ Statistik zusätzlich auch in das Listing geschrieben.
 | OS/2 |
 +------+
 OS/2 erweitert wie Unix das Datensegment einer Anwendung erst dann,
-wenn sie wirklich mehr Speicher anfordert.  Eine Angabe wie 
+wenn sie wirklich mehr Speicher anfordert.  Eine Angabe wie
 
   511 KByte verfügbarer Restspeicher
 
@@ -1259,8 +1259,8 @@ Knopf ist aus Eindeutigkeitsgründen nötig, da sonst keine Unter-
 scheidung zwischen Befehl mit Format und Label mit Befehl möglich
 wäre.
 
-Bei 680x0, SH7000, TLCS-9000, M16(C), XA, MSP430 sowie H8 dient ein 
-dem Befehl mit einem Punkt angehängtes Attribut zur Beschreibung der 
+Bei 680x0, SH7000, TLCS-9000, M16(C), XA, MSP430 sowie H8 dient ein
+dem Befehl mit einem Punkt angehängtes Attribut zur Beschreibung der
 Operandengröße.  Folgende Attributbuchstaben sind definiert:
 
    Attribut     arithmetisch-logischer Befehl      Sprungbefehl
@@ -1286,8 +1286,8 @@ Befehle haben gar kein Attribut.  Zum genaueren Studium greife man auf
 ein vernünftiges Programmierhandbuch zurück, z.B. in [Williams] für
 die 68000er-Familie.
 
-Bei TLCS-9000, H8/500 und M16(C) dient das Attribut sowohl der Angabe 
-der Operandengröße, falls diese nicht durch die Operanden klar sein 
+Bei TLCS-9000, H8/500 und M16(C) dient das Attribut sowohl der Angabe
+der Operandengröße, falls diese nicht durch die Operanden klar sein
 sollte, als auch der des zu verwendenden Befehlsformates.  Dieses muß
 durch einen Doppelpunkt von der Operandengröße getrennt werden, z.B.
 so:
@@ -1440,7 +1440,7 @@ wendet werden.
 Defaultmäßig ist AS nicht case-sensitiv, es ist also egal, ob man
 Groß-oder Kleinbuchstaben verwendet.  Mittels des Kommandozeilenschal-
 ters U läßt sich AS jedoch in einen Modus umschalten, in dem Groß-
-und Kleinschreibung unterschieden wird.  Ob AS umgeschaltet wurde, 
+und Kleinschreibung unterschieden wird.  Ob AS umgeschaltet wurde,
 kann mit dem vordefinierten Symbol CASESENSITIVE ermittelt werden:
 TRUE bedeutet Unterscheidung, FALSE keine.
 
@@ -1578,7 +1578,7 @@ entsprechenden dezimalen ASCII-Wert.  So kann man mit
 ein ETX-Zeichen definieren.  Vorsicht allerdings mit der Definition
 von NUL-Zeichen!  Da die C-Version von AS momentan intern zur Spei-
 cherung von String-Symbolen C-Strings benutzt (die durch NUL-Zeichen
-terminiert werden), sind NUL-Zeichen in Strings momentan nicht 
+terminiert werden), sind NUL-Zeichen in Strings momentan nicht
 portabel!
 
 Einige besonders häufig gebrauchte Steuerzeichen kann man auch mit
@@ -1783,7 +1783,7 @@ Dieser Abschnitt ist das Produkt eines gewissen Grolls auf die (durch-
 aus legale) Art und Weise, wie einige Leute programmieren, die in Zu-
 sammenhang mit AS bisweilen das eine oder andere Problem verursachen
 kann.  Die Rede ist hier von sogenannten "Vorwärtsreferenzen".  Was
-unterscheidet eine Vorwärtsreferenz von einer normalen Referenz? 
+unterscheidet eine Vorwärtsreferenz von einer normalen Referenz?
 Dazu sehe man sich folgendes Programmbeispiel an (man sehe mir bitte
 meine - auch im Rest dieser Anleitung anzutreffende - 68000-Lastig-
 keit nach):
@@ -1806,7 +1806,7 @@ Quellcode gehen zu müssen, um den korrekten und optimalen Maschinen-
 code zu finden.  Einige Hochsprachen wie Pascal mit ihrer strikten
 Regel, daß alles vor der ersten Benutzung definiert sein muß, nutzen
 genau diese Eigenschaft aus, um den Übersetzungsvorgang zu beschleu-
-nigen.  
+nigen.
 
 Leider ist die Sache im Falle von Assembler nicht so einfach, denn man
 will ja bisweilen auch vorwärts im Code springen oder muß aus bestimm-
@@ -1831,7 +1831,7 @@ auch die bisweilen gestellte Frage, warum in einem Listing des ersten
 Passes (dies bleibt z.B. stehen, wenn AS aufgrund anderer Fehler den
 zweiten Pass erst gar nicht beginnt), z.T. falsche Adressen im erzeug-
 ten Binärcode gezeigt werden - dies sind noch nicht aufgelöste Vor-
-wärtsreferenzen.  
+wärtsreferenzen.
 
 Das obige Beispiel offenbart allerdings noch eine weitere Schwierig-
 keit von Vorwärtsreferenzen: Je nach Abstand von Quelle und Ziel im
@@ -1890,7 +1890,7 @@ LDD-Befehle an, was eine Code-Länge von 180 Bytes ergibt und im zweiten
 Pass (zum Zeitpunkt des BEQ-Befehls ist noch der "falsche" Wert von
 'skip' aktuell, d.h. AS weiß zu diesem Zeitpunkt noch nicht, daß der
 Code in Wirklichkeit nur 120 Bytes lang ist) gibt es eine Fehlermel-
-dung wegen einer überschrittenen Sprungdistanz.  Dieser Fehler läßt 
+dung wegen einer überschrittenen Sprungdistanz.  Dieser Fehler läßt
 sich auf drei Arten vermeiden:
 
  1. Weisen Sie AS explizit darauf hin, daß er für die LDD-Befehle kur-
@@ -1923,7 +1923,7 @@ fach einmal sein.  Was sollte man als Erkenntnis aus diesem Abschnitt
 mitnehmen?
 
  1. AS versucht immer, den kürzestmöglichen Code zu erzeugen.  Dazu
-    benötigt er eine endliche Zahl von Durchläufen.  Wenn man ihn 
+    benötigt er eine endliche Zahl von Durchläufen.  Wenn man ihn
     nicht gerade knebelt, kennt AS keine Rücksichten...
 
  2. Wenn sinnvoll und möglich, Sprung- und Adreßlängen explizit vor-
@@ -2186,7 +2186,7 @@ bit1    BIT     @h+5.2
 
 erlaubt.
 
-Beim ST9 ist es hingegen möglich, Bits auch invertiert anzusprechen, 
+Beim ST9 ist es hingegen möglich, Bits auch invertiert anzusprechen,
 was beim BIT-Befehl auch berücksichtigt wird:
 
 invbit  BIT     r6.!3
@@ -2232,7 +2232,7 @@ PIO_Ctrl	port	PIO_Port_A+3
 
 
 	3.1.8.  REG
-	- - - - - -         
+	- - - - - -
 
 --> Gültigkeit: ST9
 
@@ -2245,7 +2245,7 @@ Adreßbereich zugeordnet.  Erlaubte Werte sind 0..255.
 
 --> Gültigkeit: 8X30x
 
-LIV und RIV dienen dazu, sogenannte IV-Bus-Objekte zu definieren. 
+LIV und RIV dienen dazu, sogenannte IV-Bus-Objekte zu definieren.
 Bei diesen handelt es sich um Bitgruppen in peripheren Speicherzellen
 mit einer Länge von 1..8 Bit, die fortan symbolisch angesprochen
 werden können, so daß man bei den entsprechenden Befehlen nicht mehr
@@ -2253,7 +2253,7 @@ Adresse, Länge und Position separat angeben muß.  Da die
 8X30x-Prozessoren zwei periphere Adreßräume besitzen (einen 'linken'
 und einen 'rechten', sind auch zwei separate Befehle definiert.  Die
 Parameter dieser Befehle sind allerdings identisch: es müssen drei
-Parameter sein, die Adresse, Startposition und Länge angeben. 
+Parameter sein, die Adresse, Startposition und Länge angeben.
 Weitere Hinweise zur Benutzung von Busobjekten finden sich in
 Abschnitt 4.14 .
 
@@ -2333,7 +2333,7 @@ Wert zuzuweisen.
 --> Gültigkeit: alle Prozessoren
 
 Mit PUSHV und POPV ist es möglich, den Wert von (nicht makro-
-lokalen) Symbolen temporär zu speichern und zu einem späteren 
+lokalen) Symbolen temporär zu speichern und zu einem späteren
 Zeitpunkt wiederherzustellen.  Die Speicherung erfolgt auf
 Stacks, d.h. Last-In-First-Out-Speichern.  Ein Stack hat einen
 Namen, der den allgemeinen Symbolkonventionen genügen muß, und
@@ -2345,7 +2345,7 @@ von dem sie wieder abgeholt werden sollen, ist der erste Parameter
 von PUSHV bzw. POPV, danach folgt eine beliebige Menge von Sym-
 bolen als weitere Parameter.  Alle in der Liste aufgeführten
 Symbole müssen bereits existieren, es ist also NICHT möglich, mit
-einem POPV-Befehl implizit neue Symbole zu definieren.  
+einem POPV-Befehl implizit neue Symbole zu definieren.
 
 Stacks stellen eine globale Ressource dar, d.h. ihre Namen sind
 nicht lokal zu Sektionen.
@@ -2511,7 +2511,7 @@ ST62xx     4K       256     ------  ------  ------  ------  ------  ------
            Init 0   Init 0
 
 ST7        64K      ------  ------  ------  ------  ------  ------  ------
-           Init 0                                                   
+           Init 0
 
 ST9        64K      64K     ------  ------  ------  ------  ------  256
            Init 0   Init 0                                          Init 0
@@ -2545,7 +2545,7 @@ MSP430     64K      ------  ------  ------  ------  ------  ------  ------
            Init 0
 
 SC/MP      64K      ------  ------  ------  ------  ------  ------  ------
-           Init 0   
+           Init 0
 
 COP8       8K       256     ------  ------  ------  ------  ------  ------
            Init 0   Init 0
@@ -2557,7 +2557,7 @@ COP8       8K       256     ------  ------  ------  ------  ------  ------
            Init 0   Init 0
 
 78K0       64K      ------  ------  ------  ------  ------  ------  ------
-           Init 0   
+           Init 0
 
 *) Da der 8051 kein RAM jenseits 80h hat, muß dieser Wert für den 8051
    als Zielprozessor auf jeden Fall mit ORG angepaßt werden!!
@@ -2711,7 +2711,7 @@ Unterversion stark differieren) kennt der 80196 eine Reihe von zu-
 sätzlichen Befehlen und kennt einen "Windowing"-Mechanismus, um das
 größere interne RAM anzusprechen.  Die 80196N-Familie wiederum erwei-
 tert den Adreßraum auf 16 Mbyte und führt eine Reihe von Befehlen
-ein, mit denen man auf Adressen jenseits 64 Kbyte zugreifen kann.  
+ein, mit denen man auf Adressen jenseits 64 Kbyte zugreifen kann.
 Der 80296 erweitert den CPU-Kern um Befehle zur Signalverarbeitung
 und ein zweites Windowing-Register, verzichtet jedoch auf den Peri-
 pheral Transaction Server (PTS) und verliert damit wieder zwei Ma-
@@ -2761,7 +2761,7 @@ y) 80C166 --> 80C167,80C165,80C163
 
 80C167 und 80C165/163 haben anstelle 256 Kbyte max. 16 Mbyte
 Adreßraum, außerdem kennen sie einige zusätzliche Befehle für
-erweiterte Adres sierungsmodi sowie atomare Befehlssequenzen. 
+erweiterte Adres sierungsmodi sowie atomare Befehlssequenzen.
 Untereinander unter- scheiden sich diese Prozessoren der "zweiten
 Generation" nur in der eingebauten Peripherie.
 
@@ -2863,7 +2863,7 @@ Unterscheidung ausgenutzt.
 aq) 320C50, 320C51, 320C53
 
 Die Unterscheidung zwischen diesen Prozessoren wird von AS momentan
-nicht ausgenutzt. 
+nicht ausgenutzt.
 
 ar) TMS9900
 
@@ -2875,7 +2875,7 @@ as) TMS70C00, TMS70C20, TMS70C40,
 Alle Mitglieder dieser Familie haben den gleichen CPU-Kern, unter-
 scheiden sich im Befehlssatz also nicht.  Die Unterschiede finden
 sich nur in der Datei REG7000.INC, in der Speicherbereiche und Pe-
-ripherieadressen definiert werden.  Die in einer Zeile stehenden 
+ripherieadressen definiert werden.  Die in einer Zeile stehenden
 Typen besitzen jeweils gleiche Peripherie und gleiche interne RAM-
 Menge, unterscheiden sich also nur in der Menge eingebauten ROMs.
 
@@ -2891,7 +2891,7 @@ av) SC/MP
 
 aw) COP87L84
 
-Dies ist das momentan einzige unterstützte Mitglied der COP8-Familie 
+Dies ist das momentan einzige unterstützte Mitglied der COP8-Familie
 von National Semiconductor.  Mir ist bekannt, daß die Familie wesent-
 lich größer ist und auch Vertreter mit unterschiedlich großem Befehls-
 satz existieren, die nach Bedarf hinzukommen werden.  Es ist eben ein
@@ -3020,8 +3020,8 @@ ausgestattet.  AS sperrt bei aktiviertem PMMU-Befehlssatz (s.o.) des-
 halb alle fehlenden Befehle, wenn als Zielprozessor 68030 oder höher
 eingestellt wurde.  Nun kann es aber sein, daß in einem System mit
 68030-Prozessor die interne MMU abgeschaltet wurde und der Prozessor
-mit einer externen 68851 betrieben wird.  Mit FULLPMMU ON kann man 
-AS dann mitteilen, daß der vollständige MMU-Befehlssatz zugelassen 
+mit einer externen 68851 betrieben wird.  Mit FULLPMMU ON kann man
+AS dann mitteilen, daß der vollständige MMU-Befehlssatz zugelassen
 ist.  Umgekehrt kann man, wenn man portablen Code erzeugen will, alle
 zusätzlichen Befehle trotz 68020-Zielplattform mit FULLPMMU OFF ab-
 schalten.  Die Umschaltung darf beliebig oft erfolgen, die momentane
@@ -3125,9 +3125,9 @@ ganze (Lang-)Worte aus dem Speicher lesen und erwartet dabei das MSB
 zuerst.  Da dies nicht der bisherigen Arbeitsweise von AS bei der
 Konstantenablage entspricht, kann man nun mit diesem Befehl umschal-
 ten, ob die Befehle DB, DW, DD, DQ und DT mit Big- oder Little-Endian-
-Orientierung arbeiten sollen.  Mit BIGENDIAN OFF (Voreinstellung) wird 
-wie bei älteren AS-Versionen zuerst das niederwertigste Byte abgelegt, 
-mit BIGENDIAN ON wird die MCS-251-kompatible Variante benutzt. Natür- 
+Orientierung arbeiten sollen.  Mit BIGENDIAN OFF (Voreinstellung) wird
+wie bei älteren AS-Versionen zuerst das niederwertigste Byte abgelegt,
+mit BIGENDIAN ON wird die MCS-251-kompatible Variante benutzt. Natür-
 lich kann man diese Einstellung beliebig oft im Code ändern; die mo-
 mentane Einstellung kann aus dem gleichnamigen Symbol ausgelesen wer-
 den.
@@ -3301,7 +3301,7 @@ werden Adressen falscher Länge erzeugt...
         68HC16
         ......
 
-Um mit seinen nur 16 Bit breiten Adreßoperanden einen 1 Mbyte großen 
+Um mit seinen nur 16 Bit breiten Adreßoperanden einen 1 Mbyte großen
 Adreßraum ansprechen zu können, bedient sich der 68HC16 einer Reihe
 von Bank-Registern, die die fehlenden oberen vier Adreßbits nachlie-
 fern.  Davon ist das EK-Register für absolute Datenzugriffe (nicht
@@ -3418,9 +3418,9 @@ Vorinitialisiert sind folgende ASSUMEs:
         ..
 
 Die XA-Familie besitzt einen Datenadreßraum von 16 Mbyte, ein Prozeß
-kann jedoch nur immer innerhalb einer 64K-Seite adressieren, die 
+kann jedoch nur immer innerhalb einer 64K-Seite adressieren, die
 durch das DS-Register vorgegeben wird.  AS muß man den momentanen
-Wert dieses Registers vorgeben, damit er Zugriffe auf absolute 
+Wert dieses Registers vorgeben, damit er Zugriffe auf absolute
 Adressen überprüfen kann.
 
         29K
@@ -3510,7 +3510,7 @@ Dieser Wert ist auch die Voreinstellung.
 Die ST9-Familie verwendet zur Adressierung von Code- und Datenbereich
 exakt die gleichen Befehle.  Welcher Adreßraum dabei jeweils ange-
 sprochen wird, hängt vom Stand des DP-Flags im Flag-Register ab.  Da-
-mit AS bei absoluten Zugriffen überprüfen kann, ob man mit Symbolen 
+mit AS bei absoluten Zugriffen überprüfen kann, ob man mit Symbolen
 aus dem korrekten Adreßraum arbeitet (das funktioniert natürlich NUR
 bei absoluten Zugriffen!), muß man ihm per ASSUME mitteilen, ob das
 DP-Flag momentan auf 0 (Code) oder 1 (Daten) steht.  Der Initialwert
@@ -3727,8 +3727,8 @@ stantenfeldern!
 Um mit dem M80 verträglich zu sein, darf im Z80-Modus anstelle von
 DB / DW auch DEFB / DEFW geschrieben werden.
 
-Analog stellen BYTE/ADDR bzw. WORD/ADDRW beim COP8 einen Alias für 
-DB bzw. DW dar, wobei die beiden Paare sich jedoch in der Byte-Order 
+Analog stellen BYTE/ADDR bzw. WORD/ADDRW beim COP8 einen Alias für
+DB bzw. DW dar, wobei die beiden Paare sich jedoch in der Byte-Order
 unterscheiden: Die Befehle, die von National zur Adreßablage vorge-
 sehen waren, benutzen Big-Endian, BYTE bzw. WORD jedoch Little-Endian.
 
@@ -3756,7 +3756,7 @@ sind selbige jetzt zufrieden ;-)
 
 
 	3.3.5. BYT oder FCB
-        - - - - - - - - - - 
+        - - - - - - - - - -
 
 --> Gültigkeit: 6502, 68xx
 
@@ -3774,13 +3774,13 @@ Dito.  Ein im 320C2x/5x-Modus vor dem Befehl stehendes Label wird
 als untypisiert gespeichert, d.h. keinem Adreßraum zugeordnet.
 Der Sinn dieses Verhaltens wird bei den prozessorspezifischen
 Hinweisen erläutert.
-Ob beim MSP bzw. TMS9900 ungerade Mengen von Bytes automatisch um 
+Ob beim MSP bzw. TMS9900 ungerade Mengen von Bytes automatisch um
 ein Null-Byte ergänzt werden sollen, kann mit dem PADDING-Befehl ein-
 gestellt werden.
 
 
 	3.3.7. ADR oder FDB
-	- - - - - - - - - - 
+	- - - - - - - - - -
 
 --> Gültigkeit: 6502, 68xx
 
@@ -3957,9 +3957,9 @@ erläutert.
 
 --> Gültigkeit: 6502, 68xx
 
-Mit diesem Befehl werden im 65xx/68xx-Modus String-Konstanten 
+Mit diesem Befehl werden im 65xx/68xx-Modus String-Konstanten
 abgelegt.  Beachten Sie jedoch, daß im Gegensatz zum Original-
-assembler AS11 von Motorola (dessentwegen dieser Befehl existiert, 
+assembler AS11 von Motorola (dessentwegen dieser Befehl existiert,
 bei AS ist diese Funktion im BYT-Befehl enthalten), String-Argu-
 mente nur in Gänsefüßchen und nicht in Hochkommas oder Schräg-
 strichen eingeschlossen werden dürfen!
@@ -3999,7 +3999,7 @@ den PICs Bytes, beim 4500er Nibbles sowie bei Texas ebenfalls Wörter.
 
 BSS arbeitet analog zu RES, lediglich ein eventuell vor dem
 Befehl stehendes Symbol wird beim 320C2x/5x als untypisiert ge-
-speichert.  Der Sinn dieser Maßnahme kann im Kapitel mit den 
+speichert.  Der Sinn dieser Maßnahme kann im Kapitel mit den
 prozessorspezifischen Hinweisen nachgelesen werden.
 
 
@@ -4008,9 +4008,9 @@ prozessorspezifischen Hinweisen nachgelesen werden.
 
 --> Gültigkeit: COP8
 
-Diese beiden Befehle stellen im COP8-Modus die zum ASMCOP von 
-National kompatible Methode dar, Speicher zu reservieren.  
-Während DSB nur einzelne Bytes freihält, reserviert DSW Wörter 
+Diese beiden Befehle stellen im COP8-Modus die zum ASMCOP von
+National kompatible Methode dar, Speicher zu reservieren.
+Während DSB nur einzelne Bytes freihält, reserviert DSW Wörter
 und damit effektiv doppelt soviel Bytes wie DSB.
 
 
@@ -4354,8 +4354,8 @@ IF- oder SWITCH-Konstrukte Buch führt, wird auf den Stand vor
 Beginn der Makroexpansion zurückgesetzt.  Dies ist für bedingte
 EXITM's zwingend notwendig, da das den EXITM-Befehl in irgendeiner
 Form einschließende ENDIF oder ENDCASE nicht mehr erreicht wird
-und AS ohne einen solchen Trick eine Fehlermeldung erzeugen 
-würde.  Weiterhin ist es für verschachtelte Makrokonstruktionen 
+und AS ohne einen solchen Trick eine Fehlermeldung erzeugen
+würde.  Weiterhin ist es für verschachtelte Makrokonstruktionen
 wichtig, zu beachten, daß EXITM immer nur das momentan innerste
 Konstrukt abbricht!  Wer aus seiner geschachtelten Konstruktion
 vollständig "ausbrechen" will, muß auf den höheren Ebenen eben-
@@ -4505,7 +4505,7 @@ IFEXIST <Name>   : wahr, falls die angegebene Datei existiert.
 		   Regeln wie beim INCLUDE-Befehl (siehe Abschnitt
 		   3.8.2.).
 IFNEXIST <Name>  : Umkehrung zu IFEXIST.
-IFB <Arg-Liste>  : wahr, falls alle Argumente der Parameterliste leer 
+IFB <Arg-Liste>  : wahr, falls alle Argumente der Parameterliste leer
                    sind.
 IFNB <Arg-Liste> : Umkehrung zu IFB.
 
@@ -4671,7 +4671,7 @@ Die momentane Einstellung läßt sich aus dem Symbol MACEXP auslesen.
 	3.6.4.  LISTING
 	- - - - - - - -
 
-funktioniert wie MACEXP und akzeptiert die gleichen Parameter, 
+funktioniert wie MACEXP und akzeptiert die gleichen Parameter,
 arbeitet aber wesentlich radikaler: Mit
 
      listing off
@@ -5111,14 +5111,14 @@ den.
 
 --> Gültigkeit: alle Prozessoren
 
-Mit diesem Befehl weist man den AS an, die in der Parameterliste 
+Mit diesem Befehl weist man den AS an, die in der Parameterliste
 angegebenen Symbole (egal ob Integer, Gleitkomma oder String) im
 Sharefile mit ihren Werten abzulegen.  Ob eine solche Datei über-
 haupt und in welchem Format erzeugt wird, hängt von den in 2.1. be-
-schriebenen Kommandozeilenschaltern ab.  Findet AS diesen Befehl und 
+schriebenen Kommandozeilenschaltern ab.  Findet AS diesen Befehl und
 es wird keine Datei erzeugt, führt das zu einer Warnung.
 
-VORSICHT! Ein eventuell der Befehlszeile anhängender Kommentar wird 
+VORSICHT! Ein eventuell der Befehlszeile anhängender Kommentar wird
 in die erste, ausgegebene Zeile mit übertragen (sofern die Argument-
 liste von SHARED leer ist, wird nur der Kommentar ausgegeben).  Falls
 die Share-Datei für C oder Pascal erzeugt wird, sind einen C/Pascal-
@@ -5165,7 +5165,7 @@ ignoriert.
 --> Gültigkeit: alle Prozessoren
 
 BINCLUDE dient dazu, in den von AS erzeugten Code Binärdaten einzu-
-betten, die von einem anderen Programm erzeugt wurden (das kann 
+betten, die von einem anderen Programm erzeugt wurden (das kann
 natürlich theoretisch auch von AS selber erzeugter Code sein...).
 BINCLUDE hat drei Formen:
 
@@ -5706,7 +5706,7 @@ man der Adresse ein <, > oder >> ohne trennendes Leerzeichen voran,
 so wird eine Adresse mit 1, 2 oder 3 Bytes benutzt, unabhängig davon,
 ob dies die optimale Länge ist.  Benutzt man eine für diesen Befehl
 nicht erlaubte oder für die Adresse zu kurze Länge, gibt es eine Feh-
-lermeldung. 
+lermeldung.
 
 Um die Portierung von 6502-Programmen zu erleichtern, verwendet AS
 für Hexadezimalkonstanten die Motorola-Syntax und nicht die von
@@ -6176,12 +6176,12 @@ ge.  Kommt Zeit, kommt Rat...
 	4.15. XA
         --------
 
-Ähnlich wie sein Vorgänger MCS/51, jedoch im Unterschied zu seinem 
+Ähnlich wie sein Vorgänger MCS/51, jedoch im Unterschied zu seinem
 "Konkurrenten" MCS/251 besitzt der Philips XA einen getrennten Bit-
 adreßraum, d.h. alle mit Bitbefehlen manipulierbaren Bits haben eine
 bestimmte, eindimensionale Adresse, die in den Maschinenbefehlen auch
-so abgelegt wird.  Die naheliegende Möglichkeit, diesen dritten 
-Adreßraum (neben Code und Daten) auch so in AS anzubieten, habe ich 
+so abgelegt wird.  Die naheliegende Möglichkeit, diesen dritten
+Adreßraum (neben Code und Daten) auch so in AS anzubieten, habe ich
 nicht nutzen können, und zwar aus dem Grund, daß ein Teil der Bit-
 adressen im Gegensatz zum MCS/51 nicht mehr eindeutig ist: Bits mit
 den Adressen 256 bis 511 bezeichnen Bits der Speicherzellen 20h..3fh
@@ -6189,23 +6189,23 @@ aus dem aktuellen Datensegment.  Dies bedeutet aber, daß diese Adressen
 je nach Situation unterschiedliche Bits ansprechen können - ein defi-
 nieren von Bits mit Hilfe von DC-Befehlen, was durch ein extra Segment
 möglich geworden wäre, würde also nicht übermäßig viel Sinn ergeben.
-Zur Definition einzelner, symbolisch ansprechbarer Bits steht aber 
+Zur Definition einzelner, symbolisch ansprechbarer Bits steht aber
 nach wie vor der BIT-Befehl zur Verfügung, mit dem beliebige Bitadres-
-sen (Register, RAM, SFR) definiert werden können.  Für Bitadressen im 
-internen RAM wird auch die 64K-Bank-Adresse gespeichert, so daß AS 
+sen (Register, RAM, SFR) definiert werden können.  Für Bitadressen im
+internen RAM wird auch die 64K-Bank-Adresse gespeichert, so daß AS
 Zugriffe überprüfen kann, sofern das DS-Register korrekt mit ASSUME
 vorbesetzt wurde.
 
 Der XA benutzt die gleichen Pseudobefehle zur Konstantenablage wie
 die 68000-Familie.  Dies bedeutet dummerweise auch, daß defaultmäßig
-die Anzahl abgelegter Bytes auf eine gerade Zahl aufgerundet wird. 
-Beim XA sind gerade Adressen nicht so zwingend, deshalb ist ein 
+die Anzahl abgelegter Bytes auf eine gerade Zahl aufgerundet wird.
+Beim XA sind gerade Adressen nicht so zwingend, deshalb ist ein
 PADDING OFF am Anfang schon fast obligatorisch...
 
 Nichts drehen kann man dagegen an den Bemühungen von AS, potentielle
 Sprungziele (also Zeilen im Code mit Label) auf gerade Adressen auszu-
 richten.  Dies macht AS genauso wie andere XA-Assembler auch durch
-Einfügen von NOPs vor dem fraglichen Befehl.  
+Einfügen von NOPs vor dem fraglichen Befehl.
 
 
 	4.16. Z80UNDOC
@@ -6753,7 +6753,7 @@ aber einige Anweisungen wirklich.  So gibt es z.B. zwar einen AND-
 Befehl, aber kein OR...von XOR gar nicht zu reden.  In der Datei
 STDDEF62.INC finden sich deshalb neben den Adressen der SFRs noch
 einige Makros zur Abhilfe.
-			  
+
 Der Original-Assembler AST6 von SGS-Thomson verwendet teilweise andere
 Pseudobefehle als AS.  Außer der Tatsache, daß AS Pseudobefehle nicht
 mit einem vorangestellten Punkt kennzeichnet, sind folgende Befehle
@@ -6793,16 +6793,16 @@ Adressierung, um trotz eines nur 8 Bit langen Wertes (0..255) ein
         4.29. ST9
         ---------
 
-Die Bitadressierungsmöglichkeiten des ST9 sind relativ eingeschränkt: 
+Die Bitadressierungsmöglichkeiten des ST9 sind relativ eingeschränkt:
 Mit Ausnahme des BTSET-Befehls ist es nur möglich, auf Bits innerhalb
 des aktuellen Arbeitsregistersatzes zuzugreifen.  Eine Bit-Adresse
 sieht also folgendermaßen aus:
 
   rn.[!]b
 
-wobei ! eine optionale Invertierung eines Quelloperanden bedeutet.  
-Wird ein Bit symbolisch mittels des BIT-Befehles definiert, so wird 
-die Registernummer im Symbolwert in Bit 7..4, die Bitnummer in Bit 
+wobei ! eine optionale Invertierung eines Quelloperanden bedeutet.
+Wird ein Bit symbolisch mittels des BIT-Befehles definiert, so wird
+die Registernummer im Symbolwert in Bit 7..4, die Bitnummer in Bit
 3..1 und eine optionale Invertierung in Bit 0 vermerkt.  AS unter-
 scheidet direkte und symbolische Bitangaben am Fehlen eines Punktes,
 der Name eines Bitsymboles darf also keinen Punkt enthalten, obwohl
@@ -6817,7 +6817,7 @@ bit2    bit     r5.3
 Auf diese Weise ist es auch möglich, eine inverse Definition nach-
 träglich wieder aufzuheben.
 
-Bitdefinitionen finden sich in großer Zahl in der Include-Datei 
+Bitdefinitionen finden sich in großer Zahl in der Include-Datei
 REGST9.INC, in der die Register- und Bitnamen aller On-Chip-Peri-
 pherie beschrieben sind.  Beachten Sie jedoch, daß deren Nutzung
 nur möglich ist, wenn die Arbeitsregisterbank vorher auch auf diese
@@ -6942,13 +6942,13 @@ der Zeilenparser von AS Probleme...
 Wie bei den meisten älteren Prozessorfamilien auch, hatte TI seiner-
 zeit ein eigenes Format zur Schreibweise von Hexadezimal- und Binär-
 konstanten verwendet, anstelle deren AS die normale, heute auch bei
-TI gebräuchliche Intel-Notation verwendet.  
+TI gebräuchliche Intel-Notation verwendet.
 
-Leider war die Dokumentation, die ich zur Verfügung hatte [TI9900], 
+Leider war die Dokumentation, die ich zur Verfügung hatte [TI9900],
 eine Beschreibung, die die Assemblersyntax nur am Rande streifte.
 Ich habe daher an der einen oder anderen Stelle etwas raten müssen...
 zum Beispiel bei der Operandenreihenfolge: Da die meisten anderen TI-
-Mikrokontroller die Quelle als ersten Operanden schreiben, habe ich 
+Mikrokontroller die Quelle als ersten Operanden schreiben, habe ich
 dieses auch für dem 9900 übernommen.  Weiterhin wechselt TI mit der
 Registerbezeichnung zwischen Rx und WRx...vorerst ist beides zuge-
 lassen.
@@ -6963,8 +6963,8 @@ herstellereigene Syntax für hexadezimale und binäre Konstanten (voran-
 gestelltes < bzw. ?).  Da das in AS aber so nicht machbar ist, wird
 defaultmäßig die Intel-Syntax verwendet.  Auf diese ist Texas bei den
 Nachfolgern dieser Familie, nämlich den 370ern auch umgestiegen.  Beim
-genaueren Betrachten des Maschinenbefehlssatzes stellt man fest, daß 
-ca. 80% der 7000er-Befehle binär aufwärtskompatibel sind, und auch die 
+genaueren Betrachten des Maschinenbefehlssatzes stellt man fest, daß
+ca. 80% der 7000er-Befehle binär aufwärtskompatibel sind, und auch die
 Assemblersyntax ist fast gleich - aber eben nur fast.  Bei der Erwei-
 terung des 7000er-Befehlssatzes hat TI nämlich auch gleich die Chance
 genutzt, die Syntax etwas zu vereinheitlichen und zu vereinfachen.
@@ -6978,15 +6978,15 @@ Syntax einfließen zu lassen:
 - Wenn bei den Befehlen AND, BTJO, BTJZ, MOV, OR und XOR eine Port-
   adresse (P...) als Quelle oder Ziel benutzt wird, ist es nicht
   notwendig, die Mnemonic-Form mit explizit angehängtem P zu benut-
-  zen - die allgemeine Form reicht genauso aus.  
+  zen - die allgemeine Form reicht genauso aus.
 
-- Der vorangestelle Klammeraffe für absolute oder B-indizierte 
+- Der vorangestelle Klammeraffe für absolute oder B-indizierte
   Adressierung darf weggelassen werden.
 
 - Anstelle des CMPA-Befehls darf auch einfach CMP mit A als Ziel
   benutzt werden.
 
-- Anstelle LDA oder STA darf auch einfach der MOV-Befehl mit A 
+- Anstelle LDA oder STA darf auch einfach der MOV-Befehl mit A
   als Ziel bzw. Quelle benutzt werden.
 
 - Anstelle des MOVD-Befehls darf auch MOVW benutzt werden.
@@ -6994,7 +6994,7 @@ Syntax einfließen zu lassen:
 - Anstelle von RETS oder RETI darf auch verkürzt RTS bzw. RTI
   geschrieben werden.
 
-- TSTA bzw. TSTB dürfen auch als TST A bzw. TST B geschrieben 
+- TSTA bzw. TSTB dürfen auch als TST A bzw. TST B geschrieben
   werden.
 
 - XCHB B ist als Alias für TSTB zugelassen.
@@ -7036,16 +7036,16 @@ der Prozessor an dieser Stelle nicht...
         4.37. MSP430
         ------------
 
-Der MSP430 wurde als RISC-Prozessor mit minimalem Stromverbrauch 
+Der MSP430 wurde als RISC-Prozessor mit minimalem Stromverbrauch
 konzipiert.  Aus diesem Grund ist der Satz von Befehlen, die der
-Prozessor in Hardware versteht, auf das absolut notwendige reduziert 
-worden (da RISC-Prozessoren keinen Mikrocode besitzen, muß jeder 
+Prozessor in Hardware versteht, auf das absolut notwendige reduziert
+worden (da RISC-Prozessoren keinen Mikrocode besitzen, muß jeder
 Befehl mit zusätzlichem Silizium implementiert werden und erhöht so
-den Stromverbrauch).  Eine Reihe von Befehlen, die bei anderen 
-Prozessoren in Hardware gegossen wurden, werden beim MSP durch eine 
-Emulation mit anderen Befehlen realisiert.  Bei AS finden sich diese 
-Befehle mit in der Datei REGMSP.INC.  Wer diese Datei nicht einbindet, 
-wird bei über der Hälfte der insgesamt von TI definierten Befehle 
+den Stromverbrauch).  Eine Reihe von Befehlen, die bei anderen
+Prozessoren in Hardware gegossen wurden, werden beim MSP durch eine
+Emulation mit anderen Befehlen realisiert.  Bei AS finden sich diese
+Befehle mit in der Datei REGMSP.INC.  Wer diese Datei nicht einbindet,
+wird bei über der Hälfte der insgesamt von TI definierten Befehle
 Fehlermeldungen bekommen!!
 
 
@@ -7115,7 +7115,7 @@ auf absolute Adressen verschiedene Schreibweisen:
  - absolut lang: vorangestelltes !
  - PC-relativ: vorangestelltes $
 
-Bei AS sind diese Präfixe nur notwendig, falls man eine bestimmte 
+Bei AS sind diese Präfixe nur notwendig, falls man eine bestimmte
 Adressierung erzwingen will und der Befehl verschiedene Varianten
 zuläßt.  Setzt man keinen Präfix, so wählt AS automatisch die kür-
 zeste Variante.  Es dürfte daher in der Praxis sehr selten notwendig
@@ -7144,7 +7144,7 @@ Codedatei beginnt mit den Bytes $89/$14.
 
 Danach folgt eine Reihe beliebig vieler "Records", wobei ein Record
 entweder ein zusammenhängendes Teilfeld des Codes darstellt oder be-
-stimmte Zusatzinformationen enthält.  Eine Datei kann auch ohne 
+stimmte Zusatzinformationen enthält.  Eine Datei kann auch ohne
 Umschaltung des Prozessortyps mehrere Code-Records enthalten, wenn
 Code- oder Konstantenbereiche durch reservierte (und nicht zu initia-
 lisierende) Speicherbereiche unterbrochen werden.  Der Assembler ver-
@@ -7176,15 +7176,15 @@ die Länge von Datenfeldern variabel ist und von Length abhängt.
 Ein Record mit einem Header-Byte von $81 ist ein Record, der Code
 oder Daten aus beliebigen Segmenten beinhalten kann.  Das erste
 Byte (Header) gibt an, für welche Prozessorfamilie die folgenden
-Daten bzw. der folgende  Code bestimmt ist:  
+Daten bzw. der folgende  Code bestimmt ist:
 
     Header  Familie               Header  Familie
 
     $01     680x0, 683xx          $05     PowerPC
     $09     DSP56000              $11     65xx/MELPS-740
     $12     MELPS-4500            $13     M16
-    $14     M16C                  $19     65816/MELPS-7700      
-    $21     MCS-48                $29     29xxx                 
+    $14     M16C                  $19     65816/MELPS-7700
+    $21     MCS-48                $29     29xxx
     $31     MCS-(2)51             $32     ST9
     $33     ST7                   $39     MCS-96/196/296
     $3a     8X30x                 $3b     AVR
@@ -7208,7 +7208,7 @@ Daten bzw. der folgende  Code bestimmt ist:
     $7a     µPD78(C)10            $7b     75K0
     $7c     78K0
 
-Das Segment-Feld gibt an, in welchen Adreßraum des Prozessors der 
+Das Segment-Feld gibt an, in welchen Adreßraum des Prozessors der
 folgende Code gehört.  Dabei gilt folgende Zuordnung:
 
     Nummer  Segment               Nummer  Segment
@@ -7219,16 +7219,16 @@ folgende Code gehört.  Dabei gilt folgende Zuordnung:
     $06     BDATA                 $07     IO
     $08     REG
 
-Das Gran-Feld gibt die "Granularität" des Codes an, d.h. die Größe 
+Das Gran-Feld gibt die "Granularität" des Codes an, d.h. die Größe
 der kleinsten, adressierbaren Einheit im folgenden Datensatz.  Dieser
 Wert ist eine Funktion von Prozessortyp und Segment und ein wichtiges
 Detail für die Interpretation der beiden folgenden Felder, die Start-
-adresse und Länge angeben: Während die Startadresse sich auf die 
+adresse und Länge angeben: Während die Startadresse sich auf die
 Granularität bezieht, erfolgt die Längenangabe immer in Bytes!  Wäre
 die Startadresse z.B. $300 und die Länge 12, so wäre die sich ergeben-
 de Endadresse bei einer Granularität von 1 $30b, bei einer Granulari-
 tät von z.B. 4 jedoch $303!  Andere Granularitäten als eins sind sel-
-ten und treten in erster Linie bei Signalprozessoren auf, die nicht 
+ten und treten in erster Linie bei Signalprozessoren auf, die nicht
 auf Einzelbyteverarbeitung ausgelegt sind deren Datenspeicher z.B.
 aus 64kWorten zu 16 Bit besteht (DSP56K).  Der sich ergebende Spei-
 cherplatz beträgt dann zwar 128 KByte, er ist aber in 2^16 Worten
@@ -7236,7 +7236,7 @@ organisiert, die mit Adressen von 0,1,2,...65535 adressiert werden!
 
 Die Startadresse ist immer 32-bittig, unabhängig von der Adreßbreite
 der jeweiligen Prozessorfamilie.  Im Gegensatz dazu ist die Längenan-
-gabe nur 16 Bit lang, ein Record kann also maximal (4+4+2+(64K-1)) = 
+gabe nur 16 Bit lang, ein Record kann also maximal (4+4+2+(64K-1)) =
 65545 Byte lang werden.
 
 Daten-Records mit den Header-Bytes $01..$7f stellen eine Kurzschreib-
@@ -7244,7 +7244,7 @@ weise dar und stellen die Abwärtskompatibilität mit früheren Defini-
 tionen des Dateiformats her: Das Header-Byte gibt direkt den Pro-
 zessortyp gemäß der ersten Tabelle an, das Zielsegment ist auf CODE
 festgelegt und die Granularität ergibt sich aus dem Prozessortyp, auf-
-gerundet auf eine Zweierpotenz von Bytes.  AS bevorzugt diese Records, 
+gerundet auf eine Zweierpotenz von Bytes.  AS bevorzugt diese Records,
 wenn Daten bzw. Code für das CODE-Segment anstehen.
 
 Der Record mit dem Typ-Byte $80 legt den Einsprungpunkt fest, d.h.
@@ -7292,7 +7292,7 @@ dabei durch durch spezielle Zeilen der Form
 
 Segment <Segmentname>
 
-bzw. 
+bzw.
 
 File <Dateiname>
 
@@ -7343,7 +7343,7 @@ Hat AS keine Informationen über die Symbolgröße, so steht in diesem
 Feld eine schlichte -1.
 
 Das fünfte und letzte Feld gibt schlußendlich durch eine 0 oder 1 an,
-ob das Symbol während der Assemblierung jemals referenziert wurde. 
+ob das Symbol während der Assemblierung jemals referenziert wurde.
 Ein Programm, daß die Symboltabelle liest, kann auf diese Weise z.B.
 nicht benutzte Symbole automatisch verwerfen, da sie beim folgenden
 Debugging oder der Disassemblierung mit hoher Wahrscheinlichkeit auch
@@ -7367,10 +7367,10 @@ Information benötigt ein Rückübersetzer, um sich bei der Auffindung
 eines Symbols für einen Zahlenwert ausgehend von der aktuellen Sek-
 tion im Baum bis zur Wurzel "durchhangeln" kann, bis ein passendes
 Symbol gefunden wird.  Auf diese Zeile folgt eine Reihe weiterer
-Zeilen, die den von dieser Sektion belegten Code-Bereich beschreiben. 
+Zeilen, die den von dieser Sektion belegten Code-Bereich beschreiben.
 Jeder einzelne Eintrag (genau einer pro Zeile) beschreibt entweder
 eine einzelne Adresse oder einen durch zwei Grenzwerte beschriebenen
-Bereich (Trennung von Anfangs-und Endwert durch ein Minuszeichen). 
+Bereich (Trennung von Anfangs-und Endwert durch ein Minuszeichen).
 Die Grenzen sind dabei "inklusive", d.h. die Grenzen gehören auch zu
 dem Bereich.  Wichtig ist, daß ein einer Sektion zugehöriger Bereich
 nicht nochmals für ihre Vatersektionen aufgeführt wird (eine Ausnahme
@@ -7875,7 +7875,7 @@ folgende Angaben:
 	Fehlertyp:
            Warnung
         Ursache:
-	   Ein kurzer Sprung mit der Distanz 0 ist bei 680x0- bzw. 
+	   Ein kurzer Sprung mit der Distanz 0 ist bei 680x0- bzw.
            COP8-Prozessoren nicht erlaubt, da dieser Sonderwert für
            lange Sprünge benötigt wird.  Stattdessen wurde ein NOP-
            Befehl eingefügt.
@@ -8754,7 +8754,7 @@ folgende Angaben:
 	Fehlertyp:
            Fehler
         Ursache:
-           In einer Bitmaske, die der BITPOS-Funktion übergeben 
+           In einer Bitmaske, die der BITPOS-Funktion übergeben
            wurde, war nicht genau ein Bit gesetzt.
         Argument:
            keines
@@ -8764,7 +8764,7 @@ folgende Angaben:
         Fehlertyp:
            Fehler
         Ursache:
-           Es wurde mit einem BINCLUDE-Befehl versucht, über das 
+           Es wurde mit einem BINCLUDE-Befehl versucht, über das
            Ende einer Datei hinauszulesen.
         Argument:
            keines
@@ -8864,8 +8864,8 @@ folgende Angaben:
         Fehlertyp:
            Fehler
         Ursache:
-           EXITM bricht die Expansion von Makro-Konstrukten ab.  Dieser 
-           Befehl macht nur innerhalb von Makros Sinn und es wurde 
+           EXITM bricht die Expansion von Makro-Konstrukten ab.  Dieser
+           Befehl macht nur innerhalb von Makros Sinn und es wurde
            versucht, ihn außerhalb aufzurufen.
         Argument:
            keines
@@ -9385,7 +9385,7 @@ A: Neben der Protected-Mode-Version, die AS unter DOS mehr Speicher
    dürfte.  Über Fragen zu diesen Quellen hinaus sollte er sich aber
    nicht viel von mir erwarten...
 
-F: Ist eine Unterstützung des XYZ-Prozessors für AS geplant? 
+F: Ist eine Unterstützung des XYZ-Prozessors für AS geplant?
 A: Es kommen immer neue Prozessoren heraus, und ich bemühe mich, bei
    Erweiterung von AS Schritt zu halten.  Der Stapel mit der Auf-
    schrift "Unerledigt" auf meinem Schreibtisch unterschreitet aber
@@ -9407,7 +9407,7 @@ A: AS ist ein Freizeitprojekt von mir, d.h. etwas, was ich in der
    Zeit tue, wenn ich mich nicht gerade um den Broterwerb kümmere.
    Von dieser Zeit nimmt AS schon einen ganz erheblichen Teil ein,
    und ab und zu genehmige ich mir auch mal eine Auszeit, um den
-   Lötkolben zu schwingen, mal wieder eine Tangerine Dream-Platte 
+   Lötkolben zu schwingen, mal wieder eine Tangerine Dream-Platte
    bewußt zu hören, mich vor den Fernseher zu hocken oder einfach
    nur dringenden menschlichen Bedürfnissen nachzugehen.  Ich habe
    einmal angefangen, einen Disassembler zu konzipieren, der wieder
@@ -9481,7 +9481,7 @@ A: Dann haben Sie wahrscheinlich das Adreßfilter nicht korrekt
 In diesem Anhang finden sich noch einmal als schnelle Referenz alle
 von AS zur Verfügung gestellten Pseudobefehle.  Die Liste ist in zwei
 Teile gegliedert: Im ersten Teil finden sich Befehle, die unabhängig
-vom eingestellten Zielprozessor vorhanden sind, danach folgen fÜr 
+vom eingestellten Zielprozessor vorhanden sind, danach folgen fÜr
 jede Prozessorfamilie die zusätzlich vorhandenen Befehle:
 
         Immer vorhandene Befehle
@@ -9632,7 +9632,7 @@ SFRB          SRCMODE
 
 ASSUME        DB             DD             DQ             DS
 DT            DW
- 
+
 
         Intel 8080/8085
         ---------------
@@ -9646,11 +9646,11 @@ DW            PORT
 
 LIV           RIV
 
- 
+
         Philips XA
         ----------
 
-ASSUME        BIT            DB             DC[.<size>]    DD 
+ASSUME        BIT            DB             DC[.<size>]    DD
 DQ            DS[.<size>]    DT             DW             PADDING
 PORT          SUPMODE
 
@@ -9740,7 +9740,7 @@ DATA          RES            SFR            ZERO
         ---------------
 
 ASCII         ASCIZ          ASSUME         BYTE           BLOCK
-SFR           WORD      
+SFR           WORD
 
 
         SGS-Thomson ST7
@@ -9823,7 +9823,7 @@ BSS           BYTE           PADDING        WORD
 
 DB            DD             DQ             DS             DT
 DW
-	
+
 
         National COP8
         -------------
@@ -9846,7 +9846,7 @@ DT            DW
 ASSUME        BIT            DB             DD             DQ
 DS            DT             DW             SFR
 
-   
+
         NEC 78K0
         --------
 
@@ -9951,7 +9951,7 @@ mehrfach ändern, da sie mit anderen Befehlen vorgenommene Einstel-
 lungen widerspiegeln.  Die in Klammern stehenden Werte geben dann die
 Voreinstellung zu Beginn eines Passes an.
 
-Die hier aufgelistete Schreibweise ist diejenige, mit der man die 
+Die hier aufgelistete Schreibweise ist diejenige, mit der man die
 Symbole auch im case-sensitiven Modus erreicht.
 
 Die hier aufgeführten Namen sollte man für eigene Symbole meiden;
@@ -9969,13 +9969,13 @@ Wenn man sich entschließt, ein solches Kapitel neu zu schreiben, nach-
 dem es eigentlich schon zwei Jahre veraltet ist, läuft man automatisch
 Gefahr, daß dabei der eine oder andere gute Geist, der etwas zum bis-
 herigen Gelingen dieses Projektes beigetragen hat, vergessen wird.  Der
-allererste  Dank gebührt daher allen Personen, die ich in der folgenden 
-Aufzählung unfreiwillig unterschlagen habe!  
+allererste  Dank gebührt daher allen Personen, die ich in der folgenden
+Aufzählung unfreiwillig unterschlagen habe!
 
 AS als Universalassembler, wie er jetzt besteht, ist auf Anregung von
 Bernhard (C.) Zschocke entstanden, der einen "studentenfreundli-
 chen", d.h. kostenlosen 8051-Assembler für sein Mikroprozessorprakti-
-kum brauchte und mich dazu bewegt hat, einen bereits bestehenden 
+kum brauchte und mich dazu bewegt hat, einen bereits bestehenden
 68000-Assembler zu erweitern.  Von dortan nahm die Sache ihren Lauf...
 Das Mikroprozessorpraktikum an der RWTH Aachen hat auch immer die
 eifrigsten Nutzer der neuesten AS-Features (und damit Bug-Sucher) ge-
@@ -9984,23 +9984,23 @@ stellt und damit einiges zur jetzigen Qualität von AS beigetragen.
 Das Internet und FTP haben sich als große Hilfe bei der Meldung von
 Bugs und der Verbreitung von AS erwiesen.  Ein Dank geht daher an
 die FTP-Administratoren (Bernd Casimir in Stuttgart, Norbert Breidohr
-in Aachen und Jürgen Meißburger in Jülich).  Insbesondere letzterer 
-hat sich sehr engagiert, um eine praxisnahe Lösung im ZAM zu 
+in Aachen und Jürgen Meißburger in Jülich).  Insbesondere letzterer
+hat sich sehr engagiert, um eine praxisnahe Lösung im ZAM zu
 finden.
 
 Ach ja, wo wir schon im ZAM sind: Wolfgang E. Nagel hat zwar nichts
-direkt mit AS zu tun, immerhin ist er aber mein Chef und wirft 
+direkt mit AS zu tun, immerhin ist er aber mein Chef und wirft
 ständig vier Augen auf das, was ich tue.  Bei AS scheint zumindest
 ein lachendes dabei zu sein...
 
 Ohne Datenbücher und Unterlagen zu Prozessoren ist ein Programm wie
 AS nicht zu machen.  Ich habe von einer enormen Anzahl von Leuten
 Informationen bekommen, die von einem kleinen Tip bis zu ganzen
-Datenbüchern reichen.  Hier eine Aufzählung (wie oben gesagt, ohne 
+Datenbüchern reichen.  Hier eine Aufzählung (wie oben gesagt, ohne
 Garantie auf Vollständigkeit!):
 
 Ernst Ahlers, Charles Altmann, Bernd Casimir, Gunther Ewald,
-Stephan Hruschka, Peter Kliegelhöfer, Ulf Meinke, Matthias Paul, 
+Stephan Hruschka, Peter Kliegelhöfer, Ulf Meinke, Matthias Paul,
 Norbert Rosch, Steffen Schmid, Leonhard Schneider, Oliver Sellke,
 Christian Stelter, Oliver Thamm, Thorsten Thiele.
 
@@ -10514,7 +10514,7 @@ Version 1.41:  - über das Symbol MOMSEGMENT kann der momentan gesetzte
                  im Big- oder Little-Endian-Format erfolgen soll
                  (r3);
 
-               - es wird beim 680x0 jetzt zwischen dem vollen und 
+               - es wird beim 680x0 jetzt zwischen dem vollen und
                  eingeschränkten MMU-Befehlssatz unterschieden; eine
                  manuelle Umschaltung ist mit dem FULLPMMU-Befehl
                  möglich (r3);
@@ -10548,7 +10548,7 @@ Version 1.41:  - über das Symbol MOMSEGMENT kann der momentan gesetzte
                - unterstützt zusätzlich die AVR-Familie von
                  Atmel (r4);
 
-               - aus Kompatibilität zum AS11 von Motorola existieren 
+               - aus Kompatibilität zum AS11 von Motorola existieren
                  zusätzlich die Befehle FCB, FDB, FCC und RMB (r5);
 
                - unterstützt zusätzlich den M16C von Mitsubishi (r5);
@@ -10594,7 +10594,7 @@ Version 1.41:  - über das Symbol MOMSEGMENT kann der momentan gesetzte
                  Makros, Makroparametern sowie Sektionen nach Groß-
                  und Kleinschreibung unterschieden werden (r5);
 
-               - SFRB berücksichtigt jetzt auch die Bildungsregeln 
+               - SFRB berücksichtigt jetzt auch die Bildungsregeln
                  für Bitadressen im RAM-Bereich; werden nicht bit-
                  adressierbare Speicherstellen angesprochen, erfolgt
                  eine Warnung (r5);
@@ -10605,7 +10605,7 @@ Version 1.41:  - über das Symbol MOMSEGMENT kann der momentan gesetzte
                - zusätzliche Funktionen BITCNT, FIRSTBIT, LASTBIT und
                  BITPOS zur Bitverarbeitung (r5);
 
-               - bei den CPU32-Prozessoren ist jetzt auch der 68360 
+               - bei den CPU32-Prozessoren ist jetzt auch der 68360
                  berücksichtigt (r5);
 
                - unterstützt zusätzlich die ST9-Familie von SGS-Thom-
@@ -10660,7 +10660,7 @@ die C-Freaks schreien, "in C geht so etwas doch viel besser, außerdem
 ist es dann beliebig portabel!"  Jaaaa, wenn das alles so einfach
 wäre...AS ist ein Projekt, das ich nun schon seit einigen Jahren
 verfolge, und zu der Zeit, als ich damit anfing, bestand die Betriebs-
-systemwelt des PC-Benutzers aus DOS, DOS und DOS, und die Erfahrung, 
+systemwelt des PC-Benutzers aus DOS, DOS und DOS, und die Erfahrung,
 daß ich ohne Festplatte schon bei Turbo-C mit 4 Disketten jonglieren
 mußte, Turbo-Pascal aber immer noch auf eine paßte, wirkte noch sehr
 deutlich nach.  Auch das Dickicht der Speichermodelle eines DOS-C-
@@ -10695,12 +10695,12 @@ sich aber geändert: Mit der Einstellung der Turbo/Borland-Pascal-
 Linie durch Borland gibt es an aktuellen Pascal-Compilern nur noch
 so etwas wie Delphi, das m.E. eigentlich nur zur Entwicklung von
 Programmen taugt, die aus 90% Oberfläche bestehen, für ein kommando-
-zeilengesteuertes Programm wie AS also völlig ungeeignet ist. 
+zeilengesteuertes Programm wie AS also völlig ungeeignet ist.
 Außerdem hat sich mein betriebssystemmäßiger Schwerpunkt inzwischen
 deutlich in Richtung Unix verschoben, und der ANSI-Standard hat sich
 inzwischen durchgesetzt.  Eine Portierung der AS-Sourcen auf C habe
-ich daher inzwischen fast beendet, momentan ist die Pascal-Version 
-aber noch die "Referenz".  Zum Übersetzen wird Borland-Pascal in 
+ich daher inzwischen fast beendet, momentan ist die Pascal-Version
+aber noch die "Referenz".  Zum Übersetzen wird Borland-Pascal in
 der Version 7 empfohlen; mit Version 6 geht es zur Not zwar auch,
 man kann einige Features (wie Protected Mode) aber nicht ausnutzen.
 
@@ -10794,7 +10794,7 @@ unabhängig vom Zielprozessor.
         ASMDEF.PAS
 
 Dieses Modul enthält lediglich Deklarationen von überall benötigten
-Konstanten und gemeinsam benutzten Variablen.  
+Konstanten und gemeinsam benutzten Variablen.
 
         ASMSUB.PAS
 
@@ -10831,7 +10831,7 @@ tet ist.
 
         ASMCODE.PAS
 
-In diesem Modul befindet sich die Verwaltung der Code-Ausgabedatei. 
+In diesem Modul befindet sich die Verwaltung der Code-Ausgabedatei.
 Exportiert wird ein Interface, mit dem sich eine Code-Datei öffnen
 und schließen läßt, und das Routinen zum Einschreiben (und
 Zurücknehmen) von Code anbietet.  Eine wichtige Aufgabe dieses Moduls
@@ -10924,13 +10924,13 @@ Hier sind einige häufig genutzte String-Operationen gelandet.
         CHUNKS.PAS
 
 Dieses Modul definiert einen Datentyp, mit dem eine Liste von Adreß-
-bereichen verwaltet werden kann.  Dies Funktion wird von AS für die 
-Belegungslisten benötigt, außerdem benutzten P2BIN und P2HEX diese 
+bereichen verwaltet werden kann.  Dies Funktion wird von AS für die
+Belegungslisten benötigt, außerdem benutzten P2BIN und P2HEX diese
 Listen, um vor Überlappungen zu warnen.
 
         INCLIST.PAS
 
-In diesem Modul ist die Listenstruktur definiert, über die AS die 
+In diesem Modul ist die Listenstruktur definiert, über die AS die
 Verschachtelung von Include-Dateien im Listing ausgeben kann.
 
         FILENUMS.PAS
@@ -11349,7 +11349,7 @@ mern.
 
 [Int196]        Intel Corp.:
                 8XC196NT Microcontroller User's Manual
-                June 1995 
+                June 1995
 
 [Int251]        Intel Corp.:
                 8XC251SB High Performance CHMOS Single-Chip
@@ -11358,7 +11358,7 @@ mern.
 
 [Int296]        Intel Corp.:
                 80296SA Microcontroller User's Manual
-                Sept. 1996 
+                Sept. 1996
 
 [Kaku] 		Hirotsugu Kakugawa:
 		A memo on the secret features of 6309.
@@ -11485,7 +11485,7 @@ mern.
 [NEC7814]       NEC Corp.:
                 Data Sheet $\mu$PD78014.
 
-[PhilXA]        Philips Semiconductor: 
+[PhilXA]        Philips Semiconductor:
                 16-bit 80C51XA Microcontrollers (eXtended Architecture)
                 Data Handbook IC25, 1996
 
@@ -11530,7 +11530,7 @@ mern.
 		Sybex-Verlag Düsseldorf, 1985
 
 [Ti9900]        Texas Instruments:
-                TMS9995 16-Bit Microcomputer 
+                TMS9995 16-Bit Microcomputer
                 Preliminary Data Manual
                 1981
 
