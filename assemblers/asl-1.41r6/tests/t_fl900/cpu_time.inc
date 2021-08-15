@@ -129,7 +129,7 @@ CPU_TI_INI2:    LDW     (XDE),0FFFFH    ;Feldzelle fÅr Min.Werte initalisieren
                 endp
 
 ;*************************************************************************
-;Hier wird der gerade gemessene Wert ausgegeben. Diese Ausgabe ist 
+;Hier wird der gerade gemessene Wert ausgegeben. Diese Ausgabe ist
 ;ausreichend um Laufzeitwerte von statischen Programmabschnitten
 ;zu ermitteln (keine Verzweigungen im Programmabschnitt).
 
@@ -139,7 +139,7 @@ CPU_TI_SOUT:    PUSH    A                 ; needed little later
                 ld      wa,(cap1l)        ; gemesser Wert
                 call    WriteTime
                 pop     bc                ; back to the roots ...
-                POP     F 
+                POP     F
                 POP     A
                 RET                       ; ZurÅck zum Aufruf!
 
@@ -147,9 +147,9 @@ CPU_TI_SOUT:    PUSH    A                 ; needed little later
 ;Hier werden die ermittelten Werte sortiert abgelegt!
 ;Jeweils am Feldanfang steht der grî·te und der kleinste Wert.
 ;Falls ein Wert einem anderen im Feld entspricht (gleicher Messwert)
-;wird dieser nicht nochmal eingetragen!!!! 
-;!!Achtung diese Routine benîtigt max. 145Ês (14,7456MHz Quarz) 
-;  im worst case!! Aber nur wenn Daten und Code 16Bit breit sind 
+;wird dieser nicht nochmal eingetragen!!!!
+;!!Achtung diese Routine benîtigt max. 145Ês (14,7456MHz Quarz)
+;  im worst case!! Aber nur wenn Daten und Code 16Bit breit sind
 ;  und keine Waitstates zugeschaltet sind (Micro-ICE TLCS900 default RAM)!
 
 CPU_TI_SOR:     PUSH    HL              ;Wird gleich benutzt
@@ -181,7 +181,7 @@ CPU_TI_SOR6:    POP     XDE             ;Und wieder restaurieren
                 RET                     ;ZurÅck zum Aufruf!
 
 ;*************************************************************************
-;Hier werden die im Feld abgelegten Werte ausgeben. 
+;Hier werden die im Feld abgelegten Werte ausgeben.
 
 CPU_TI_MOUT:                            ;Mu· noch geschrieben werden!
                 RET                     ;ZurÅck zum Aufruf!
