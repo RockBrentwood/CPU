@@ -12,19 +12,19 @@ typedef struct _TIfSave
          {
 	  struct _TIfSave *Next;
 	  Integer NestLevel;
-	  Boolean SaveIfAsm;
+	  bool SaveIfAsm;
 	  TempResult SaveExpr;
 	  enum {IfState_IFIF,IfState_IFELSE,
 		   IfState_CASESWITCH,IfState_CASECASE,IfState_CASEELSE} State;
-	  Boolean CaseFound;
+	  bool CaseFound;
          } TIfSave,*PIfSave;
 
 
-extern Boolean IfAsm;
+extern bool IfAsm;
 extern PIfSave FirstIfSave;
 
 
-extern Boolean CodeIFs(void);
+extern bool CodeIFs(void);
 
 extern void AsmIFInit(void);
 
@@ -32,6 +32,6 @@ extern Integer SaveIFs(void);
 
 extern void RestoreIFs(Integer Level);
 
-extern Boolean IFListMask(void);
+extern bool IFListMask(void);
 
 extern void asmif_init(void);

@@ -9,7 +9,7 @@
 /*                                                                           */
 /*****************************************************************************/
 
-extern Boolean BigEndian;
+extern bool BigEndian;
 
 extern char *Integ16Format,*Integ32Format,*Integ64Format;
 extern char *IntegerFormat,*LongIntFormat,*QuadIntFormat;
@@ -30,18 +30,18 @@ extern void QWSwap(void *Field, int Cnt);
 extern void Double_2_TenBytes(Double inp, Byte *dest);
 
 
-extern Boolean Read2(FILE *file, void *Ptr);
+extern bool Read2(FILE *file, void *Ptr);
 
-extern Boolean Read4(FILE *file, void *Ptr);
+extern bool Read4(FILE *file, void *Ptr);
 
-extern Boolean Read8(FILE *file, void *Ptr);
+extern bool Read8(FILE *file, void *Ptr);
 
 
-extern Boolean Write2(FILE *file, void *Ptr);
+extern bool Write2(FILE *file, void *Ptr);
 
-extern Boolean Write4(FILE *file, void *Ptr);
+extern bool Write4(FILE *file, void *Ptr);
 
-extern Boolean Write8(FILE *file, void *Ptr);
+extern bool Write8(FILE *file, void *Ptr);
 
 
 extern char *Dec32BlankString(LongInt number, int Stellen);

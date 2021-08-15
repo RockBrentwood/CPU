@@ -128,7 +128,7 @@ typedef struct _TSaveState
 	  CPUVar SaveCPU;
 	  Integer SavePC;
 	  Byte SaveListOn;
-	  Boolean SaveLstMacroEx;
+	  bool SaveLstMacroEx;
 	 } TSaveState,*PSaveState;
 
 typedef struct _TForwardSymbol
@@ -160,37 +160,37 @@ extern String CursUp;
 
 extern LargeWord PCs[PCMax+1];
 extern LargeWord StartAdr;
-extern Boolean StartAdrPresent;
+extern bool StartAdrPresent;
 extern LargeWord Phases[PCMax+1];
 extern Word Grans[PCMax+1];
 extern Word ListGrans[PCMax+1];
 extern ChunkList SegChunks[PCMax+1];
 extern Integer ActPC;
-extern Boolean PCsUsed[PCMax+1];
+extern bool PCsUsed[PCMax+1];
 extern LongInt SegInits[PCMax+1];
 extern LongInt ValidSegs;
-extern Boolean ENDOccured;
-extern Boolean Retracted;
+extern bool ENDOccured;
+extern bool Retracted;
 
 extern Word TypeFlag;
 extern ShortInt SizeFlag;
 
 extern Byte PassNo;
 extern Integer JmpErrors;
-extern Boolean ThrowErrors;
-extern Boolean Repass;
+extern bool ThrowErrors;
+extern bool Repass;
 extern Byte MaxSymPass;
 extern Byte ShareMode;
 extern DebugType DebugMode;
 extern Byte ListMode;
 extern Byte ListOn;
-extern Boolean MakeUseList;
-extern Boolean MakeCrossList;
-extern Boolean MakeSectionList;
-extern Boolean MakeIncludeList;
-extern Boolean RelaxedMode;
+extern bool MakeUseList;
+extern bool MakeCrossList;
+extern bool MakeSectionList;
+extern bool MakeIncludeList;
+extern bool RelaxedMode;
 extern Byte ListMask;
-extern Boolean ExtendErrors;
+extern bool ExtendErrors;
 
 extern LongInt MomSectionHandle;
 extern PSaveSection SectionStack;
@@ -200,25 +200,25 @@ extern Byte *BAsmCode;
 extern Word *WAsmCode;
 extern LongWord *DAsmCode;
 
-extern Boolean DontPrint;
+extern bool DontPrint;
 
-extern Boolean NumericErrors;
-extern Boolean CodeOutput;
-extern Boolean MacProOutput;
-extern Boolean MacroOutput;
-extern Boolean QuietMode;
+extern bool NumericErrors;
+extern bool CodeOutput;
+extern bool MacProOutput;
+extern bool MacroOutput;
+extern bool QuietMode;
 extern char *DivideChars;
-extern Boolean HasAttrs;
+extern bool HasAttrs;
 extern char *AttrChars;
-extern Boolean MsgIfRepass;
+extern bool MsgIfRepass;
 extern Integer PassNoForMessage;
-extern Boolean CaseSensitive;
+extern bool CaseSensitive;
 
 extern FILE *PrgFile;
 
 extern String ErrorPath,ErrorName;
 extern String OutName;
-extern Boolean IsErrorOpen;
+extern bool IsErrorOpen;
 extern String CurrFileName;
 extern LongInt CurrLine;
 extern LongInt MomLineCounter;
@@ -226,14 +226,14 @@ extern LongInt LineSum;
 extern LongInt MacLineSum;
 
 extern LongInt NOPCode;
-extern Boolean TurnWords;
+extern bool TurnWords;
 extern Byte HeaderID;
 extern char *PCSymbol;
 extern TConstMode ConstMode;
-extern Boolean SetIsOccupied;
+extern bool SetIsOccupied;
 extern void (*MakeCode)(void);
-extern Boolean (*ChkPC)(void);
-extern Boolean (*IsDef)(void);
+extern bool (*ChkPC)(void);
+extern bool (*IsDef)(void);
 extern void (*SwitchFrom)(void);
 extern void (*InternSymbol)(char *Asc, TempResult *Erg);
 extern void (*InitPassProc)(void);
@@ -247,17 +247,17 @@ extern FILE *ShareFile;
 extern FILE *MacProFile;
 extern FILE *MacroFile;
 extern String LstName,MacroName,MacProName;
-extern Boolean DoLst,NextDoLst;
+extern bool DoLst,NextDoLst;
 extern String ShareName;
 extern CPUVar MomCPU,MomVirtCPU;
 extern char MomCPUIdent[10];
 extern PCPUDef FirstCPUDef;
 extern CPUVar CPUCnt;
 
-extern Boolean FPUAvail;
-extern Boolean DoPadding;
-extern Boolean SupAllowed;
-extern Boolean Maximum;
+extern bool FPUAvail;
+extern bool DoPadding;
+extern bool SupAllowed;
+extern bool Maximum;
 
 extern String LabPart,OpPart,AttrPart,ArgPart,CommPart,LOpPart;
 extern char AttrSplit;
@@ -271,7 +271,7 @@ extern Byte ChapDepth;
 extern String ListLine;
 extern String ErrorPos;
 extern Byte PageLength,PageWidth;
-extern Boolean LstMacroEx;
+extern bool LstMacroEx;
 extern String PrtInitString;
 extern String PrtExitString;
 extern String PrtTitleString;
@@ -279,7 +279,7 @@ extern String ExtendError;
 
 extern Byte StopfZahl;
 
-extern Boolean SuppWarns;
+extern bool SuppWarns;
 
 extern unsigned char CharTransTable[256];
 
@@ -289,7 +289,7 @@ extern PDefinement FirstDefine;
 
 extern PSaveState FirstSaveState;
 
-extern Boolean MakeDebug;
+extern bool MakeDebug;
 extern FILE *Debug;
 
 

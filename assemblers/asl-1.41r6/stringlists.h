@@ -33,11 +33,11 @@ extern char *GetStringListNext(StringRecPtr *Lauf);
 
 extern char *GetAndCutStringList(StringList *List);
 
-extern Boolean StringListEmpty(StringList List);
+extern bool StringListEmpty(StringList List);
 
 extern StringList DuplicateStringList(StringList Src);
 
-extern Boolean StringListPresent(StringList List, char *Search);
+extern bool StringListPresent(StringList List, char *Search);
 
 
 extern void stringlists_init(void);

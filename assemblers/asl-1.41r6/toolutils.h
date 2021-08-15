@@ -35,10 +35,10 @@ extern void ReadRecordHeader(Byte *Header, Byte* Segment, Byte *Gran,
 extern void WriteRecordHeader(Byte *Header, Byte* Segment, Byte *Gran,
                               char *Name, FILE *f);
 
-extern CMDResult CMD_FilterList(Boolean Negate, char *Arg);
+extern CMDResult CMD_FilterList(bool Negate, char *Arg);
 
-extern Boolean FilterOK(Byte Header);
+extern bool FilterOK(Byte Header);
 
-extern Boolean RemoveOffset(char *Name, LongWord *Offset);
+extern bool RemoveOffset(char *Name, LongWord *Offset);
 
 extern void toolutils_init(void);

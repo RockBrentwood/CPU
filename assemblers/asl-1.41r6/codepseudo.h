@@ -19,26 +19,26 @@ typedef struct
 typedef struct
          {
           char *Name;
-          Boolean *Dest;
+          bool *Dest;
           char *FlagName;
          } ONOFFRec;
 
 extern int FindInst(void *Field, int Size, int Count);
 
-extern Boolean IsIndirect(char *Asc);
+extern bool IsIndirect(char *Asc);
 
 extern void ConvertDec(Double F, Word *w);
 
-extern Boolean DecodeIntelPseudo(Boolean Turn);
+extern bool DecodeIntelPseudo(bool Turn);
 
-extern Boolean DecodeMotoPseudo(Boolean Turn);
+extern bool DecodeMotoPseudo(bool Turn);
 
-extern Boolean DecodeMoto16Pseudo(ShortInt OpSize, Boolean Turn);
+extern bool DecodeMoto16Pseudo(ShortInt OpSize, bool Turn);
 
 extern void CodeEquate(ShortInt DestSeg, LargeInt Min, LargeInt Max);
 
 extern void CodeASSUME(ASSUMERec *Def, Integer Cnt);
 
-extern Boolean CodeONOFF(ONOFFRec *Def, Integer Cnt);
+extern bool CodeONOFF(ONOFFRec *Def, Integer Cnt);
 
 extern void codepseudo_init(void);

@@ -23,7 +23,7 @@ typedef struct
 	 } ChunkList;
 
 
-extern Boolean AddChunk(ChunkList *NChunk, LargeWord NewStart, LargeWord NewLen, Boolean Warn);
+extern bool AddChunk(ChunkList *NChunk, LargeWord NewStart, LargeWord NewLen, bool Warn);
 
 extern void DeleteChunk(ChunkList *NChunk, LargeWord DelStart, LargeWord DelLen);
 

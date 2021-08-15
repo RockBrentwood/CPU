@@ -8,7 +8,7 @@
 /*                                                                           */
 /*****************************************************************************/
 
-extern Boolean HexLowerCase;
+extern bool HexLowerCase;
 
 extern char *Blanks(int cnt);
 
@@ -43,6 +43,6 @@ extern void strmaxins(char *Dest, const char *Src, int Pos, int MaxLen);
 
 extern void ReadLn(FILE *Datei, char *Zeile);
 
-extern LongInt ConstLongInt(const char *inp, Boolean *err);
+extern LongInt ConstLongInt(const char *inp, bool *err);
 
 extern void stringutil_init(void);

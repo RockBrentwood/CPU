@@ -12,14 +12,14 @@ typedef enum {CMDErr,CMDFile,CMDOK,CMDArg} CMDResult;
 
 typedef CMDResult (*CMDCallback)(
 #ifdef __PROTOS__
-Boolean NegFlag, char *Arg
+bool NegFlag, char *Arg
 #endif
 );
 
 typedef void (*CMDErrCallback)
 (
 #ifdef __PROTOS__
-Boolean InEnv, char *Arg
+bool InEnv, char *Arg
 #endif
 );
 
@@ -30,13 +30,13 @@ typedef struct
          } CMDRec;
 
 #define MAXPARAM 256
-typedef Boolean CMDProcessed[MAXPARAM+1];
+typedef bool CMDProcessed[MAXPARAM+1];
 
 extern LongInt ParamCount;
 extern char **ParamStr;
 
 
-extern Boolean ProcessedEmpty(CMDProcessed Processed);
+extern bool ProcessedEmpty(CMDProcessed Processed);
 
 extern void ProcessCMD(CMDRec *Def, Integer Cnt, CMDProcessed Unprocessed,
                        char *EnvName, CMDErrCallback ErrProc);

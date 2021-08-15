@@ -26,7 +26,7 @@ extern void AddInstTree(PInstTreeNode *Root, char *NName, InstProc NProc, Word N
 
 extern void ClearInstTree(PInstTreeNode *Root);
 
-extern Boolean SearchInstTree(PInstTreeNode Root);
+extern bool SearchInstTree(PInstTreeNode Root);
 
 extern void PrintInstTree(PInstTreeNode Root);
 

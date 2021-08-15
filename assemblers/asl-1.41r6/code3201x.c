@@ -32,7 +32,7 @@ typedef struct
          {
           char *Name;
           Word Code;
-          Boolean Must1;
+          bool Must1;
          } AdrOrder;
 
 typedef struct
@@ -59,7 +59,7 @@ typedef struct
 
 
 static Word AdrMode;
-static Boolean AdrOK;
+static bool AdrOK;
 
 static CPUVar CPU32010,CPU32015;
 
@@ -72,47 +72,47 @@ static ImmOrder *ImmOrders;
 /*----------------------------------------------------------------------------*/
 
 	static void AddFixed(char *NName, Word NCode)
-BEGIN
+{
    if (InstrZ>=FixedOrderCnt) exit(255);
    FixedOrders[InstrZ].Name=NName;
    FixedOrders[InstrZ++].Code=NCode;
-END
+}
 
         static void AddJmp(char *NName, Word NCode)
-BEGIN
+{
    if (InstrZ>=JmpOrderCnt) exit(255);
    JmpOrders[InstrZ].Name=NName;
    JmpOrders[InstrZ++].Code=NCode;
-END
+}
 
         static void AddAdr(char *NName, Word NCode, Word NMust1)
-BEGIN
+{
    if (InstrZ>=AdrOrderCnt) exit(255);
    AdrOrders[InstrZ].Name=NName;
    AdrOrders[InstrZ].Code=NCode;
    AdrOrders[InstrZ++].Must1=NMust1;
-END
+}
 
         static void AddAdrShift(char *NName, Word NCode, Word NAllow)
-BEGIN
+{
    if (InstrZ>=AdrShiftOrderCnt) exit(255);
    AdrShiftOrders[InstrZ].Name=NName;
    AdrShiftOrders[InstrZ].Code=NCode;
    AdrShiftOrders[InstrZ++].AllowShifts=NAllow;
-END
+}
 
         static void AddImm(char *NName, Word NCode, Integer NMin, Integer NMax, Word NMask)
-BEGIN
+{
    if (InstrZ>=ImmOrderCnt) exit(255);
    ImmOrders[InstrZ].Name=NName;
    ImmOrders[InstrZ].Code=NCode;
    ImmOrders[InstrZ].Min=NMin;
    ImmOrders[InstrZ].Max=NMax;
    ImmOrders[InstrZ++].Mask=NMask;
-END
+}
 
 	static void InitFields(void)
-BEGIN
+{
    FixedOrders=(FixedOrder *) malloc(sizeof(FixedOrder)*FixedOrderCnt); InstrZ=0;
    AddFixed("ABS"   , 0x7f88);  AddFixed("APAC"  , 0x7f8f);
    AddFixed("CALA"  , 0x7f8c);  AddFixed("DINT"  , 0x7f81);
@@ -131,17 +131,17 @@ BEGIN
    AddJmp("CALL"  , 0xf800);
 
    AdrOrders=(AdrOrder *) malloc(sizeof(AdrOrder)*AdrOrderCnt); InstrZ=0;
-   AddAdr("ADDH"  , 0x6000, False);  AddAdr("ADDS"  , 0x6100, False);
-   AddAdr("AND"   , 0x7900, False);  AddAdr("DMOV"  , 0x6900, False);
-   AddAdr("LDP"   , 0x6f00, False);  AddAdr("LST"   , 0x7b00, False);
-   AddAdr("LT"    , 0x6a00, False);  AddAdr("LTA"   , 0x6c00, False);
-   AddAdr("LTD"   , 0x6b00, False);  AddAdr("MAR"   , 0x6800, False);
-   AddAdr("MPY"   , 0x6d00, False);  AddAdr("OR"    , 0x7a00, False);
-   AddAdr("SST"   , 0x7c00, True );  AddAdr("SUBC"  , 0x6400, False);
-   AddAdr("SUBH"  , 0x6200, False);  AddAdr("SUBS"  , 0x6300, False);
-   AddAdr("TBLR"  , 0x6700, False);  AddAdr("TBLW"  , 0x7d00, False);
-   AddAdr("XOR"   , 0x7800, False);  AddAdr("ZALH"  , 0x6500, False);
-   AddAdr("ZALS"  , 0x6600, False);
+   AddAdr("ADDH"  , 0x6000, false);  AddAdr("ADDS"  , 0x6100, false);
+   AddAdr("AND"   , 0x7900, false);  AddAdr("DMOV"  , 0x6900, false);
+   AddAdr("LDP"   , 0x6f00, false);  AddAdr("LST"   , 0x7b00, false);
+   AddAdr("LT"    , 0x6a00, false);  AddAdr("LTA"   , 0x6c00, false);
+   AddAdr("LTD"   , 0x6b00, false);  AddAdr("MAR"   , 0x6800, false);
+   AddAdr("MPY"   , 0x6d00, false);  AddAdr("OR"    , 0x7a00, false);
+   AddAdr("SST"   , 0x7c00, true );  AddAdr("SUBC"  , 0x6400, false);
+   AddAdr("SUBH"  , 0x6200, false);  AddAdr("SUBS"  , 0x6300, false);
+   AddAdr("TBLR"  , 0x6700, false);  AddAdr("TBLW"  , 0x7d00, false);
+   AddAdr("XOR"   , 0x7800, false);  AddAdr("ZALH"  , 0x6500, false);
+   AddAdr("ZALS"  , 0x6600, false);
 
    AdrShiftOrders=(AdrShiftOrder *) malloc(sizeof(AdrShiftOrder)*AdrShiftOrderCnt); InstrZ=0;
    AddAdrShift("ADD"   , 0x0000, 0xffff);
@@ -154,158 +154,158 @@ BEGIN
    AddImm("LACK", 0x7e00,     0,  255,   0xff);
    AddImm("LDPK", 0x6e00,     0,    1,    0x1);
    AddImm("MPYK", 0x8000, -4096, 4095, 0x1fff);
-END
+}
 
 	static void DeinitFields(void)
-BEGIN
+{
    free(FixedOrders);
    free(JmpOrders);
    free(AdrOrders);
    free(AdrShiftOrders);
    free(ImmOrders);
-END
+}
 
 /*----------------------------------------------------------------------------*/
 
-	static Word EvalARExpression(char *Asc, Boolean *OK)
-BEGIN
-   *OK=True;
+	static Word EvalARExpression(char *Asc, bool *OK)
+{
+   *OK=true;
    if (strcasecmp(Asc,"AR0")==0) return 0;
    if (strcasecmp(Asc,"AR1")==0) return 1;
    return EvalIntExpression(Asc,UInt1,OK);
-END
+}
 
-	static void DecodeAdr(char *Arg, Integer Aux, Boolean Must1)
-BEGIN
+	static void DecodeAdr(char *Arg, Integer Aux, bool Must1)
+{
    Byte h;
    char *p;
 
-   AdrOK=False;
+   AdrOK=false;
 
-   if ((strcmp(Arg,"*")==0) OR (strcmp(Arg,"*-")==0) OR (strcmp(Arg,"*+")==0))
-    BEGIN
+   if ((strcmp(Arg,"*")==0) || (strcmp(Arg,"*-")==0) || (strcmp(Arg,"*+")==0))
+    {
      AdrMode=0x88;
      if (strlen(Arg)==2)
       AdrMode+=(Arg[1]=='+') ? 0x20 : 0x10;
      if (Aux<=ArgCnt)
-      BEGIN
+      {
        h=EvalARExpression(ArgStr[Aux],&AdrOK);
        if (AdrOK)
-	BEGIN
+	{
 	 AdrMode&=0xf7; AdrMode+=h;
-	END
-      END
-     else AdrOK=True;
-    END
+	}
+      }
+     else AdrOK=true;
+    }
    else if (Aux<=ArgCnt) WrError(1110);
    else
-    BEGIN
+    {
      h=0;
-     if ((strlen(Arg)>3) AND (strncasecmp(Arg,"DAT",3)==0))
-      BEGIN
-       AdrOK=True;
+     if ((strlen(Arg)>3) && (strncasecmp(Arg,"DAT",3)==0))
+      {
+       AdrOK=true;
        for (p=Arg+3; *p!='\0'; p++)
-	if ((*p>'9') OR (*p<'0')) AdrOK=False;
+	if ((*p>'9') || (*p<'0')) AdrOK=false;
        if (AdrOK) h=EvalIntExpression(Arg+3,UInt8,&AdrOK);
-      END
-     if (NOT AdrOK) h=EvalIntExpression(Arg,Int8,&AdrOK);
+      }
+     if (! AdrOK) h=EvalIntExpression(Arg,Int8,&AdrOK);
      if (AdrOK)
-      if ((Must1) AND (h<0x80) AND (NOT FirstPassUnknown))
-       BEGIN
-	WrError(1315); AdrOK=False;
-       END
+      if ((Must1) && (h<0x80) && (! FirstPassUnknown))
+       {
+	WrError(1315); AdrOK=false;
+       }
       else
-       BEGIN
+       {
 	AdrMode=h & 0x7f; ChkSpace(SegData);
-       END
-    END
-END
+       }
+    }
+}
 
-	static Boolean DecodePseudo(void)
-BEGIN
+	static bool DecodePseudo(void)
+{
    Word Size;
    Integer z,z2;
    char *p;
    TempResult t;
-   Boolean OK;
+   bool OK;
 
    if (Memo("PORT"))
-    BEGIN
+    {
      CodeEquate(SegIO,0,7);
-     return True;
-    END
+     return true;
+    }
 
    if (Memo("RES"))
-    BEGIN
+    {
      if (ArgCnt!=1) WrError(1110);
      else
-      BEGIN
-       FirstPassUnknown=False;
+      {
+       FirstPassUnknown=false;
        Size=EvalIntExpression(ArgStr[1],Int16,&OK);
        if (FirstPassUnknown) WrError(1820);
-       if ((OK) AND (NOT FirstPassUnknown))
-	BEGIN
-	 DontPrint=True;
+       if ((OK) && (! FirstPassUnknown))
+	{
+	 DontPrint=true;
 	 CodeLen=Size;
 	 if (MakeUseList)
 	  if (AddChunk(SegChunks+ActPC,ProgCounter(),CodeLen,ActPC==SegCode)) WrError(90);
-	END
-      END
-     return True;
-    END
+	}
+      }
+     return true;
+    }
 
    if (Memo("DATA"))
-    BEGIN
+    {
      if (ArgCnt==0) WrError(1110);
      else
-      BEGIN
-       OK=True;
+      {
+       OK=true;
        for (z=1; z<=ArgCnt; z++)
 	if (OK)
-	 BEGIN
+	 {
 	  EvalExpression(ArgStr[z],&t);
 	  switch (t.Typ)
-           BEGIN
+           {
 	    case TempInt:
-             if ((t.Contents.Int<-32768) OR (t.Contents.Int>0xffff))
-	      BEGIN
-	       WrError(1320); OK=False;
-	      END
+             if ((t.Contents.Int<-32768) || (t.Contents.Int>0xffff))
+	      {
+	       WrError(1320); OK=false;
+	      }
 	     else WAsmCode[CodeLen++]=t.Contents.Int;
 	     break;
 	    case TempFloat:
-             WrError(1135); OK=False;
+             WrError(1135); OK=false;
 	     break;
 	    case TempString:
              for (p=t.Contents.Ascii,z2=0; *p!='\0'; p++,z2++)
-              BEGIN
+              {
 	       if ((z2&1)==0)
 		WAsmCode[CodeLen]=CharTransTable[(int)*p];
 	       else
 		WAsmCode[CodeLen++]+=((Word) CharTransTable[(int)*p]) << 8;
-              END
+              }
 	     if ((z2&1)==0) CodeLen++;
 	     break;
 	    default:
-             OK=False;
-	   END
-	 END
-       if (NOT OK) CodeLen=0;
-      END
-     return True;
-    END
+             OK=false;
+	   }
+	 }
+       if (! OK) CodeLen=0;
+      }
+     return true;
+    }
 
-   return False;
-END
+   return false;
+}
 
 	static void MakeCode_3201X(void)
-BEGIN
-   Boolean OK,HasSh;
+{
+   bool OK,HasSh;
    Word AdrWord;
    LongInt AdrLong;
    Integer z,Cnt;
 
-   CodeLen=0; DontPrint=False;
+   CodeLen=0; DontPrint=false;
 
    /* zu ignorierendes */
 
@@ -319,230 +319,230 @@ BEGIN
 
    for (z=0; z<FixedOrderCnt; z++)
     if (Memo(FixedOrders[z].Name))
-     BEGIN
+     {
       if (ArgCnt!=0) WrError(1110);
       else
-       BEGIN
+       {
         CodeLen=1; WAsmCode[0]=FixedOrders[z].Code;
-       END
+       }
       return;
-     END
+     }
 
    /* Spruenge */
 
    for (z=0; z<JmpOrderCnt; z++)
     if (Memo(JmpOrders[z].Name))
-     BEGIN
+     {
       if (ArgCnt!=1) WrError(1110);
       else
-       BEGIN
+       {
         WAsmCode[1]=EvalIntExpression(ArgStr[1],UInt12,&OK);
         if (OK)
-         BEGIN
+         {
           CodeLen=2; WAsmCode[0]=JmpOrders[z].Code;
-         END
-       END
+         }
+       }
       return;
-     END
+     }
 
    /* nur Adresse */
 
    for (z=0; z<AdrOrderCnt; z++)
     if (Memo(AdrOrders[z].Name))
-     BEGIN
-      if ((ArgCnt<1) OR (ArgCnt>2)) WrError(1110);
+     {
+      if ((ArgCnt<1) || (ArgCnt>2)) WrError(1110);
       else
-       BEGIN
+       {
 	DecodeAdr(ArgStr[1],2,AdrOrders[z].Must1);
 	if (AdrOK)
-	 BEGIN
+	 {
 	  CodeLen=1; WAsmCode[0]=AdrOrders[z].Code+AdrMode;
-	 END
-       END
+	 }
+       }
       return;
-     END
+     }
 
    /* Adresse & schieben */
 
    for (z=0; z<AdrShiftOrderCnt; z++)
     if (Memo(AdrShiftOrders[z].Name))
-     BEGIN
-      if ((ArgCnt<1) OR (ArgCnt>3)) WrError(1110);
+     {
+      if ((ArgCnt<1) || (ArgCnt>3)) WrError(1110);
       else
-       BEGIN
+       {
         if (*ArgStr[1]=='*')
          if (ArgCnt==2)
           if (strncasecmp(ArgStr[2],"AR",2)==0)
-           BEGIN
-            HasSh=False; Cnt=2;
-           END
+           {
+            HasSh=false; Cnt=2;
+           }
           else
-           BEGIN
-            HasSh=True; Cnt=3;
-           END
+           {
+            HasSh=true; Cnt=3;
+           }
          else
-          BEGIN
-           HasSh=True; Cnt=3;
-          END
+          {
+           HasSh=true; Cnt=3;
+          }
         else
-         BEGIN
+         {
           Cnt=3; HasSh=(ArgCnt==2);
-         END
-        DecodeAdr(ArgStr[1],Cnt,False);
+         }
+        DecodeAdr(ArgStr[1],Cnt,false);
         if (AdrOK)
-         BEGIN
-          if (NOT HasSh)
-           BEGIN
-            OK=True; AdrWord=0;
-           END
+         {
+          if (! HasSh)
+           {
+            OK=true; AdrWord=0;
+           }
           else
-           BEGIN
+           {
             AdrWord=EvalIntExpression(ArgStr[2],Int4,&OK);
-            if ((OK) AND (FirstPassUnknown)) AdrWord=0;
-           END
+            if ((OK) && (FirstPassUnknown)) AdrWord=0;
+           }
           if (OK)
            if ((AdrShiftOrders[z].AllowShifts & (1 << AdrWord))==0) WrError(1380);
            else
-            BEGIN
+            {
              CodeLen=1; WAsmCode[0]=AdrShiftOrders[z].Code+AdrMode+(AdrWord << 8);
-            END
-         END
-       END
+            }
+         }
+       }
       return;
-     END
+     }
 
    /* Ein/Ausgabe */
 
-   if ((Memo("IN")) OR (Memo("OUT")))
-    BEGIN
-     if ((ArgCnt<2) OR (ArgCnt>3)) WrError(1110);
+   if ((Memo("IN")) || (Memo("OUT")))
+    {
+     if ((ArgCnt<2) || (ArgCnt>3)) WrError(1110);
      else
-      BEGIN
-       DecodeAdr(ArgStr[1],3,False);
+      {
+       DecodeAdr(ArgStr[1],3,false);
        if (AdrOK)
-	BEGIN
+	{
 	 AdrWord=EvalIntExpression(ArgStr[2],UInt3,&OK);
 	 if (OK)
-	  BEGIN
+	  {
 	   ChkSpace(SegIO);
 	   CodeLen=1;
 	   WAsmCode[0]=0x4000+AdrMode+(AdrWord << 8);
 	   if (Memo("OUT")) WAsmCode[0]+=0x800;
-	  END
-	END
-      END
+	  }
+	}
+      }
      return;
-    END
+    }
 
    /* konstantes Argument */
 
    for (z=0; z<ImmOrderCnt; z++)
     if (Memo(ImmOrders[z].Name))
-     BEGIN
+     {
       if (ArgCnt!=1) WrError(1110);
       else
-       BEGIN
+       {
         AdrLong=EvalIntExpression(ArgStr[1],Int32,&OK);
         if (OK)
-         BEGIN
+         {
           if (FirstPassUnknown) AdrLong&=ImmOrders[z].Mask;
           if (AdrLong<ImmOrders[z].Min) WrError(1315);
           else if (AdrLong>ImmOrders[z].Max) WrError(1320);
           else
-           BEGIN
+           {
             CodeLen=1; WAsmCode[0]=ImmOrders[z].Code+(AdrLong & ImmOrders[z].Mask);
-           END
-         END
-       END
+           }
+         }
+       }
       return;
-     END
+     }
 
    /* mit Hilfsregistern */
 
    if (Memo("LARP"))
-    BEGIN
+    {
      if (ArgCnt!=1) WrError(1110);
      else
-      BEGIN
+      {
        AdrWord=EvalARExpression(ArgStr[1],&OK);
        if (OK)
-	BEGIN
+	{
 	 CodeLen=1; WAsmCode[0]=0x6880+AdrWord;
-	END
-      END
+	}
+      }
      return;
-    END
+    }
 
-   if ((Memo("LAR")) OR (Memo("SAR")))
-    BEGIN
-     if ((ArgCnt<2) OR (ArgCnt>3)) WrError(1110);
+   if ((Memo("LAR")) || (Memo("SAR")))
+    {
+     if ((ArgCnt<2) || (ArgCnt>3)) WrError(1110);
      else
-      BEGIN
+      {
        AdrWord=EvalARExpression(ArgStr[1],&OK);
        if (OK)
-	BEGIN
-	 DecodeAdr(ArgStr[2],3,False);
+	{
+	 DecodeAdr(ArgStr[2],3,false);
 	 if (AdrOK)
-	  BEGIN
+	  {
 	   CodeLen=1;
 	   WAsmCode[0]=0x3000+AdrMode+(AdrWord << 8);
 	   if (Memo("LAR")) WAsmCode[0]+=0x800;
-	  END
-	END
-      END
+	  }
+	}
+      }
      return;
-    END
+    }
 
    if (Memo("LARK"))
-    BEGIN
+    {
      if (ArgCnt!=2) WrError(1110);
      else
-      BEGIN
+      {
        AdrWord=EvalARExpression(ArgStr[1],&OK);
        if (OK)
-	BEGIN
+	{
 	 WAsmCode[0]=EvalIntExpression(ArgStr[2],Int8,&OK);
 	 if (OK)
-	  BEGIN
+	  {
 	   CodeLen=1;
 	   WAsmCode[0]=Lo(WAsmCode[0])+0x7000+(AdrWord << 8);
-	  END
-	END
-      END
+	  }
+	}
+      }
      return;
-    END
+    }
 
    WrXError(1200,OpPart);
-END
+}
 
-	static Boolean ChkPC_3201X(void)
-BEGIN
+	static bool ChkPC_3201X(void)
+{
    switch (ActPC)
-    BEGIN
+    {
      case SegCode  : return (ProgCounter() <=0xfff);
      case SegData  : return (ProgCounter()<=((MomCPU==CPU32010) ? 0x8f : 0xff));
      case SegIO    : return (ProgCounter() <=7);
-     default       : return False;
-    END
-END
+     default       : return false;
+    }
+}
 
 
-	static Boolean IsDef_3201X(void)
-BEGIN
+	static bool IsDef_3201X(void)
+{
    return (Memo("PORT"));
-END
+}
 
         static void SwitchFrom_3201X(void)
-BEGIN
+{
    DeinitFields();
-END
+}
 
 	static void SwitchTo_3201X(void)
-BEGIN
-   TurnWords=False; ConstMode=ConstModeIntel; SetIsOccupied=False;
+{
+   TurnWords=false; ConstMode=ConstModeIntel; SetIsOccupied=false;
 
    PCSymbol="$"; HeaderID=0x74; NOPCode=0x7f80;
-   DivideChars=","; HasAttrs=False;
+   DivideChars=","; HasAttrs=false;
 
    ValidSegs=(1<<SegCode)|(1<<SegData)|(1<<SegIO);
    Grans[SegCode]=2; ListGrans[SegCode]=2; SegInits[SegCode]=0;
@@ -551,10 +551,10 @@ BEGIN
 
    MakeCode=MakeCode_3201X; ChkPC=ChkPC_3201X; IsDef=IsDef_3201X;
    SwitchFrom=SwitchFrom_3201X; InitFields();
-END
+}
 
 	void code3201x_init(void)
-BEGIN
+{
    CPU32010=AddCPU("32010",SwitchTo_3201X);
    CPU32015=AddCPU("32015",SwitchTo_3201X);
-END
+}

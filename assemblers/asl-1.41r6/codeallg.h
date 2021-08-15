@@ -8,8 +8,8 @@
 /*                                                                           */
 /*****************************************************************************/
 
-extern void SetCPU(CPUVar NewCPU, Boolean NotPrev);
+extern void SetCPU(CPUVar NewCPU, bool NotPrev);
 
-extern Boolean CodeGlobalPseudo(void);
+extern bool CodeGlobalPseudo(void);
 
 extern void codeallg_init(void);

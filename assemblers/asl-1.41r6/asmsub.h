@@ -26,7 +26,7 @@ extern long GTime(void);
 
 extern CPUVar AddCPU(char *NewName, TSwitchProc Switcher);
 
-extern Boolean AddCPUAlias(char *OrigName, char *AliasName);
+extern bool AddCPUAlias(char *OrigName, char *AliasName);
 
 extern void PrintCPUList(TSwitchProc NxtProc);
 
@@ -67,12 +67,12 @@ extern char *PathPart(char *Name);
 
 extern char *FloatString(Double f);
 
-extern void StrSym(TempResult *t, Boolean WithSystem, char *Dest);
+extern void StrSym(TempResult *t, bool WithSystem, char *Dest);
 
 
 extern void ResetPageCounter(void);
 
-extern void NewPage(ShortInt Level, Boolean WithFF);
+extern void NewPage(ShortInt Level, bool WithFF);
 
 extern void WrLstLine(char *Line);
 
@@ -116,19 +116,19 @@ extern void AddCopyright(char *NewLine);
 extern void WriteCopyrights(TSwitchProc NxtProc);
 
 
-extern Boolean ChkSymbName(char *sym);
+extern bool ChkSymbName(char *sym);
 
-extern Boolean ChkMacSymbName(char *sym);
+extern bool ChkMacSymbName(char *sym);
 
 
-extern void WrErrorString(char *Message, char *Add, Boolean Warning, Boolean Fatal);
+extern void WrErrorString(char *Message, char *Add, bool Warning, bool Fatal);
 
 
 extern void WrError(Word Num);
 
 extern void WrXError(Word Num, char *Message);
 
-extern Boolean ChkRange(LargeInt Value, LargeInt Min, LargeInt Max);
+extern bool ChkRange(LargeInt Value, LargeInt Min, LargeInt Max);
 
 
 extern void ChkIO(Word ErrNo);

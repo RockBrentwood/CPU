@@ -44,7 +44,7 @@ extern void NLS_CurrDateString(char *Dest);
 
 extern void NLS_TimeString(Word Hour, Word Minute, Word Second, Word Sec100, char *Dest);
 
-extern void NLS_CurrTimeString(Boolean Use100, char *Dest);
+extern void NLS_CurrTimeString(bool Use100, char *Dest);
 
 extern void NLS_CurrencyString(double inp, char *erg);
 

@@ -25,46 +25,46 @@ extern LargeWord IntMasks[IntTypeCnt];
 extern LargeInt IntMins[IntTypeCnt];
 extern LargeInt IntMaxs[IntTypeCnt];
 
-extern Boolean FirstPassUnknown;
-extern Boolean SymbolQuestionable;
-extern Boolean UsesForwards;
+extern bool FirstPassUnknown;
+extern bool SymbolQuestionable;
+extern bool UsesForwards;
 extern LongInt MomLocHandle;
 extern LongInt LocHandleCnt;
-extern Boolean BalanceTree;
+extern bool BalanceTree;
 extern LongInt MomLocHandle;
 
 
 extern void AsmParsInit(void);
 
 
-extern LargeInt ConstIntVal(char *Asc_O, IntType Typ, Boolean *Ok);
+extern LargeInt ConstIntVal(char *Asc_O, IntType Typ, bool *Ok);
 
-extern Double ConstFloatVal(char *Asc_O, FloatType Typ, Boolean *Ok);
+extern Double ConstFloatVal(char *Asc_O, FloatType Typ, bool *Ok);
 
-extern void ConstStringVal(char *Asc, char *Erg, Boolean *OK);
-
-
-extern Boolean RangeCheck(LargeInt Wert, IntType Typ);
-
-extern Boolean FloatRangeCheck(Double Wert, FloatType Typ);
+extern void ConstStringVal(char *Asc, char *Erg, bool *OK);
 
 
-extern Boolean IdentifySection(char *Name, LongInt *Erg);
+extern bool RangeCheck(LargeInt Wert, IntType Typ);
+
+extern bool FloatRangeCheck(Double Wert, FloatType Typ);
 
 
-extern Boolean ExpandSymbol(char *Name);
+extern bool IdentifySection(char *Name, LongInt *Erg);
 
-extern void EnterIntSymbol(char *Name_O, LargeInt Wert, Byte Typ, Boolean MayChange);
 
-extern void EnterFloatSymbol(char *Name_O, Double Wert, Boolean MayChange);
+extern bool ExpandSymbol(char *Name);
 
-extern void EnterStringSymbol(char *Name_O, char *Wert, Boolean MayChange);
+extern void EnterIntSymbol(char *Name_O, LargeInt Wert, Byte Typ, bool MayChange);
 
-extern Boolean GetIntSymbol(char *Name, LargeInt *Wert);
+extern void EnterFloatSymbol(char *Name_O, Double Wert, bool MayChange);
 
-extern Boolean GetFloatSymbol(char *Name, Double *Wert);
+extern void EnterStringSymbol(char *Name_O, char *Wert, bool MayChange);
 
-extern Boolean GetStringSymbol(char *Name, char *Wert);
+extern bool GetIntSymbol(char *Name, LargeInt *Wert);
+
+extern bool GetFloatSymbol(char *Name, Double *Wert);
+
+extern bool GetStringSymbol(char *Name, char *Wert);
 
 extern void PrintSymbolList(void);
 
@@ -83,29 +83,29 @@ extern void SetSymbolSize(char *Name, ShortInt Size);
 
 extern ShortInt GetSymbolSize(char *Name);
 
-extern Boolean IsSymbolFloat(char *Name);
+extern bool IsSymbolFloat(char *Name);
 
-extern Boolean IsSymbolString(char *Name);
+extern bool IsSymbolString(char *Name);
 
-extern Boolean IsSymbolDefined(char *Name);
+extern bool IsSymbolDefined(char *Name);
 
-extern Boolean IsSymbolUsed(char *Name);
+extern bool IsSymbolUsed(char *Name);
 
-extern Boolean IsSymbolChangeable(char *Name);
+extern bool IsSymbolChangeable(char *Name);
 
 
 extern void EvalExpression(char *Asc_O, TempResult *Erg);
 
-extern LargeInt EvalIntExpression(char *Asc, IntType Typ, Boolean *OK);
+extern LargeInt EvalIntExpression(char *Asc, IntType Typ, bool *OK);
 
-extern Double EvalFloatExpression(char *Asc, FloatType Typ, Boolean *OK);
+extern Double EvalFloatExpression(char *Asc, FloatType Typ, bool *OK);
 
-extern void EvalStringExpression(char *Asc, Boolean *OK, char *Result);
+extern void EvalStringExpression(char *Asc, bool *OK, char *Result);
 
 
-extern Boolean PushSymbol(char *SymName_O, char *StackName_O);
+extern bool PushSymbol(char *SymName_O, char *StackName_O);
 
-extern Boolean PopSymbol(char *SymName_O, char *StackName_O);
+extern bool PopSymbol(char *SymName_O, char *StackName_O);
 
 extern void ClearStacks(void);
 
@@ -131,7 +131,7 @@ extern void PrintCrossList(void);
 extern void ClearCrossList(void);
 
 
-extern LongInt GetSectionHandle(char *SName_O, Boolean AddEmpt, LongInt Parent);
+extern LongInt GetSectionHandle(char *SName_O, bool AddEmpt, LongInt Parent);
 
 extern char *GetSectionName(LongInt Handle);
 
@@ -146,7 +146,7 @@ extern void PrintDebSections(FILE *f);
 extern void ClearSectionList(void);
 
 
-extern void SetFlag(Boolean *Flag, char *Name, Boolean Wert);
+extern void SetFlag(bool *Flag, char *Name, bool Wert);
 
 
 extern LongInt GetLocHandle(void);

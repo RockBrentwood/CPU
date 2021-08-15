@@ -13,8 +13,8 @@ typedef struct _MacroRec
           char *Name;            /* Name des Makros */
           Byte ParamCount;       /* Anzahl Parameter */
           StringList FirstLine;  /* Zeiger auf erste Zeile */
-          Boolean Used;          /* wird gerade benutzt-verhindert Rekusion */
-          Boolean LocMacExp;     /* Makroexpansion wird aufgelistet */
+          bool Used;             /* wird gerade benutzt-verhindert Rekusion */
+          bool LocMacExp;        /* Makroexpansion wird aufgelistet */
          } MacroRec,*PMacroRec;
 
 #define BufferArraySize 1024
@@ -22,13 +22,13 @@ typedef struct _MacroRec
 typedef struct _TInputTag
          {
           struct _TInputTag *Next;
-          Boolean IsMacro;
+          bool IsMacro;
           Integer IfLevel;
-          Boolean First;
+          bool First;
           String OrigPos;
-          Boolean OrigDoLst;
+          bool OrigDoLst;
           LongInt StartLine;
-          Boolean (*Processor)(
+          bool (*Processor)(
 #ifdef __PROTOS__
 struct _TInputTag *P, char *erg
 #endif
@@ -38,7 +38,7 @@ struct _TInputTag *P, char *erg
           LongInt LineCnt,LineZ;
           StringRecPtr Lines;
           String SpecName,SaveAttr;
-          Boolean IsEmpty;
+          bool IsEmpty;
           FILE *Datei;
           void *Buffer;
           void (*Cleanup)(
@@ -66,7 +66,7 @@ void
           PMacroRec Mac;
           StringList Params;
           LongInt PubSect,GlobSect;
-          Boolean DoExport,DoGlobCopy;
+          bool DoExport,DoGlobCopy;
           String GName;
          } TOutputTag,*POutputTag;
 
@@ -78,9 +78,9 @@ extern POutputTag FirstOutputTag;
 extern void Preprocess(void);
 
 
-extern void AddMacro(PMacroRec Neu, LongInt DefSect, Boolean Protest);
+extern void AddMacro(PMacroRec Neu, LongInt DefSect, bool Protest);
 
-extern Boolean FoundMacro(PMacroRec *Erg);
+extern bool FoundMacro(PMacroRec *Erg);
 
 extern void ClearMacroList(void);
 

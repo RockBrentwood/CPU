@@ -38,14 +38,14 @@ typedef struct
 typedef struct
          {
           char *Name;
-          Boolean MayImm;
+          bool MayImm;
 	  Byte Code;
 	 } ALU8Order;
 
 typedef struct
          {
           char *Name;
-          Boolean MayImm;
+          bool MayImm;
 	  CPUVar MinCPU;    /* Shift  andere   ,Y   */
           Byte PageShift;   /* 0 :     nix    Pg 2  */
 	  Byte Code;        /* 1 :     Pg 3   Pg 4  */
@@ -95,34 +95,34 @@ static CPUVar CPU6800,CPU6301,CPU6811;
 /*---------------------------------------------------------------------------*/
 
 	static void AddFixed(char *NName, CPUVar NMin, CPUVar NMax, Word NCode)
-BEGIN
+{
    if (InstrZ>=FixedOrderCnt) exit(255);
 
    FixedOrders[InstrZ].Name=NName;
    FixedOrders[InstrZ].MinCPU=NMin;
    FixedOrders[InstrZ].MaxCPU=NMax;
    FixedOrders[InstrZ++].Code=NCode;
-END
+}
 
 	static void AddRel(char *NName, Byte NCode)
-BEGIN
+{
    if (InstrZ>=RelOrderCnt) exit(255);
 
    RelOrders[InstrZ].Name=NName;
    RelOrders[InstrZ++].Code=NCode;
-END
+}
 
-	static void AddALU8(char *NName, Boolean NMay, Byte NCode)
-BEGIN
+	static void AddALU8(char *NName, bool NMay, Byte NCode)
+{
    if (InstrZ>=ALU8OrderCnt) exit(255);
 
    ALU8Orders[InstrZ].Name=NName;
    ALU8Orders[InstrZ].MayImm=NMay;
    ALU8Orders[InstrZ++].Code=NCode;
-END
+}
 
-	static void AddALU16(char *NName, Boolean NMay, CPUVar NMin, Byte NShift, Byte NCode)
-BEGIN
+	static void AddALU16(char *NName, bool NMay, CPUVar NMin, Byte NShift, Byte NCode)
+{
    if (InstrZ>=ALU16OrderCnt) exit(255);
 
    ALU16Orders[InstrZ].Name=NName;
@@ -130,26 +130,26 @@ BEGIN
    ALU16Orders[InstrZ].MinCPU=NMin;
    ALU16Orders[InstrZ].PageShift=NShift;
    ALU16Orders[InstrZ++].Code=NCode;
-END
+}
 
         static void AddSing8(char *NName, Byte NCode)
-BEGIN
+{
    if (InstrZ>=Sing8OrderCnt) exit(255);
 
    Sing8Orders[InstrZ].Name=NName;
    Sing8Orders[InstrZ++].Code=NCode;
-END
+}
 
 	static void AddBit63(char *NName, Byte NCode)
-BEGIN
+{
    if (InstrZ>=Bit63OrderCnt) exit(255);
 
    Bit63Orders[InstrZ].Name=NName;
    Bit63Orders[InstrZ++].Code=NCode;
-END
+}
 
 	static void InitFields(void)
-BEGIN
+{
    FixedOrders=(FixedOrder *) malloc(sizeof(FixedOrder)*FixedOrderCnt); InstrZ=0;
    AddFixed("ABA"  ,CPU6800, CPU6811, 0x001b); AddFixed("ABX"  ,CPU6301, CPU6811, 0x003a);
    AddFixed("ABY"  ,CPU6811, CPU6811, 0x183a); AddFixed("ASLD" ,CPU6301, CPU6811, 0x0005);
@@ -188,32 +188,32 @@ BEGIN
    AddRel("BVS", 0x29);
 
    ALU8Orders=(ALU8Order *) malloc(sizeof(ALU8Order)*ALU8OrderCnt); InstrZ=0;
-   AddALU8("SUB",True , 0x80);
-   AddALU8("CMP",True , 0x81);
-   AddALU8("SBC",True , 0x82);
-   AddALU8("AND",True , 0x84);
-   AddALU8("BIT",True , 0x85);
-   AddALU8("LDA",True , 0x86);
-   AddALU8("STA",False, 0x87);
-   AddALU8("EOR",True , 0x88);
-   AddALU8("ADC",True , 0x89);
-   AddALU8("ORA",True , 0x8a);
-   AddALU8("ADD",True , 0x8b);
+   AddALU8("SUB",true , 0x80);
+   AddALU8("CMP",true , 0x81);
+   AddALU8("SBC",true , 0x82);
+   AddALU8("AND",true , 0x84);
+   AddALU8("BIT",true , 0x85);
+   AddALU8("LDA",true , 0x86);
+   AddALU8("STA",false, 0x87);
+   AddALU8("EOR",true , 0x88);
+   AddALU8("ADC",true , 0x89);
+   AddALU8("ORA",true , 0x8a);
+   AddALU8("ADD",true , 0x8b);
 
    ALU16Orders=(ALU16Order *) malloc(sizeof(ALU16Order)*ALU16OrderCnt); InstrZ=0;
-   AddALU16("ADDD", True , CPU6301, 0, 0xc3);
-   AddALU16("SUBD", True , CPU6301, 0, 0x83);
-   AddALU16("LDD" , True , CPU6301, 0, 0xcc);
-   AddALU16("STD" , False, CPU6301, 0, 0xcd);
-   AddALU16("CPD" , True , CPU6811, 1, 0x83);
-   AddALU16("CPX" , True , CPU6800, 2, 0x8c);
-   AddALU16("CPY" , True , CPU6811, 3, 0x8c);
-   AddALU16("LDS" , True , CPU6800, 0, 0x8e);
-   AddALU16("STS" , False, CPU6800, 0, 0x8f);
-   AddALU16("LDX" , True , CPU6800, 2, 0xce);
-   AddALU16("STX" , False, CPU6800, 2, 0xcf);
-   AddALU16("LDY" , True , CPU6811, 3, 0xce);
-   AddALU16("STY" , False, CPU6811, 3, 0xcf);
+   AddALU16("ADDD", true , CPU6301, 0, 0xc3);
+   AddALU16("SUBD", true , CPU6301, 0, 0x83);
+   AddALU16("LDD" , true , CPU6301, 0, 0xcc);
+   AddALU16("STD" , false, CPU6301, 0, 0xcd);
+   AddALU16("CPD" , true , CPU6811, 1, 0x83);
+   AddALU16("CPX" , true , CPU6800, 2, 0x8c);
+   AddALU16("CPY" , true , CPU6811, 3, 0x8c);
+   AddALU16("LDS" , true , CPU6800, 0, 0x8e);
+   AddALU16("STS" , false, CPU6800, 0, 0x8f);
+   AddALU16("LDX" , true , CPU6800, 2, 0xce);
+   AddALU16("STX" , false, CPU6800, 2, 0xcf);
+   AddALU16("LDY" , true , CPU6811, 3, 0xce);
+   AddALU16("STY" , false, CPU6811, 3, 0xcf);
 
    Sing8Orders=(BaseOrder *) malloc(sizeof(BaseOrder)*Sing8OrderCnt); InstrZ=0;
    AddSing8("ASL", 0x48); AddSing8("LSL", 0x48);
@@ -226,220 +226,220 @@ BEGIN
    Bit63Orders=(BaseOrder *) malloc(sizeof(BaseOrder)*Bit63OrderCnt); InstrZ=0;
    AddBit63("AIM", 0x61); AddBit63("EIM", 0x65);
    AddBit63("OIM", 0x62); AddBit63("TIM", 0x6b);
-END
+}
 
 	static void DeinitFields(void)
-BEGIN
+{
    free(FixedOrders);
    free(RelOrders);
    free(ALU8Orders);
    free(ALU16Orders);
    free(Sing8Orders);
    free(Bit63Orders);
-END
+}
 
 /*---------------------------------------------------------------------------*/
 
-        static Boolean SplitAcc(char *Op)
-BEGIN
+        static bool SplitAcc(char *Op)
+{
    char Ch;
    Integer z;
    int OpLen=strlen(Op),OpPartLen=strlen(OpPart);
 
    Ch=OpPart[OpPartLen-1];
-   if ((OpLen+1==OpPartLen) AND
-       (strncmp(OpPart,Op,OpLen)==0) AND
-       ((Ch=='A') OR (Ch=='B')))
-    BEGIN
+   if ((OpLen+1==OpPartLen) &&
+       (strncmp(OpPart,Op,OpLen)==0) &&
+       ((Ch=='A') || (Ch=='B')))
+    {
      for (z=ArgCnt; z>=1; z--) strcpy(ArgStr[z+1],ArgStr[z]);
      ArgStr[1][0]=Ch; ArgStr[1][1]='\0';
      OpPart[OpPartLen-1]='\0'; ArgCnt++;
-    END
+    }
    return (Memo(Op));
-END
+}
 
 	static void DecodeAdr(Integer StartInd, Integer StopInd, Byte Erl)
-BEGIN
+{
    String Asc;
-   Boolean OK,ErrOcc;
+   bool OK,ErrOcc;
    Word AdrWord;
    Byte Bit8;
 
-   AdrMode=ModNone; AdrPart=0; strmaxcpy(Asc,ArgStr[StartInd],255); ErrOcc=False;
+   AdrMode=ModNone; AdrPart=0; strmaxcpy(Asc,ArgStr[StartInd],255); ErrOcc=false;
 
    /* eine Komponente ? */
 
    if (StartInd==StopInd)
-    BEGIN
+    {
 
      /* Akkumulatoren ? */
 
      if (strcasecmp(Asc,"A")==0)
-      BEGIN
+      {
        if ((MModAcc & Erl)!=0) AdrMode=ModAcc;
-      END
+      }
      else if (strcasecmp(Asc,"B")==0)
-      BEGIN
+      {
        if ((MModAcc & Erl)!=0)
-        BEGIN
+        {
          AdrMode=ModAcc; AdrPart=1;
-        END
-      END
+        }
+      }
 
      /* immediate ? */
 
-     else if ((strlen(Asc)>1) AND (*Asc=='#'))
-      BEGIN
+     else if ((strlen(Asc)>1) && (*Asc=='#'))
+      {
        if ((MModImm & Erl)!=0)
-        BEGIN
+        {
          if (OpSize==1)
-          BEGIN
+          {
            AdrWord=EvalIntExpression(Asc+1,Int16,&OK);
            if (OK)
-            BEGIN
+            {
              AdrMode=ModImm;
   	   AdrVals[AdrCnt++]=Hi(AdrWord); AdrVals[AdrCnt++]=Lo(AdrWord);
-            END
-           else ErrOcc=True;
-          END
+            }
+           else ErrOcc=true;
+          }
          else
-          BEGIN
+          {
            AdrVals[AdrCnt]=EvalIntExpression(Asc+1,Int8,&OK);
            if (OK)
-            BEGIN
+            {
              AdrMode=ModImm; AdrCnt++;
-            END
-           else ErrOcc=True;
-          END
-        END
-      END
+            }
+           else ErrOcc=true;
+          }
+        }
+      }
 
      /* absolut ? */
 
      else
-      BEGIN
+      {
        Bit8=0;
        if (*Asc=='<')
-        BEGIN
+        {
          Bit8=2; strcpy(Asc,Asc+1);
-        END
+        }
        else if (*Asc=='>')
-        BEGIN
+        {
          Bit8=1; strcpy(Asc,Asc+1);
-        END
-       if ((Bit8==2) OR ((MModExt & Erl)==0))
+        }
+       if ((Bit8==2) || ((MModExt & Erl)==0))
         AdrWord=EvalIntExpression(Asc,Int8,&OK);
        else
         AdrWord=EvalIntExpression(Asc,Int16,&OK);
        if (OK)
-        BEGIN
-         if (((MModDir & Erl)!=0) AND (Bit8!=1) AND ((Bit8==2) OR ((MModExt & Erl)==0) OR (Hi(AdrWord)==0)))
-  	  BEGIN
+        {
+         if (((MModDir & Erl)!=0) && (Bit8!=1) && ((Bit8==2) || ((MModExt & Erl)==0) || (Hi(AdrWord)==0)))
+  	  {
   	   if (Hi(AdrWord)!=0)
-  	    BEGIN
-  	     WrError(1340); ErrOcc=True;
-  	    END
+  	    {
+  	     WrError(1340); ErrOcc=true;
+  	    }
   	   else
-  	    BEGIN
+  	    {
   	     AdrMode=ModDir; AdrPart=1;
   	     AdrVals[AdrCnt++]=Lo(AdrWord);
-            END
-          END
+            }
+          }
          else if ((MModExt & Erl)!=0)
-          BEGIN
+          {
            AdrMode=ModExt; AdrPart=3;
            AdrVals[AdrCnt++]=Hi(AdrWord); AdrVals[AdrCnt++]=Lo(AdrWord);
-          END
-        END
-       else ErrOcc=True;
-      END
-    END
+          }
+        }
+       else ErrOcc=true;
+      }
+    }
 
    /* zwei Komponenten ? */
 
    else if (StartInd+1==StopInd)
-    BEGIN
+    {
 
      /* indiziert ? */
 
-     if (((strcasecmp(ArgStr[StopInd],"X")==0) OR (strcasecmp(ArgStr[StopInd],"Y")==0)))
-      BEGIN
+     if (((strcasecmp(ArgStr[StopInd],"X")==0) || (strcasecmp(ArgStr[StopInd],"Y")==0)))
+      {
        if ((MModInd & Erl)!=0)
-        BEGIN
+        {
          AdrWord=EvalIntExpression(Asc,Int8,&OK);
          if (OK)
-          if ((MomCPU<CPU6811) AND (strcasecmp(ArgStr[StartInd+1],"Y")==0))
-  	 BEGIN
-  	  WrError(1505); ErrOcc=True;
-           END
+          if ((MomCPU<CPU6811) && (strcasecmp(ArgStr[StartInd+1],"Y")==0))
+  	 {
+  	  WrError(1505); ErrOcc=true;
+           }
           else
-           BEGIN
+           {
             AdrVals[AdrCnt++]=Lo(AdrWord);
             AdrMode=ModInd; AdrPart=2;
             if (strcasecmp(ArgStr[StartInd+1],"Y")==0)
-             BEGIN
+             {
               BAsmCode[PrefCnt++]=0x18;
-             END
-           END
-          else ErrOcc=True;
-        END
-      END
+             }
+           }
+          else ErrOcc=true;
+        }
+      }
      else
-      BEGIN
-       WrXError(1445,ArgStr[StopInd]); ErrOcc=True;
-      END
+      {
+       WrXError(1445,ArgStr[StopInd]); ErrOcc=true;
+      }
 
-    END
+    }
    else
-    BEGIN
-     WrError(1110); ErrOcc=True;
-    END
+    {
+     WrError(1110); ErrOcc=true;
+    }
 
-   if ((NOT ErrOcc) AND (AdrMode==ModNone)) WrError(1350);
-END
+   if ((! ErrOcc) && (AdrMode==ModNone)) WrError(1350);
+}
 
 	static void AddPrefix(Byte Prefix)
-BEGIN
+{
    BAsmCode[PrefCnt++]=Prefix;
-END
+}
 
 	static void Try2Split(Integer Src)
-BEGIN
+{
    Integer z;
    char *p;
 
    KillPrefBlanks(ArgStr[Src]); KillPostBlanks(ArgStr[Src]);
    p=ArgStr[Src]+strlen(ArgStr[Src])-1;
-   while ((p>ArgStr[Src]) AND (NOT isspace(*p))) p--;
+   while ((p>ArgStr[Src]) && (! isspace(*p))) p--;
    if (p>ArgStr[Src])
-    BEGIN
+    {
      for (z=ArgCnt; z>=Src; z--) strcpy(ArgStr[z+1],ArgStr[z]); ArgCnt++;
      strcpy(ArgStr[Src+1],p+1); *p='\0';
      KillPostBlanks(ArgStr[Src]); KillPrefBlanks(ArgStr[Src+1]);
-    END
-END
+    }
+}
 
-	static Boolean DecodePseudo(void)
-BEGIN
-   return False;
-END
+	static bool DecodePseudo(void)
+{
+   return false;
+}
 
 	static void MakeCode_68(void)
-BEGIN
+{
    Integer z,AdrInt;
-   Boolean OK;
+   bool OK;
    Byte AdrByte,Mask;
 
    int erg;
    FixedOrder *forder;
 
-   CodeLen=0; DontPrint=False; PrefCnt=0; AdrCnt=0; OpSize=0;
+   CodeLen=0; DontPrint=false; PrefCnt=0; AdrCnt=0; OpSize=0;
 
    /* Operandengroesse festlegen */
 
    if (*AttrPart!='\0')
     switch (toupper(*AttrPart))
-     BEGIN
+     {
       case 'B':OpSize=0; break;
       case 'W':OpSize=1; break;
       case 'L':OpSize=2; break;
@@ -450,7 +450,7 @@ BEGIN
       case 'P':OpSize=7; break;
       default:
        WrError(1107); return;
-     END
+     }
 
    /* zu ignorierendes */
 
@@ -460,104 +460,104 @@ BEGIN
 
    if (DecodePseudo()) return;
 
-   if (DecodeMotoPseudo(True)) return;
-   if (DecodeMoto16Pseudo(OpSize,True)) return;
+   if (DecodeMotoPseudo(true)) return;
+   if (DecodeMoto16Pseudo(OpSize,true)) return;
 
    /* Anweisungen ohne Argument */
 
    /* Sonderfall : XGDX hat anderen Code bei 6301 !!!! */
 
-   if ((MomCPU==CPU6301) AND (Memo("XGDX")))
-    BEGIN
+   if ((MomCPU==CPU6301) && (Memo("XGDX")))
+    {
      if (ArgCnt!=0) WrError(1110);
      else
-      BEGIN
+      {
        CodeLen=1; BAsmCode[0]=0x18;
-      END
+      }
      return;
-    END
+    }
 
    for (z=0,forder=FixedOrders; z<FixedOrderCnt; z++,forder++)
     if ((erg=strcmp(OpPart,forder->Name))==0)
-     BEGIN
+     {
       if (ArgCnt!=0) WrError(1110);
-      else if ((MomCPU<forder->MinCPU) OR (MomCPU>forder->MaxCPU)) WrError(1500);
+      else if ((MomCPU<forder->MinCPU) || (MomCPU>forder->MaxCPU)) WrError(1500);
       else if (Hi(forder->Code)!=0)
-       BEGIN
+       {
         CodeLen=2;
         BAsmCode[0]=Hi(forder->Code);
         BAsmCode[1]=Lo(forder->Code);
-       END
+       }
       else
-       BEGIN
+       {
         CodeLen=1;
         BAsmCode[0]=Lo(forder->Code);
-       END
+       }
       return;
-     END
+     }
     else if (erg<0) break;
 
    /* rel. Spruenge */
 
    for (z=0; z<RelOrderCnt; z++)
     if ((erg=strcmp(OpPart,RelOrders[z].Name))==0)
-     BEGIN
+     {
       if (ArgCnt!=1) WrError(1110);
       else
-       BEGIN
+       {
         AdrInt=EvalIntExpression(ArgStr[1],Int16,&OK);
         if (OK)
-         BEGIN
+         {
           AdrInt-=EProgCounter()+2;
-          if (((AdrInt<-128) OR (AdrInt>127)) AND (NOT SymbolQuestionable)) WrError(1370);
+          if (((AdrInt<-128) || (AdrInt>127)) && (! SymbolQuestionable)) WrError(1370);
           else
-           BEGIN
+           {
             CodeLen=2; BAsmCode[0]=RelOrders[z].Code; BAsmCode[1]=Lo(AdrInt);
-           END
-         END
-       END
+           }
+         }
+       }
       return;
-     END
+     }
     else if (erg<0) break;
 
    /* Arithmetik */
 
    for (z=0; z<ALU8OrderCnt; z++)
     if (SplitAcc(ALU8Orders[z].Name))
-     BEGIN
-      if ((ArgCnt<2) OR (ArgCnt>3)) WrError(1110);
+     {
+      if ((ArgCnt<2) || (ArgCnt>3)) WrError(1110);
       else
-       BEGIN
+       {
         DecodeAdr(2,ArgCnt,((ALU8Orders[z].MayImm)?MModImm:0)+MModInd+MModExt+MModDir);
         if (AdrMode!=ModNone)
-         BEGIN
+         {
           BAsmCode[PrefCnt]=
           ALU8Orders[z].Code+(AdrPart << 4);
           DecodeAdr(1,1,1);
           if (AdrMode!=ModNone)
-           BEGIN
+           {
             BAsmCode[PrefCnt]+=AdrPart << 6;
             CodeLen=PrefCnt+1+AdrCnt;
             memcpy(BAsmCode+1+PrefCnt,AdrVals,AdrCnt);
-           END
-         END
-       END
+           }
+         }
+       }
       return;
-     END
+     }
 
    for (z=0; z<ALU16OrderCnt; z++)
     if (Memo(ALU16Orders[z].Name))
-     BEGIN
+     {
       OpSize=1;
-      if ((ArgCnt<1) OR (ArgCnt>2)) WrError(1110);
+      if ((ArgCnt<1) || (ArgCnt>2)) WrError(1110);
       else if (MomCPU<ALU16Orders[z].MinCPU) WrError(1500);
       else
-       BEGIN
+       {
         DecodeAdr(1,ArgCnt,(ALU16Orders[z].MayImm?MModImm:0)+MModInd+MModExt+MModDir);
         if (AdrMode!=ModNone)
-         BEGIN
+         {
 	  switch (ALU16Orders[z].PageShift)
-           BEGIN
+           {
 	    case 1:
              if (PrefCnt==1) BAsmCode[PrefCnt-1]=Page4Prefix;
              else AddPrefix(Page3Prefix);
@@ -568,130 +568,130 @@ BEGIN
 	    case 3:
              if (PrefCnt==0) AddPrefix((AdrMode==ModInd)?Page3Prefix:Page2Prefix);
              break;
-	   END
+	   }
 	  BAsmCode[PrefCnt]=ALU16Orders[z].Code+(AdrPart << 4);
 	  CodeLen=PrefCnt+1+AdrCnt;
 	  memcpy(BAsmCode+1+PrefCnt,AdrVals,AdrCnt);
-	 END
-       END
+	 }
+       }
       return;
-     END
+     }
 
    for (z=0; z<Bit63OrderCnt; z++)
     if (Memo(Bit63Orders[z].Name))
-     BEGIN
-      if ((ArgCnt<2) OR (ArgCnt>3)) WrError(1110);
+     {
+      if ((ArgCnt<2) || (ArgCnt>3)) WrError(1110);
       else if (MomCPU!=CPU6301) WrError(1500);
       else
-       BEGIN
+       {
         DecodeAdr(1,1,MModImm);
         if (AdrMode!=ModNone)
-         BEGIN
+         {
           DecodeAdr(2,ArgCnt,MModDir+MModInd);
           if (AdrMode!=ModNone)
-           BEGIN
+           {
             BAsmCode[PrefCnt]=Bit63Orders[z].Code;
             if (AdrMode==ModDir) BAsmCode[PrefCnt]+=0x10;
             CodeLen=PrefCnt+1+AdrCnt;
             memcpy(BAsmCode+1+PrefCnt,AdrVals,AdrCnt);
-            END
-          END
-        END
+            }
+          }
+        }
        return;
-      END
+      }
 
    for (z=0; z<Sing8OrderCnt; z++)
     if (SplitAcc(Sing8Orders[z].Name))
-     BEGIN
-      if ((ArgCnt<1) OR (ArgCnt>2)) WrError(1110);
+     {
+      if ((ArgCnt<1) || (ArgCnt>2)) WrError(1110);
       else
-       BEGIN
+       {
         DecodeAdr(1,ArgCnt,MModAcc+MModExt+MModInd);
         if (AdrMode!=ModNone)
-         BEGIN
+         {
           CodeLen=PrefCnt+1+AdrCnt;
           BAsmCode[PrefCnt]=Sing8Orders[z].Code+(AdrPart << 4);
           memcpy(BAsmCode+1+PrefCnt,AdrVals,AdrCnt);
-         END
-       END
+         }
+       }
       return;
-     END
+     }
 
    if (Memo("JMP"))
-    BEGIN
-     if ((ArgCnt<1) OR (ArgCnt>2)) WrError(1110);
+    {
+     if ((ArgCnt<1) || (ArgCnt>2)) WrError(1110);
      else
-      BEGIN
+      {
        DecodeAdr(1,ArgCnt,MModExt+MModInd);
        if (AdrMode!=ModImm)
-        BEGIN
+        {
          CodeLen=PrefCnt+1+AdrCnt;
          BAsmCode[PrefCnt]=0x4e + (AdrPart << 4);
          memcpy(BAsmCode+1+PrefCnt,AdrVals,AdrCnt);
-        END
-      END
+        }
+      }
      return;
-    END
+    }
 
    if (Memo("JSR"))
-    BEGIN
-     if ((ArgCnt<1) OR (ArgCnt>2)) WrError(1110);
+    {
+     if ((ArgCnt<1) || (ArgCnt>2)) WrError(1110);
      else
-      BEGIN
+      {
        DecodeAdr(1,ArgCnt,MModDir+MModExt+MModInd);
        if (AdrMode!=ModImm)
-        BEGIN
+        {
          CodeLen=PrefCnt+1+AdrCnt;
          BAsmCode[PrefCnt]=0x8d+(AdrPart << 4);
          memcpy(BAsmCode+1+PrefCnt,AdrVals,AdrCnt);
-        END
-      END
+        }
+      }
      return;
-    END
+    }
 
-   if ((SplitAcc("PSH")) OR (SplitAcc("PUL")))
-    BEGIN
+   if ((SplitAcc("PSH")) || (SplitAcc("PUL")))
+    {
      if (ArgCnt!=1) WrError(1110);
      else
-      BEGIN
+      {
        DecodeAdr(1,1,MModAcc);
        if (AdrMode!=ModNone)
-        BEGIN
+        {
          CodeLen=1; BAsmCode[0]=0x32+AdrPart;
          if (Memo("PSH")) BAsmCode[0]+=4;
-        END
-      END
+        }
+      }
      return;
-    END
+    }
 
-   if ((Memo("BRSET")) OR (Memo("BRCLR")))
-    BEGIN
+   if ((Memo("BRSET")) || (Memo("BRCLR")))
+    {
      if (ArgCnt==1)
-      BEGIN
+      {
        Try2Split(1); Try2Split(1);
-      END
+      }
      else if (ArgCnt==2)
-      BEGIN
+      {
        Try2Split(ArgCnt); Try2Split(2);
-      END
-     if ((ArgCnt<3) OR (ArgCnt>4)) WrError(1110);
+      }
+     if ((ArgCnt<3) || (ArgCnt>4)) WrError(1110);
      else if (MomCPU<CPU6811) WrError(1500);
      else
-      BEGIN
+      {
        if (ArgStr[ArgCnt-1][0]=='#') strcpy(ArgStr[ArgCnt-1],ArgStr[ArgCnt-1]+1);
        Mask=EvalIntExpression(ArgStr[ArgCnt-1],Int8,&OK);
        if (OK)
-        BEGIN
+        {
          DecodeAdr(1,ArgCnt-2,MModDir+MModInd);
          if (AdrMode!=ModNone)
-          BEGIN
+          {
            AdrInt=EvalIntExpression(ArgStr[ArgCnt],Int16,&OK);
            if (OK)
-            BEGIN
+            {
              AdrInt-=EProgCounter()+3+PrefCnt+AdrCnt;
-             if ((AdrInt<-128) OR (AdrInt>127)) WrError(1370);
+             if ((AdrInt<-128) || (AdrInt>127)) WrError(1370);
              else
-              BEGIN
+              {
                CodeLen=PrefCnt+3+AdrCnt;
                BAsmCode[PrefCnt]=0x12;
                if (AdrMode==ModInd) BAsmCode[PrefCnt]+=12;
@@ -699,129 +699,129 @@ BEGIN
 	       memcpy(BAsmCode+PrefCnt+1,AdrVals,AdrCnt);
 	       BAsmCode[PrefCnt+1+AdrCnt]=Mask;
 	       BAsmCode[PrefCnt+2+AdrCnt]=Lo(AdrInt);
-              END
-            END
-          END
-        END
-      END
+              }
+            }
+          }
+        }
+      }
      return;
-    END
+    }
 
-   if ((Memo("BSET")) OR (Memo("BCLR")))
-    BEGIN
+   if ((Memo("BSET")) || (Memo("BCLR")))
+    {
      if (MomCPU==CPU6301)
-      BEGIN
+      {
        strcpy(ArgStr[ArgCnt+1],ArgStr[1]);
        for (z=1; z<=ArgCnt-1; z++) strcpy(ArgStr[z],ArgStr[z+1]);
        strcpy(ArgStr[ArgCnt],ArgStr[ArgCnt+1]);
-      END
-     if ((ArgCnt>=1) AND (ArgCnt<=2)) Try2Split(ArgCnt);
-     if ((ArgCnt<2) OR (ArgCnt>3)) WrError(1110);
+      }
+     if ((ArgCnt>=1) && (ArgCnt<=2)) Try2Split(ArgCnt);
+     if ((ArgCnt<2) || (ArgCnt>3)) WrError(1110);
      else if (MomCPU<CPU6301) WrError(1500);
      else
-      BEGIN
+      {
        if (ArgStr[ArgCnt][0]=='#') strcpy(ArgStr[ArgCnt],ArgStr[ArgCnt]+1);
        Mask=EvalIntExpression(ArgStr[ArgCnt],Int8,&OK);
-       if ((OK) AND (MomCPU==CPU6301))
+       if ((OK) && (MomCPU==CPU6301))
         if (Mask>7)
-	 BEGIN
-	  WrError(1320); OK=False;
-	 END
+	 {
+	  WrError(1320); OK=false;
+	 }
 	else
-	 BEGIN
+	 {
 	  Mask=1 << Mask;
 	  if (Memo("BCLR")) Mask=0xff-Mask;
-         END
+         }
        if (OK)
-        BEGIN
+        {
          DecodeAdr(1,ArgCnt-1,MModDir+MModInd);
          if (AdrMode!=ModNone)
-          BEGIN
+          {
            CodeLen=PrefCnt+2+AdrCnt;
            if (MomCPU==CPU6301)
-            BEGIN
+            {
              BAsmCode[PrefCnt]=0x61;
              if (Memo("BSET")) BAsmCode[PrefCnt]++;
 	     if (AdrMode==ModDir) BAsmCode[PrefCnt]+=0x10;
 	     BAsmCode[1+PrefCnt]=Mask;
 	     memcpy(BAsmCode+2+PrefCnt,AdrVals,AdrCnt);
-            END
+            }
            else
-            BEGIN
+            {
              BAsmCode[PrefCnt]=0x14;
              if (Memo("BCLR")) BAsmCode[PrefCnt]++;
 	     if (AdrMode==ModInd) BAsmCode[PrefCnt]+=8;
 	     memcpy(BAsmCode+1+PrefCnt,AdrVals,AdrCnt);
 	     BAsmCode[1+PrefCnt+AdrCnt]=Mask;
-	    END
-          END
-        END
-      END
+	    }
+          }
+        }
+      }
      return;
-    END
+    }
 
-   if ((Memo("BTST")) OR (Memo("BTGL")))
-    BEGIN
-     if ((ArgCnt<2) OR (ArgCnt>3)) WrError(1110);
+   if ((Memo("BTST")) || (Memo("BTGL")))
+    {
+     if ((ArgCnt<2) || (ArgCnt>3)) WrError(1110);
      else if (MomCPU!=CPU6301) WrError(1500);
      else
-      BEGIN
+      {
        AdrByte=EvalIntExpression(ArgStr[1],Int8,&OK);
        if (OK)
         if (AdrByte>7) WrError(1320);
         else
-         BEGIN
+         {
           DecodeAdr(2,ArgCnt,MModDir+MModInd);
           if (AdrMode!=ModNone)
-           BEGIN
+           {
             CodeLen=PrefCnt+2+AdrCnt;
 	    BAsmCode[1+PrefCnt]=1 << AdrByte;
             memcpy(BAsmCode+2+PrefCnt,AdrVals,AdrCnt);
             BAsmCode[PrefCnt]=0x65;
             if (Memo("BTST")) BAsmCode[PrefCnt]+=6;
             if (AdrMode==ModDir) BAsmCode[PrefCnt]+=0x10;
-           END
-         END
-      END
+           }
+         }
+      }
      return;
-    END
+    }
 
    WrXError(1200,OpPart);
-END
+}
 
-	static Boolean ChkPC_68(void)
-BEGIN
+	static bool ChkPC_68(void)
+{
    if (ActPC==SegCode) return (ProgCounter()<0x10000);
-   else return False;
-END
+   else return false;
+}
 
-	static Boolean IsDef_68(void)
-BEGIN
-   return False;
-END
+	static bool IsDef_68(void)
+{
+   return false;
+}
 
         static void SwitchFrom_68()
-BEGIN
+{
    DeinitFields();
-END
+}
 
 	static void SwitchTo_68(void)
-BEGIN
-   TurnWords=False; ConstMode=ConstModeMoto; SetIsOccupied=False;
+{
+   TurnWords=false; ConstMode=ConstModeMoto; SetIsOccupied=false;
 
    PCSymbol="*"; HeaderID=0x61; NOPCode=0x01;
-   DivideChars=","; HasAttrs=True; AttrChars=".";
+   DivideChars=","; HasAttrs=true; AttrChars=".";
 
    ValidSegs=1<<SegCode;
    Grans[SegCode]=1; ListGrans[SegCode]=1; SegInits[SegCode]=0;
 
    MakeCode=MakeCode_68; ChkPC=ChkPC_68; IsDef=IsDef_68;
    SwitchFrom=SwitchFrom_68; InitFields();
-END
+}
 
 	void code68_init(void)
-BEGIN
+{
    CPU6800=AddCPU("6800",SwitchTo_68);
    CPU6301=AddCPU("6301",SwitchTo_68);
    CPU6811=AddCPU("6811",SwitchTo_68);
-END
+}
