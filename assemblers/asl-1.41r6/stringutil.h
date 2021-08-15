@@ -41,7 +41,7 @@ extern void strmaxprep(char *Dest, const char *Src, int MaxLen);
 extern void strins(char *Dest, const char *Src, int Pos);
 extern void strmaxins(char *Dest, const char *Src, int Pos, int MaxLen);
 
-extern void ReadLn(FILE *Datei, char *Zeile);
+extern void ReadLn(FILE * Datei, char *Zeile);
 
 extern LongInt ConstLongInt(const char *inp, bool *err);
 

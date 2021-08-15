@@ -12,12 +12,12 @@ extern char *FExpand(char *Src);
 
 extern char *FSearch(char *File, char *Path);
 
-extern long FileSize(FILE *file);
+extern long FileSize(FILE * file);
 
 extern Byte Lo(Word inp);
 
 extern Byte Hi(Word inp);
 
-extern bool Odd (int inp);
+extern bool Odd(int inp);
 
 extern void bpemu_init(void);

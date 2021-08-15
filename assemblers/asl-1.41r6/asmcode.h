@@ -11,7 +11,6 @@
 extern Word LenSoFar;
 extern LongInt RecPos;
 
-
 extern void DreheCodes(void);
 
 extern void NewRecord(void);

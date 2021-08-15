@@ -8,36 +8,34 @@
 /*                                                                           */
 /*****************************************************************************/
 
-typedef struct _StringRec
-         {
-          struct _StringRec *Next;
-          char *Content;
-         } StringRec,*StringRecPtr;
+typedef struct _StringRec {
+   struct _StringRec *Next;
+   char *Content;
+} StringRec, *StringRecPtr;
 typedef StringRecPtr StringList;
 
-extern void InitStringList(StringList *List);
+extern void InitStringList(StringList * List);
 
-extern void ClearStringEntry(StringRecPtr *Elem);
+extern void ClearStringEntry(StringRecPtr * Elem);
 
-extern void ClearStringList(StringList *List);
+extern void ClearStringList(StringList * List);
 
-extern void AddStringListFirst(StringList *List, char *NewStr);
+extern void AddStringListFirst(StringList * List, char *NewStr);
 
-extern void AddStringListLast(StringList *List, char *NewStr);
+extern void AddStringListLast(StringList * List, char *NewStr);
 
-extern void RemoveStringList(StringList *List, char *OldStr);
+extern void RemoveStringList(StringList * List, char *OldStr);
 
-extern char *GetStringListFirst(StringList List, StringRecPtr *Lauf);
+extern char *GetStringListFirst(StringList List, StringRecPtr * Lauf);
 
-extern char *GetStringListNext(StringRecPtr *Lauf);
+extern char *GetStringListNext(StringRecPtr * Lauf);
 
-extern char *GetAndCutStringList(StringList *List);
+extern char *GetAndCutStringList(StringList * List);
 
 extern bool StringListEmpty(StringList List);
 
 extern StringList DuplicateStringList(StringList Src);
 
 extern bool StringListPresent(StringList List, char *Search);
-
 
 extern void stringlists_init(void);

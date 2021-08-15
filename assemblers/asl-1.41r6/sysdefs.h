@@ -1,9 +1,3 @@
-/*---------------------------------------------------------------------------*/
-/* If the compiler claims to be ANSI, we surely can use prototypes */
-#if defined __STDC__
-#   define __PROTOS__
-#endif
-
 // Preliminary adjustments to the Systems Matrix.
 /*---------------------------------------------------------------------------*/
 /* unify 68K platforms */
@@ -464,7 +458,6 @@ typedef signed long Integ32;
 typedef unsigned long Card32;
 #      define NOLONGLONG
 #      define NO_NLS
-#      define __PROTOS__
 #   endif
 #endif /* __i386 */
 

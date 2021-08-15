@@ -8,7 +8,7 @@
 /*                                                                           */
 /*****************************************************************************/
 
-typedef enum {NoRedir,RedirToDevice,RedirToFile} TRedirected;  /* Umleitung von Handles */
+typedef enum { NoRedir, RedirToDevice, RedirToFile } TRedirected; /* Umleitung von Handles */
 
 #define NumStdIn 0
 #define NumStdOut 1
@@ -16,6 +16,6 @@ typedef enum {NoRedir,RedirToDevice,RedirToFile} TRedirected;  /* Umleitung von 
 
 extern TRedirected Redirected;
 
-extern void RewriteStandard(FILE **T, char *Path);
+extern void RewriteStandard(FILE ** T, char *Path);
 
 extern void stdhandl_init(void);

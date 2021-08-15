@@ -8,38 +8,26 @@
 /*                                                                           */
 /*****************************************************************************/
 
-typedef enum {CMDErr,CMDFile,CMDOK,CMDArg} CMDResult;
+typedef enum { CMDErr, CMDFile, CMDOK, CMDArg } CMDResult;
 
-typedef CMDResult (*CMDCallback)(
-#ifdef __PROTOS__
-bool NegFlag, char *Arg
-#endif
-);
+typedef CMDResult(*CMDCallback)(bool NegFlag, char *Arg);
 
-typedef void (*CMDErrCallback)
-(
-#ifdef __PROTOS__
-bool InEnv, char *Arg
-#endif
-);
+typedef void (*CMDErrCallback)(bool InEnv, char *Arg);
 
-typedef struct
-         {
-          char Ident[11];
-          CMDCallback Callback;
-         } CMDRec;
+typedef struct {
+   char Ident[11];
+   CMDCallback Callback;
+} CMDRec;
 
 #define MAXPARAM 256
-typedef bool CMDProcessed[MAXPARAM+1];
+typedef bool CMDProcessed[MAXPARAM + 1];
 
 extern LongInt ParamCount;
 extern char **ParamStr;
 
-
 extern bool ProcessedEmpty(CMDProcessed Processed);
 
-extern void ProcessCMD(CMDRec *Def, Integer Cnt, CMDProcessed Unprocessed,
-                       char *EnvName, CMDErrCallback ErrProc);
+extern void ProcessCMD(CMDRec * Def, Integer Cnt, CMDProcessed Unprocessed, char *EnvName, CMDErrCallback ErrProc);
 
 extern char *GetEXEName(void);
 

@@ -16,7 +16,6 @@ extern Word FileID;
 
 extern char *OutName;
 
-
 extern void WrCopyRight(char *Msg);
 
 extern void DelSuffix(char *Name);
@@ -29,16 +28,14 @@ extern void ChkIO(char *Name);
 
 extern Word Granularity(Byte Header);
 
-extern void ReadRecordHeader(Byte *Header, Byte* Segment, Byte *Gran,
-                             char *Name, FILE *f);
+extern void ReadRecordHeader(Byte * Header, Byte * Segment, Byte * Gran, char *Name, FILE * f);
 
-extern void WriteRecordHeader(Byte *Header, Byte* Segment, Byte *Gran,
-                              char *Name, FILE *f);
+extern void WriteRecordHeader(Byte * Header, Byte * Segment, Byte * Gran, char *Name, FILE * f);
 
 extern CMDResult CMD_FilterList(bool Negate, char *Arg);
 
 extern bool FilterOK(Byte Header);
 
-extern bool RemoveOffset(char *Name, LongWord *Offset);
+extern bool RemoveOffset(char *Name, LongWord * Offset);
 
 extern void toolutils_init(void);

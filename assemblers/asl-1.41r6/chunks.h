@@ -11,26 +11,22 @@
 /*                                                                           */
 /*****************************************************************************/
 
-typedef struct
-         {
-	  LargeWord Start,Length;
-	 } OneChunk;
+typedef struct {
+   LargeWord Start, Length;
+} OneChunk;
 
-typedef struct
-         {
-	  Word RealLen,AllocLen;
-	  OneChunk *Chunks;
-	 } ChunkList;
+typedef struct {
+   Word RealLen, AllocLen;
+   OneChunk *Chunks;
+} ChunkList;
 
+extern bool AddChunk(ChunkList * NChunk, LargeWord NewStart, LargeWord NewLen, bool Warn);
 
-extern bool AddChunk(ChunkList *NChunk, LargeWord NewStart, LargeWord NewLen, bool Warn);
+extern void DeleteChunk(ChunkList * NChunk, LargeWord DelStart, LargeWord DelLen);
 
-extern void DeleteChunk(ChunkList *NChunk, LargeWord DelStart, LargeWord DelLen);
+extern void InitChunk(ChunkList * NChunk);
 
-extern void InitChunk(ChunkList *NChunk);
-
-extern void ClearChunk(ChunkList *NChunk);
-
+extern void ClearChunk(ChunkList * NChunk);
 
 extern void chunks_init(void);
 

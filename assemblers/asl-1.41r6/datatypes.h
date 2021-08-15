@@ -3,7 +3,7 @@
 
 #define MaxLongInt 0x7fffffff
 
-typedef Card8 Byte;       /* Integertypen */
+typedef Card8 Byte; /* Integertypen */
 typedef Integ8 ShortInt;
 
 #ifdef HAS16

@@ -8,21 +8,13 @@
 /*                                                                           */
 /*****************************************************************************/
 
-typedef void (*TSwitchProc)(
-#ifdef __PROTOS__
-void
-#endif
-);
+typedef void (*TSwitchProc)(void);
 
-
-extern Word ErrorCount,WarnCount;
-
+extern Word ErrorCount, WarnCount;
 
 extern void AsmSubInit(void);
 
-
 extern long GTime(void);
-
 
 extern CPUVar AddCPU(char *NewName, TSwitchProc Switcher);
 
@@ -31,7 +23,6 @@ extern bool AddCPUAlias(char *OrigName, char *AliasName);
 extern void PrintCPUList(TSwitchProc NxtProc);
 
 extern void ClearCPUList(void);
-
 
 extern void UpString(char *s);
 
@@ -55,7 +46,6 @@ extern ShortInt StrCmp(char *s1, char *s2, LongInt Hand1, LongInt Hand2);
 
 #define Memo(s) (strcmp(OpPart,(s))==0)
 
-
 extern void AddSuffix(char *s, char *Suff);
 
 extern void KillSuffix(char *s);
@@ -64,11 +54,9 @@ extern char *NamePart(char *Name);
 
 extern char *PathPart(char *Name);
 
-
 extern char *FloatString(Double f);
 
-extern void StrSym(TempResult *t, bool WithSystem, char *Dest);
-
+extern void StrSym(TempResult * t, bool WithSystem, char *Dest);
 
 extern void ResetPageCounter(void);
 
@@ -76,8 +64,7 @@ extern void NewPage(ShortInt Level, bool WithFF);
 
 extern void WrLstLine(char *Line);
 
-extern void SetListLineVal(TempResult *t);
-
+extern void SetListLineVal(TempResult * t);
 
 extern LargeWord ProgCounter(void);
 
@@ -89,13 +76,11 @@ extern Word ListGran(void);
 
 extern void ChkSpace(Byte Space);
 
-
-extern void PrintChunk(ChunkList *NChunk);
+extern void PrintChunk(ChunkList * NChunk);
 
 extern void PrintUseList(void);
 
 extern void ClearUseList(void);
-
 
 extern void CompressLine(char *TokNam, Byte Num, char *Line);
 
@@ -103,26 +88,21 @@ extern void ExpandLine(char *TokNam, Byte Num, char *Line);
 
 extern void KillCtrl(char *Line);
 
-
 extern void ChkStack(void);
 
 extern void ResetStack(void);
 
 extern LongWord StackRes(void);
 
-
 extern void AddCopyright(char *NewLine);
 
 extern void WriteCopyrights(TSwitchProc NxtProc);
-
 
 extern bool ChkSymbName(char *sym);
 
 extern bool ChkMacSymbName(char *sym);
 
-
 extern void WrErrorString(char *Message, char *Add, bool Warning, bool Fatal);
-
 
 extern void WrError(Word Num);
 
@@ -130,14 +110,11 @@ extern void WrXError(Word Num, char *Message);
 
 extern bool ChkRange(LargeInt Value, LargeInt Min, LargeInt Max);
 
-
 extern void ChkIO(Word ErrNo);
-
 
 extern void AddIncludeList(char *NewPath);
 
 extern void RemoveIncludeList(char *RemPath);
-
 
 extern void ClearOutList(void);
 
@@ -147,8 +124,6 @@ extern void RemoveFromOutList(char *OldName);
 
 extern char *GetFromOutList(void);
 
-
 extern long DTime(long t1, long t2);
-
 
 extern void asmsub_init(void);
