@@ -1082,7 +1082,8 @@ static void MakeCode_6809(void) {
          else {
             BAsmCode[1] = EvalIntExpression(ArgStr[1] + 1, Int8, &OK);
             if (OK) {
-               for (z2 = 1; z2 < ArgCnt; z2++) strcpy(ArgStr[z2], ArgStr[z2 + 1]);
+               for (z2 = 1; z2 < ArgCnt; z2++) strcopy(ArgStr[z2], ArgStr[z2 + 1]);
+            // for (z2 = 1; z2 < ArgCnt; z2++) strcpy(ArgStr[z2], ArgStr[z2 + 1]); //(@) Formerly: a bug. These areas overlap.
                ArgCnt--;
                DecodeAdr();
                if (AdrMode == ModImm) WrError(1350);

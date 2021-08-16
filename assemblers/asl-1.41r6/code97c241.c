@@ -921,11 +921,9 @@ static bool CodeAri(void) {
                   if (OpSize == -1) WrError(1132);
                   else {
                      if (Format == ' ') {
-                        if (((IsReg()) && (Is2Short()))
-                           || ((Is2Reg()) && (IsShort()))) Format = 'S';
-                        else if (((IsAbsolute()) && (Is2Short()))
-                           || ((Is2Absolute()) && (IsShort()))) Format = 'A';
-                        else if ((IsImmediate()) && (OpSize > 0) && ((ImmVal() > 127) || (ImmVal() < -128))) Format = 'I';
+                        if ((IsReg() && Is2Short()) || (Is2Reg() && IsShort())) Format = 'S';
+                        else if ((IsAbsolute() && Is2Short()) || (Is2Absolute() && IsShort())) Format = 'A';
+                        else if (IsImmediate() && OpSize > 0 && (ImmVal() > 127 || ImmVal() < -128)) Format = 'I';
                         else Format = 'G';
                      }
                      switch (Format) {

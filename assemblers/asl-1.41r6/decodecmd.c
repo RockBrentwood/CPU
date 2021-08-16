@@ -20,14 +20,12 @@
 LongInt ParamCount; /* Kommandozeilenparameter */
 char **ParamStr;
 
-static void ClrBlanks(char *S0) {
-   char *S1;
-   for (S1 = S0; isspace(*S1); S1++);
-// if (S1 > S0) strcpy(S0, S1); // The equivalent of the original code, now replaced by what's below.
-   if (S1 > S0) {
-      for (; *S1 != '\0'; S0++, S1++) *S0 = *S1;
-      *S0 = '\0';
-   }
+static void ClrBlanks(char *tmp) {
+   Integer cnt;
+
+   for (cnt = 0; isspace(tmp[cnt]); cnt++);
+   if (cnt > 0) strmove(tmp, cnt);
+// if (cnt > 0) strcpy(tmp, tmp + cnt); //(@) Formerly.
 }
 
 bool ProcessedEmpty(CMDProcessed Processed) {

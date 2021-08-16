@@ -3168,7 +3168,8 @@ static void MakeCode_68K(void) {
             WAsmCode[0] = 0xc100 | (AdrMode & 7);
             DecodeAdr(ArgStr[2], Mdata + Madr);
             if (AdrNum == 1) {
-               WAsmCode[0] |= 0x88 || (AdrMode << 9);
+               WAsmCode[0] |= 0x88 | (AdrMode << 9);
+            // WAsmCode[0] |= 0x88 || (AdrMode << 9); //(@) Formerly: which was a bug.
                CodeLen = 2;
             } else {
                WAsmCode[0] |= 0x48 | ((AdrMode & 7) << 9);
@@ -3217,7 +3218,7 @@ static void MakeCode_68K(void) {
       } else if (OpSize == 2) {
          if (strchr(ArgStr[2], ':') == NULL) {
             strcat(ArgStr[2], ":");
-            strcat(ArgStr[2], ArgStr[2]);
+            stradd(ArgStr[2], ArgStr[2]);
             ArgStr[2][strlen(ArgStr[2]) - 1] = '\0';
          }
          if (!CodeRegPair(ArgStr[2], &w1, &w2)) WrError(1760);

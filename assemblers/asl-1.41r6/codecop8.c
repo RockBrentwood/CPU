@@ -147,7 +147,8 @@ static void DeinitFields(void) {
 /*---------------------------------------------------------------------------*/
 
 static void ChkAdr(Word Mask) {
-   if ((AdrMode != ModNone) && ((Mask && (1 << AdrMode)) == 0)) {
+   if ((AdrMode != ModNone) && ((Mask & (1 << AdrMode)) == 0)) {
+// if ((AdrMode != ModNone) && ((Mask && (1 << AdrMode)) == 0)) { //(@) Formerly: probably a bug.
       AdrMode = ModNone;
       WrError(1350);
    }

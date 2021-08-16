@@ -131,7 +131,8 @@ static void ResetAdr(void) {
 }
 
 static void ChkAdr(Byte Mask) {
-   if ((AdrType != ModNone) && ((Mask && (1 << AdrType)) == 0)) {
+   if ((AdrType != ModNone) && ((Mask & (1 << AdrType)) == 0)) {
+// if ((AdrType != ModNone) && ((Mask && (1 << AdrType)) == 0)) { //(@) Formerly: probably a bug.
       ResetAdr();
       WrError(1350);
    }

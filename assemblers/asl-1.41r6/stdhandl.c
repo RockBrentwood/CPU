@@ -57,7 +57,7 @@ static void AssignHandle(FILE ** T, Word Num) {
 
 /* Eine Datei unter Beruecksichtigung der Standardkanaele oeffnen */
 
-void RewriteStandard(FILE ** T, String Path) {
+void RewriteStandard(FILE ** T, char *Path) {
    if ((strlen(Path) == 2) && (Path[0] == '!') && (Path[1] >= '0') && (Path[1] <= '2'))
       AssignHandle(T, Path[1] - '0');
    else *T = fopen(Path, "w");

@@ -256,7 +256,8 @@ static void ChkZero(char *s, char *serg, Byte * Erg) {
 
 static void ChkAdr(Word Mask, Word Mask08) {
    if ((AdrMode != ModNone) && ((Mask & (1 << AdrMode)) == 0)) {
-      WrError((((1 << AdrMode) && Mask08) == 0) ? 1350 : 1505);
+      WrError((((1 << AdrMode) & Mask08) == 0) ? 1350 : 1505);
+   // WrError((((1 << AdrMode) && Mask08) == 0) ? 1350 : 1505); //(@) Formerly: which is a bug.
       AdrMode = ModNone;
       AdrCnt = 0;
    }
@@ -300,7 +301,8 @@ static void DecodeAdr(Byte Start, Byte Stop, Word Mask) {
       if (OK) {
          if ((ZeroMode == 0) && (AdrWord == 0) && (Mask && MModIx != 0) && (tmode1 == ModIx1)) AdrMode = ModIx;
 
-         else if (((Mask && (1 << tmode2)) == 0) || (ZeroMode == 2) || ((ZeroMode == 0) && (Hi(AdrWord) == 0))) {
+         else if (((Mask & (1 << tmode2)) == 0) || (ZeroMode == 2) || ((ZeroMode == 0) && (Hi(AdrWord) == 0))) {
+      // else if (((Mask && (1 << tmode2)) == 0) || (ZeroMode == 2) || ((ZeroMode == 0) && (Hi(AdrWord) == 0))) { //(@) Formerly.
             if (FirstPassUnknown) AdrWord &= 0xff;
             if (Hi(AdrWord) != 0) WrError(1340);
             else {

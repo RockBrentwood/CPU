@@ -696,7 +696,8 @@ static void MakeCode_68(void) {
       if (MomCPU == CPU6301) {
          strcpy(ArgStr[ArgCnt + 1], ArgStr[1]);
          for (z = 1; z <= ArgCnt - 1; z++) strcpy(ArgStr[z], ArgStr[z + 1]);
-         strcpy(ArgStr[ArgCnt], ArgStr[ArgCnt + 1]);
+         strcopy(ArgStr[ArgCnt], ArgStr[ArgCnt + 1]);
+      // strcpy(ArgStr[ArgCnt], ArgStr[ArgCnt + 1]); //(@) Formerly - which is technically an overlapping areas bug.
       }
       if ((ArgCnt >= 1) && (ArgCnt <= 2)) Try2Split(ArgCnt);
       if ((ArgCnt < 2) || (ArgCnt > 3)) WrError(1110);

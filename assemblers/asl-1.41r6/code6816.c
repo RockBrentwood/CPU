@@ -447,7 +447,8 @@ static void DeinitFields(void) {
 typedef enum { ShortDisp, LongDisp, NoDisp } DispType;
 
 static void ChkAdr(Byte Mask) {
-   if ((AdrMode != ModNone) && ((Mask && (1 << AdrMode)) == 0)) {
+   if ((AdrMode != ModNone) && ((Mask & (1 << AdrMode)) == 0)) {
+// if ((AdrMode != ModNone) && ((Mask && (1 << AdrMode)) == 0)) { //(@) Formerly: which is a bug.
       WrError(1350);
       AdrMode = ModNone;
       AdrCnt = 0;

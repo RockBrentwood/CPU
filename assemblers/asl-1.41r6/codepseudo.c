@@ -383,7 +383,7 @@ static bool DecodeIntelPseudo_LayoutMult(char *Asc_O, Word * Cnt, TLayoutFunc La
 
    /* Einzelteile bilden & evaluieren */
 
-      strcpy(Asc, Asc + Fnd + 3);
+      strmove(Asc, Fnd + 3);
       KillPrefBlanks(Asc);
       SumCnt = 0;
       if ((strlen(Asc) >= 2) && (*Asc == '(') && (Asc[strlen(Asc) - 1] == ')')) {
@@ -411,7 +411,7 @@ static bool DecodeIntelPseudo_LayoutMult(char *Asc_O, Word * Cnt, TLayoutFunc La
          } else {
             Asc[Fnd] = '\0';
             strmaxcpy(Part, Asc, 255);
-            strcpy(Asc, Asc + Fnd + 1);
+            strmove(Asc, Fnd + 1);
          }
          if (!DecodeIntelPseudo_LayoutMult(Part, &ECnt, LayoutFunc, Turn))
             return false;
@@ -653,7 +653,7 @@ void ConvertDec(Double F, Word * w) {
    strcpy(Man, Man + 2);
    if (strlen(Man) > 16) Man[16] = '\0';
    for (z = 0; z < strlen(Man); z++) DigIns(Man[z], 15 - z, w);
-   if (strlen(Exp) > 4) strcpy(Exp, Exp + strlen(Exp) - 4);
+   if (strlen(Exp) > 4) strmove(Exp, strlen(Exp) - 4);
    for (z = strlen(Exp) - 1; z >= 0; z--) {
       epos = strlen(Exp) - 1 - z;
       if (epos == 3) DigIns(Exp[z], 19, w);

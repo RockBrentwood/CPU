@@ -981,8 +981,7 @@ static void MakeCode_601(void) {
 /* ein Register */
 
    for (z = 0; z < Reg1OrderCount; z++)
-      if Memo
-         (Reg1Orders[z].Name) {
+      if (Memo(Reg1Orders[z].Name)) {
          if (ArgCnt != 1) WrError(1110);
          else if (!ChkCPU(Reg1Orders[z].CPUMask)) WrXError(1500, OpPart);
          else if (!DecodeGenReg(ArgStr[1], &Dest)) WrError(1350);
@@ -992,7 +991,7 @@ static void MakeCode_601(void) {
             if (Memo("MTMSR")) ChkSup();
          }
          return;
-         }
+      }
 
 /* ein Steuerregister */
 
@@ -1059,8 +1058,7 @@ static void MakeCode_601(void) {
 /* 2 Bedingungs-Bits */
 
    for (z = 0; z < CReg2OrderCount; z++)
-      if Memo
-         (CReg2Orders[z].Name) {
+      if (Memo(CReg2Orders[z].Name)) {
          if (ArgCnt != 2) WrError(1110);
          else if (!ChkCPU(CReg2Orders[z].CPUMask)) WrXError(1500, OpPart);
          else if (!DecodeCondReg(ArgStr[1], &Dest)) WrError(1350);
@@ -1072,13 +1070,12 @@ static void MakeCode_601(void) {
             PutCode(CReg2Orders[z].Code + (Dest << 21) + (Src1 << 16));
          }
          return;
-         }
+      }
 
 /* 1/2 Float-Register */
 
    for (z = 0; z < FReg2OrderCount; z++)
-      if Memo
-         (FReg2Orders[z].Name) {
+      if (Memo(FReg2Orders[z].Name)) {
          if (ArgCnt == 1) {
             ArgCnt = 2;
             strcpy(ArgStr[2], ArgStr[1]);
@@ -1092,13 +1089,12 @@ static void MakeCode_601(void) {
             PutCode(FReg2Orders[z].Code + (Dest << 21) + (Src1 << 11));
          }
          return;
-         }
+      }
 
 /* 1/2 Integer-Register, Quelle in B */
 
    for (z = 0; z < Reg2BOrderCount; z++)
-      if Memo
-         (Reg2BOrders[z].Name) {
+      if (Memo(Reg2BOrders[z].Name)) {
          if (ArgCnt == 1) {
             ArgCnt = 2;
             strcpy(ArgStr[2], ArgStr[1]);
@@ -1113,7 +1109,7 @@ static void MakeCode_601(void) {
             ChkSup();
          }
          return;
-         }
+      }
 
 /* 1/2 Integer-Register, getauscht */
 

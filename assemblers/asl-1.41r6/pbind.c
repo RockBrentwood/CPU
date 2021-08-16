@@ -137,7 +137,7 @@ static void ParamError(bool InEnv, char *Arg) {
 #define BINDParamCnt 1
 static CMDRec BINDParams[BINDParamCnt] = { { "f", CMD_FilterList } };
 
-void main(int argc, char **argv) {
+int main(int argc, char **argv) {
    ParamCount = argc - 1;
    ParamStr = argv;
 
@@ -157,7 +157,7 @@ void main(int argc, char **argv) {
          printf("%s\n", InfoMessHelp[z]);
          ChkIO(OutName);
       }
-      exit(1);
+      return 1;
    }
 
    ProcessCMD(BINDParams, BINDParamCnt, ParProcessed, "BINDCMD", ParamError);
@@ -168,7 +168,7 @@ void main(int argc, char **argv) {
       errno = 0;
       printf("%s\n", ErrMsgTargetMissing);
       ChkIO(OutName);
-      exit(1);
+      return 1;
    } else {
       strmaxcpy(TargName, ParamStr[z], 255);
       ParProcessed[z] = false;
@@ -181,4 +181,5 @@ void main(int argc, char **argv) {
       if (ParProcessed[z]) ProcessGroup(ParamStr[z]);
 
    CloseTarget();
+   return 0;
 }

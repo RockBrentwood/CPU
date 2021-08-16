@@ -594,7 +594,8 @@ void NewPage(ShortInt Level, bool WithFF) {
          fprintf(LstFile, "%s\n", Header);
          ChkIO(10002);
          Header[PageWidth] = Save;
-         strcpy(Header, Header + PageWidth);
+         strmove(Header, PageWidth);
+      // strcpy(Header, Header + PageWidth); //(@) Formerly
       }
    errno = 0;
    fprintf(LstFile, "%s\n", Header);

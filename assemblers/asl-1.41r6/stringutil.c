@@ -96,9 +96,9 @@ char *LargeString(LargeInt i) {
 /* manche haben's nicht... */
 
 #ifdef NEEDS_STRDUP
-char *strdup(char *s) {
-   char *ptr = malloc(strlen(s) + 1);
-   if (ptr != 0) strcpy(ptr, s);
+char *strdup(char *S) {
+   char *ptr = malloc(strlen(S) + 1);
+   if (ptr != NULL) strcpy(ptr, S);
    return ptr;
 }
 #endif
@@ -137,22 +137,14 @@ char *strstr(char *haystack, char *needle) {
 #endif
 
 /*---------------------------------------------------------------------------*/
-/* wenn man mit unsigned arbeitet, gibt das boese Seiteneffekte bei direkter
-   Arithmetik mit strlen... */
-
-signed int strslen(const char *s) {
-   return strlen(s);
-}
-
-/*---------------------------------------------------------------------------*/
 /* das originale strncpy plaettet alle ueberstehenden Zeichen mit Nullen */
 
-void strmaxcpy(char *dest, const char *src, int Max) {
-   int cnt = strlen(src);
+void strmaxcpy(char *Dest, const char *Src, int Max) {
+   int cnt = strlen(Src);
 
    if (cnt > Max) cnt = Max;
-   memcpy(dest, src, cnt);
-   dest[cnt] = '\0';
+   memcpy(Dest, Src, cnt);
+   Dest[cnt] = '\0';
 }
 
 /*---------------------------------------------------------------------------*/
@@ -167,6 +159,24 @@ void strmaxcat(char *Dest, const char *Src, int MaxLen) {
       Dest[DLen + TLen] = '\0';
    }
 }
+
+void strmove(char *S, int dS) {
+   if (dS == 0) return;
+   int Len = strlen(S);
+#if 1
+// Fast, insecure.
+   if (dS >= Len || dS <= -Len) *S = '\0';
+   else if (dS > 0) memmove(S, S + dS, Len - dS), S[Len - dS] = '\0';
+#else
+// Slow, secure.
+   if (dS >= Len || dS <= -Len) memset(S, '\0', Len);
+   else if (dS > 0) memmove(S, S + dS, Len - dS), memset(S + Len - dS, '\0', dS);
+#endif
+   else memmove(S - dS, S, Len + dS), memset(S, '\0', -dS);
+}
+
+void strcopy(char *Dest, char *Src) { memmove(Dest, Src, strlen(Src) + 1); }
+void stradd(char *Dest, char *Src) { memmove(Dest + strlen(Dest), Src, strlen(Src) + 1); }
 
 void strprep(char *Dest, const char *Src) {
    memmove(Dest + strlen(Src), Dest, strlen(Dest) + 1);
@@ -213,71 +223,39 @@ void ReadLn(FILE * Datei, char *Zeile) {
    *Run++ = '\0';
 }
 
-/*--------------------------------------------------------------------*/
-/* Zahlenkonstante umsetzen: $ hex, % binaer, @ oktal */
-/* inp: Eingabezeichenkette */
-/* erg: Zeiger auf Ergebnis-Longint */
-/* liefert true, falls fehlerfrei, sonst false */
-
+// Convert numeric constants: $ base 0x10 (16), % base 2, @ base 010 (8) or else base 10 by default.
+// Input:
+// ∙	inp:	Input string.
+// ∙	erg:	Pointer to the LongInt result.
+// Return: true ⇔ free of errors.
 LongInt ConstLongInt(const char *inp, bool *err) {
-   static char Prefixes[4] = { '$', '@', '%', '\0' }; /* die moeglichen Zahlensysteme */
-   static LongInt Bases[3] = { 16, 8, 2 }; /* die dazugehoerigen Basen */
-   LongInt erg;
-   LongInt Base = 10, z, val, vorz = 1; /* Vermischtes */
-
-/* eventuelles Vorzeichen abspalten */
-
-   if (*inp == '-') {
-      vorz = (-1);
-      inp++;
-   }
-
-/* Jetzt das Zahlensystem feststellen.  Vorgabe ist dezimal, was
-   sich aber durch den Initialwert von Base jederzeit aendern
-   laesst.  Der break-Befehl verhindert, dass mehrere Basenzeichen
-   hintereinander eingegeben werden koennen */
-
-   for (z = 0; z < 3; z++)
-      if (*inp == Prefixes[z]) {
-         Base = Bases[z];
-         inp++;
-         break;
-      }
-
-/* jetzt die Zahlenzeichen der Reihe nach durchverwursten */
-
-   erg = 0;
+// First, remove and process any signs, and then any base prefixes.
+// The numeral is positive (+) and decimal (base 10) by default.
+   LongInt vorz = *inp == '-'? -1: +1;
+   if (*inp == '-' || *inp == '+') inp++;
+   LongInt Base = *inp == '$'? 0x10: *inp == '@'? 010: *inp == '%'? 2: 10;
+   if (Base != 10) inp++;
+// Now, accumulate the total of the {hex/oct/b/dig}its into erg.
+   LongInt erg = 0;
    *err = false;
-   for (; *inp; inp++) {
-   /* Ziffern 0..9 ergeben selbiges */
-
-      if ((*inp >= '0') && (*inp <= '9')) val = (*inp) - '0';
-
-   /* Grossbuchstaben fuer Hexziffern */
-
-      else if ((*inp >= 'A') && (*inp <= 'F')) val = (*inp) - 'A' + 10;
-
-   /* Kleinbuchstaben nicht vergessen...! */
-
-      else if ((*inp >= 'a') && (*inp <= 'f')) val = (*inp) - 'a' + 10;
-
-   /* alles andere ist Schrott */
-
-      else return erg;
-
-   /* entsprechend der Basis zulaessige Ziffer ? */
-
-      if (val >= Base) return erg;
-
-   /* Zahl linksschieben, zusammenfassen, naechster bitte */
-
-      erg = erg * Base + val;
+   for (; *inp != '\0'; inp++) {
+      LongInt Xit = *inp;
+   // Digits '0'-'9' have values 0-9.
+      if (Xit >= '0' && Xit <= '9') Xit -= '0';
+   // Uppercase hexits 'A'-'F' have values 0xA-0xF.
+      else if (Xit >= 'A' && Xit <= 'F') Xit -= 'A' - 0xA;
+   // Lowercase hexits 'a'-'f' have values 0xa-0xf.
+      else if (Xit >= 'a' && Xit <= 'f') Xit -= 'a' - 0xa;
+   // Everything else, including an Xit out of the range [0,Base) permitted by the base, cuts the process short.
+      else return vorz*erg;
+   // else return erg; //(@) Formerly.
+      if (Xit >= Base) return vorz*erg;
+   // if (Xit >= Base) return erg; //(@) Formerly.
+   // Shift, add and next.
+      erg = Base*erg + Xit;
    }
-
-/* Vorzeichen beruecksichtigen */
-
+// Add back on the sign.
    erg *= vorz;
-
    *err = true;
    return erg;
 }

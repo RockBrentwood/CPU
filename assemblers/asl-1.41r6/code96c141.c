@@ -895,7 +895,8 @@ static bool IsPwr2(LongInt Inp, Byte * Erg) {
 }
 
 static bool IsShort(Byte Code) {
-   return ((Code & 0x4e) == 40);
+   return ((Code & 0x4e) == 0x40);
+// return ((Code & 0x4e) == 40); //(@) Formerly: a possible bug.
 }
 
 static bool CodeMove(void) {
