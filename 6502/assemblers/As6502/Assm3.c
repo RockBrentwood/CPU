@@ -52,11 +52,10 @@ static bool evaluate(int *ip) {
       else if (ch >= '0' && ch <= '9') tvalue = colnum(ip);
       else if (ch >= 'a' && ch <= 'z') tvalue = symval(ip);
       else if (ch >= 'A' && ch <= 'Z') tvalue = symval(ip);
-      else if ((ch == '_') || (ch == '.')) tvalue = symval(ip);
+      else if (ch == '_' || ch == '.') tvalue = symval(ip);
       else if (ch == '*') tvalue = loccnt, ++*ip;
-      else if (ch == '\'') {
-         ++*ip, tvalue = prlnbuf[*ip]&0xff, ++*ip;
-      } else if (ch == '[') {
+      else if (ch == '\'') ++*ip, tvalue = prlnbuf[*ip]&0xff, ++*ip;
+      else if (ch == '[') {
          if (parflg)
             error("Too many ['s in expression"), invalid = true;
          else
@@ -128,7 +127,7 @@ void class3(int *ip) {
    while ((ch = prlnbuf[++*ip]) == ' ');
    int flag, ztmask;
    switch (ch) {
-      case 0: case ';': error("Operand field missing"); return;
+      case '\0': case ';': error("Operand field missing"); return;
       case 'A': case 'a':
          if ((ch = prlnbuf[*ip + 1]) == ' ' || ch == 0) {
             flag = ACC;
@@ -176,6 +175,7 @@ void class3(int *ip) {
             case 281: flag &= INDY; break;
             default: flag = 0; break;
          }
+      break;
    }
    if ((opflg &= flag) == 0) {
       error("Invalid addressing mode");
@@ -188,7 +188,7 @@ void class3(int *ip) {
          if (pass == LAST_PASS)
             loadlc(loccnt, 0, true), loadv(opval + 8, 0, true), println();
          loccnt++;
-      return;
+      break;
    // double byte - class 3.
       case ZERX: case ZERY:
          opval += 4;
@@ -202,7 +202,7 @@ void class3(int *ip) {
          if (pass == LAST_PASS)
             loadlc(loccnt, 0, true), loadv(opval, 0, true), loadv(value, 1, true), println();
          loccnt += 2;
-      return;
+      break;
    // Triple byte - class 3.
       case IND:
          opval += 16;
@@ -214,8 +214,8 @@ void class3(int *ip) {
          if (pass == LAST_PASS)
             opval += 12, loadlc(loccnt, 0, true), loadv(opval, 0, true), loadv(value, 1, true), loadv(value >> 8, 2, true), println();
          loccnt += 3;
-      return;
-      default: error("Invalid addressing mode"); return;
+      break;
+      default: error("Invalid addressing mode"); break;
    }
 }
 
@@ -347,7 +347,7 @@ void pseudo(int *ip) {
             }
          } while (prlnbuf[(*ip)++] == ',');
       break;
-   // .page pseudo .
+   // .page pseudo.
       case 7:
          if (pagesize == 0) break;
          while (prlnbuf[++*ip] == ' ');
