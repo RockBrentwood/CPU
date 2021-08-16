@@ -2164,13 +2164,14 @@ static CMDResult CMD_IncludeList(bool Negate, char *Arg) {
 }
 
 static CMDResult CMD_ListMask(bool Negate, char *Arg) {
-   bool erg;
+   Byte erg;
    bool OK;
 
    if (Arg[0] == '\0') return CMDErr;
    else {
-      OK = ConstLongInt(Arg, &erg);
-      if ((!OK) || (erg > 31)) return CMDErr;
+      erg = ConstLongInt(Arg, &OK);
+   // OK = ConstLongInt(Arg, &erg); //(@) Formerly: which was a bug.
+	   if ((!OK) || (erg > 31)) return CMDErr;
       else {
          if (Negate) ListMask &= (~erg);
          else ListMask |= erg;
