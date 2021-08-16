@@ -33,6 +33,7 @@ CharTable LowCaseTable;
 static NLS_CountryInfo NLSInfo;
 static CharTable CollateTable;
 
+#if 0
 /*-------------------------------------------------------------------------------*/
 
 /* einen String anhand einer Tabelle uebersetzen: */
@@ -40,6 +41,7 @@ static CharTable CollateTable;
 static void TranslateString(char *s, CharTable Table) {
    for (; *s != '\0'; s++) *s = Table[((unsigned int)*s) & 0xff];
 }
+#endif
 
 /*-------------------------------------------------------------------------------*/
 /* Da es moeglich ist, die aktuelle Codeseite im Programmlauf zu wechseln,
