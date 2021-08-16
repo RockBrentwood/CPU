@@ -2171,7 +2171,7 @@ static CMDResult CMD_ListMask(bool Negate, char *Arg) {
    else {
       erg = ConstLongInt(Arg, &OK);
    // OK = ConstLongInt(Arg, &erg); //(@) Formerly: which was a bug.
-	   if ((!OK) || (erg > 31)) return CMDErr;
+      if ((!OK) || (erg > 31)) return CMDErr;
       else {
          if (Negate) ListMask &= (~erg);
          else ListMask |= erg;
