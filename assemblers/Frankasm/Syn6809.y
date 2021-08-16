@@ -99,7 +99,6 @@ char *indexgen[][4] = {
 #define	PPOSTPC	0x80
 
 long labelloc;
-static int satsub;
 static bool fraifskip = false;
 %}
 %union {
@@ -297,7 +296,7 @@ line: KOC_CHDEF STRING ',' exprlist {
    if (chtnpoint == NULL)
       fraerror("no CHARSET statement active");
    else {
-      for (satsub = 0; satsub < $4; satsub++) {
+      for (int satsub = 0; satsub < $4; satsub++) {
          char *before = sourcestr;
          pevalexpr(0, exprlist[satsub]);
          int *charaddr, numret;
@@ -343,17 +342,17 @@ line: genline { labelloc = locctr; };
 
 genline: KOC_BDEF exprlist {
    genlocrec(currseg, labelloc);
-   for (satsub = 0; satsub < $2; satsub++)
+   for (int satsub = 0; satsub < $2; satsub++)
       pevalexpr(1, exprlist[satsub]), locctr += geninstr(genbdef);
 };
 genline: KOC_SDEF stringlist {
    genlocrec(currseg, labelloc);
-   for (satsub = 0; satsub < $2; satsub++)
+   for (int satsub = 0; satsub < $2; satsub++)
       locctr += genstring(stringlist[satsub]);
 };
 genline: KOC_WDEF exprlist {
    genlocrec(currseg, labelloc);
-   for (satsub = 0; satsub < $2; satsub++)
+   for (int satsub = 0; satsub < $2; satsub++)
       pevalexpr(1, exprlist[satsub]), locctr += geninstr(genwdef);
 };
 genline: KOC_RESM expr {
