@@ -206,7 +206,7 @@ static void DeinitFields(void) {
 static void ChkZero(char *Asc, Byte * erg) {
    if ((strlen(Asc) > 1) && ((*Asc == '<') || (*Asc == '>'))) {
       *erg = (*Asc == '<') + 1;
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
    } else *erg = 0;
 }
 
@@ -482,7 +482,7 @@ static void MakeCode_65(void) {
       /* 5. indirekt absolut ? */
 
          if (IsIndirect(ArgStr[1])) {
-            strcpy(s1, ArgStr[1] + 1);
+            strcopy(s1, ArgStr[1] + 1);
             s1[strlen(s1) - 1] = '\0';
             ChkZero(s1, &ZeroMode);
             if (ZeroMode == 2) {
@@ -531,7 +531,7 @@ static void MakeCode_65(void) {
    /* 7. Y-indirekt ? */
 
       if ((IsIndirect(ArgStr[1])) && (strcasecmp(ArgStr[2], "Y") == 0)) {
-         strcpy(s1, ArgStr[1] + 1);
+         strcopy(s1, ArgStr[1] + 1);
          s1[strlen(s1) - 1] = '\0';
          ChkZero(s1, &ZeroMode);
          AdrVals[0] = EvalIntExpression(s1, UInt8, &ValOK);
@@ -544,7 +544,7 @@ static void MakeCode_65(void) {
    /* 8. X,Y-indiziert ? */
 
       else {
-         strcpy(s1, ArgStr[1]);
+         strcopy(s1, ArgStr[1]);
          ChkZero(s1, &ZeroMode);
          if (ZeroMode == 2) {
             AdrVals[0] = EvalIntExpression(s1, UInt8, &ValOK);

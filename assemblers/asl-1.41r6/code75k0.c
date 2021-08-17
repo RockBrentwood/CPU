@@ -699,9 +699,9 @@ static void MakeCode_75K0(void) {
       else {
          z = Memo("IN");
          if (z > 0) {
-            strcpy(ArgStr[3], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[3]);
          }
          if (strncasecmp(ArgStr[1], "PORT", 4) != 0) WrError(1350);
          else {
@@ -1107,10 +1107,10 @@ static void MakeCode_75K0(void) {
          BrLong = false;
          if (*ArgStr[1] == '$') {
             BrRel = true;
-            strcpy(ArgStr[1], ArgStr[1] + 1);
+            strmove(ArgStr[1], 1);
          } else if (*ArgStr[1] == '!') {
             BrLong = true;
-            strcpy(ArgStr[1], ArgStr[1] + 1);
+            strmove(ArgStr[1], 1);
          }
          AdrInt = EvalIntExpression(ArgStr[1], UInt16, &OK);
          if (OK) {
@@ -1162,7 +1162,7 @@ static void MakeCode_75K0(void) {
       if (ArgCnt != 1) WrError(1110);
       else {
          if (*ArgStr[1] == '!') {
-            strcpy(ArgStr[1], ArgStr[1] + 1);
+            strmove(ArgStr[1], 1);
             BrLong = true;
          } else BrLong = false;
          FirstPassUnknown = false;
@@ -1189,7 +1189,7 @@ static void MakeCode_75K0(void) {
    if (Memo("CALLF")) {
       if (ArgCnt != 1) WrError(1110);
       else {
-         if (*ArgStr[1] == '!') strcpy(ArgStr[1], ArgStr[1] + 1);
+         if (*ArgStr[1] == '!') strmove(ArgStr[1], 1);
          AdrInt = EvalIntExpression(ArgStr[1], UInt11, &OK);
          if (OK) {
             BAsmCode[0] = 0x40 + Hi(AdrInt);

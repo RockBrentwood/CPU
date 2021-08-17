@@ -258,7 +258,7 @@ static void DecodeAdr(char *Asc, Byte Mask, bool Is16) {
 /* indirekte Konstrukte ? */
 
    if (*Asc == '@') {
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
       if (IsWReg(Asc, &AdrMode)) AdrType = ModIWReg;
       else if (IsRReg(Asc, &AdrMode)) {
          if ((AdrMode & 1) == 1) WrError(1351);

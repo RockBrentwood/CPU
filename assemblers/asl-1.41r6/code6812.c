@@ -345,7 +345,7 @@ static bool ValidReg(char *Asc_o) {
 
    strmaxcpy(Asc, Asc_o, 255);
 
-   if ((*Asc == '-') || (*Asc == '+')) strcpy(Asc, Asc + 1);
+   if ((*Asc == '-') || (*Asc == '+')) strmove(Asc, 1);
    else if ((Asc[l - 1] == '-') || (Asc[l - 1] == '+')) Asc[l - 1] = '\0';
    return DecodeReg16(Asc, &Dummy);
 }
@@ -374,13 +374,13 @@ static bool DecodeReg(char *Asc, Byte * Erg) {
 static void CutShort(char *Asc, Integer * ShortMode) {
    if (*Asc == '>') {
       *ShortMode = 1;
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
    } else if (*Asc == '<') {
       *ShortMode = 2;
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
       if (*Asc == '<') {
          *ShortMode = 3;
-         strcpy(Asc, Asc + 1);
+         strmove(Asc, 1);
       }
    } else *ShortMode = 0;
 }
@@ -440,7 +440,7 @@ static void DecodeAdr(Integer Start, Integer Stop, Word Mask) {
    /* indirekt */
 
       if ((*ArgStr[Start] == '[') && (ArgStr[Start][strlen(ArgStr[Start]) - 1] == ']')) {
-         strcpy(ArgStr[Start], ArgStr[Start] + 1);
+         strmove(ArgStr[Start], 1);
          ArgStr[Start][strlen(ArgStr[Start]) - 1] = '\0';
          p = QuotPos(ArgStr[Start], ',');
          if (p != NULL) *p = '\0';
@@ -499,7 +499,7 @@ static void DecodeAdr(Integer Start, Integer Stop, Word Mask) {
          DecFlag = (*ArgStr[Stop] == '-');
          AutoFlag = true;
          PostFlag = false;
-         strcpy(ArgStr[Stop], ArgStr[Stop] + 1);
+         strmove(ArgStr[Stop], 1);
       } else if ((ArgStr[Stop][l - 1] == '-') || (ArgStr[Stop][l - 1] == '+')) {
          DecFlag = (ArgStr[Stop][l - 1] == '-');
          AutoFlag = true;
@@ -592,10 +592,10 @@ static void Try2Split(Integer Src) {
    p = ArgStr[Src] + strlen(ArgStr[Src]) - 1;
    while ((p >= ArgStr[Src]) && (!isspace(*p))) p--;
    if (p >= ArgStr[Src]) {
-      for (z = ArgCnt; z >= Src; z--) strcpy(ArgStr[z + 1], ArgStr[z]);
+      for (z = ArgCnt; z >= Src; z--) strcopy(ArgStr[z + 1], ArgStr[z]);
       ArgCnt++;
       *p = '\0';
-      strcpy(ArgStr[Src + 1], p + 1);
+      strcopy(ArgStr[Src + 1], p + 1);
       KillPostBlanks(ArgStr[Src]);
       KillPrefBlanks(ArgStr[Src + 1]);
    }
@@ -911,7 +911,7 @@ static void MakeCode_6812(void) {
       if ((ArgCnt < 2) || (ArgCnt > 3)) WrError(1110);
       else if (*AttrPart != '\0') WrError(1100);
       else {
-         if (*ArgStr[ArgCnt] == '#') strcpy(ArgStr[ArgCnt], ArgStr[ArgCnt] + 1);
+         if (*ArgStr[ArgCnt] == '#') strmove(ArgStr[ArgCnt], 1);
          HReg = EvalIntExpression(ArgStr[ArgCnt], UInt8, &OK);
          if (OK) {
             ExPos = 2; /* wg. Masken-Postbyte */
@@ -1074,7 +1074,7 @@ static void MakeCode_6812(void) {
       if ((ArgCnt < 3) || (ArgCnt > 4)) WrError(1110);
       else if (*AttrPart != '\0') WrError(1100);
       else {
-         if (*ArgStr[ArgCnt - 1] == '#') strcpy(ArgStr[ArgCnt - 1], ArgStr[ArgCnt - 1] + 1);
+         if (*ArgStr[ArgCnt - 1] == '#') strmove(ArgStr[ArgCnt - 1], 1);
          HReg = EvalIntExpression(ArgStr[ArgCnt - 1], UInt8, &OK);
          if (OK) {
             Address = EvalIntExpression(ArgStr[ArgCnt], UInt16, &OK) - EProgCounter();
@@ -1111,7 +1111,7 @@ static void MakeCode_6812(void) {
       else if (*AttrPart != '\0') WrError(1100);
       else {
          FirstPassUnknown = false;
-         if (*ArgStr[1] == '#') strcpy(ArgStr[1], ArgStr[1] + 1);
+         if (*ArgStr[1] == '#') strmove(ArgStr[1], 1);
          BAsmCode[1] = EvalIntExpression(ArgStr[1], UInt8, &OK);
          if (FirstPassUnknown) BAsmCode[1] = 0x30;
          if (OK)

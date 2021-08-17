@@ -25,7 +25,6 @@ static void ClrBlanks(char *tmp) {
 
    for (cnt = 0; isspace(tmp[cnt]); cnt++);
    if (cnt > 0) strmove(tmp, cnt);
-// if (cnt > 0) strcpy(tmp, tmp + cnt); //(@) Formerly.
 }
 
 bool ProcessedEmpty(CMDProcessed Processed) {
@@ -138,7 +137,7 @@ void ProcessCMD(CMDRec * Def, Integer Cnt, CMDProcessed Unprocessed, char *EnvNa
    else strncpy(OneLine, getenv(EnvName), 255);
 
    if (OneLine[0] == '@') {
-      strcpy(OneLine, OneLine + 1);
+      strmove(OneLine, 1);
       ClrBlanks(OneLine);
       KeyFile = fopen(OneLine, "r");
       if (KeyFile == NULL) ErrProc(true, ErrMsgKeyFileNotFound);
@@ -176,10 +175,10 @@ char *GetEXEName(void) {
    static String s;
    char *pos;
 
-   strcpy(s, ParamStr[0]);
+   strcopy(s, ParamStr[0]);
    do {
       pos = strchr(s, '/');
-      if (pos != NULL) strcpy(s, pos + 1);
+      if (pos != NULL) strcopy(s, pos + 1);
    }
    while (pos != NULL);
    pos = strchr(s, '.');

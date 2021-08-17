@@ -257,7 +257,7 @@ static void DecodeAdr(char *Asc, Word Mask) {
 /* indirekt */
 
    if ((*Asc == '[') && (Asc[strlen(Asc) - 1] == ']')) {
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
       Asc[strlen(Asc) - 1] = '\0';
 
       if ((strcasecmp(Asc, "DE") == 0) || (strcasecmp(Asc, "RP2") == 0)) {
@@ -265,8 +265,8 @@ static void DecodeAdr(char *Asc, Word Mask) {
          AdrPart = 0;
       } else if ((strncasecmp(Asc, "HL", 2) != 0) && (strncasecmp(Asc, "RP3", 3) != 0)) WrXError(1445, Asc);
       else {
-         strcpy(Asc, Asc + 2);
-         if (*Asc == '3') strcpy(Asc, Asc + 1);
+         strmove(Asc, 2);
+         if (*Asc == '3') strmove(Asc, 1);
          if ((strcasecmp(Asc, "+B") == 0) || (strcasecmp(Asc, "+R3") == 0)) {
             AdrMode = ModIndex;
             AdrPart = 1;
@@ -294,7 +294,7 @@ static void DecodeAdr(char *Asc, Word Mask) {
 
    if (*Asc == '!') {
       LongFlag = true;
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
    } else LongFlag = false;
 
 /* -->absolut */
@@ -554,9 +554,9 @@ static void MakeCode_78K0(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          if ((strcasecmp(ArgStr[2], "A") == 0) || (strcasecmp(ArgStr[2], "RP1") == 0)) {
-            strcpy(ArgStr[3], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[3]);
          }
          DecodeAdr(ArgStr[1], MModReg8);
          if (AdrMode != ModNone)
@@ -931,9 +931,9 @@ static void MakeCode_78K0(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          if (strcasecmp(ArgStr[2], "CY") == 0) {
-            strcpy(ArgStr[3], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[3]);
             z = 1;
          } else z = 4;
          if (strcasecmp(ArgStr[1], "CY") != 0) WrError(1110);
@@ -1008,7 +1008,7 @@ static void MakeCode_78K0(void) {
    if (Memo("CALLF")) {
       if (ArgCnt != 1) WrError(1110);
       else {
-         if (*ArgStr[1] == '!') strcpy(ArgStr[1], ArgStr[1] + 1);
+         if (*ArgStr[1] == '!') strmove(ArgStr[1], 1);
          AdrWord = EvalIntExpression(ArgStr[1], UInt11, &OK);
          if (OK) {
             BAsmCode[0] = 0x0c + (Hi(AdrWord) << 4);
@@ -1045,10 +1045,10 @@ static void MakeCode_78K0(void) {
          CodeLen = 2;
       } else {
          if (*ArgStr[1] == '!') {
-            strcpy(ArgStr[1], ArgStr[1] + 1);
+            strmove(ArgStr[1], 1);
             HReg = 1;
          } else if (*ArgStr[1] == '$') {
-            strcpy(ArgStr[1], ArgStr[1] + 1);
+            strmove(ArgStr[1], 1);
             HReg = 2;
          } else HReg = 0;
          AdrWord = EvalIntExpression(ArgStr[1], UInt16, &OK);
@@ -1083,7 +1083,7 @@ static void MakeCode_78K0(void) {
       if (Memo(RelOrders[z])) {
          if (ArgCnt != 1) WrError(1110);
          else {
-            if (*ArgStr[1] == '$') strcpy(ArgStr[1], ArgStr[1] + 1);
+            if (*ArgStr[1] == '$') strmove(ArgStr[1], 1);
             AdrInt = EvalIntExpression(ArgStr[1], UInt16, &OK) - (EProgCounter() + 2);
             if (OK)
                if (((AdrInt < -128) || (AdrInt > 127)) && (!SymbolQuestionable)) WrError(1370);
@@ -1124,7 +1124,7 @@ static void MakeCode_78K0(void) {
                BAsmCode[2] = AdrVals[0];
                HReg = 2 + AdrCnt;
             }
-            if (*ArgStr[2] == '$') strcpy(ArgStr[2], ArgStr[2] + 1);
+            if (*ArgStr[2] == '$') strmove(ArgStr[2], 1);
             AdrInt = EvalIntExpression(ArgStr[2], UInt16, &OK) - (EProgCounter() + HReg + 1);
             if (OK)
                if (((AdrInt < -128) || (AdrInt > 127)) && (!SymbolQuestionable)) WrError(1370);
@@ -1144,7 +1144,7 @@ static void MakeCode_78K0(void) {
          else if (AdrMode != ModNone) {
             BAsmCode[0] = (AdrMode == ModReg8) ? 0x88 + AdrPart : 0x04;
             BAsmCode[1] = AdrVals[0];
-            if (*ArgStr[2] == '$') strcpy(ArgStr[2], ArgStr[2] + 1);
+            if (*ArgStr[2] == '$') strmove(ArgStr[2], 1);
             AdrInt = EvalIntExpression(ArgStr[2], UInt16, &OK) - (EProgCounter() + AdrCnt + 2);
             if (OK)
                if (((AdrInt < -128) || (AdrInt > 127)) && (!SymbolQuestionable)) WrError(1370);

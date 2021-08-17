@@ -165,7 +165,7 @@ static void DecodeAdr(char *Asc, Byte Erl) {
       ok = true;
       NegFlag = false;
       Unknown = false;
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
       Asc[strlen(Asc) - 1] = '\0';
       do {
          ppos = QuotPos(Asc, '+');
@@ -180,7 +180,7 @@ static void DecodeAdr(char *Asc, Byte Erl) {
          } else {
             *p = '\0';
             strmaxcpy(Part, Asc, 255);
-            strcpy(Asc, p + 1);
+            strcopy(Asc, p + 1);
          }
          fnd = false;
          if (strcasecmp(Part, "A") == 0) {

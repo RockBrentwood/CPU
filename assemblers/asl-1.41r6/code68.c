@@ -278,7 +278,7 @@ static bool SplitAcc(char *Op) {
 
    Ch = OpPart[OpPartLen - 1];
    if ((OpLen + 1 == OpPartLen) && (strncmp(OpPart, Op, OpLen) == 0) && ((Ch == 'A') || (Ch == 'B'))) {
-      for (z = ArgCnt; z >= 1; z--) strcpy(ArgStr[z + 1], ArgStr[z]);
+      for (z = ArgCnt; z >= 1; z--) strcopy(ArgStr[z + 1], ArgStr[z]);
       ArgStr[1][0] = Ch;
       ArgStr[1][1] = '\0';
       OpPart[OpPartLen - 1] = '\0';
@@ -340,10 +340,10 @@ static void DecodeAdr(Integer StartInd, Integer StopInd, Byte Erl) {
          Bit8 = 0;
          if (*Asc == '<') {
             Bit8 = 2;
-            strcpy(Asc, Asc + 1);
+            strmove(Asc, 1);
          } else if (*Asc == '>') {
             Bit8 = 1;
-            strcpy(Asc, Asc + 1);
+            strmove(Asc, 1);
          }
          if ((Bit8 == 2) || ((MModExt & Erl) == 0))
             AdrWord = EvalIntExpression(Asc, Int8, &OK);
@@ -417,9 +417,9 @@ static void Try2Split(Integer Src) {
    p = ArgStr[Src] + strlen(ArgStr[Src]) - 1;
    while ((p > ArgStr[Src]) && (!isspace(*p))) p--;
    if (p > ArgStr[Src]) {
-      for (z = ArgCnt; z >= Src; z--) strcpy(ArgStr[z + 1], ArgStr[z]);
+      for (z = ArgCnt; z >= Src; z--) strcopy(ArgStr[z + 1], ArgStr[z]);
       ArgCnt++;
-      strcpy(ArgStr[Src + 1], p + 1);
+      strcopy(ArgStr[Src + 1], p + 1);
       *p = '\0';
       KillPostBlanks(ArgStr[Src]);
       KillPrefBlanks(ArgStr[Src + 1]);
@@ -667,7 +667,7 @@ static void MakeCode_68(void) {
       if ((ArgCnt < 3) || (ArgCnt > 4)) WrError(1110);
       else if (MomCPU < CPU6811) WrError(1500);
       else {
-         if (ArgStr[ArgCnt - 1][0] == '#') strcpy(ArgStr[ArgCnt - 1], ArgStr[ArgCnt - 1] + 1);
+         if (ArgStr[ArgCnt - 1][0] == '#') strmove(ArgStr[ArgCnt - 1], 1);
          Mask = EvalIntExpression(ArgStr[ArgCnt - 1], Int8, &OK);
          if (OK) {
             DecodeAdr(1, ArgCnt - 2, MModDir + MModInd);
@@ -694,16 +694,15 @@ static void MakeCode_68(void) {
 
    if ((Memo("BSET")) || (Memo("BCLR"))) {
       if (MomCPU == CPU6301) {
-         strcpy(ArgStr[ArgCnt + 1], ArgStr[1]);
-         for (z = 1; z <= ArgCnt - 1; z++) strcpy(ArgStr[z], ArgStr[z + 1]);
+         strcopy(ArgStr[ArgCnt + 1], ArgStr[1]);
+         for (z = 1; z <= ArgCnt - 1; z++) strcopy(ArgStr[z], ArgStr[z + 1]);
          strcopy(ArgStr[ArgCnt], ArgStr[ArgCnt + 1]);
-      // strcpy(ArgStr[ArgCnt], ArgStr[ArgCnt + 1]); //(@) Formerly - which is technically an overlapping areas bug.
       }
       if ((ArgCnt >= 1) && (ArgCnt <= 2)) Try2Split(ArgCnt);
       if ((ArgCnt < 2) || (ArgCnt > 3)) WrError(1110);
       else if (MomCPU < CPU6301) WrError(1500);
       else {
-         if (ArgStr[ArgCnt][0] == '#') strcpy(ArgStr[ArgCnt], ArgStr[ArgCnt] + 1);
+         if (ArgStr[ArgCnt][0] == '#') strmove(ArgStr[ArgCnt], 1);
          Mask = EvalIntExpression(ArgStr[ArgCnt], Int8, &OK);
          if ((OK) && (MomCPU == CPU6301))
             if (Mask > 7) {

@@ -529,27 +529,27 @@ static void DecodeAdr(char *Asc) {
    FoundSize = (-1);
 
    if (strncasecmp(Asc, "WORD PTR", 8) == 0) {
-      strcpy(Asc, Asc + 8);
+      strmove(Asc, 8);
       FoundSize = 1;
       IsImm = false;
       KillBlanks(Asc);
    } else if (strncasecmp(Asc, "BYTE PTR", 8) == 0) {
-      strcpy(Asc, Asc + 8);
+      strmove(Asc, 8);
       FoundSize = 0;
       IsImm = false;
       KillBlanks(Asc);
    } else if (strncasecmp(Asc, "DWORD PTR", 9) == 0) {
-      strcpy(Asc, Asc + 9);
+      strmove(Asc, 9);
       FoundSize = 2;
       IsImm = false;
       KillBlanks(Asc);
    } else if (strncasecmp(Asc, "QWORD PTR", 9) == 0) {
-      strcpy(Asc, Asc + 9);
+      strmove(Asc, 9);
       FoundSize = 3;
       IsImm = false;
       KillBlanks(Asc);
    } else if (strncasecmp(Asc, "TBYTE PTR", 9) == 0) {
-      strcpy(Asc, Asc + 9);
+      strmove(Asc, 9);
       FoundSize = 4;
       IsImm = false;
       KillBlanks(Asc);
@@ -560,7 +560,7 @@ static void DecodeAdr(char *Asc) {
       AddPart[2] = '\0';
       for (z = 0; z <= SegRegCnt; z++)
          if (strcasecmp(AddPart, SegRegNames[z]) == 0) {
-            strcpy(Asc, Asc + 3);
+            strmove(Asc, 3);
             SegBuffer = z;
             AddPrefix(SegRegPrefixes[SegBuffer]);
          }
@@ -581,7 +581,7 @@ static void DecodeAdr(char *Asc) {
          if (p == NULL) *Asc = '\0';
          else {
             *p = '[';
-            strcpy(Asc, p);
+            strcopy(Asc, p);
          }
       }
 
@@ -596,7 +596,7 @@ static void DecodeAdr(char *Asc) {
 
          *p = '\0';
          strmaxcpy(AdrPart, Asc + 1, 255);
-         strcpy(Asc, p + 1);
+         strcopy(Asc, p + 1);
          OldNegFlag = false;
 
          do {
@@ -609,12 +609,12 @@ static void DecodeAdr(char *Asc) {
             } else p = p1;
 
             if (p == NULL) {
-               strcpy(AddPart, AdrPart);
+               strcopy(AddPart, AdrPart);
                *AdrPart = '\0';
             } else {
                *p = '\0';
-               strcpy(AddPart, AdrPart);
-               strcpy(AdrPart, p + 1);
+               strcopy(AddPart, AdrPart);
+               strcopy(AdrPart, p + 1);
             }
 
             if (strcasecmp(AddPart, "BX") == 0) {
@@ -1083,7 +1083,7 @@ static bool DecodeFPU(void) {
          return true;
       }
       if (ArgCnt == 1) {
-         strcpy(ArgStr[2], ArgStr[1]);
+         strcopy(ArgStr[2], ArgStr[1]);
          strmaxcpy(ArgStr[1], "ST", 255);
          ArgCnt++;
       }
@@ -1138,7 +1138,7 @@ static bool DecodeFPU(void) {
       if (FMemo("FIIMUL")) OpAdd += 8;
       if (ArgCnt == 1) {
          ArgCnt = 2;
-         strcpy(ArgStr[2], ArgStr[1]);
+         strcopy(ArgStr[2], ArgStr[1]);
          strmaxcpy(ArgStr[1], "ST", 255);
       }
       if (ArgCnt != 2) WrError(1110);
@@ -1208,7 +1208,7 @@ static bool DecodeFPU(void) {
          return true;
       }
       if (ArgCnt == 1) {
-         strcpy(ArgStr[2], ArgStr[1]);
+         strcopy(ArgStr[2], ArgStr[1]);
          strmaxcpy(ArgStr[1], "ST", 255);
          ArgCnt++;
       }
@@ -1270,7 +1270,7 @@ static bool DecodeFPU(void) {
       if ((FMemo("FIDIV")) || (Memo("FIDIVR"))) OpAdd += 16;
       if (ArgCnt == 1) {
          ArgCnt = 2;
-         strcpy(ArgStr[2], ArgStr[1]);
+         strcopy(ArgStr[2], ArgStr[1]);
          strmaxcpy(ArgStr[1], "ST", 255);
       }
       if (ArgCnt != 2) WrError(1110);
@@ -1706,8 +1706,8 @@ static void MakeCode_86(void) {
                else if (!Memo("IMUL")) WrError(1110);
                else {
                   if (ArgCnt == 2) {
-                     strcpy(ArgStr[3], ArgStr[2]);
-                     strcpy(ArgStr[2], ArgStr[1]);
+                     strcopy(ArgStr[3], ArgStr[2]);
+                     strcopy(ArgStr[2], ArgStr[1]);
                      ArgCnt++;
                   }
                   BAsmCode[CodeLen] = 0x69;
@@ -1790,9 +1790,9 @@ static void MakeCode_86(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          if (Memo("OUT")) {
-            strcpy(ArgStr[3], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[3]);
          }
          DecodeAdr(ArgStr[1]);
          switch (AdrType) {
@@ -1826,11 +1826,11 @@ static void MakeCode_86(void) {
       else {
          if (strncmp(ArgStr[1], "SHORT ", 6) == 0) {
             AdrByte = 2;
-            strcpy(ArgStr[1], ArgStr[1] + 6);
+            strmove(ArgStr[1], 6);
             KillPrefBlanks(ArgStr[1]);
          } else if ((strncmp(ArgStr[1], "LONG ", 5) == 0) || (strncmp(ArgStr[1], "NEAR ", 5) == 0)) {
             AdrByte = 1;
-            strcpy(ArgStr[1], ArgStr[1] + 5);
+            strmove(ArgStr[1], 5);
             KillPrefBlanks(ArgStr[1]);
          } else AdrByte = 0;
          OK = true;

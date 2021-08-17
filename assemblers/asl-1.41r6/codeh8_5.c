@@ -267,7 +267,7 @@ static bool DecodeRegList(char *Asc, Byte * Erg) {
    char *p;
 
    if (IsIndirect(Asc)) {
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
       Asc[strlen(Asc) - 1] = '\0';
       KillBlanks(Asc);
    }
@@ -281,7 +281,7 @@ static bool DecodeRegList(char *Asc, Byte * Erg) {
       } else {
          *p = '\0';
          strmaxcpy(Part, Asc, 255);
-         strcpy(Asc, p + 1);
+         strcopy(Asc, p + 1);
       }
       if (DecodeReg(Part, &Reg1)) *Erg |= (1 << Reg1);
       else {
@@ -420,9 +420,9 @@ static void DecodeAdr(char *Asc, Word Mask) {
 /* indirekt ? */
 
    if (*Asc == '@') {
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
       if (IsIndirect(Asc)) {
-         strcpy(Asc, Asc + 1);
+         strmove(Asc, 1);
          Asc[strlen(Asc) - 1] = '\0';
       }
 
@@ -460,7 +460,7 @@ static void DecodeAdr(char *Asc, Word Mask) {
             } else {
                *p = '\0';
                strmaxcpy(Part, Asc, 255);
-               strcpy(Asc, p + 1);
+               strcopy(Asc, p + 1);
             }
             if (DecodeReg(Part, &HReg))
                if (RegPart != -1) {
@@ -469,7 +469,7 @@ static void DecodeAdr(char *Asc, Word Mask) {
                } else RegPart = HReg;
             else {
                SplitDisp(Part, &DispSize);
-               if (*Part == '#') strcpy(Part, Part + 1);
+               if (*Part == '#') strmove(Part, 1);
                FirstPassUnknown = false;
                DispAcc += EvalIntExpression(Part, Int32, &OK);
                if (FirstPassUnknown) Unknown = true;
@@ -646,7 +646,7 @@ static void MakeCode_H8_5(void) {
             *p = '\0';
             if (p == AttrPart) strcpy(Format, " ");
             else strmaxcpy(Format, AttrPart, 255);
-            strcpy(AttrPart, p + 1);
+            strcopy(AttrPart, p + 1);
          }
          break;
       default:
@@ -810,9 +810,9 @@ static void MakeCode_H8_5(void) {
       else if (strcmp(Format, " ") != 0) WrError(1090);
       else {
          if (Memo("STC")) {
-            strcpy(ArgStr[3], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[3]);
          }
          if (!DecodeCReg(ArgStr[2], &HReg)) WrXError(1440, ArgStr[2]);
          else {
@@ -868,9 +868,9 @@ static void MakeCode_H8_5(void) {
       if (ArgCnt != 2) WrError(1110);
       else if (CheckFormat("G")) {
          if (Memo("MOVTPE")) {
-            strcpy(ArgStr[3], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[3]);
          }
          if (OpSize == -1) SetOpSize(0);
          if (OpSize != 0) WrError(1130);
@@ -1105,7 +1105,7 @@ static void MakeCode_H8_5(void) {
                      OK = true;
                      HReg += 8;
                   } else {
-                     if (*ArgStr[1] == '#') strcpy(ArgStr[1], ArgStr[1] + 1);
+                     if (*ArgStr[1] == '#') strmove(ArgStr[1], 1);
                      HReg = EvalIntExpression(ArgStr[1], (OpSize == 0) ? UInt3 : UInt4, &OK);
                      if (OK) HReg += 0x80;
                   }
@@ -1235,7 +1235,7 @@ static void MakeCode_H8_5(void) {
       else if (strcmp(Format, " ") != 0) WrError(1090);
       else if (!Maximum) WrError(1997);
       else {
-         if (*ArgStr[1] == '@') strcpy(ArgStr[1], ArgStr[1] + 1);
+         if (*ArgStr[1] == '@') strmove(ArgStr[1], 1);
          if (DecodeReg(ArgStr[1], &HReg)) {
             BAsmCode[0] = 0x11;
             BAsmCode[1] = 0xc0 + ((1 - z) << 3) + HReg;
@@ -1260,7 +1260,7 @@ static void MakeCode_H8_5(void) {
       else if (strcmp(Format, " ") != 0) WrError(1090);
       else if (*ArgStr[1] != '#') WrError(1120);
       else {
-         strcpy(ArgStr[1], ArgStr[1] + 1);
+         strmove(ArgStr[1], 1);
          HSize = (-1);
          SplitDisp(ArgStr[1], &HSize);
          if (HSize != -1) SetOpSize(HSize);
@@ -1305,7 +1305,7 @@ static void MakeCode_H8_5(void) {
             if ((AdrByte & 7) != 6) WrError(1350);
             else if (*ArgStr[2] != '#') WrError(1120);
             else {
-               strcpy(ArgStr[2], ArgStr[2] + 1);
+               strmove(ArgStr[2], 1);
                HSize = (-1);
                SplitDisp(ArgStr[2], &HSize);
                if (HSize != -1) SetOpSize(HSize);

@@ -445,7 +445,7 @@ static void DecodeAdr(char *Asc, Word Mask) {
 /* indirekt ? */
 
    if (*Asc == '@') {
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
 
       if (*Asc == '@') {
          AdrVals[0] = EvalIntExpression(Asc + 1, UInt8, &OK) & 0xff;
@@ -493,7 +493,7 @@ static void DecodeAdr(char *Asc, Word Mask) {
       }
 
       if (IsIndirect(Asc)) {
-         strcpy(Asc, Asc + 1);
+         strmove(Asc, 1);
          Asc[strlen(Asc) - 1] = '\0';
          AdrPart = 0xff;
          DispAcc = 0;
@@ -1007,9 +1007,9 @@ static void MakeCode_H8_3(void) {
       else if (MomCPU <= CPUH8_300L) WrError(1500);
       else {
          if (Memo("MOVTPE")) {
-            strcpy(ArgStr[3], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[3]);
          }
          DecodeAdr(ArgStr[2], MModReg);
          if (AdrMode != ModNone)
@@ -1049,9 +1049,9 @@ static void MakeCode_H8_3(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          if (Memo("STC")) {
-            strcpy(ArgStr[3], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[3]);
             z = 0x80;
          } else z = 0;
          if (strcasecmp(ArgStr[2], "CCR") != 0) WrError(1350);

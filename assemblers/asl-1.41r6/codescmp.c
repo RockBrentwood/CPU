@@ -178,7 +178,7 @@ static bool DecodeAdr(char *Asc, bool MayInc, Byte PCDisp, Byte * Arg) {
                WrError(1350);
                return false;
             }
-            strcpy(Asc, Asc + 1);
+            strmove(Asc, 1);
             *Arg += 4;
          }
          if (strcasecmp(Asc, "E") == 0) BAsmCode[1] = 0x80;

@@ -410,7 +410,7 @@ static void DecodeAdr(char *Asc, Byte PrefInd, bool MayImm, bool MayReg) {
    if (IsIndirect(Asc)) {
    /* I.1. vorkonditionieren */
 
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
       Asc[strlen(Asc) - 1] = '\0';
       KillBlanks(Asc);
 
@@ -481,14 +481,14 @@ static void DecodeAdr(char *Asc, Byte PrefInd, bool MayImm, bool MayReg) {
          } else {
             *EPos = '\0';
             strmaxcpy(AdrPart, Asc, 255);
-            strcpy(Asc, EPos + 1);
+            strcopy(Asc, EPos + 1);
          }
 
       /* I.4.b. Indexregister mit Skalierung */
 
          EPos = QuotPos(AdrPart, '*');
          if (EPos != NULL) {
-            strcpy(tmp, AdrPart);
+            strcopy(tmp, AdrPart);
             tmp[EPos - AdrPart] = '\0';
          }
          l = strlen(AdrPart);
@@ -1175,7 +1175,7 @@ static void MakeCode_97C241(void) {
          } else {
             if (p == AttrPart) Format = ' ';
             else Format = (*AttrPart);
-            strcpy(AttrPart, p + 1);
+            strcopy(AttrPart, p + 1);
          }
          break;
       default:
@@ -1230,7 +1230,7 @@ static void MakeCode_97C241(void) {
          else {
             if ((!IsIndirect(ArgStr[1])) && ((RMWOrders[z].Mask & 0x20) != 0)) {
                sprintf(ArgStr[2], "(%s)", ArgStr[1]);
-               strcpy(ArgStr[1], ArgStr[2]);
+               strcopy(ArgStr[1], ArgStr[2]);
             }
             DecodeAdr(ArgStr[1], 0, (RMWOrders[z].Mask & 0x10) == 0, (RMWOrders[z].Mask & 0x20) == 0);
             if (AdrOK)
@@ -1401,9 +1401,9 @@ static void MakeCode_97C241(void) {
          if (ArgCnt != 4) WrError(1110);
          else {
             if (z == 2) {
-               strcpy(ArgStr[5], ArgStr[1]);
-               strcpy(ArgStr[1], ArgStr[2]);
-               strcpy(ArgStr[2], ArgStr[5]);
+               strcopy(ArgStr[5], ArgStr[1]);
+               strcopy(ArgStr[1], ArgStr[2]);
+               strcopy(ArgStr[2], ArgStr[5]);
             }
             if (!DecodeReg(ArgStr[1], &Reg)) WrError(1350);
             else if ((Reg >> 6) != 1) WrError(1130);
@@ -1534,7 +1534,7 @@ static void MakeCode_97C241(void) {
                      else if (OpSize == -1) WrError(1132);
                      else {
                         if (Format == ' ') {
-                           if (((Is2Absolute()) && (IsShort))
+                           if (((Is2Absolute()) && (IsShort()))
                               || ((Is2Short()) && (IsAbsolute()))) Format = 'A';
                            else Format = 'G';
                         };

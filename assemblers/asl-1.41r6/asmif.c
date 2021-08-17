@@ -125,7 +125,7 @@ void CodeIFEXIST(void) {
       IfExpr = 1;
    } else {
       strmaxcpy(ArgPart, ArgStr[1], 255);
-      if (*ArgPart == '"') strcpy(ArgPart, ArgPart + 1);
+      if (*ArgPart == '"') strmove(ArgPart, 1);
       if (ArgPart[strlen(ArgPart) - 1] == '"') ArgPart[strlen(ArgPart) - 1] = '\0';
       AddSuffix(ArgPart, IncSuffix);
       strmaxcpy(NPath, IncludeList, 255);

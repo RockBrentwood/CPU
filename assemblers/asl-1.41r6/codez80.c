@@ -527,7 +527,7 @@ static void DecodeAdr(char *Asc_O) {
             } else { /* SP,IX,IY */
                strmaxcpy(Asc, Asc_O + 3, 255);
                Asc[strlen(Asc) - 1] = '\0';
-               if (*Asc == '+') strcpy(Asc, Asc + 1);
+               if (*Asc == '+') strmove(Asc, 1);
                AdrLong = EvalIntExpression(Asc, (MomCPU >= CPUZ380) ? SInt24 : SInt8, &OK);
                if (OK) {
                   if (z == 3) AdrMode = ModSPRel;
@@ -1172,7 +1172,7 @@ static bool CodeAri(void) {
    for (z = 0; z < ALUOrderCnt; z++)
       if (Memo(ALUOrders[z].Name)) {
          if (ArgCnt == 1) {
-            strcpy(ArgStr[2], ArgStr[1]);
+            strcopy(ArgStr[2], ArgStr[1]);
             strmaxcpy(ArgStr[1], "A", 255);
             ArgCnt = 2;
          }
@@ -1641,7 +1641,7 @@ static bool CodeAri(void) {
 
    if ((Memo("DIVUW")) || (Memo("MULTW")) || (Memo("MULTUW"))) {
       if (ArgCnt == 1) {
-         strcpy(ArgStr[2], ArgStr[1]);
+         strcopy(ArgStr[2], ArgStr[1]);
          strmaxcpy(ArgStr[1], "HL", 255);
          ArgCnt = 2;
       }
@@ -2073,9 +2073,9 @@ static void MakeCode_Z80(void) {
       } else if (ArgCnt != 2) WrError(1110);
       else {
          if (Memo("OUT")) {
-            strcpy(ArgStr[3], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[3]);
          }
          if (strcasecmp(ArgStr[2], "(C)") == 0) {
             OpSize = 0;
@@ -2125,9 +2125,9 @@ static void MakeCode_Z80(void) {
       else if (MomCPU < CPUZ380) WrError(1500);
       else {
          if (Memo("OUTW")) {
-            strcpy(ArgStr[3], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[3]);
          };
          if (strcasecmp(ArgStr[2], "(C)") != 0) WrError(1350);
          else {
@@ -2174,9 +2174,9 @@ static void MakeCode_Z80(void) {
       else if (MomCPU < CPUZ180) WrError(1500);
       else {
          if (Memo("OUT0")) {
-            strcpy(ArgStr[3], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[3]);
          }
          OpSize = 0;
          if (ArgCnt == 1) {
@@ -2208,9 +2208,9 @@ static void MakeCode_Z80(void) {
       else if (MomCPU < CPUZ380) WrError(1500);
       else {
          if (*OpPart == 'O') {
-            strcpy(ArgStr[3], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[3]);
          }
          OpSize = OpPart[strlen(OpPart) - 1] == 'W';
          if (((OpSize == 0) && (strcasecmp(ArgStr[1], "A") != 0))

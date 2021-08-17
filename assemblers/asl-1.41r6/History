@@ -15,3 +15,5 @@
 		Locking in function prototypes, removing "PROTOS".
 		No degradation: 4/55 tests succeed.
 		Versions 1.41r{7,8} are even less viable: the bounds check errors occur even during the build process.
+2021/08/15	Pre-C90 operational baseline established.
+		Recoding, bug fixes: eliminated the strcat(), strcpy() related bounds check errors.

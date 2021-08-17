@@ -293,7 +293,7 @@ static void DecodeAdr(char *Asc, Word Mask) {
    }
 
    if (*Asc == '#') {
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
       p = HasDisp(Asc);
       if (p == NULL) {
          switch (OpSize) {
@@ -1156,7 +1156,7 @@ static void InternSymbol_370(char *Asc, TempResult * Erg) {
    Erg->Typ = TempNone;
    if ((strlen(Asc) < 2) || ((toupper(*Asc) != 'R') && (toupper(*Asc) != 'P'))) return;
 
-   strcpy(h, Asc + 1);
+   strcopy(h, Asc + 1);
    if ((*h == '0') && (strlen(h) > 1)) *h = '$';
    Erg->Contents.Int = ConstLongInt(h, &err);
    if ((!err) || (Erg->Contents.Int < 0) || (Erg->Contents.Int > 255)) return;

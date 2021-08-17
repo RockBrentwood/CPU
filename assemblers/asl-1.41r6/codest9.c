@@ -352,7 +352,7 @@ static void DecodeAdr(char *Asc_O, LongWord Mask) {
    if (Asc[strlen(Asc) - 1] == '+') {
       if ((*Asc != '(') || (Asc[strlen(Asc) - 2] != ')')) WrError(1350);
       else {
-         strcpy(Asc, Asc + 1);
+         strmove(Asc, 1);
          Asc[strlen(Asc) - 2] = '\0';
          if (!DecodeReg(Asc, &AdrPart, &Size)) WrXError(1445, Asc);
          AdrMode = (Size == 0) ? ModIncWReg : ModIncWRReg;
@@ -364,7 +364,7 @@ static void DecodeAdr(char *Asc_O, LongWord Mask) {
 /* Predekrement */
 
    if ((*Asc == '-') && (Asc[1] == '(') && (Asc[strlen(Asc) - 1] == ')')) {
-      strcpy(Reg, Asc + 2);
+      strcopy(Reg, Asc + 2);
       Reg[strlen(Reg) - 1] = '\0';
       if (DecodeReg(Reg, &AdrPart, &Size)) {
          if (Size == 0) WrError(1350);
@@ -406,7 +406,7 @@ static void DecodeAdr(char *Asc_O, LongWord Mask) {
 /* indirekt */
 
    if (OK) {
-      strcpy(Reg, p + 2);
+      strcopy(Reg, p + 2);
       Reg[strlen(Reg) - 1] = '\0';
       p[1] = '\0';
       if (DecodeReg(Reg, &AdrPart, &Size))
@@ -532,7 +532,7 @@ static bool SplitBit(char *Asc, Byte * Erg) {
    if ((p == NULL) || (p == Asc + strlen(Asc) + 1)) {
       if (*Asc == '!') {
          Inv = true;
-         strcpy(Asc, Asc + 1);
+         strmove(Asc, 1);
       } else Inv = false;
       val = EvalIntExpression(Asc, UInt8, &OK);
       if (OK) {
@@ -1845,7 +1845,7 @@ static void InternSymbol_ST9(char *Asc, TempResult * Erg) {
    if (*h == 'R') {
       if (strlen(h) < 2) return;
       Pair = true;
-      strcpy(h, h + 1);
+      strmove(h, 1);
    } else Pair = false;
    Erg->Contents.Int = ConstLongInt(h, &Err);
    if ((!Err) || (Erg->Contents.Int < 0) || (Erg->Contents.Int > 255)) return;

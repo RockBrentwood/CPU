@@ -412,7 +412,7 @@ static void DecodeAdr(char *Asc, Byte Erl, bool ImmFloat) {
    if (*Asc == '*') {
    /* II.1. Erkennungszeichen entfernen */
 
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
 
    /* II.2. Extrawuerste erledigen */
 
@@ -454,18 +454,18 @@ static void DecodeAdr(char *Asc, Byte Erl, bool ImmFloat) {
       if (*Asc == '-') {
          if (Asc[1] == '-') {
             Mode = ModPreDec;
-            strcpy(Asc, Asc + 2);
+            strmove(Asc, 2);
          } else {
             Mode = ModSub;
-            strcpy(Asc, Asc + 1);
+            strmove(Asc, 1);
          }
       } else if (*Asc == '+') {
          if (Asc[1] == '+') {
             Mode = ModPreInc;
-            strcpy(Asc, Asc + 2);
+            strmove(Asc, 2);
          } else {
             Mode = ModAdd;
-            strcpy(Asc, Asc + 1);
+            strmove(Asc, 1);
          }
       } else if (Asc[l - 1] == '-') {
          if (Asc[l - 2] == '-') {
@@ -794,7 +794,7 @@ static void JudgePar(GenOrder * Prim, Integer Sec, Byte * ErgMode, Byte * ErgCod
 }
 
 static LongWord EvalAdrExpression(char *Asc, bool *OK) {
-   if (*Asc == '@') strcpy(Asc, Asc + 1);
+   if (*Asc == '@') strmove(Asc, 1);
    return EvalIntExpression(Asc, UInt24, OK);
 }
 
@@ -823,7 +823,7 @@ static void MakeCode_3203X(void) {
    ThisPar = (strcmp(LabPart, "||") == 0);
    if ((strlen(OpPart) > 2) && (strncmp(OpPart, "||", 2) == 0)) {
       ThisPar = true;
-      strcpy(OpPart, OpPart + 2);
+      strmove(OpPart, 2);
    }
    if ((!NextPar) && (ThisPar)) {
       WrError(1950);
@@ -863,7 +863,7 @@ static void MakeCode_3203X(void) {
          if (ArgCnt == 1)
             if (GenOrders[z].May1) {
                ArgCnt = 2;
-               strcpy(ArgStr[2], ArgStr[1]);
+               strcopy(ArgStr[2], ArgStr[1]);
             } else {
                WrError(1110);
                return;
@@ -871,13 +871,13 @@ static void MakeCode_3203X(void) {
          if ((ArgCnt == 3) && (OpPart[strlen(OpPart) - 1] != '3')) strcat(OpPart, "3");
          Is3 = (OpPart[strlen(OpPart) - 1] == '3');
          if ((GenOrders[z].SwapOps) && (!Is3)) {
-            strcpy(ArgStr[3], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[3]);
          }
          if ((Is3) && (ArgCnt == 2)) {
             ArgCnt = 3;
-            strcpy(ArgStr[3], ArgStr[2]);
+            strcopy(ArgStr[3], ArgStr[2]);
          }
          if ((ArgCnt < 2) || (ArgCnt > 3) || ((Is3) && (!GenOrders[z].May3))) {
             WrError(1110);
@@ -1093,7 +1093,7 @@ static void MakeCode_3203X(void) {
             PrevSrc2Part = CurrSrc2Part;
             PrevDestMode = CurrDestMode;
             PrevDestPart = CurrDestPart;
-            strcpy(PrevOp, OpPart);
+            strcopy(PrevOp, OpPart);
             PrevARs = ARs;
             z2 = z;
             if (Is3)
@@ -1139,8 +1139,8 @@ static void MakeCode_3203X(void) {
 /* Datentransfer */
 
    if ((strncmp(OpPart, "LDI", 3) == 0) || (strncmp(OpPart, "LDF", 3) == 0)) {
-      strcpy(HOp, OpPart);
-      strcpy(OpPart, OpPart + 3);
+      strcopy(HOp, OpPart);
+      strmove(OpPart, 3);
       for (z = 0; z < ConditionCount; z++)
          if (Memo(Conditions[z].Name)) {
             if (ArgCnt != 2) WrError(1110);
@@ -1242,8 +1242,8 @@ static void MakeCode_3203X(void) {
    }
 
    if (*OpPart == 'B') {
-      strcpy(HOp, OpPart);
-      strcpy(OpPart, OpPart + 1);
+      strcopy(HOp, OpPart);
+      strmove(OpPart, 1);
       if (OpPart[strlen(OpPart) - 1] == 'D') {
          OpPart[strlen(OpPart) - 1] = '\0';
          DFlag = 1l << 21;
@@ -1277,8 +1277,8 @@ static void MakeCode_3203X(void) {
    }
 
    if (strncmp(OpPart, "CALL", 4) == 0) {
-      strcpy(HOp, OpPart);
-      strcpy(OpPart, OpPart + 4);
+      strcopy(HOp, OpPart);
+      strmove(OpPart, 4);
       for (z = 0; z < ConditionCount; z++)
          if (Memo(Conditions[z].Name)) {
             if (ArgCnt != 1) WrError(1110);
@@ -1304,8 +1304,8 @@ static void MakeCode_3203X(void) {
    }
 
    if (strncmp(OpPart, "DB", 2) == 0) {
-      strcpy(HOp, OpPart);
-      strcpy(OpPart, OpPart + 2);
+      strcopy(HOp, OpPart);
+      strmove(OpPart, 2);
       if (OpPart[strlen(OpPart) - 1] == 'D') {
          OpPart[strlen(OpPart) - 1] = '\0';
          DFlag = 1l << 21;
@@ -1349,8 +1349,8 @@ static void MakeCode_3203X(void) {
 
    if ((strncmp(OpPart, "RETI", 4) == 0) || (strncmp(OpPart, "RETS", 4) == 0)) {
       DFlag = (OpPart[3] == 'S') ? (1l << 23) : (0);
-      strcpy(HOp, OpPart);
-      strcpy(OpPart, OpPart + 4);
+      strcopy(HOp, OpPart);
+      strmove(OpPart, 4);
       for (z = 0; z < ConditionCount; z++)
          if (Memo(Conditions[z].Name)) {
             if (ArgCnt != 0) WrError(1110);
@@ -1368,8 +1368,8 @@ static void MakeCode_3203X(void) {
    }
 
    if (strncmp(OpPart, "TRAP", 4) == 0) {
-      strcpy(HOp, OpPart);
-      strcpy(OpPart, OpPart + 4);
+      strcopy(HOp, OpPart);
+      strmove(OpPart, 4);
       for (z = 0; z < ConditionCount; z++)
          if (Memo(Conditions[z].Name)) {
             if (ArgCnt != 1) WrError(1110);

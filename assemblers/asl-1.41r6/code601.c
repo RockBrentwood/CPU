@@ -141,7 +141,7 @@ static void AddSReg2(char *NName, LongInt NCode, Byte NMask) {
 static void AddReg2(char *NName1, char *NName2, LongInt NCode, Byte NMask, bool WithOE, bool WithFL) {
    String NName;
 
-   strcpy(NName, (MomCPU == CPU6000) ? NName1 : NName2);
+   strcopy(NName, (MomCPU == CPU6000) ? NName1 : NName2);
    AddSReg2(strdup(NName), NCode, NMask);
    if (WithOE) {
       strcat(NName, "O");
@@ -177,7 +177,7 @@ static void AddSFReg2(char *NName, LongInt NCode, Byte NMask) {
 static void AddFReg2(char *NName1, char *NName2, LongInt NCode, Byte NMask, bool WithFL) {
    String NName;
 
-   strcpy(NName, (MomCPU == CPU6000) ? NName1 : NName2);
+   strcopy(NName, (MomCPU == CPU6000) ? NName1 : NName2);
    AddSFReg2(strdup(NName), NCode, NMask);
    if (WithFL) {
       strcat(NName, ".");
@@ -203,7 +203,7 @@ static void AddSReg2Swap(char *NName, LongInt NCode, Byte NMask) {
 static void AddReg2Swap(char *NName1, char *NName2, LongInt NCode, Byte NMask, bool WithOE, bool WithFL) {
    String NName;
 
-   strcpy(NName, (MomCPU == CPU6000) ? NName1 : NName2);
+   strcopy(NName, (MomCPU == CPU6000) ? NName1 : NName2);
    AddSReg2Swap(strdup(NName), NCode, NMask);
    if (WithOE) {
       strcat(NName, "O");
@@ -239,7 +239,7 @@ static void AddSReg3(char *NName, LongInt NCode, Byte NMask) {
 static void AddReg3(char *NName1, char *NName2, LongInt NCode, Byte NMask, bool WithOE, bool WithFL) {
    String NName;
 
-   strcpy(NName, (MomCPU == CPU6000) ? NName1 : NName2);
+   strcopy(NName, (MomCPU == CPU6000) ? NName1 : NName2);
    AddSReg3(strdup(NName), NCode, NMask);
    if (WithOE) {
       strcat(NName, "O");
@@ -275,7 +275,7 @@ static void AddSFReg3(char *NName, LongInt NCode, Byte NMask) {
 static void AddFReg3(char *NName1, char *NName2, LongInt NCode, Byte NMask, bool WithFL) {
    String NName;
 
-   strcpy(NName, (MomCPU == CPU6000) ? NName1 : NName2);
+   strcopy(NName, (MomCPU == CPU6000) ? NName1 : NName2);
    AddSFReg3(strdup(NName), NCode, NMask);
    if (WithFL) {
       strcat(NName, ".");
@@ -294,7 +294,7 @@ static void AddSReg3Swap(char *NName, LongInt NCode, Byte NMask) {
 static void AddReg3Swap(char *NName1, char *NName2, LongInt NCode, Byte NMask, bool WithFL) {
    String NName;
 
-   strcpy(NName, (MomCPU == CPU6000) ? NName1 : NName2);
+   strcopy(NName, (MomCPU == CPU6000) ? NName1 : NName2);
    AddSReg3Swap(strdup(NName), NCode, NMask);
    if (WithFL) {
       strcat(NName, ".");
@@ -320,7 +320,7 @@ static void AddSFReg4(char *NName, LongWord NCode, Byte NMask) {
 static void AddFReg4(char *NName1, char *NName2, LongWord NCode, Byte NMask, bool WithFL) {
    String NName;
 
-   strcpy(NName, (MomCPU == CPU6000) ? NName1 : NName2);
+   strcopy(NName, (MomCPU == CPU6000) ? NName1 : NName2);
    AddSFReg4(strdup(NName), NCode, NMask);
    if (WithFL) {
       strcat(NName, ".");
@@ -353,7 +353,7 @@ static void AddSReg2Imm(char *NName, LongWord NCode, Byte NMask) {
 static void AddReg2Imm(char *NName1, char *NName2, LongWord NCode, Byte NMask, bool WithFL) {
    String NName;
 
-   strcpy(NName, (MomCPU == CPU6000) ? NName1 : NName2);
+   strcopy(NName, (MomCPU == CPU6000) ? NName1 : NName2);
    AddSReg2Imm(strdup(NName), NCode, NMask);
    if (WithFL) {
       strcat(NName, ".");
@@ -1042,7 +1042,7 @@ static void MakeCode_601(void) {
       if (Memo(Reg2Orders[z].Name)) {
          if (ArgCnt == 1) {
             ArgCnt = 2;
-            strcpy(ArgStr[2], ArgStr[1]);
+            strcopy(ArgStr[2], ArgStr[1]);
          }
          if (ArgCnt != 2) WrError(1110);
          else if (!ChkCPU(Reg2Orders[z].CPUMask)) WrXError(1500, OpPart);
@@ -1078,7 +1078,7 @@ static void MakeCode_601(void) {
       if (Memo(FReg2Orders[z].Name)) {
          if (ArgCnt == 1) {
             ArgCnt = 2;
-            strcpy(ArgStr[2], ArgStr[1]);
+            strcopy(ArgStr[2], ArgStr[1]);
          }
          if (ArgCnt != 2) WrError(1110);
          else if (!ChkCPU(FReg2Orders[z].CPUMask)) WrXError(1500, OpPart);
@@ -1097,7 +1097,7 @@ static void MakeCode_601(void) {
       if (Memo(Reg2BOrders[z].Name)) {
          if (ArgCnt == 1) {
             ArgCnt = 2;
-            strcpy(ArgStr[2], ArgStr[1]);
+            strcopy(ArgStr[2], ArgStr[1]);
          }
          if (ArgCnt != 2) WrError(1110);
          else if (!ChkCPU(Reg2BOrders[z].CPUMask)) WrXError(1500, OpPart);
@@ -1117,7 +1117,7 @@ static void MakeCode_601(void) {
       if (Memo(Reg2SwapOrders[z].Name)) {
          if (ArgCnt == 1) {
             ArgCnt = 2;
-            strcpy(ArgStr[2], ArgStr[1]);
+            strcopy(ArgStr[2], ArgStr[1]);
          }
          if (ArgCnt != 2) WrError(1110);
          else if (!ChkCPU(Reg2SwapOrders[z].CPUMask)) WrXError(1500, OpPart);
@@ -1151,8 +1151,8 @@ static void MakeCode_601(void) {
       if (Memo(Reg3Orders[z].Name)) {
          if (ArgCnt == 2) {
             ArgCnt = 3;
-            strcpy(ArgStr[3], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[1]);
+            strcopy(ArgStr[3], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[1]);
          }
          if (ArgCnt != 3) WrError(1110);
          else if (!ChkCPU(Reg3Orders[z].CPUMask)) WrXError(1500, OpPart);
@@ -1172,8 +1172,8 @@ static void MakeCode_601(void) {
       if (Memo(CReg3Orders[z].Name)) {
          if (ArgCnt == 2) {
             ArgCnt = 3;
-            strcpy(ArgStr[3], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[1]);
+            strcopy(ArgStr[3], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[1]);
          }
          if (ArgCnt != 3) WrError(1110);
          else if (!ChkCPU(CReg3Orders[z].CPUMask)) WrXError(1500, OpPart);
@@ -1193,8 +1193,8 @@ static void MakeCode_601(void) {
       if (Memo(FReg3Orders[z].Name)) {
          if (ArgCnt == 2) {
             ArgCnt = 3;
-            strcpy(ArgStr[3], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[1]);
+            strcopy(ArgStr[3], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[1]);
          }
          if (ArgCnt != 3) WrError(1110);
          else if (!ChkCPU(FReg3Orders[z].CPUMask)) WrXError(1500, OpPart);
@@ -1214,8 +1214,8 @@ static void MakeCode_601(void) {
       if (Memo(Reg3SwapOrders[z].Name)) {
          if (ArgCnt == 2) {
             ArgCnt = 3;
-            strcpy(ArgStr[3], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[1]);
+            strcopy(ArgStr[3], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[1]);
          }
          if (ArgCnt != 3) WrError(1110);
          else if (!ChkCPU(Reg3SwapOrders[z].CPUMask)) WrXError(1500, OpPart);
@@ -1251,9 +1251,9 @@ static void MakeCode_601(void) {
       if (Memo(FReg4Orders[z].Name)) {
          if (ArgCnt == 3) {
             ArgCnt = 4;
-            strcpy(ArgStr[4], ArgStr[3]);
-            strcpy(ArgStr[3], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[1]);
+            strcopy(ArgStr[4], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[1]);
          }
          if (ArgCnt != 4) WrError(1110);
          else if (!ChkCPU(FReg4Orders[z].CPUMask)) WrXError(1500, OpPart);
@@ -1320,8 +1320,8 @@ static void MakeCode_601(void) {
       if (Memo(Imm16Orders[z].Name)) {
          if (ArgCnt == 2) {
             ArgCnt = 3;
-            strcpy(ArgStr[3], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[1]);
+            strcopy(ArgStr[3], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[1]);
          }
          if (ArgCnt != 3) WrError(1110);
          else if (!ChkCPU(Imm16Orders[z].CPUMask)) WrXError(1500, OpPart);
@@ -1343,8 +1343,8 @@ static void MakeCode_601(void) {
       if (Memo(Imm16SwapOrders[z].Name)) {
          if (ArgCnt == 2) {
             ArgCnt = 3;
-            strcpy(ArgStr[3], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[1]);
+            strcopy(ArgStr[3], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[1]);
          }
          if (ArgCnt != 3) WrError(1110);
          else if (!ChkCPU(Imm16SwapOrders[z].CPUMask)) WrXError(1500, OpPart);
@@ -1367,8 +1367,8 @@ static void MakeCode_601(void) {
 
    if ((PMemo("FMUL")) || (PMemo("FMULS"))) {
       if (ArgCnt == 2) {
-         strcpy(ArgStr[3], ArgStr[2]);
-         strcpy(ArgStr[2], ArgStr[1]);
+         strcopy(ArgStr[3], ArgStr[2]);
+         strcopy(ArgStr[2], ArgStr[1]);
          ArgCnt = 3;
       }
       if (ArgCnt != 3) WrError(1110);
@@ -1404,9 +1404,9 @@ static void MakeCode_601(void) {
 
    if ((Memo("MFSPR")) || (Memo("MTSPR"))) {
       if (Memo("MTSPR")) {
-         strcpy(ArgStr[3], ArgStr[1]);
-         strcpy(ArgStr[1], ArgStr[2]);
-         strcpy(ArgStr[2], ArgStr[3]);
+         strcopy(ArgStr[3], ArgStr[1]);
+         strcopy(ArgStr[1], ArgStr[2]);
+         strcopy(ArgStr[2], ArgStr[3]);
       }
       if (ArgCnt != 2) WrError(1110);
       else if (!DecodeGenReg(ArgStr[1], &Dest)) WrError(1350);
@@ -1424,9 +1424,9 @@ static void MakeCode_601(void) {
 
    if ((Memo("MFDCR")) || (Memo("MTDCR"))) {
       if (Memo("MTDCR")) {
-         strcpy(ArgStr[3], ArgStr[1]);
-         strcpy(ArgStr[1], ArgStr[2]);
-         strcpy(ArgStr[2], ArgStr[3]);
+         strcopy(ArgStr[3], ArgStr[1]);
+         strcopy(ArgStr[1], ArgStr[2]);
+         strcopy(ArgStr[2], ArgStr[3]);
       }
       if (ArgCnt != 2) WrError(1110);
       else if (MomCPU != CPU403) WrXError(1500, OpPart);
@@ -1445,9 +1445,9 @@ static void MakeCode_601(void) {
 
    if ((Memo("MFSR")) || (Memo("MTSR"))) {
       if (Memo("MTSR")) {
-         strcpy(ArgStr[3], ArgStr[1]);
-         strcpy(ArgStr[1], ArgStr[2]);
-         strcpy(ArgStr[2], ArgStr[3]);
+         strcopy(ArgStr[3], ArgStr[1]);
+         strcopy(ArgStr[1], ArgStr[2]);
+         strcopy(ArgStr[2], ArgStr[3]);
       }
       if (ArgCnt != 2) WrError(1110);
       else if (!DecodeGenReg(ArgStr[1], &Dest)) WrError(1350);
@@ -1643,8 +1643,8 @@ static void MakeCode_601(void) {
 
    if ((Memo("CMP")) || (Memo("CMPL"))) {
       if (ArgCnt == 3) {
-         strcpy(ArgStr[4], ArgStr[3]);
-         strcpy(ArgStr[3], ArgStr[2]);
+         strcopy(ArgStr[4], ArgStr[3]);
+         strcopy(ArgStr[3], ArgStr[2]);
          strmaxcpy(ArgStr[2], "0", 255);
          ArgCnt = 4;
       }
@@ -1681,8 +1681,8 @@ static void MakeCode_601(void) {
 
    if ((Memo("CMPI")) || (Memo("CMPLI"))) {
       if (ArgCnt == 3) {
-         strcpy(ArgStr[4], ArgStr[3]);
-         strcpy(ArgStr[3], ArgStr[2]);
+         strcopy(ArgStr[4], ArgStr[3]);
+         strcopy(ArgStr[3], ArgStr[2]);
          strmaxcpy(ArgStr[2], "0", 255);
          ArgCnt = 4;
       }

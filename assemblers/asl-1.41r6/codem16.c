@@ -399,10 +399,10 @@ static PChainRec DecodeChain(char *Asc) {
       } else {
          *p = '\0';
          strmaxcpy(Part, Asc, 255);
-         strcpy(Asc, p + 1);
+         strcopy(Asc, p + 1);
       }
 
-      strcpy(SReg, Part);
+      strcopy(SReg, Part);
       p = QuotPos(SReg, '*');
       if (p != NULL) *p = '\0';
 
@@ -411,9 +411,9 @@ static PChainRec DecodeChain(char *Asc) {
       if (*Part == '@')
          if (Rec->Next != NULL) SetError(1350);
          else {
-            strcpy(Part, Part + 1);
+            strmove(Part, 1);
             if (IsIndirect(Part)) {
-               strcpy(Part, Part + 1);
+               strmove(Part, 1);
                Part[strlen(Part) - 1] = '\0';
             }
             Rec->Next = DecodeChain(Part);
@@ -551,9 +551,9 @@ static bool DecodeAdr(char *Asc, Integer Index, Word Mask) {
 /* indirekt ? */
 
    if (*Asc == '@') {
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
       if (IsIndirect(Asc)) {
-         strcpy(Asc, Asc + 1);
+         strmove(Asc, 1);
          Asc[strlen(Asc) - 1] = '\0';
       }
 
@@ -910,7 +910,7 @@ static bool DecodeRegList(char *Asc, Word * Erg, bool Turn) {
    Word r1, r2, z;
 
    if (IsIndirect(Asc)) {
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
       Asc[strlen(Asc) - 1] = '\0';
    }
    *Erg = 0;
@@ -925,7 +925,7 @@ static bool DecodeRegList(char *Asc, Word * Erg, bool Turn) {
       } else {
          *p = '\0';
          strmaxcpy(Part, Asc, 11);
-         strcpy(Asc, p + 1);
+         strcopy(Asc, p + 1);
       }
       p = strchr(Part, '-');
       if (p == NULL) {
@@ -1038,7 +1038,7 @@ static void SplitOptions(void) {
       p = RQuotPos(OpPart, '/');
       if (p != NULL) {
          if (OptionCnt < 2) {
-            for (z = OptionCnt - 1; z >= 0; z--) strcpy(Options[z + 1], Options[z]);
+            for (z = OptionCnt - 1; z >= 0; z--) strcopy(Options[z + 1], Options[z]);
             OptionCnt++;
             strmaxcpy(Options[0], p + 1, 255);
          }
@@ -2299,9 +2299,9 @@ static void MakeCode_M16(void) {
    if ((Memo("ENTER")) || (Memo("EXITD"))) {
       if (Memo("EXITD")) {
          z = 1;
-         strcpy(ArgStr[3], ArgStr[1]);
-         strcpy(ArgStr[1], ArgStr[2]);
-         strcpy(ArgStr[2], ArgStr[3]);
+         strcopy(ArgStr[3], ArgStr[1]);
+         strcopy(ArgStr[1], ArgStr[2]);
+         strcopy(ArgStr[2], ArgStr[3]);
       } else z = 0;
       if (ArgCnt != 2) WrError(1110);
       else if (CheckFormat("GE"))
@@ -2376,11 +2376,11 @@ static void MakeCode_M16(void) {
          SplitOptions();
          if (strcasecmp(Options[0], "F") == 0) {
             Mask = 0;
-            strcpy(Options[0], Options[1]);
+            strcopy(Options[0], Options[1]);
             OptionCnt--;
          } else if (strcasecmp(Options[0], "B") == 0) {
             Mask = 1;
-            strcpy(Options[0], Options[1]);
+            strcopy(Options[0], Options[1]);
             OptionCnt--;
          } else if (strcasecmp(Options[1], "F") == 0) {
             Mask = 0;
@@ -2421,9 +2421,9 @@ static void MakeCode_M16(void) {
       if (Memo("LDM")) {
          z = 0x1000;
          Mask += MModPop;
-         strcpy(ArgStr[3], ArgStr[1]);
-         strcpy(ArgStr[1], ArgStr[2]);
-         strcpy(ArgStr[2], ArgStr[3]);
+         strcopy(ArgStr[3], ArgStr[1]);
+         strcopy(ArgStr[1], ArgStr[2]);
+         strcopy(ArgStr[2], ArgStr[3]);
       } else {
          z = 0;
          Mask += MModPush;

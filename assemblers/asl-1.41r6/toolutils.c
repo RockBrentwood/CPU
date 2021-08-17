@@ -153,7 +153,7 @@ CMDResult CMD_FilterList(bool Negate, char *Arg) {
       else if ((!Negate) && (Search >= FilterCnt))
          FilterBytes[FilterCnt++] = FTemp;
 
-      if (p != NULL) strcpy(Copy, p + 1);
+      if (p != NULL) strcopy(Copy, p + 1);
    }
    while (p != NULL);
 

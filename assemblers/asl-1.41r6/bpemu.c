@@ -43,7 +43,7 @@ char *FExpand(char *Src) {
    if (p != NULL) {
       memcpy(DrvPart, Copy, p - Copy);
       DrvPart[p - Copy] = '\0';
-      strcpy(Copy, p + 1);
+      strcopy(Copy, p + 1);
    } else *DrvPart = '\0';
 #endif
 
@@ -74,7 +74,7 @@ char *FExpand(char *Src) {
 
    if (*Copy == PATHSEP) {
       strmaxcpy(CurrentDir, SPATHSEP, 255);
-      strcpy(Copy, Copy + 1);
+      strmove(Copy, 1);
    }
 #ifdef DRSEP
    strmaxprep(CurrentDir, SDRSEP, 255);
@@ -92,7 +92,7 @@ char *FExpand(char *Src) {
          strmaxcat(CurrentDir, Copy, 255);
          strmaxcat(CurrentDir, SPATHSEP, 255);
       }
-      strcpy(Copy, p + 1);
+      strcopy(Copy, p + 1);
    }
 
    strmaxcat(CurrentDir, Copy, 255);

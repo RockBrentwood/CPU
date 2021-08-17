@@ -662,7 +662,7 @@ void MakeCode_48(void) {
       else {
          OK = false;
          if ((Memo("MOVD")) && (strcasecmp(ArgStr[1], "A") == 0)) {
-            strcpy(ArgStr[1], ArgStr[2]);
+            strcopy(ArgStr[1], ArgStr[2]);
             strmaxcpy(ArgStr[2], "A", 255);
             OK = true;
          }
@@ -698,7 +698,7 @@ void MakeCode_48(void) {
       else {
          OK = false;
          if (strcasecmp(ArgStr[2], "A") == 0) {
-            strcpy(ArgStr[2], ArgStr[1]);
+            strcopy(ArgStr[2], ArgStr[1]);
             strmaxcpy(ArgStr[1], "A", 255);
             OK = true;
          }
@@ -826,7 +826,7 @@ void MakeCode_48(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          if (strcasecmp(ArgStr[2], "A") == 0) {
-            strcpy(ArgStr[2], ArgStr[1]);
+            strcopy(ArgStr[2], ArgStr[1]);
             strmaxcpy(ArgStr[1], "A", 255);
          }
          if (strcasecmp(ArgStr[1], "A") != 0) WrError(1350);
@@ -853,7 +853,7 @@ void MakeCode_48(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          if (strcasecmp(ArgStr[2], "A") == 0) {
-            strcpy(ArgStr[2], ArgStr[1]);
+            strcopy(ArgStr[2], ArgStr[1]);
             strmaxcpy(ArgStr[1], "A", 255);
          }
          if (strcasecmp(ArgStr[1], "A") != 0) WrError(1350);

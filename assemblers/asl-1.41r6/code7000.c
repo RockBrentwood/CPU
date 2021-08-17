@@ -336,9 +336,9 @@ static void DecodeAdr(char *Asc, Word Mask, bool Signed) {
    }
 
    if (*Asc == '@') {
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
       if (IsIndirect(Asc)) {
-         strcpy(Asc, Asc + 1);
+         strmove(Asc, 1);
          Asc[strlen(Asc) - 1] = '\0';
          BaseReg = RegNone;
          IndReg = RegNone;
@@ -353,7 +353,7 @@ static void DecodeAdr(char *Asc, Word Mask, bool Signed) {
             } else {
                *pos = '\0';
                strmaxcpy(AdrStr, Asc, 255);
-               strcpy(Asc, pos + 1);
+               strcopy(Asc, pos + 1);
             }
             if (strcasecmp(AdrStr, "PC") == 0)
                if (BaseReg == RegNone) BaseReg = RegPC;
@@ -819,9 +819,9 @@ static void MakeCode_7000(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          if (Memo("LDC")) {
-            strcpy(ArgStr[3], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[3]);
          }
          if (strcasecmp(ArgStr[1], "SR") == 0) HReg = 0;
          else if (strcasecmp(ArgStr[1], "GBR") == 0) HReg = 1;
@@ -854,9 +854,9 @@ static void MakeCode_7000(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          if (Memo("LDS")) {
-            strcpy(ArgStr[3], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[3]);
          }
          if (strcasecmp(ArgStr[1], "MACH") == 0) HReg = 0;
          else if (strcasecmp(ArgStr[1], "MACL") == 0) HReg = 1;

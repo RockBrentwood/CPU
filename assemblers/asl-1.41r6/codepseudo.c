@@ -387,7 +387,7 @@ static bool DecodeIntelPseudo_LayoutMult(char *Asc_O, Word * Cnt, TLayoutFunc La
       KillPrefBlanks(Asc);
       SumCnt = 0;
       if ((strlen(Asc) >= 2) && (*Asc == '(') && (Asc[strlen(Asc) - 1] == ')')) {
-         strcpy(Asc, Asc + 1);
+         strmove(Asc, 1);
          Asc[strlen(Asc) - 1] = '\0';
       }
       do {
@@ -633,24 +633,24 @@ void ConvertDec(Double F, Word * w) {
    sprintf(s, "%0.16e", F);
    h = strchr(s, 'e');
    if (h == NULL) {
-      strcpy(Man, s);
+      strcopy(Man, s);
       strcpy(Exp, "+0000");
    } else {
       *h = '\0';
-      strcpy(Man, s);
-      strcpy(Exp, h + 1);
+      strcopy(Man, s);
+      strcopy(Exp, h + 1);
    }
    memset(w, 0, 12);
    if (*Man == '-') {
       w[5] |= 0x8000;
-      strcpy(Man, Man + 1);
-   } else if (*Man == '+') strcpy(Man, Man + 1);
+      strmove(Man, 1);
+   } else if (*Man == '+') strmove(Man, 1);
    if (*Exp == '-') {
       w[5] |= 0x4000;
-      strcpy(Exp, Exp + 1);
-   } else if (*Exp == '+') strcpy(Exp, Exp + 1);
+      strmove(Exp, 1);
+   } else if (*Exp == '+') strmove(Exp, 1);
    DigIns(*Man, 16, w);
-   strcpy(Man, Man + 2);
+   strmove(Man, 2);
    if (strlen(Man) > 16) Man[16] = '\0';
    for (z = 0; z < strlen(Man); z++) DigIns(Man[z], 15 - z, w);
    if (strlen(Exp) > 4) strmove(Exp, strlen(Exp) - 4);
@@ -706,7 +706,7 @@ bool DecodeMoto16Pseudo(ShortInt OpSize, bool Turn) {
             FirstPassUnknown = false;
             if (*ArgStr[z] != '[') Rep = 1;
             else {
-               strcpy(ArgStr[z], ArgStr[z] + 1);
+               strmove(ArgStr[z], 1);
                p = QuotPos(ArgStr[z], ']');
                if (p == NULL) {
                   WrError(1300);
@@ -714,7 +714,7 @@ bool DecodeMoto16Pseudo(ShortInt OpSize, bool Turn) {
                } else {
                   *p = '\0';
                   Rep = EvalIntExpression(ArgStr[z], Int32, &OK);
-                  strcpy(ArgStr[z], p + 1);
+                  strcopy(ArgStr[z], p + 1);
                }
             }
             if (OK)

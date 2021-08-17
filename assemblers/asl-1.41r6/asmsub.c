@@ -230,10 +230,10 @@ void SplitString(char *Source, char *Left, char *Right, char *Trenner) {
       Trenner = Source + slen;
    Save = (*Trenner);
    *Trenner = '\0';
-   strcpy(Left, Source);
+   strcopy(Left, Source);
    *Trenner = Save;
    if (Trenner >= Source + slen) *Right = '\0';
-   else strcpy(Right, Trenner + 1);
+   else strcopy(Right, Trenner + 1);
 }
 
 /*--------------------------------------------------------------------------*/
@@ -282,7 +282,7 @@ void KillPrefBlanks(char *s) {
    char *z = s;
 
    while ((*z != '\0') && (isspace(*z))) z++;
-   if (z != s) strcpy(s, z);
+   if (z != s) strcopy(s, z);
 }
 
 /*--------------------------------------------------------------------------*/
@@ -384,21 +384,21 @@ char *FloatString(Double f) {
 /* 1. mit Maximallaenge wandeln, fuehrendes Vorzeichen weg */
 
    sprintf(s, "%27.15e", f);
-   while ((s[0] == ' ') || (s[0] == '+')) strcpy(s, s + 1);
+   while ((s[0] == ' ') || (s[0] == '+')) strmove(s, 1);
 
 /* 2. Exponenten soweit als moeglich kuerzen, evtl. ganz streichen */
 
    p = strchr(s, 'e');
    switch (*(++p)) {
       case '+':
-         strcpy(p, p + 1);
+         strmove(p, 1);
          break;
       case '-':
          p++;
          break;
    }
 
-   while (*p == '0') strcpy(p, p + 1);
+   while (*p == '0') strmove(p, 1);
    WithE = (*p != '\0');
    if (!WithE) s[strlen(s) - 1] = '\0';
 
@@ -408,7 +408,7 @@ char *FloatString(Double f) {
    else p = s + strlen(s);
    p--;
    while (*p == '0') {
-      strcpy(p, p + 1);
+      strmove(p, 1);
       p--;
    }
 
@@ -421,7 +421,10 @@ char *FloatString(Double f) {
 
 /* 5. Maximallaenge ueberschritten ? */
 
-   if (strlen(s) > MaxLen) strcpy(d + (n - (strlen(s) - MaxLen)), d + n);
+   if (strlen(s) > MaxLen) {
+      int dS = strlen(s) - MaxLen;
+      strmove(d + n - dS, dS);
+   }
 
 /* 6. Exponentenwert berechnen */
 
@@ -445,7 +448,7 @@ char *FloatString(Double f) {
       if (nzeroes <= 0) {
          *p = '\0';
          d = strchr(s, '.');
-         strcpy(d, d + 1);
+         strmove(d, 1);
          if (nzeroes != 0) {
             memmove(s + strlen(s) + nzeroes + 1, s + strlen(s) + nzeroes, -nzeroes);
             s[strlen(s) - 1 + nzeroes] = '.';
@@ -460,7 +463,7 @@ char *FloatString(Double f) {
          if (n >= nzeroes) {
             *p = '\0';
             d = strchr(s, '.');
-            strcpy(d, d + 1);
+            strmove(d, 1);
             d = s + strlen(s);
             for (n = 0; n < nzeroes; n++) *(d++) = '0';
             *d = '\0';
@@ -476,7 +479,7 @@ char *FloatString(Double f) {
       if (strlen(s) + n <= MaxLen) {
          *p = '\0';
          d = strchr(s, '.');
-         strcpy(d, d + 1);
+         strmove(d, 1);
          if (s[0] == '-') d = s + 1;
          else d = s;
          memmove(d - ExpVal + 1, d, strlen(s) + 1);
@@ -492,7 +495,7 @@ char *FloatString(Double f) {
       p = strchr(s, 'e');
       if (p != NULL) *p = 'E';
    } else p = s + strlen(s);
-   if ((p != NULL) && (*(p - 1) == '.')) strcpy(p - 1, p);
+   if ((p != NULL) && (*(p - 1) == '.')) strmove(p - 1, 1);
 
    return s;
 }
@@ -503,7 +506,7 @@ char *FloatString(Double f) {
 void StrSym(TempResult * t, bool WithSystem, char *Dest) {
    switch (t->Typ) {
       case TempInt:
-         strcpy(Dest, HexString(t->Contents.Int, 1));
+         strcopy(Dest, HexString(t->Contents.Int, 1));
          if (WithSystem)
             switch (ConstMode) {
                case ConstModeIntel:
@@ -518,10 +521,10 @@ void StrSym(TempResult * t, bool WithSystem, char *Dest) {
             }
          break;
       case TempFloat:
-         strcpy(Dest, FloatString(t->Contents.Float));
+         strcopy(Dest, FloatString(t->Contents.Float));
          break;
       case TempString:
-         strcpy(Dest, t->Contents.Ascii);
+         strcopy(Dest, t->Contents.Ascii);
          break;
       default:
          strcpy(Dest, "???");
@@ -595,7 +598,6 @@ void NewPage(ShortInt Level, bool WithFF) {
          ChkIO(10002);
          Header[PageWidth] = Save;
          strmove(Header, PageWidth);
-      // strcpy(Header, Header + PageWidth); //(@) Formerly
       }
    errno = 0;
    fprintf(LstFile, "%s\n", Header);
@@ -1352,7 +1354,7 @@ static char *GetPath(char *Acc) {
    } else {
       *p = '\0';
       strmaxcpy(tmp, Acc, 255);
-      strcpy(Acc, p + 1);
+      strcopy(Acc, p + 1);
    }
    return tmp;
 }
@@ -1422,7 +1424,7 @@ void CompressLine(char *TokNam, Byte Num, char *Line) {
       if ((SFound)
          && ((z == 0) || (!CompressLine_NErl(Line[z - 1])))
          && ((e >= strlen(Line)) || (!CompressLine_NErl(Line[e])))) {
-         strcpy(Line + z + 1, Line + e);
+         strmove(Line + z + 1, e - z - 1);
          Line[z] = Num;
          llen = strlen(Line);
       };
@@ -1436,7 +1438,7 @@ void ExpandLine(char *TokNam, Byte Num, char *Line) {
    do {
       z = strchr(Line, Num);
       if (z != NULL) {
-         strcpy(z, z + 1);
+         strmove(z, 1);
          strmaxins(Line, TokNam, z - Line, 255);
       }
    }
@@ -1450,7 +1452,7 @@ void KillCtrl(char *Line) {
    do {
       if (*z == '\0');
       else if (*z == Char_HT) {
-         strcpy(z, z + 1);
+         strmove(z, 1);
          strprep(z, Blanks(8 - ((z - Line) % 8)));
       } else if (*z < ' ') *z = ' ';
       z++;

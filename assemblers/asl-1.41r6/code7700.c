@@ -402,7 +402,7 @@ static void CodeDisp(char *Asc, LongInt Start, LongWord Mask) {
 static void SplitArg(char *Src, String * HStr, Integer * HCnt) {
    char *p;
 
-   strcpy(Src, Src + 1);
+   strmove(Src, 1);
    Src[strlen(Src) - 1] = '\0';
    p = QuotPos(Src, ',');
    if (p == NULL) {
@@ -655,7 +655,7 @@ static void MakeCode_7700(void) {
       if (Memo(RelOrders[z].Name)) {
          if (ArgCnt != 1) WrError(1110);
          else {
-            if (*ArgStr[1] == '#') strcpy(ArgStr[1], ArgStr[1] + 1);
+            if (*ArgStr[1] == '#') strmove(ArgStr[1], 1);
             AdrLong = EvalIntExpression(ArgStr[1], Int32, &OK);
             if (OK) {
                OK = RelOrders[z].Disp8 == -1;
@@ -1267,7 +1267,7 @@ static void MakeCode_7700(void) {
    if (Memo("PEI")) {
       if (ArgCnt != 1) WrError(1110);
       else {
-         if (*ArgStr[1] == '#') strcpy(ArgStr[1], ArgStr[1] + 1);
+         if (*ArgStr[1] == '#') strmove(ArgStr[1], 1);
          DecodeAdr(1, MModAbs8);
          if (AdrType != ModNone) {
             CodeLen = 1 + AdrCnt;
@@ -1283,7 +1283,7 @@ static void MakeCode_7700(void) {
       else {
          Rel = true;
          if (*ArgStr[1] == '#') {
-            strcpy(ArgStr[1], ArgStr[1] + 1);
+            strmove(ArgStr[1], 1);
             Rel = false;
          }
          BAsmCode[0] = 0x62;

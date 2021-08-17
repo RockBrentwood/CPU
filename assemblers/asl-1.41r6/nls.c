@@ -320,7 +320,7 @@ void NLS_CurrencyString(double inp, char *erg) {
 
 /* Schritt 4: Komma anpassen */
 
-   strcpy(p, p + 1);
+   strmove(p, 1);
    strins(s, NLSInfo.DecSep, p - s);
 
 /* Schritt 5: Einheit anbauen */
@@ -339,7 +339,7 @@ void NLS_CurrencyString(double inp, char *erg) {
          sprintf(erg, "%s%s", s, NLSInfo.Currency);
          break;
       default:
-         strcpy(p, p + strlen(NLSInfo.DecSep));
+         strmove(p, strlen(NLSInfo.DecSep));
          strins(NLSInfo.Currency, s, p - s);
    }
 }

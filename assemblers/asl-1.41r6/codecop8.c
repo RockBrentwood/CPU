@@ -413,9 +413,9 @@ static void MakeCode_COP8(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          if (strcasecmp(ArgStr[1], "A") != 0) {
-            strcpy(ArgStr[3], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[3]);
          }
          DecodeAdr(ArgStr[1], MModAcc);
          if (AdrMode != ModNone) {

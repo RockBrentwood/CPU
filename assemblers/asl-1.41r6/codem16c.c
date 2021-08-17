@@ -800,9 +800,9 @@ static bool CodeData(void) {
       if (ArgCnt != 2) WrError(1110);
       else if (CheckFormat("G")) {
          if (Memo("STC")) {
-            strcpy(ArgStr[3], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[3]);
             z = 1;
          } else z = 0;
          if (strcasecmp(ArgStr[2], "PC") == 0)
@@ -861,9 +861,9 @@ static bool CodeData(void) {
       if (ArgCnt != 2) WrError(1110);
       else if (CheckFormat("G")) {
          if (Memo("LDE")) {
-            strcpy(ArgStr[3], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[3]);
             z = 1;
          } else z = 0;
          DecodeAdr(ArgStr[1], MModGen);

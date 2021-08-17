@@ -463,7 +463,7 @@ static void DecodeAdr(char *Asc, Word Mask, bool InCode, bool Dest) {
 /* indirekt ? */
 
    else if ((*Asc == '[') && (Asc[strlen(Asc) - 1] == ']')) {
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
       Asc[strlen(Asc) - 1] = '\0';
 
    /* Predekrement ? */
@@ -495,13 +495,13 @@ static void DecodeAdr(char *Asc, Word Mask, bool InCode, bool Dest) {
             } else {
                *PPos = '\0';
                strmaxcpy(Part, Asc, 255);
-               strcpy(Asc, PPos + 1);
+               strcopy(Asc, PPos + 1);
             }
             if (IsReg(Part, &HReg, true))
                if ((NegFlag) || (AdrMode != 0xff)) WrError(1350);
                else AdrMode = HReg;
             else {
-               if (*Part == '#') strcpy(Part, Part + 1);
+               if (*Part == '#') strmove(Part, 1);
                HDisp = EvalIntExpression(Part, Int32, &OK);
                if (OK)
                   if (NegFlag) DispAcc -= HDisp;
@@ -609,7 +609,7 @@ static bool DecodePref(char *Asc, Byte * Erg) {
       WrError(1350);
       return false;
    }
-   strcpy(Asc, Asc + 1);
+   strmove(Asc, 1);
    FirstPassUnknown = false;
    *Erg = EvalIntExpression(Asc, UInt3, &OK);
    if (FirstPassUnknown) *Erg = 1;

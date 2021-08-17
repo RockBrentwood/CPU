@@ -332,7 +332,7 @@ static void DecodeAdr(char *Asc, Word Mask) {
    }
 
    if ((*Asc == '[') && (Asc[strlen(Asc) - 1] == ']')) {
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
       Asc[strlen(Asc) - 1] = '\0';
       if (Asc[strlen(Asc) - 1] == '+') {
          Asc[strlen(Asc) - 1] = '\0';
@@ -360,7 +360,7 @@ static void DecodeAdr(char *Asc, Word Mask) {
             } else {
                *PPos = '\0';
                strmaxcpy(Part, Asc, 255);
-               strcpy(Asc, PPos + 1);
+               strcopy(Asc, PPos + 1);
             }
             if (DecodeReg(Part, &NSize, &Reg))
                if ((NSize != 1) || (AdrPart != 0xff) || (NegFlag)) {
@@ -1176,7 +1176,7 @@ static void MakeCode_XA(void) {
       else {
          if (*ArgStr[2] == '/') {
             OK = true;
-            strcpy(ArgStr[2], ArgStr[2] + 1);
+            strmove(ArgStr[2], 1);
          } else OK = false;
          if (DecodeBitAddr(ArgStr[2], &AdrLong)) {
             ChkBitPage(AdrLong);

@@ -370,7 +370,7 @@ static Byte CodeEReg(char *Asc, Byte * ErgNo, Byte * ErgSize) {
 /* Bankregister, 32 Bit ? */
 
    if ((strlen(Asc) == 4) && ((Asc[3] >= '0') && (Asc[3] <= '7'))) {
-      strcpy(HAsc, Asc);
+      strcopy(HAsc, Asc);
       HAsc[3] = '\0';
       for (z = 0; z < (RegCnt / 2) - 1; z++)
          if (strcmp(HAsc, Reg32Names[z]) == 0) {
@@ -412,7 +412,7 @@ static Byte CodeEReg(char *Asc, Byte * ErgNo, Byte * ErgSize) {
 
    if (((strlen(Asc) == 3) || ((strlen(Asc) == 4) && (*Asc == 'Q')))
       && ((Asc[strlen(Asc) - 1] == 'L') || (Asc[strlen(Asc) - 1] == 'H'))) {
-      strcpy(HAsc, Asc + 1);
+      strcopy(HAsc, Asc + 1);
       HAsc[strlen(HAsc) - 1] = '\0';
       for (z = 0; z < (RegCnt / 2); z++)
          if (strcmp(Asc, Reg16Names[z + 4]) == 0) {
@@ -436,7 +436,7 @@ static Byte CodeEReg(char *Asc, Byte * ErgNo, Byte * ErgSize) {
 /* 16-Bit-Teile vorheriger Bank ? */
 
    if (((strlen(Asc) == 3) || ((strlen(Asc) == 4) && (*Asc == 'Q'))) && (IsQuot(Asc[strlen(Asc) - 1]))) {
-      strcpy(HAsc, Asc + 1);
+      strcopy(HAsc, Asc + 1);
       HAsc[strlen(HAsc) - 1] = '\0';
       for (z = 0; z < (RegCnt / 2); z++)
          if (strcmp(HAsc, Reg16Names[z]) == 0) {
@@ -450,7 +450,7 @@ static Byte CodeEReg(char *Asc, Byte * ErgNo, Byte * ErgSize) {
 /* 32-Bit-Register vorheriger Bank ? */
 
    if ((strlen(Asc) == 4) && (IsQuot(Asc[3]))) {
-      strcpy(HAsc, Asc);
+      strcopy(HAsc, Asc);
       HAsc[3] = '\0';
       for (z = 0; z < (RegCnt / 2); z++)
          if (strcmp(HAsc, Reg32Names[z]) == 0) {
@@ -597,7 +597,7 @@ static void DecodeAdr(char *Asc, Byte Erl) {
 /* Predekrement ? */
 
    if ((strlen(Asc) > 4) && (Asc[strlen(Asc) - 1] == ')') && (strncmp(Asc, "(-", 2) == 0)) {
-      strcpy(HAsc, Asc + 2);
+      strcopy(HAsc, Asc + 2);
       HAsc[strlen(HAsc) - 1] = '\0';
       if (CodeEReg(HAsc, &HNum, &HSize) != 2) WrError(1350);
       else if (!IsRegBase(HNum, HSize)) WrError(1350);
@@ -615,7 +615,7 @@ static void DecodeAdr(char *Asc, Byte Erl) {
 /* Postinkrement ? */
 
    if ((strlen(Asc) > 4) && (Asc[0] == '(') && (strncmp(Asc + strlen(Asc) - 2, "+)", 2) == 0)) {
-      strcpy(HAsc, Asc + 1);
+      strcopy(HAsc, Asc + 1);
       HAsc[strlen(HAsc) - 2] = '\0';
       if (CodeEReg(HAsc, &HNum, &HSize) != 2) WrError(1350);
       else if (!IsRegBase(HNum, HSize)) WrError(1350);
@@ -639,7 +639,7 @@ static void DecodeAdr(char *Asc, Byte Erl) {
       PartMask = 0;
       DispAcc = 0;
       BaseReg = IndReg = BaseSize = IndSize = 0xff;
-      strcpy(Rest, Asc + 1);
+      strcopy(Rest, Asc + 1);
       Rest[strlen(Rest) - 1] = '\0';
 
       do {
@@ -658,7 +658,7 @@ static void DecodeAdr(char *Asc, Byte Erl) {
          }
          strncpy(HAsc, Rest, EPos - Rest);
          HAsc[EPos - Rest] = '\0';
-         if (EPos < Rest + strlen(Rest)) strcpy(Rest, EPos + 1);
+         if (EPos < Rest + strlen(Rest)) strcopy(Rest, EPos + 1);
          else *Rest = '\0';
 
          switch (CodeEReg(HAsc, &HNum, &HSize)) {
@@ -1828,9 +1828,9 @@ static void MakeCode_96C141(void) {
             else CmpStr = "-)";
             if ((*ArgStr[1] != '(') || (*ArgStr[2] != '(') || (strcasecmp(ArgStr[1] + strlen(ArgStr[1]) - 2, CmpStr) != 0) || (strcasecmp(ArgStr[2] + strlen(ArgStr[2]) - 2, CmpStr) != 0)) OK = false;
             else {
-               strcpy(ArgStr[1], ArgStr[1] + 1);
+               strmove(ArgStr[1], 1);
                ArgStr[1][strlen(ArgStr[1]) - 2] = '\0';
-               strcpy(ArgStr[2], ArgStr[2] + 1);
+               strmove(ArgStr[2], 1);
                ArgStr[2][strlen(ArgStr[2]) - 2] = '\0';
                if ((strcasecmp(ArgStr[1], "XIX") == 0) && (strcasecmp(ArgStr[2], "XIY") == 0)) HReg = 2;
                else if ((Maximum) && (strcasecmp(ArgStr[1], "XDE") == 0) && (strcasecmp(ArgStr[2], "XHL") == 0)) HReg = 0;

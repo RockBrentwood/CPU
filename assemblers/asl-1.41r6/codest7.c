@@ -322,7 +322,7 @@ static void DecodeAdr(char *Asc_O, LongInt Mask) {
 /* speicherindirekt ? */
 
    if ((*Asc == '[') && (Asc[strlen(Asc) - 1] == ']')) {
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
       Asc[strlen(Asc) - 1] = '\0';
       DecideASize(Mask, Asc, ModIAbs8, ModIAbs16, 0xb, 0xc);
       if (AdrType != ModNone) AddPrefix(0x92);
@@ -333,7 +333,7 @@ static void DecodeAdr(char *Asc_O, LongInt Mask) {
 /* sonstwie indirekt ? */
 
    if (IsIndirect(Asc)) {
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
       Asc[strlen(Asc) - 1] = '\0';
 
    /* ein oder zwei Argumente ? */
@@ -369,7 +369,7 @@ static void DecodeAdr(char *Asc_O, LongInt Mask) {
    /* speicherindirekt ? */
 
       if ((*Asc == '[') && (Asc[strlen(Asc) - 1] == ']')) {
-         strcpy(Asc, Asc + 1);
+         strmove(Asc, 1);
          Asc[strlen(Asc) - 1] = '\0';
          if (YReg) {
             DecideASize(Mask, Asc, ModIYAbs8, ModIYAbs16, 0xe, 0xd);

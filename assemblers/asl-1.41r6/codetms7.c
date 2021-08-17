@@ -245,7 +245,7 @@ static void DecodeAdr(char *Asc, Word Mask) {
    }
 
    if ((*Asc == '#') || (*Asc == '%')) {
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
       if (strcasecmp(Asc + strlen(Asc) - 3, "(B)") == 0) {
          Asc[strlen(Asc) - 3] = '\0';
          HVal = EvalIntExpression(Asc, Int16, &OK);
@@ -285,7 +285,7 @@ static void DecodeAdr(char *Asc, Word Mask) {
       return;
    }
 
-   if (*Asc == '@') strcpy(Asc, Asc + 1);
+   if (*Asc == '@') strmove(Asc, 1);
 
    if (Asc[strlen(Asc) - 1] == ')') {
       p = Asc + strlen(Asc) - 2;

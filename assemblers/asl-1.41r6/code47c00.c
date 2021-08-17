@@ -460,9 +460,9 @@ static void MakeCode_47C00(void) {
          BAsmCode[0] = 0x31;
       } else {
          if ((strcasecmp(ArgStr[1], "A") != 0) && (strcasecmp(ArgStr[1], "HL") != 0)) {
-            strcpy(ArgStr[3], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[3]);
          }
          if ((strcasecmp(ArgStr[1], "A") != 0) && (strcasecmp(ArgStr[1], "HL") != 0)) WrError(1350);
          else {

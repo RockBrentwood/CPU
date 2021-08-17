@@ -163,11 +163,11 @@ static void SplitArg(char *Orig, char *LDest, char *RDest) {
    p = QuotPos(str, ',');
    if (p == NULL) {
       *RDest = '\0';
-      strcpy(LDest, str);
+      strcopy(LDest, str);
    } else {
       *p = '\0';
-      strcpy(LDest, str);
-      strcpy(RDest, p + 1);
+      strcopy(LDest, str);
+      strcopy(RDest, p + 1);
    }
    free(str);
 }
@@ -212,7 +212,7 @@ static void DecodeAdr(char *Asc_O, Word Erl, Byte ErlSeg) {
    for (z = 0; z < SegCount; z++)
       if ((toupper(*Asc) == SegNames[z]) && (Asc[1] == ':')) {
          AdrSeg = SegVals[z];
-         strcpy(Asc, Asc + 2);
+         strmove(Asc, 2);
       }
 
 /* Adressausdruecke abklopfen: dazu mit Referenzstring vergleichen */
@@ -854,9 +854,9 @@ static void MakeCode_56K(void) {
                   SplitArg(Mid, Mid, Right);
                   h = 0;
                   if (*Left == '-') {
-                     strcpy(Left, Left + 1);
+                     strmove(Left, 1);
                      h += 4;
-                  } else if (*Left == '+') strcpy(Left, Left + 1);
+                  } else if (*Left == '+') strmove(Left, 1);
                   if (!DecodeALUReg(Right, &Reg3, false, false, true)) OK = false;
                   else if (!DecodeReg(Left, &Reg1)) OK = false;
                   else if ((Reg1 < 4) || (Reg1 > 7)) OK = false;

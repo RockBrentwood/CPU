@@ -853,7 +853,7 @@ static void DecodeLogic(void) {
       else {
          HReg = Memo("ANL") << 4;
          InvFlag = (*ArgStr[2] == '/');
-         if (InvFlag) strcpy(ArgStr[2], ArgStr[2] + 1);
+         if (InvFlag) strmove(ArgStr[2], 1);
          switch (DecodeBitAdr(ArgStr[2], &AdrLong, true)) {
             case ModBit51:
                PutCode((InvFlag) ? 0xa0 + HReg : 0x72 + HReg);
@@ -1102,7 +1102,7 @@ static void MakeCode_51(void) {
          z = 0;
          if ((strcasecmp(ArgStr[2], "A") == 0) || ((MomCPU >= CPU80251) && (strcasecmp(ArgStr[2], "R11") == 0))) {
             z = 0x10;
-            strcpy(ArgStr[2], ArgStr[1]);
+            strcopy(ArgStr[2], ArgStr[1]);
             strmaxcpy(ArgStr[1], "A", 255);
          }
          if ((strcasecmp(ArgStr[1], "A") != 0) && ((MomCPU < CPU80251) || (strcasecmp(ArgStr[2], "R11") == 0))) WrError(1350);

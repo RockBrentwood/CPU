@@ -243,13 +243,13 @@ static void DeinitFields(void) {
 
 static void ChkZero(char *s, char *serg, Byte * Erg) {
    if (*s == '<') {
-      strcpy(serg, s + 1);
+      strcopy(serg, s + 1);
       *Erg = 2;
    } else if (*s == '>') {
-      strcpy(serg, s + 1);
+      strcopy(serg, s + 1);
       *Erg = 1;
    } else {
-      strcpy(serg, s);
+      strcopy(serg, s);
       *Erg = 0;
    }
 }
@@ -731,7 +731,7 @@ static void MakeCode_6805(void) {
 
    ch = OpPart[strlen(OpPart) - 1];
    if ((ch >= '0') && (ch <= '7')) {
-      for (z = ArgCnt; z >= 1; z--) strcpy(ArgStr[z + 1], ArgStr[z]);
+      for (z = ArgCnt; z >= 1; z--) strcopy(ArgStr[z + 1], ArgStr[z]);
       *ArgStr[1] = ch;
       ArgStr[1][1] = '\0';
       ArgCnt++;

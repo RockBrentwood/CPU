@@ -266,7 +266,7 @@ static void ReplaceBkSlashes(char *s) {
             WrError(1135);
       };
       *p = ErgChar;
-      strcpy(p + 1, p + cnt);
+      strmove(p + 1, cnt - 1);
       p = strchr(p + 1, '\\');
    }
 }
@@ -283,7 +283,7 @@ bool ExpandSymbol(char *Name) {
          WrXError(1020, Name);
          return false;
       }
-      strcpy(p1, p2 + 1);
+      strcopy(p1, p2 + 1);
       *p2 = '\0';
       FirstPassUnknown = false;
       EvalStringExpression(h, &OK, h);
@@ -390,7 +390,7 @@ LargeInt ConstIntVal(char *Asc_O, IntType Typ, bool *Ok) {
 
    else if (Asc[0] == '\'') {
       if (Asc[strlen(Asc) - 1] != '\'') return -1;
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
       Asc[strlen(Asc) - 1] = '\0';
       ReplaceBkSlashes(Asc);
       for (Search = 0; Search < strlen(Asc); Search++) {
@@ -405,9 +405,9 @@ LargeInt ConstIntVal(char *Asc_O, IntType Typ, bool *Ok) {
    else {
    /* Vorzeichen */
 
-      if (*Asc == '+') strcpy(Asc, Asc + 1);
+      if (*Asc == '+') strmove(Asc, 1);
       NegFlag = (*Asc == '-');
-      if (NegFlag) strcpy(Asc, Asc + 1);
+      if (NegFlag) strmove(Asc, 1);
 
       if (RelaxedMode) {
          Found = false;
@@ -450,7 +450,7 @@ LargeInt ConstIntVal(char *Asc_O, IntType Typ, bool *Ok) {
             for (Search = 0; Search < 3; Search++)
                if (Asc[0] == BaseIds[Search]) {
                   Base = BaseVals[Search];
-                  strcpy(Asc, Asc + 1);
+                  strmove(Asc, 1);
                   break;
                }
             break;
@@ -461,14 +461,14 @@ LargeInt ConstIntVal(char *Asc_O, IntType Typ, bool *Ok) {
             } else if (Asc[0] != '0') Base = 10;
             else if (strlen(Asc) < 2) return -1;
             else {
-               strcpy(Asc, Asc + 1);
+               strmove(Asc, 1);
                switch (toupper(Asc[0])) {
                   case 'X':
-                     strcpy(Asc, Asc + 1);
+                     strmove(Asc, 1);
                      Base = 16;
                      break;
                   case 'B':
-                     strcpy(Asc, Asc + 1);
+                     strmove(Asc, 1);
                      Base = 2;
                      break;
                   default:
@@ -541,7 +541,7 @@ void ConstStringVal(char *Asc_O, char *Erg, bool *OK) {
       if (strchr(Asc, '"') != NULL) return;
       strmaxcat(tmp, Asc, 255);
       *z = Save;
-      strcpy(Asc, z);
+      strcopy(Asc, z);
       if (*Asc == '\\') {
          if (strlen(Asc) < 2) return;
          l = strlen(tmp);
@@ -643,7 +643,7 @@ void ConstStringVal(char *Asc_O, char *Erg, bool *OK) {
                z = Asc + 2;
                break;
          }
-         strcpy(Asc, z);
+         strcopy(Asc, z);
       }
    }
 
@@ -1195,7 +1195,7 @@ void EvalExpression(char *Asc_O, TempResult * Erg) {
 
       *KlPos = '\0';
       strmaxcpy(ftemp, Asc, 255);
-      strcpy(Asc, KlPos + 1);
+      strcopy(Asc, KlPos + 1);
       Asc[strlen(Asc) - 1] = '\0';
 
    /* Nullfunktion: nur Argument */
@@ -1219,7 +1219,7 @@ void EvalExpression(char *Asc_O, TempResult * Erg) {
             if (KlPos != NULL) *KlPos = '\0';
             EvalExpression(Asc, &LVal);
             if (KlPos == NULL) Asc[0] = '\0';
-            else strcpy(Asc, KlPos + 1);
+            else strcopy(Asc, KlPos + 1);
             switch (LVal.Typ) {
                case TempInt:
                   sprintf(stemp, "%s", LargeString(LVal.Contents.Int));
@@ -1229,7 +1229,7 @@ void EvalExpression(char *Asc_O, TempResult * Erg) {
                   KillBlanks(stemp);
                   break;
                case TempString:
-                  strcpy(stemp, "\"");
+                  strcopy(stemp, "\"");
                   strmaxcat(stemp, LVal.Contents.Ascii, 255);
                   strmaxcat(stemp, "\"", 255);
                   break;
@@ -2315,7 +2315,7 @@ bool GetStringSymbol(char *Name, char *Wert) {
    Lauf = FindLocNode(NName, TempString);
    if (Lauf == NULL) Lauf = FindNode(NName, TempString);
    if (Lauf != NULL) {
-      strcpy(Wert, Lauf->SymWert.Contents.SWert);
+      strcopy(Wert, Lauf->SymWert.Contents.SWert);
       Lauf->Used = true;
    } else {
       if (PassNo > MaxSymPass) WrXError(1010, Name);

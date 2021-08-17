@@ -427,13 +427,13 @@ static bool CodeReg(char *ChIn, Byte * erg) {
 
 static void ChkZero(char *s, Byte * Erg) {
    if (*s == '>') {
-      strcpy(s, s + 1);
+      strmove(s, 1);
       *Erg = 1;
    } else if (*s == '<') {
-      strcpy(s, s + 1);
+      strmove(s, 1);
       *Erg = 2;
       if (*s == '<') {
-         strcpy(s, s + 1);
+         strmove(s, 1);
          *Erg = 3;
       }
    } else *Erg = 0;
@@ -492,7 +492,7 @@ static void DecodeAdr(void) {
 
    if ((*Asc == '[') && (Asc[strlen(Asc) - 1] == ']')) {
       IndFlag = true;
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
       Asc[strlen(Asc) - 1] = '\0';
       ArgCnt = 0;
       while (*Asc != '\0') {
@@ -501,7 +501,7 @@ static void DecodeAdr(void) {
          if (p != NULL) {
             *p = '\0';
             strmaxcpy(ArgStr[ArgCnt], Asc, 255);
-            strcpy(Asc, p + 1);
+            strcopy(Asc, p + 1);
          } else {
             strmaxcpy(ArgStr[ArgCnt], Asc, 255);
             *Asc = '\0';
@@ -1083,7 +1083,6 @@ static void MakeCode_6809(void) {
             BAsmCode[1] = EvalIntExpression(ArgStr[1] + 1, Int8, &OK);
             if (OK) {
                for (z2 = 1; z2 < ArgCnt; z2++) strcopy(ArgStr[z2], ArgStr[z2 + 1]);
-            // for (z2 = 1; z2 < ArgCnt; z2++) strcpy(ArgStr[z2], ArgStr[z2 + 1]); //(@) Formerly: a bug. These areas overlap.
                ArgCnt--;
                DecodeAdr();
                if (AdrMode == ModImm) WrError(1350);
@@ -1116,7 +1115,7 @@ static void MakeCode_6809(void) {
                if (!CodeCPUReg(ArgStr[1], BAsmCode + 2)) WrError(1980);
                else if ((BAsmCode[2] < 8) || (BAsmCode[2] > 11)) WrError(1980);
                else {
-                  strcpy(ArgStr[1], ArgStr[2]);
+                  strcopy(ArgStr[1], ArgStr[2]);
                   ArgCnt = 1;
                   DecodeAdr();
                   if (AdrMode != ModDir) WrError(1350);

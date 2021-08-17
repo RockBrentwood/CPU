@@ -187,7 +187,7 @@ static void DecodeAdr(char *Asc, Byte Erl) {
       }
 
    if (IsIndirect(Asc)) {
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
       Asc[strlen(Asc) - 1] = '\0';
       if (strcasecmp(Asc, "-HL") == 0) {
          AdrType = ModMem;
@@ -219,7 +219,7 @@ static void DecodeAdr(char *Asc, Byte Erl) {
          } else {
             *EPos = '\0';
             strmaxcpy(AdrPart, Asc, 255);
-            strcpy(Asc, EPos + 1);
+            strcopy(Asc, EPos + 1);
          }
          for (z = 0; z < AdrRegCnt; z++)
             if (strcasecmp(AdrPart, AdrRegs[z]) == 0) break;

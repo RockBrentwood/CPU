@@ -361,7 +361,7 @@ bool MACRO_Processor(PInputTag PInp, char *erg) {
 
    Lauf = PInp->Lines;
    for (z = 1; z <= PInp->LineZ - 1; z++) Lauf = Lauf->Next;
-   strcpy(erg, Lauf->Content);
+   strcopy(erg, Lauf->Content);
    Lauf = PInp->Params;
    for (z = 1; z <= PInp->ParCnt; z++) {
       ExpandLine(Lauf->Content, z, erg);
@@ -453,7 +453,7 @@ static void ReadMacro(void) {
    z2 = 0;
    for (z1 = 1; z1 <= ArgCnt; z1++)
       if ((ArgStr[z1][0] == '{') && (ArgStr[z1][strlen(ArgStr[z1]) - 1] == '}')) {
-         strcpy(ArgStr[z1], ArgStr[z1] + 1);
+         strmove(ArgStr[z1], 1);
          ArgStr[z1][strlen(ArgStr[z1]) - 1] = '\0';
          if (ReadMacro_SearchArg(ArgStr[z1], "EXPORT", &(Neu->DoExport)));
          else if (ReadMacro_SearchArg(ArgStr[z1], "EXPAND", &DoMacExp)) {
@@ -503,7 +503,7 @@ static void ReadMacro(void) {
    OneMacro = (PMacroRec) malloc(sizeof(MacroRec));
    Neu->Mac = OneMacro;
    if ((MacroOutput) && (Neu->DoExport)) {
-      if (strlen(PList) != 0) strcpy(PList, PList + 1);
+      if (strlen(PList) != 0) strmove(PList, 1);
       errno = 0;
       if (Neu->DoGlobCopy) fprintf(MacroFile, "%s MACRO %s\n", Neu->GName, PList);
       else fprintf(MacroFile, "%s MACRO %s\n", LabPart, PList);
@@ -634,7 +634,7 @@ bool IRP_Processor(PInputTag PInp, char *erg) {
 
    Lauf = PInp->Lines;
    for (z = 1; z <= PInp->LineZ - 1; z++) Lauf = Lauf->Next;
-   strcpy(erg, Lauf->Content);
+   strcopy(erg, Lauf->Content);
    Lauf = PInp->Params;
    for (z = 1; z <= PInp->ParZ - 1; z++) Lauf = Lauf->Next;
    ExpandLine(Lauf->Content, 1, erg);
@@ -771,7 +771,7 @@ bool REPT_Processor(PInputTag PInp, char *erg) {
 
    Lauf = PInp->Lines;
    for (z = 1; z <= PInp->LineZ - 1; z++) Lauf = Lauf->Next;
-   strcpy(erg, Lauf->Content);
+   strcopy(erg, Lauf->Content);
    CurrLine = PInp->StartLine + PInp->LineZ;
 
    sprintf(ErrorPos, "%s REPT %d/%d", PInp->OrigPos, PInp->ParZ, PInp->LineZ);
@@ -888,7 +888,7 @@ bool WHILE_Processor(PInputTag PInp, char *erg) {
 
    Lauf = PInp->Lines;
    for (z = 1; z <= PInp->LineZ - 1; z++) Lauf = Lauf->Next;
-   strcpy(erg, Lauf->Content);
+   strcopy(erg, Lauf->Content);
 
    if ((++PInp->LineZ) > PInp->LineCnt) {
       PInp->LineZ = 1;
@@ -1024,7 +1024,7 @@ static void ExpandINCLUDE(bool SearchPath) {
    }
 
    strmaxcpy(ArgPart, ArgStr[1], 255);
-   if (*ArgPart == '"') strcpy(ArgPart, ArgPart + 1);
+   if (*ArgPart == '"') strmove(ArgPart, 1);
    if (ArgPart[strlen(ArgPart) - 1] == '"') ArgPart[strlen(ArgPart) - 1] = '\0';
    AddSuffix(ArgPart, IncSuffix);
    strmaxcpy(ArgStr[1], ArgPart, 255);
@@ -1130,12 +1130,12 @@ static void Produce_Code(void) {
 
    if (*OpPart == '!') {
       SearchMacros = false;
-      strcpy(OpPart, OpPart + 1);
+      strmove(OpPart, 1);
    } else {
       SearchMacros = true;
       ExpandSymbol(OpPart);
    }
-   strcpy(LOpPart, OpPart);
+   strcopy(LOpPart, OpPart);
    NLS_UpString(OpPart);
 
 /* Prozessor eingehaengt ? */
@@ -1288,7 +1288,7 @@ static void SplitLine(void) {
    if ((*LabPart == '\0') && (i != NULL) && (i == OpPart + strlen(OpPart) - 1)) {
       *i = '\0';
       strmaxcpy(LabPart, OpPart, 255);
-      strcpy(OpPart, i + 1);
+      strcopy(OpPart, i + 1);
       if (*OpPart == '\0') {
          strmaxcpy(h, ArgPart, 255);
          longjmp(Retry, 1);
@@ -1320,7 +1320,7 @@ static void SplitLine(void) {
 /* Argumente zerteilen: Da alles aus einem String kommt und die Teile alle auch
    so lang sind, koennen wir uns Laengenabfragen sparen */
    ArgCnt = 0;
-   strcpy(h, ArgPart);
+   strcopy(h, ArgPart);
    if (*h != '\0')
       do {
          KillPrefBlanks(h);
@@ -1470,7 +1470,7 @@ static void TWrite_RWrite(char *dest, Double r, Byte Stellen) {
 
    sprintf(form, "%%20.%df", Stellen);
    sprintf(s, form, r);
-   while (*s == ' ') strcpy(s, s + 1);
+   while (*s == ' ') strmove(s, 1);
    strcat(dest, s);
 }
 
@@ -1841,19 +1841,19 @@ static void AssembleFile(void) {
       WrLstLine("");
    }
 
-   strcpy(s, Dec32BlankString(LineSum, 7));
+   strcopy(s, Dec32BlankString(LineSum, 7));
    strmaxcat(s, (LineSum == 1) ? InfoMessAssLine : InfoMessAssLines, 255);
    if (!QuietMode) printf("%s%s\n", s, ClrEol);
    if (ListMode == 2) WrLstLine(s);
 
    if (LineSum != MacLineSum) {
-      strcpy(s, Dec32BlankString(MacLineSum, 7));
+      strcopy(s, Dec32BlankString(MacLineSum, 7));
       strmaxcat(s, (MacLineSum == 1) ? InfoMessMacAssLine : InfoMessMacAssLines, 255);
       if (!QuietMode) printf("%s%s\n", s, ClrEol);
       if (ListMode == 2) WrLstLine(s);
    }
 
-   strcpy(s, Dec32BlankString(PassNo, 7));
+   strcopy(s, Dec32BlankString(PassNo, 7));
    strmaxcat(s, (PassNo == 1) ? InfoMessPassCnt : InfoMessPPassCnt, 255);
    if (!QuietMode) printf("%s%s\n", s, ClrEol);
    if (ListMode == 2) WrLstLine(s);
@@ -2196,7 +2196,7 @@ static CMDResult CMD_DefSymbol(bool Negate, char *Arg) {
       } else {
          *p = '\0';
          strmaxcpy(Part, Copy, 255);
-         strcpy(Copy, p + 1);
+         strcopy(Copy, p + 1);
       }
       UpString(Part);
       p = QuotPos(Part, '=');
@@ -2206,7 +2206,7 @@ static CMDResult CMD_DefSymbol(bool Negate, char *Arg) {
       } else {
          *p = '\0';
          strmaxcpy(Name, Part, 255);
-         strcpy(Part, p + 1);
+         strcopy(Part, p + 1);
       }
       if (!ChkSymbName(Name)) return CMDErr;
       if (Negate) RemoveDefSymbol(Name);
@@ -2536,7 +2536,7 @@ int main(int argc, char **argv) {
    WrHead();
 
    ErrFlag = false;
-   if (ErrorPath[0] != '\0') strcpy(ErrorName, ErrorPath);
+   if (ErrorPath[0] != '\0') strcopy(ErrorName, ErrorPath);
    IsErrorOpen = false;
 
    for (i = 1; i <= ParamCount; i++)

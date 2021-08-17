@@ -378,7 +378,7 @@ static bool ClassComp(AdrComp * C) {
                default:
                   return false;
             }
-            strcpy(C->Name + 2, C->Name + 4);
+            strmove(C->Name + 2, 2);
          } else C->Long = false;
          if ((strlen(C->Name) > 3) && (C->Name[2] == '*')) {
             switch (C->Name[3]) {
@@ -397,7 +397,7 @@ static bool ClassComp(AdrComp * C) {
                default:
                   return false;
             }
-            strcpy(C->Name + 2, C->Name + 4);
+            strmove(C->Name + 2, 2);
          } else C->Scale = 0;
          C->INummer = C->ANummer;
          C->Art = Index;
@@ -493,7 +493,7 @@ static void DecodeAdr(char *Asc_O, Word Erl) {
 /* immediate : */
 
    if (*Asc == '#') {
-      strcpy(Asc, Asc + 1);
+      strmove(Asc, 1);
       AdrNum = 11;
       AdrMode = 0x3c;
       switch (OpSize) {
@@ -623,7 +623,7 @@ static void DecodeAdr(char *Asc_O, Word Erl) {
 /* Adressregister indirekt mit Predekrement: */
 
    if ((l == 5) && (*Asc == '-') && (Asc[1] == '(') && (Asc[4] == ')')) {
-      strcpy(CReg, Asc + 2);
+      strcopy(CReg, Asc + 2);
       CReg[2] = '\0';
       if (CodeReg(CReg, &rerg))
          if (rerg > 7) {
@@ -638,7 +638,7 @@ static void DecodeAdr(char *Asc_O, Word Erl) {
 /* Adressregister indirekt mit Postinkrement */
 
    if ((l == 5) && (*Asc == '(') && (Asc[3] == ')') && (Asc[4] == '+')) {
-      strcpy(CReg, Asc + 1);
+      strcopy(CReg, Asc + 1);
       CReg[2] = '\0';
       if (CodeReg(CReg, &rerg))
          if (rerg > 7) {
@@ -674,7 +674,7 @@ static void DecodeAdr(char *Asc_O, Word Erl) {
       p = strchr(Asc, '(');
       *p = '\0';
       strmaxcpy(OutDisp, Asc, 255);
-      strcpy(Asc, p + 1);
+      strcopy(Asc, p + 1);
       if ((strlen(OutDisp) > 2) && (OutDisp[strlen(OutDisp) - 2] == '.')) {
          switch (toupper(OutDisp[strlen(OutDisp) - 1])) {
             case 'B':
@@ -707,12 +707,12 @@ static void DecodeAdr(char *Asc_O, Word Erl) {
          }
          while (((!doklamm) || (*p != ',')) && (*p != '\0'));
          if (*p == '\0') {
-            strcpy(AdrComps[CompCnt].Name, Asc);
+            strcopy(AdrComps[CompCnt].Name, Asc);
             *Asc = '\0';
          } else {
             *p = '\0';
-            strcpy(AdrComps[CompCnt].Name, Asc);
-            strcpy(Asc, p + 1);
+            strcopy(AdrComps[CompCnt].Name, Asc);
+            strcopy(Asc, p + 1);
          }
          if (!ClassComp(AdrComps + CompCnt)) {
             WrError(1350);
@@ -987,7 +987,7 @@ static void DecodeAdr(char *Asc_O, Word Erl) {
 
       /* indirektes Argument herauskopieren: */
 
-         strcpy(Asc, AdrComps[0].Name + 1);
+         strcopy(Asc, AdrComps[0].Name + 1);
          Asc[strlen(Asc) - 1] = '\0';
 
       /* Felder loeschen: */
@@ -1002,12 +1002,12 @@ static void DecodeAdr(char *Asc_O, Word Erl) {
 
             p = strchr(Asc, ',');
             if (p == NULL) {
-               strcpy(OneComp.Name, Asc);
+               strcopy(OneComp.Name, Asc);
                *Asc = '\0';
             } else {
                *p = '\0';
-               strcpy(OneComp.Name, Asc);
-               strcpy(Asc, p + 1);
+               strcopy(OneComp.Name, Asc);
+               strcopy(Asc, p + 1);
             }
             if (!ClassComp(&OneComp)) {
                WrError(1350);
@@ -1268,14 +1268,14 @@ static bool DecodeRegList(char *Asc_o, Word * Erg) {
    do {
       p = strchr(Asc, '/');
       if (p == NULL) {
-         strcpy(s, Asc);
+         strcopy(s, Asc);
          *Asc = '\0';
       } else {
          *p = '\0';
-         strcpy(s, Asc);
-         strcpy(Asc, p + 1);
+         strcopy(s, Asc);
+         strcopy(Asc, p + 1);
       }
-      if (*Asc == '/') strcpy(Asc, Asc + 1);
+      if (*Asc == '/') strmove(Asc, 1);
       p = strchr(s, '-');
       if (p == NULL) {
          if ((h = OneReg(s)) == 16) return false;
@@ -1328,7 +1328,7 @@ static bool SplitBitField(char *Arg_o, Word * Erg) {
    p = strchr(Arg, '{');
    if (p == NULL) return false;
    *p = '\0';
-   strcpy(Desc, p + 1);
+   strcopy(Desc, p + 1);
    if (Desc[strlen(Desc) - 1] != '}') return false;
    Desc[strlen(Desc) - 1] = '\0';
 
@@ -1395,12 +1395,12 @@ static void DecodeFRegList(char *Asc_o, Byte * Typ, Byte * Erg) {
    do {
       h1 = strchr(Asc, '/');
       if (h1 == NULL) {
-         strcpy(s, Asc);
+         strcopy(s, Asc);
          *Asc = '\0';
       } else {
          *h1 = '\0';
-         strcpy(s, Asc);
-         strcpy(Asc, h1 + 1);
+         strcopy(s, Asc);
+         strcopy(Asc, h1 + 1);
       }
       if (strcasecmp(s, "FPCR") == 0) hw |= 0x400;
       else if (strcasecmp(s, "FPSR") == 0) hw |= 0x200;
@@ -1470,7 +1470,7 @@ static void DecodeFPUOrders(void) {
       if (Memo(FPUOps[z].Name)) break;
    if (z < FPUOpCnt) {
       if ((ArgCnt == 1) && (!FPUOps[z].Dya)) {
-         strcpy(ArgStr[2], ArgStr[1]);
+         strcopy(ArgStr[2], ArgStr[1]);
          ArgCnt = 2;
       }
       if (*AttrPart == '\0') OpSize = 6;
@@ -1545,7 +1545,7 @@ static void DecodeFPUOrders(void) {
       else {
          p = strchr(AttrPart, '{');
          if (p != 0) { /* k-Faktor abspalten */
-            strcpy(sk, p);
+            strcopy(sk, p);
             *p = '\0';
          } else *sk = '\0';
          DecodeAdr(ArgStr[2], Mdata + Madr + Madri + Mpost + Mpre + Mdadri + Maix + Mabs + Mfpn + Mfpcr);
@@ -1589,7 +1589,7 @@ static void DecodeFPUOrders(void) {
                if (OpSize == 7)
                   if (strlen(sk) > 2) {
                      OpSize = 0;
-                     strcpy(sk, sk + 1);
+                     strmove(sk, 1);
                      sk[strlen(sk) - 1] = '\0';
                      DecodeAdr(sk, Mdata + Mimm);
                      if (AdrNum == 1) WAsmCode[1] |= (AdrMode << 4) | 0x1000;
@@ -1663,8 +1663,8 @@ static void DecodeFPUOrders(void) {
          p = strrchr(ArgStr[2], ':');
          if (p != NULL) {
             *p = '\0';
-            strcpy(sk, ArgStr[2]);
-            strcpy(ArgStr[2], p + 1);
+            strcopy(sk, ArgStr[2]);
+            strcopy(ArgStr[2], p + 1);
          } else *sk = '\0';
          DecodeAdr(sk, Mfpn);
          if (AdrNum == 12) {
@@ -2469,7 +2469,7 @@ static bool CodeDual(void) {
    if ((Memo("ASL")) || (Memo("ASR")) || (Memo("LSL")) || (Memo("LSR"))
       || (Memo("ROL")) || (Memo("ROR")) || (Memo("ROXL")) || (Memo("ROXR"))) {
       if (ArgCnt == 1) {
-         strcpy(ArgStr[2], ArgStr[1]);
+         strcopy(ArgStr[2], ArgStr[1]);
          strcpy(ArgStr[1], "#1");
          ArgCnt = 2;
       }
@@ -2494,7 +2494,7 @@ static bool CodeDual(void) {
                WAsmCode[0] = 0xe0c0 | AdrMode | (ShiftCodes(OpPart) << 9);
                if (OpPart[strlen(OpPart) - 1] == 'L') WAsmCode[0] |= 0x100;
                CopyAdrVals(WAsmCode + 1);
-               if (*ArgStr[1] == '#') strcpy(ArgStr[1], ArgStr[1] + 1);
+               if (*ArgStr[1] == '#') strmove(ArgStr[1], 1);
                HVal8 = EvalIntExpression(ArgStr[1], Int8, &ValOK);
                if ((ValOK) && (HVal8 == 1)) CodeLen = 2 + AdrCnt;
                else WrError(1390);
@@ -2513,7 +2513,7 @@ static bool CodeDual(void) {
             WAsmCode[0] = 0x5000 | AdrMode | (OpSize << 6);
             if (Memo("SUBQ")) WAsmCode[0] |= 0x100;
             CopyAdrVals(WAsmCode + 1);
-            if (*ArgStr[1] == '#') strcpy(ArgStr[1], ArgStr[1] + 1);
+            if (*ArgStr[1] == '#') strmove(ArgStr[1], 1);
             HVal8 = EvalIntExpression(ArgStr[1], Int8, &ValOK);
             if ((ValOK) && (HVal8 >= 1) && (HVal8 <= 8)) {
                CodeLen = 2 + AdrCnt;
@@ -2910,13 +2910,13 @@ static void MakeCode_68K(void) {
 /* Befehlserweiterungen */
 
    if ((*OpPart == 'F') && (FPUAvail)) {
-      strcpy(OpPart, OpPart + 1);
+      strmove(OpPart, 1);
       DecodeFPUOrders();
       return;
    }
 
    if ((*OpPart == 'P') && (!Memo("PEA")) && (PMMUAvail)) {
-      strcpy(OpPart, OpPart + 1);
+      strmove(OpPart, 1);
       DecodePMMUOrders();
       return;
    }
@@ -3537,7 +3537,7 @@ static void MakeCode_68K(void) {
                   Check32();
                }
             } else {
-               strcpy(ArgStr[3], p + 1);
+               strcopy(ArgStr[3], p + 1);
                *p = '\0';
                DecodeAdr(ArgStr[1], Mdata);
                if (AdrNum != 0) {

@@ -352,9 +352,9 @@ static void MakeCode_17c4x(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          if (Memo("MOVFP")) {
-            strcpy(ArgStr[3], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[3]);
          }
          AdrWord = EvalIntExpression(ArgStr[1], UInt5, &OK);
          if (OK) {

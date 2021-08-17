@@ -427,9 +427,9 @@ static void MakeCode_AVR(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          if (Memo("ST")) {
-            strcpy(ArgStr[3], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[3]);
             z = 0x200;
          } else z = 0;
          if (!DecodeReg(ArgStr[1], &Reg1)) WrXError(1445, ArgStr[1]);
@@ -448,9 +448,9 @@ static void MakeCode_AVR(void) {
       else if (MomCPU < CPU90S2313) WrXError(1500, OpPart);
       else {
          if (Memo("STD")) {
-            strcpy(ArgStr[3], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[3]);
             z = 0x200;
          } else z = 0;
          OK = true;
@@ -474,9 +474,9 @@ static void MakeCode_AVR(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          if ((Memo("OUT"))) {
-            strcpy(ArgStr[3], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[3]);
             z = 0x800;
          } else z = 0;
          if (!DecodeReg(ArgStr[1], &Reg1)) WrXError(1445, ArgStr[1]);
@@ -497,9 +497,9 @@ static void MakeCode_AVR(void) {
       else if (MomCPU < CPU90S2313) WrError(1500);
       else {
          if (Memo("STS")) {
-            strcpy(ArgStr[3], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[3]);
             z = 0x200;
          } else z = 0;
          if (!DecodeReg(ArgStr[1], &Reg1)) WrXError(1445, ArgStr[1]);

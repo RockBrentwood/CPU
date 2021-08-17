@@ -618,9 +618,9 @@ static void MakeCode_78C10(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          if (strcasecmp(ArgStr[1], "EA") != 0) {
-            strcpy(ArgStr[3], ArgStr[1]);
-            strcpy(ArgStr[1], ArgStr[2]);
-            strcpy(ArgStr[2], ArgStr[3]);
+            strcopy(ArgStr[3], ArgStr[1]);
+            strcopy(ArgStr[1], ArgStr[2]);
+            strcopy(ArgStr[2], ArgStr[3]);
             OK = true;
          } else OK = false;
          if (strcasecmp(ArgStr[1], "EA") != 0) WrError(1350);
@@ -666,9 +666,9 @@ static void MakeCode_78C10(void) {
          if (ArgCnt != 2) WrError(1110);
          else {
             if (strcasecmp(ArgStr[1], "A") != 0) {
-               strcpy(ArgStr[3], ArgStr[1]);
-               strcpy(ArgStr[1], ArgStr[2]);
-               strcpy(ArgStr[2], ArgStr[3]);
+               strcopy(ArgStr[3], ArgStr[1]);
+               strcopy(ArgStr[1], ArgStr[2]);
+               strcopy(ArgStr[2], ArgStr[3]);
                OK = false;
             } else OK = true;
             if (strcasecmp(ArgStr[1], "A") != 0) WrError(1350);

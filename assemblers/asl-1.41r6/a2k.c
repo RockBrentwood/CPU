@@ -69,7 +69,7 @@ char **argv;
    while (!feof(inpfile)) {
       if (BUFFERSIZE == BufferFill) {
          fprintf(outfile, "%s\n", lines[0]);
-         for (z = 0; z < BufferFill; z++) strcpy(lines[z], lines[z + 1]);
+         for (z = 0; z < BufferFill; z++) strcopy(lines[z], lines[z + 1]);
          BufferFill--;
       }
       readline(inpfile, lines[BufferFill++]);
@@ -102,7 +102,7 @@ char **argv;
          *p = '\0';
          sprintf(dest, "\t%s", orig);
          strcat(dest, "(");
-         strcpy(orig, p + 1);
+         strcopy(orig, p + 1);
 
       /* cut trailing ')' */
 
@@ -116,18 +116,18 @@ char **argv;
          while (*orig != '\0') {
             p = strchr(orig, ',');
             if (p == NULL) {
-               strcpy(single, orig);
+               strcopy(single, orig);
                *orig = '\0';
             } else {
                *p = '\0';
-               strcpy(single, orig);
-               strcpy(orig, p + 1);
+               strcopy(single, orig);
+               strcopy(orig, p + 1);
             }
             for (p = single; isspace(*p); p++);
-            strcpy(single, p);
+            strcopy(single, p);
             for (p = single + strlen(single) - 1; isspace(*p); p--);
             p[1] = '\0';
-            if (strncmp(single, "const ", 6) == 0) strcpy(single, single + 6);
+            if (strncmp(single, "const ", 6) == 0) strmove(single, 6);
             if (strcmp(single, "void") != 0) {
                strcat(params, single);
                strcat(params, ";\n");
@@ -172,7 +172,7 @@ char **argv;
 
             save = p[1];
             p[1] = '\0';
-            strcpy(dest, lines[BufferFill - 1]);
+            strcopy(dest, lines[BufferFill - 1]);
             strcat(dest, ");");
             p[1] = save;
 
@@ -181,7 +181,7 @@ char **argv;
 
          /* discard lines until end of prototype */
 
-            strcpy(dest, lines[BufferFill - 1]);
+            strcopy(dest, lines[BufferFill - 1]);
             BufferFill = 0;
             while (strcmp(dest + strlen(dest) - 2, ");") != 0) {
                readline(inpfile, dest);

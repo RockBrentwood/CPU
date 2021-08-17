@@ -45,7 +45,7 @@ void SetCPU(CPUVar NewCPU, bool NotPrev) {
    *dest = '\0';
    for (z = s; *z != '\0'; z++)
       if ((*z >= '0') && (*z <= '9')) break;
-   if (*z != '\0') strcpy(s, z);
+   if (*z != '\0') strcopy(s, z);
    strprep(s, "$");
    HCPU = ConstLongInt(s, &ECPU);
    if (ParamCount != 0) {
@@ -708,7 +708,7 @@ static void CodeBINCLUDE(void) {
       }
       if (OK) {
          strmaxcpy(Name, ArgStr[1], 255);
-         if (*Name == '"') strcpy(Name, Name + 1);
+         if (*Name == '"') strmove(Name, 1);
          if (Name[strlen(Name) - 1] == '"') Name[strlen(Name) - 1] = '\0';
          strmaxcpy(ArgStr[1], Name, 255);
          strmaxcpy(Name, FExpand(FSearch(Name, IncludeList)), 255);

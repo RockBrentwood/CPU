@@ -302,7 +302,7 @@ static void MakeCode_8x30X(void) {
                if (ArgCnt == 2) { /* wenn nur zwei Operanden und Ziel Register... */
                   p = HasDisp(ArgStr[1]); /* kann eine Rotation dabei sein */
                   if (p != NULL) { /* jau! */
-                     strcpy(tmp, p + 1);
+                     strcopy(tmp, p + 1);
                      tmp[strlen(tmp) - 1] = '\0';
                      Rot = EvalIntExpression(tmp, UInt3, &OK);
                      if (OK) {
@@ -364,7 +364,7 @@ static void MakeCode_8x30X(void) {
          p = HasDisp(ArgStr[1]);
          if (p == NULL) WrError(1350);
          else {
-            strcpy(tmp, p + 1);
+            strcopy(tmp, p + 1);
             tmp[strlen(tmp) - 1] = '\0';
             if (DecodeReg(tmp, &SrcReg, &SrcLen)) {
                *p = '\0';
