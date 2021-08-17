@@ -1,0 +1,30 @@
+
+#   DMakefile for Aztec C
+
+DASM   = srcc:dasm
+FTOHEX = srcc:ftohex
+OD     = atmp:dasm/
+
+CFLAGS= +L
+
+SRCS = exp.c globals.c main.c mne6303.c mne6502.c mne6811.c mne68705.c symbols.c ops.c
+OBJS = $(SRCS:"*.c":"$(OD)*.o")
+
+all: $(DASM) $(FTOHEX)
+
+$(DASM) : $(OBJS)
+    ln -W +Q %(right) -lsup32 -lc32 -O $(DASM)
+
+$(FTOHEX): $(OD)ftohex.o
+    ln +Q $(OD)ftohex.o -lsup32 -lc32 -O $(FTOHEX)
+
+$(OD)ftohex.o :    ftohex.c
+    cc $(CFLAGS) %(right) -o %(left)
+
+$(OBJS) : $(SRCS)
+    cc $(CFLAGS) %(right) -o %(left)
+
+example:
+    dasm example.asm -oram:example.out -lram:example.list -f2
+    ftohex 2 ram:example.out ram:example.hex
+

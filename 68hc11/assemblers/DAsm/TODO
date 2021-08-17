@@ -1,0 +1,4 @@
+
+    -DS.W   , allow word-sized fill characters
+    -DS.L   , allow long-sized fill characters
+

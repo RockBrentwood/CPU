@@ -1,0 +1,30 @@
+
+#   DMakefile for Lattice C 5.02
+#
+#   NOTE:   CANNOT USE REGISTERIZATION OF PARAMETERS
+#
+
+DASM   = srcc:dasm
+FTOHEX = srcc:ftohex
+OD     = ltmp:dasm/
+
+CFLAGS= -iprivate_include: -cim -d0 -v
+
+SRCS = exp.c globals.c main.c mne6303.c mne6502.c mne6811.c mne68705.c symbols.c ops.c
+OBJS = $(SRCS:"*.c":"$(OD)*.o")
+
+all: $(DASM) $(FTOHEX)
+
+$(DASM) : $(OBJS)
+    blink FROM lib:c.o %(right) LIB lib:lc.lib TO %(left) BATCH
+
+$(FTOHEX): $(OD)ftohex.o
+    blink FROM lib:c.o %(right) LIB lib:lc.lib TO %(left) BATCH
+
+$(OD)ftohex.o $(OBJS) : ftohex.c $(SRCS)
+    lc $(CFLAGS) -o%(left) %(right)
+
+example:
+    dasm example.asm -oram:example.out -lram:example.list -f2
+    ftohex 2 ram:example.out ram:example.hex
+
