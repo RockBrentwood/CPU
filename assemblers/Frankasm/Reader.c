@@ -3,14 +3,13 @@
 // Parser phase utility routines.
 #include <stdio.h>
 #include "Extern.h"
-#include "Constants.h"
 
 // Save a character string in permanent (interpass) memory.
 // Parameters:
-// ∙	stx:	the string and
-// ∙	len:	its length
+// ∙	stx:	the string, and
+// ∙	len:	its length.
 // Global:
-// ∙	the string pool
+// ∙	the string pool.
 // Return:
 // ∙	a pointer to the saved string.
 char *savestring(char *stx, int len) {
@@ -58,7 +57,7 @@ void clrexpr(void) { nextenode = 1, nextexprs = nextstrs = 0; }
 
 // Add an element to the expression tree pool.
 // Parameters:
-// ∙	swact:		the action performed by the switch in the polish conversion routine, the category of the expression node,
+// ∙	swact:		the expression category: determines the action performed by the switch in the postfix conversion routine,
 // ∙	left, right:	the subscripts of the decendent nodes of the expression tree element,
 // ∙	op:		the operation to preform,
 // ∙	value:		a constant value (maybe),
@@ -82,7 +81,7 @@ static const size_t SYELPB = 0x200;
 static int nxtsyel = SYELPB;
 
 // Allocate a symbol table element, and allocate a block if the current one is empty.
-// A fatal error if no more space can be gotten
+// A fatal error if there is no more space to get.
 // Globals:
 // ∙	the pointer to the current symbol table block,
 // ∙	the count of elements used in the block.
@@ -103,7 +102,7 @@ static const size_t SYHASHSZ = sizeof shashtab/sizeof shashtab[0];
 // Parameter:
 // ∙	str:	a character string
 // Return:
-// ∙	an integer related in some way to the character string
+// ∙	an integer related in some way to the character string.
 static int syhash(char *str) {
    const int SYHASHOFF = 13;
    unsigned rv = 0;
@@ -205,8 +204,8 @@ void setophash(void) {
       int pl = ohashtab[hv];
       if (pl == 0) ohashtab[hv] = opn;
       else {
-         for (; ophashlnk[pl] != 0; pl = ophashlnk[pl]);
-         ophashlnk[pl] = opn, ophashlnk[opn] = 0;
+         for (; optab[pl].hash != 0; pl = optab[pl].hash);
+         optab[pl].hash = opn, optab[opn].hash = 0;
       }
    }
 }
@@ -221,7 +220,7 @@ void setophash(void) {
 // ∙	0 if not found,
 // ∙	the subscript of the matching element if found.
 int findop(char *str) {
-   for (int ts = ohashtab[opcodehash(str)]; ts != 0; ts = ophashlnk[ts])
+   for (int ts = ohashtab[opcodehash(str)]; ts != 0; ts = optab[ts].hash)
       if (strcmp(str, optab[ts].opstr) == 0) return ts;
    return 0;
 }
@@ -263,8 +262,10 @@ static char *goutptr, goutbuff[INBUFFSZ] = "D:";
 static char *goutend = goutbuff + sizeof goutbuff/sizeof goutbuff[0] - 1;
 
 // Put a character in the intermediate file buffer for 'D' data records.
-// Global:
-// ∙	the buffer, its current position pointer
+// Globals:
+// ∙	goutbuff:	the buffer,
+// ∙	goutptr:	its current position pointer,
+// ∙	goutend:	the buffer's endpoint.
 static void goutch(char ch) {
    if (goutptr < goutend)
       *goutptr++ = ch;
@@ -284,55 +285,54 @@ static void goutxnum(unsigned long num) {
 struct evalrel evalr[6];
 
 // Process an instruction generation string, from the parser,
-// into a polish form expression line in a 'D' record in the intermediate file, after merging in the expression results.
+// into a postfix form expression line in a 'D' record in the intermediate file, after merging in the expression results.
 // Parameter:
 // ∙	str:	the instruction generation string.
 // Globals:
 // ∙	the evaluation results:
-//	evalr[].value:		a numeric value known at the time of the first pass
-//	evalr[].exprstr:	a polish form expression derived from the expression parse tree,
+//	evalr[].value:		a numeric value known at the time of the first pass,
+//	evalr[].exprstr:	a postfix form expression derived from the expression parse tree,
 //				to be evaluated in the output phase.
 // Return:
-// ∙	the length of the instruction (machine code bytes)
+// ∙	the length of the instruction (machine code bytes).
 int geninstr(char *str) {
    const bool GSTR_PASS = false, GSTR_PROCESS = true;
    int len = 0;
    bool state = GSTR_PASS;
    int innum = 0;
    goutptr = &goutbuff[2];
-   while (*str != '\0') {
+   while (*str != '\0')
       if (state == GSTR_PASS) switch (*str) {
       // Generate start:
-         case IG_START: state = GSTR_PROCESS, innum = 0, str++; break;
+         case '[': state = GSTR_PROCESS, innum = 0, str++; break;
       // Generate unsigned8: Generate signed7:
-         case IFC_EMU8: case IFC_EMS7: len++, goutch(*str++); break;
+         case ';': case 'r': len++, goutch(*str++); break;
       // Generate high unsigned16: Generate low unsigned16:
-         case IFC_EM16: case IFC_EMBR16: len += 2, goutch(*str++); break;
+         case 'x': case 'y': len += 2, goutch(*str++); break;
          default: goutch(*str++); break;
       } else switch (*str) {
       // Generate end:
-         case IG_END: state = GSTR_PASS, str++; break;
+         case ']': state = GSTR_PASS, str++; break;
          case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
             innum = (innum << 4) + *str++ - '0';
          break;
          case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
-            innum = (innum << 4) + *str++ - 'a' + 10;
+            innum = (innum << 4) + *str++ - 'a' + 0xa;
          break;
          case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
-            innum = (innum << 4) + *str++ - 'A' + 10;
+            innum = (innum << 4) + *str++ - 'A' + 0xA;
          break;
       // Copy constant:
-         case IG_CPCON: goutxnum((unsigned long)evalr[innum].value), innum = 0, str++; break;
+         case '#': goutxnum((unsigned long)evalr[innum].value), innum = 0, str++; break;
       // Copy expression:
-         case IG_CPEXPR:
+         case '=':
             for (char *exp = &evalr[innum].exprstr[0]; *exp != '\0'; exp++) goutch(*exp);
             innum = 0, str++;
          break;
       // Error:
-         case IG_ERROR: fraerror(++str); return 0;
+         case 'X': fraerror(++str); return 0;
          default: fraerror("invalid char in instruction generation"); break;
       }
-   }
    if (goutptr > &goutbuff[2]) goutch('\n'), fwrite(goutbuff, sizeof *goutbuff, goutptr - goutbuff, intermedf);
    return len;
 }
@@ -342,7 +342,8 @@ int *chtatab[6];
 
 // Allocate and initialize a character translate table.
 // Return:
-// ∙	0 for error, subscript into chtatab to pointer to the allocated block.
+// ∙	0 for error,
+// ∙	a subscript into chtatab to a pointer to the allocated block.
 int chtcreate(void) {
    const size_t NUM_CHTA = sizeof chtatab/sizeof chtatab[0];
    if (chtnxalph >= NUM_CHTA) return 0; // Too many.
@@ -356,10 +357,10 @@ int chtcreate(void) {
 
 // Find a character in a translate table.
 // Parameters:
-// ∙    chtab:		a pointer to the translate table,
-// ∙    sourcepnt:	a pointer to the input string pointer,
-// ∙    tabpng:		a pointer to the return value integer pointer,
-// ∙    numret:		a pointer to the numeric return.
+// ∙	chtab:		a pointer to the translate table,
+// ∙	sourcepnt:	a pointer to the input string pointer,
+// ∙	tabpng:		a pointer to the return value integer pointer,
+// ∙	numret:		a pointer to the numeric return.
 // Return:
 // ∙	the status of the search.
 char_tx chtcfind(int *chtab, char **sourcepnt, int **tabpnt, int *numret) {
@@ -371,7 +372,7 @@ char_tx chtcfind(int *chtab, char **sourcepnt, int **tabpnt, int *numret) {
             *numret = *sptr, *sourcepnt = ++sptr;
             return CF_NUMBER;
          } else {
-            int *valaddr = &(chtab[cv&0xff]);
+            int *valaddr = &chtab[cv&0xff];
             *sourcepnt = ++sptr, *tabpnt = valaddr;
             return *valaddr == -1? CF_UNDEF: CF_CHAR;
          }
@@ -397,31 +398,29 @@ char_tx chtcfind(int *chtab, char **sourcepnt, int **tabpnt, int *numret) {
             }
          case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': {
             int numval = cv - '0';
-            cv = *++sptr;
-            if (cv >= '0' && cv <= '7') {
+            if ((cv = *++sptr) >= '0' && cv <= '7') {
                numval = 010*numval + cv - '0';
-               cv = *++sptr;
-               if (cv >= '0' && cv <= '7') numval = numval*8 + cv - '0', ++sptr;
+               if ((cv = *++sptr) >= '0' && cv <= '7') numval = 010*numval + cv - '0', ++sptr;
             }
             *sourcepnt = sptr, *numret = numval&0xff;
          }
          return CF_NUMBER;
          case 'x': {
-            int numval = cv = *(++sptr);
+            int numval = cv = *++sptr;
             switch (cv) {
                case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
                   numval -= '0';
                break;
-               case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': numval -= 'a' - 10; break;
-               case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': numval -= 'A' - 10; break;
+               case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': numval -= 'a' - 0xa; break;
+               case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': numval -= 'A' - 0xA; break;
                default: *sourcepnt = sptr; return CF_INVALID;
             }
             switch (cv = *++sptr) {
                case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
                   numval = 0x10*numval + cv - '0', ++sptr;
                break;
-               case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': numval = 0x10*numval + cv - 'a' + 10, ++sptr; break;
-               case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': numval = 0x10*numval + cv - 'A' + 10, ++sptr; break;
+               case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': numval = 0x10*numval + cv - 'a' + 0xa, ++sptr; break;
+               case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': numval = 0x10*numval + cv - 'A' + 0xA, ++sptr; break;
                default: break;
             }
             *sourcepnt = sptr, *numret = numval;
@@ -444,7 +443,7 @@ int chtran(char **sourceptr) {
    }
 }
 
-// Produce 'D' records for a ASCII string constant by chopping it up into lengths that will fit in the intermediate file.
+// Produce 'D' records for an ASCII string constant by chopping it up into lengths that will fit in the intermediate file.
 // Parameter:
 // ∙	str:	a character string.
 // Return:
@@ -455,7 +454,7 @@ int genstring(char *str) {
    while (*str != '\0') {
       goutptr = &goutbuff[2];
       for (int linecount = 0; linecount < STCHPERLINE && *str != '\0'; linecount++)
-         gout2hex(chtran(&str)), goutch(IFC_EMU8), rvlen++;
+         gout2hex(chtran(&str)), goutch(';'), rvlen++;
       if (goutptr > &goutbuff[2])
          goutch('\n'), fwrite(goutbuff, sizeof *goutbuff, goutptr - goutbuff, intermedf);
    }
@@ -467,30 +466,30 @@ static int pepolcnt;
 static long etop;
 static seg_t etopseg;
 static struct evstkel *estkm1p;
-static const size_t STACKALLOWANCE = 4; // The number of levels used outside polish expr.
+static const size_t STACKALLOWANCE = 4; // The number of levels used outside a postfix expression.
 
 // Output a character to a evar[?].exprstr array.
 // Global:
-// ∙	parser expression to polish pointer pepolptr
+// ∙	the parser expression to postfix pointer pepolptr.
 static void polout(char ch) {
    if (pepolcnt > 1)
       *pepolptr++ = ch, pepolcnt--;
    else
-      *pepolptr = '\0', fraerror("overflow in polish expression conversion");
+      *pepolptr = '\0', fraerror("overflow in postfix expression conversion");
 }
 
-// Output a long constant to a polish expression.
+// Output a long constant to a postfix expression.
 static void polnumout(unsigned long inv) {
    if (inv > 0xf) polnumout(inv >> 4);
    polout(hexch((int)inv));
 }
 
-// Convert an expression tree to polish notation and do a preliminary evaluation of the numeric value of the expression.
+// Convert an expression tree to postfix notation and do a preliminary evaluation of the numeric value of the expression.
 // Parameter:
 // ∙	esub:	the subscript of an expression node.
 // Globals:
 // ∙	the expression stack
-// ∙	the polish expression string in an evalr element
+// ∙	the postfix expression string in an evalr element
 // Return:
 // ∙	false if the expression stack overflowed.
 //	The expression stack top contains the value and segment for the result of the expression
@@ -500,12 +499,15 @@ static bool pepolcon(int esub) {
    switch (enode[esub].evs) {
       case PCCASE_UN:
          if (!pepolcon(enode[esub].left)) return false;
-         polout(enode[esub].op), etop = EvalUnOp(enode[esub].op, etop);
+         polout(enode[esub].op);
+      // {-,~,high,low} x:
+         etop = EvalUnOp(enode[esub].op, etop);
       break;
       case PCCASE_BIN:
          if (!pepolcon(enode[esub].left)) return false;
-         polout(IFC_LOAD);
-         if (estkm1p >= &estk[PESTKDEPTH - 1 - STACKALLOWANCE]) {
+      // Load.
+         polout('.');
+         if (estkm1p >= evend - STACKALLOWANCE) {
             fraerror("expression stack overflow");
             return false;
          }
@@ -513,6 +515,7 @@ static bool pepolcon(int esub) {
          if (!pepolcon(enode[esub].right)) return false;
          polout(enode[esub].op);
          if (estkm1p->s != SSG_ABS) etopseg = estkm1p->s;
+      // x {+,-,*,/,%,<<,>>,|,^,&,>,>=,<,<=,!=,==} y
          etop = EvalBinOp(enode[esub].op, (estkm1p--)->v, etop);
       break;
       case PCCASE_DEF: etop = seg_valued(enode[esub].sym->seg)? 1: 0, polnumout((long)etop), etopseg = SSG_ABS; break;
@@ -521,9 +524,9 @@ static bool pepolcon(int esub) {
          if (etopseg == SSG_EQU || etopseg == SSG_SET)
             etopseg = SSG_ABS, polnumout((unsigned long)(enode[esub].sym)->value);
          else
-            polnumout((unsigned long)(enode[esub].sym)->symnum), polout(IFC_SYMB);
+            polnumout((unsigned long)(enode[esub].sym)->symnum), polout('S');
       break;
-      case PCCASE_PROGC: polout(IFC_PROGCTR), etop = locctr, etopseg = SSG_ABS; break;
+      case PCCASE_PROGC: polout('P'), etop = locctr, etopseg = SSG_ABS; break;
       case PCCASE_CONS: polnumout((unsigned long)enode[esub].val), etop = enode[esub].val, etopseg = SSG_ABS; break;
    }
    return true;
@@ -538,7 +541,7 @@ static bool pepolcon(int esub) {
 // ∙	the expression stack,
 // ∙	the expression tree node array.
 // Return:
-// ∙	in evalr[sub].seg == SSG_UNDEF if the polish expression conversion overflowed, or any undefined symbols were referenced.
+// ∙	in evalr[sub].seg == SSG_UNDEF if the postfix expression conversion overflowed, or any undefined symbols were referenced.
 void pevalexpr(int sub, int exn) {
    etop = 0, etopseg = SSG_UNUSED, estkm1p = estk;
    pepolptr = evalr[sub].exprstr, pepolcnt = PPEXPRLEN;

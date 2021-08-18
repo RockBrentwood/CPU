@@ -9,10 +9,11 @@ int GetOpt(int AC, char **AV, char *OptStr) { return getopt(AC, AV, OptStr); }
 // Adapted by Mark Zenier.
 // This is some ancient code I found on a version 7 system when I was running the original port.
 // Asking for help from the original authors is not advised.
-// (Especially after the hack job I did on it.  Mark Zenier.)
+// Especially after the hack job I did on it.
+// Mark Zenier.
 
 // This is a public domain version of getopt(3).
-// (Formerly ― bugs, fixes went to: Keith Bostic, but he's ... preoccupied now.)
+// (Formerly ― bugs, fixes went to Keith Bostic, but he's ... preoccupied now.)
 // Added NO_STDIO, opterr handling, Rich $alz (mirror!rs).
 
 // Framework Cross-Assembler
@@ -28,14 +29,14 @@ static bool opterr = true;
 int optind = 1;
 // The option character being verified.
 static int optopt;
-// The argument associated with the option.
+// The argument (if any) associated with the option character.
 char *optarg;
 
 int GetOpt(int AC, char **AV, char *OptStr) {
    static char *place = EMSG; // Option letter processing.
    if (*place == '\0') { // Update the scanning pointer.
       if (optind >= AC || *(place = AV[optind]) != '-' || *++place == '\0') return EOF;
-      if (*place == '-') { // Found "--"
+      if (*place == '-') { // Found "--".
          optind++;
          return EOF;
       }
@@ -45,7 +46,7 @@ int GetOpt(int AC, char **AV, char *OptStr) {
    if ((optopt = *place++) == ':' || (oli = strchr(OptStr, optopt)) == NULL) {
       if (*place == '\0') optind++;
       if (opterr) fprintf(stderr, "%s: illegal option -- %c\n", *AV, optopt);
-      goto Bad;
+      return '?';
    }
    if (*++oli != ':') { // We don't need an argument.
       optarg = NULL;
@@ -56,12 +57,10 @@ int GetOpt(int AC, char **AV, char *OptStr) {
       else {
          place = EMSG;
          if (opterr) fprintf(stderr, "%s: option requires an argument -- %c\n", *AV, optopt);
-         goto Bad;
+         return '?';
       }
       place = EMSG, optind++;
    }
    return optopt; // Dump back the option letter.
-Bad:
-   return '?';
 }
 #endif

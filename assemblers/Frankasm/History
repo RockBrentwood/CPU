@@ -85,7 +85,7 @@ History:
 		―	makefile.dos → Makefile.dos.
 		―	fraytok.h → Token.h.
 		―	{fraecon,frasmdat}.h → {Constants,Extern}.h.
-		―       {fraeuni,fraebin,getopt}.h → {CasesUn,CasesBin,GetOpt}.c.
+		―	{fraeuni,fraebin,getopt}.h → {CasesUn,CasesBin,GetOpt}.c.
 		―	{frasmain,fryylex,frapsub,fraosub}.c → {Assem,Scan,Reader,Writer}.c.
 		―	The history, manifest and documentation were retrofitted with the new names.
 		Converted the conditional module GetOpt.c into a module for a ‟fall-back” GetOpt() to getopt().
@@ -108,14 +108,17 @@ History:
 		Integrated the ‟cleanup.bat” and ‟makeone.bat” scripts into the DOS makefile.
 2021/08/02:	Replaced most sizeof-related manifest constants by constants or eliminated them.
 2021/08/03:	Replaced mktemp() by mkstemp().
+		Began remaking the code/mode generation tables more in line with those of the CAS assembler.
 2021/08/04:	Replaced index() by strchr(), which is now C99, and took out USEINDEX.
 2021/08/04:	Recovered Frankasm/As630102 and Syn6301.y and normalized it with the changes already made to the other *.y files.
 2021/08/07:	Converted manifest constant groups to enum types; and lifted variables and routines to these enum types.
+		Inserted the constants from ‟Constants.h” in-line.
+		Renamed and remade ‟Constants.h” into a cheat-sheet, ‟ByteCodes.txt”, summarizing the byte code format used.
 2021/08/09:	Further cleanup of the makefiles; bringing the DOS and non-DOS versions into line.
 		Removed the ‟register” keyword.
 		Replaced typedef ‟bool” by <stdbool.h>.
 2021/08/11:	Removed the ‟add-on” includes; replacing them by modules.
-                Converted the ‟add-on” include GetOpt.c into a separately-compiled file.
-                Took back out the ‟add-on” includes Cases{Un,Bin}.h and combined them into a separately-compiled file: ExOp.c.
-                Make corresponding changes to other files to reflect the changes.
+		Converted the ‟add-on” include GetOpt.c into a separately-compiled file.
+		Took back out the ‟add-on” includes Cases{Un,Bin}.h and combined them into a separately-compiled file: ExOp.c.
+		Make corresponding changes to other files to reflect the changes.
 2021/08/12:	Minor fixes to the Makefiles to remove redundant builds.

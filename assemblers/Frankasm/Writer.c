@@ -3,12 +3,11 @@
 // Output pass utility routines.
 #include <stdio.h>
 #include "Extern.h"
-#include "Constants.h"
 
 const int SOURCEOFFSET = 24, NUMHEXSOURCE = 6;
 
 struct evstkel estk[0x20];
-const size_t PESTKDEPTH = sizeof estk/sizeof estk[0];
+const struct evstkel *evend = estk + sizeof estk/sizeof estk[0] - 1;
 int currfstk, currseg;
 long locctr;
 
@@ -45,8 +44,8 @@ static long dgethex(void) {
       case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
          rv = (rv << 4) + (*oeptr - '0');
       break;
-      case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': rv = (rv << 4) + (*oeptr - 'a' + 10); break;
-      case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': rv = (rv << 4) + (*oeptr - 'A' + 10); break;
+      case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': rv = (rv << 4) + (*oeptr - 'a' + 0xa); break;
+      case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': rv = (rv << 4) + (*oeptr - 'A' + 0xA); break;
       default: return rv;
    }
    return rv;
@@ -118,17 +117,16 @@ static void listouthex(void) {
       }
       if (!lineLflag) fputc('\n', loutf);
    }
-   if (lineLflag) {
-      if (lineLbuff[2] != '\n') {
-         switch (lhnext) {
-            case 0: fputs("\t\t\t", loutf); break;
-            case 1: case 2: case 3: fputs("\t\t", loutf); break;
-            case 4: case 5: case 6: fputs("\t", loutf); break;
-            default: break;
-         }
-         fputs(&lineLbuff[2], loutf), lineLflag = false;
-      } else
-         fputc('\n', loutf);
+   if (!lineLflag) ;
+   else if (lineLbuff[2] == '\n') fputc('\n', loutf);
+   else {
+      switch (lhnext) {
+         case 0: fputs("\t\t\t", loutf); break;
+         case 1: case 2: case 3: fputs("\t\t", loutf); break;
+         case 4: case 5: case 6: fputs("\t", loutf); break;
+         default: break;
+      }
+      fputs(&lineLbuff[2], loutf), lineLflag = false;
    }
    lhnext = 0;
 }
@@ -138,132 +136,129 @@ static void listouthex(void) {
 // ∙	the new hex list flag.
 static void flushlisthex(void) { listouthex(), lhnew = true; }
 
-// Convert the polish form character string in the intermediate file 'D' line to binary values in the output result array.
+// Convert the postfix form character string in the intermediate file 'D' line to binary values in the output result array.
 // Globals:
 // ∙	the output expression pointer,
 // ∙	the output result array.
 static void outeval(void) {
    long etop = 0;
    struct evstkel *estkm1p = estk;
-   while (*oeptr != '\0') {
-      switch (*oeptr) {
-         case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
-            etop = (etop << 4) + ((*oeptr) - '0');
-         break;
-         case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': etop = (etop << 4) + ((*oeptr) - 'a' + 10); break;
-         case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': etop = (etop << 4) + ((*oeptr) - 'A' + 10); break;
-      // Unary expression {-,~,high,low} x:
-         case IFC_NEG: case IFC_NOT: case IFC_HIGH: case IFC_LOW:
-            etop = EvalUnOp(*oeptr, etop);
-         break;
-      // Binary expression x {+,-,*,/,%,<<,>>,|,^,&,>,>=,<,<=,!=,==} y:
-         case IFC_ADD: case IFC_SUB: case IFC_MUL: case IFC_DIV: case IFC_MOD:
-         case IFC_SHL: case IFC_SHR: case IFC_OR: case IFC_XOR: case IFC_AND:
-         case IFC_GT: case IFC_GE: case IFC_LT: case IFC_LE: case IFC_NE: case IFC_EQ:
-            etop = EvalBinOp(*oeptr, (estkm1p--)->v, etop);
-         break;
-      // Symbol:
-         case IFC_SYMB: {
-            struct symel *tsy = symbindex[etop];
-            if (!seg_valued(tsy->seg))
-               frp2undef(tsy), etop = 0;
-            else {
-               if (tsy->seg == SSG_EQU || tsy->seg == SSG_SET) frp2warn("forward reference to SET/EQU symbol");
-               etop = tsy->value;
-            }
+   for (; *oeptr != '\0'; oeptr++) switch (*oeptr) {
+      case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
+         etop = (etop << 4) + (*oeptr - '0');
+      break;
+      case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': etop = (etop << 4) + (*oeptr - 'a' + 0xa); break;
+      case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': etop = (etop << 4) + (*oeptr - 'A' + 0xA); break;
+   // Unary expression {-,~,high,low} x:
+      case '_': case 'N': case 'H': case 'Z':
+         etop = EvalUnOp(*oeptr, etop);
+      break;
+   // Binary expression x {+,-,*,/,%,<<,>>,|,^,&,>,>=,<,<=,!=,==} y:
+      case '+': case '-': case '*': case '/': case '%':
+      case '{': case '}': case '|': case '^': case '&':
+      case '>': case 'G': case '<': case 'L': case '?': case '=':
+         etop = EvalBinOp(*oeptr, (estkm1p--)->v, etop);
+      break;
+   // Symbol:
+      case 'S': {
+         struct symel *tsy = symbindex[etop];
+         if (!seg_valued(tsy->seg))
+            frp2undef(tsy), etop = 0;
+         else {
+            if (tsy->seg == SSG_EQU || tsy->seg == SSG_SET) frp2warn("forward reference to SET/EQU symbol");
+            etop = tsy->value;
          }
-         break;
-      // Current location:
-         case IFC_CURRLOC: etop = genlocctr; break;
-      // Program counter:
-         case IFC_PROGCTR: etop = locctr; break;
-      // Duplicate:
-         case IFC_DUP:
-            if (estkm1p >= &estk[PESTKDEPTH - 1])
-               frp2error("expression stack overflow");
-            else
-               (++estkm1p)->v = etop;
-         break;
-      // Load:
-         case IFC_LOAD:
-            if (estkm1p >= &estk[PESTKDEPTH - 1])
-               frp2error("expression stack overflow");
-            else
-               (++estkm1p)->v = etop;
-            etop = 0;
-         break;
-      // Clear:
-         case IFC_CLR: etop = 0; break;
-      // Clear all:
-         case IFC_CLRALL: etop = 0, estkm1p = estk; break;
-      // Pop:
-         case IFC_POP: etop = (estkm1p--)->v; break;
-      // Test error:
-         case IFC_TESTERR:
-            if (etop) frp2error("expression fails validity test");
-         break;
-      // SWidth A:
-         case IFC_SWIDTH:
-            if (etop > 0 && etop < maskmax) {
-               if (estkm1p->v < -(widthmask[etop - 1] + 1) || estkm1p->v > widthmask[etop - 1])
-                  frp2error("expression exceeds available field width");
-               etop = ((estkm1p--)->v)&widthmask[etop];
-            } else
-               frp2error("unimplemented width");
-         break;
-      // Width A:
-         case IFC_WIDTH:
-            if (etop > 0 && etop < maskmax) {
-               if (estkm1p->v < -(widthmask[etop - 1] + 1) || estkm1p->v > widthmask[etop])
-                  frp2error("expression exceeds available field width");
-               etop = ((estkm1p--)->v)&widthmask[etop];
-            } else
-               frp2error("unimplemented width");
-         break;
-      // IWidth A:
-         case IFC_IWIDTH:
-            if (etop > 0 && etop < maskmax) {
-               if (estkm1p->v < 0 || estkm1p->v > widthmask[etop])
-                  frp2error("expression exceeds available field width");
-               etop = ((estkm1p--)->v)&widthmask[etop];
-            } else
-               frp2error("unimplemented width");
-         break;
-      // Put unsigned8:
-         case IFC_EMU8:
-            if (etop >= -0x80 && etop <= 0xff)
-               outresult[nextresult++] = etop&0xff;
-            else
-               outresult[nextresult++] = 0, frp2error("expression exceeds available field width");
-            genlocctr++, etop = 0;
-         break;
-      // Put signed7:
-         case IFC_EMS7:
-            if (etop >= -0x80 && etop <= 0x7f)
-               outresult[nextresult++] = etop&0xff;
-            else
-               outresult[nextresult++] = 0, frp2error("expression exceeds available field width");
-            genlocctr++, etop = 0;
-         break;
-      // Put high unsigned16:
-         case IFC_EM16:
-            if (etop >= -0x8000L && etop <= 0xffffL)
-               outresult[nextresult++] = (etop >> 8)&0xff, outresult[nextresult++] = etop&0xff;
-            else
-               outresult[nextresult++] = 0, outresult[nextresult++] = 0, frp2error("expression exceeds available field width");
-            genlocctr += 2, etop = 0;
-         break;
-      // Put low unsigned16:
-         case IFC_EMBR16:
-            if (etop >= -0x8000L && etop <= 0xffffL)
-               outresult[nextresult++] = etop&0xff, outresult[nextresult++] = (etop >> 8)&0xff;
-            else
-               outresult[nextresult++] = 0, outresult[nextresult++] = 0, frp2error("expression exceeds available field width");
-            genlocctr += 2, etop = 0;
-         break;
-         default: break;
       }
-      oeptr++;
+      break;
+   // Current location:
+      case 'Q': etop = genlocctr; break;
+   // Program counter:
+      case 'P': etop = locctr; break;
+   // Duplicate:
+      case '~':
+         if (estkm1p >= evend)
+            frp2error("expression stack overflow");
+         else
+            (++estkm1p)->v = etop;
+      break;
+   // Load:
+      case '.':
+         if (estkm1p >= evend)
+            frp2error("expression stack overflow");
+         else
+            (++estkm1p)->v = etop;
+         etop = 0;
+      break;
+   // Clear:
+      case '$': etop = 0; break;
+   // Clear all:
+      case 'X': etop = 0, estkm1p = estk; break;
+   // Pop:
+      case '!': etop = (estkm1p--)->v; break;
+   // Test error:
+      case 'T':
+         if (etop) frp2error("expression fails validity test");
+      break;
+   // SWidth A:
+      case 'R':
+         if (etop > 0 && etop < maskmax) {
+            if (estkm1p->v < -(widthmask[etop - 1] + 1) || estkm1p->v > widthmask[etop - 1])
+               frp2error("expression exceeds available field width");
+            etop = ((estkm1p--)->v)&widthmask[etop];
+         } else
+            frp2error("unimplemented width");
+      break;
+   // Width A:
+      case 'W':
+         if (etop > 0 && etop < maskmax) {
+            if (estkm1p->v < -(widthmask[etop - 1] + 1) || estkm1p->v > widthmask[etop])
+               frp2error("expression exceeds available field width");
+            etop = ((estkm1p--)->v)&widthmask[etop];
+         } else
+            frp2error("unimplemented width");
+      break;
+   // IWidth A:
+      case 'I':
+         if (etop > 0 && etop < maskmax) {
+            if (estkm1p->v < 0 || estkm1p->v > widthmask[etop])
+               frp2error("expression exceeds available field width");
+            etop = ((estkm1p--)->v)&widthmask[etop];
+         } else
+            frp2error("unimplemented width");
+      break;
+   // Put unsigned8:
+      case ';':
+         if (etop >= -0x80 && etop <= 0xff)
+            outresult[nextresult++] = etop&0xff;
+         else
+            outresult[nextresult++] = 0, frp2error("expression exceeds available field width");
+         genlocctr++, etop = 0;
+      break;
+   // Put signed7:
+      case 'r':
+         if (etop >= -0x80 && etop <= 0x7f)
+            outresult[nextresult++] = etop&0xff;
+         else
+            outresult[nextresult++] = 0, frp2error("expression exceeds available field width");
+         genlocctr++, etop = 0;
+      break;
+   // Put high unsigned16:
+      case 'x':
+         if (etop >= -0x8000L && etop <= 0xffffL)
+            outresult[nextresult++] = (etop >> 8)&0xff, outresult[nextresult++] = etop&0xff;
+         else
+            outresult[nextresult++] = 0, outresult[nextresult++] = 0, frp2error("expression exceeds available field width");
+         genlocctr += 2, etop = 0;
+      break;
+   // Put low unsigned16:
+      case 'y':
+         if (etop >= -0x8000L && etop <= 0xffffL)
+            outresult[nextresult++] = etop&0xff, outresult[nextresult++] = (etop >> 8)&0xff;
+         else
+            outresult[nextresult++] = 0, outresult[nextresult++] = 0, frp2error("expression exceeds available field width");
+         genlocctr += 2, etop = 0;
+      break;
+      default: break;
    }
 }
 

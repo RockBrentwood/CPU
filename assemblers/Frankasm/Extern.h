@@ -49,19 +49,19 @@ extern readacts nextreadact;
 int Scan(void);
 void yyerror(char *str);
 
-// Syn*.y:
+// Syn*.{y,c}:
 extern char *ignosyn, *ignosel;
 
-/* opcode symbol table element */
+// Opcode symbol table elements.
 struct opsym {
    char *opstr;
    int token;
    int numsyn;
    int subsyn;
+   int hash;
 };
 extern struct opsym optab[];
 extern int gnumopcode;
-extern int ophashlnk[];
 
 struct opsynt {
    int syntaxgrp;
@@ -92,7 +92,7 @@ extern int exprlist[];
 extern int nextstrs;
 extern char *stringlist[];
 
-/* symbol table element */
+// Symbol table elements.
 typedef enum seg_t { SSG_RESV = -2, SSG_UNDEF = -1, SSG_UNUSED = 0, SSG_EQU = 2, SSG_SET = 3, SSG_ABS = 8 } seg_t;
 #define seg_valued(seg) ((seg) > 0)
 struct symel {
@@ -143,7 +143,7 @@ struct evstkel {
    seg_t s;
 };
 extern struct evstkel estk[];
-extern const size_t PESTKDEPTH;
+extern const struct evstkel *evend;
 
 extern int currfstk;
 #define nextfstk (currfstk+1)

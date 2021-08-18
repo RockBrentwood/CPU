@@ -107,7 +107,7 @@ GetOpt$O: GetOpt.c
 	$(CC) $(CFLAGS) $(MAINNEEDS) -c GetOpt.c
 Assem$O: Assem.c Extern.h
 	$(CC) $(CFLAGS) $(MAINNEEDS) -c Assem.c
-ExOp$O: ExOp.c Constants.h
+ExOp$O: ExOp.c
 	$(CC) $(CFLAGS) -c ExOp.c
 Token.h: Syn$(CPU).h
 	$(CP) Syn$(CPU).h Token.h
@@ -117,9 +117,9 @@ Syn$(CPU).c Syn$(CPU).h: Syn$(CPU).y
 	$(YACC) -d Syn$(CPU).y
 	$(MV) y.tab.c Syn$(CPU).c
 	$(MV) y.tab.h Syn$(CPU).h
-Syn$(CPU)$O: Syn$(CPU).c Extern.h Constants.h
+Syn$(CPU)$O: Syn$(CPU).c Extern.h
 	$(CC) $(CFLAGS) -c Syn$(CPU).c
-Reader$O: Reader.c Extern.h Constants.h
+Reader$O: Reader.c Extern.h
 	$(CC) $(CFLAGS) -c Reader.c
-Writer$O: Writer.c Extern.h Constants.h
+Writer$O: Writer.c Extern.h
 	$(CC) $(CFLAGS) -c Writer.c

@@ -81,7 +81,11 @@
 	Debug in the lexical analyzer is turned on with a nonzero value in the DEBUG macro.
 
 	Host machines that don't use two-complement negative numbers
-	will have to compensate in the Writer.c outeval() switch statement for cases IFC_EMU8, IFC_EMS7, IFC_EM16, IFC_EMBR16.
+	will have to compensate in the Writer.c outeval() switch statement for the cases of the byte codes:
+	∙	';': put 8-bit unsigned integer,
+	∙	'r': put 7-bit signed integer,
+	∙	'x': put the upper 8-bits of a 16-bit unsigned integer,
+	∙	'y': put the lower 8-bits of a 16-bit unsigned integer.
 
 	Update Note (2021/08/13) ― archive editor:
 	──────────────────────────────────────────

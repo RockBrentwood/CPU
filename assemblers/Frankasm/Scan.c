@@ -47,7 +47,7 @@ typedef enum char_t {
 // Control Space   '\n'    Alpha    '"'     Etc     '$'     '%'     '\''    0-1     2-7     8-9     ';'
 // '<'     '='     '>'     '@'      ACEF    'B'     'D'     Hh      OoQq    acef    'b'     'd'     '\\'
    SkipX = 0, SpaceX, NlX, AlphaX, Quote2X, EtcX, DollarX, PercentX, Quote1X, BinX, OctX, DecX, SemiX,
-   LtX, EqX, GtX, AtX, HexX, BX, DX, HX, OoQqX, hexX, bX, dX, BackX,
+   LtX, EqX, GtX, AtX, HexX, BX, DX, HhX, OoQqX, hexX, bX, dX, BackX,
    CharXs
 } char_t;
 
@@ -61,11 +61,11 @@ static char_t chartrantab[0x80] = {
 // 0   1   2   3   4   5   6   7   8   9   :   ;   <   =   >   ?
    BinX, BinX, OctX, OctX, OctX, OctX, OctX, OctX, DecX, DecX, EtcX, SemiX, LtX, EqX, GtX, EtcX,
 // @   A   B   C   D   E   F   G   H   I   J   K   L   M   N   O
-   AtX, HexX, BX, HexX, DX, HexX, HexX, AlphaX, HX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, OoQqX,
+   AtX, HexX, BX, HexX, DX, HexX, HexX, AlphaX, HhX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, OoQqX,
 // P   Q   R   S   T   U   V   W   X   Y   Z   [   \   ]   ^   _
    AlphaX, OoQqX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, EtcX, BackX, EtcX, AlphaX, AlphaX,
 // `   a   b   c   d   e   f   g   h   i   j   k   l   m   n   o
-   EtcX, hexX, bX, hexX, dX, hexX, hexX, AlphaX, HX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, OoQqX,
+   EtcX, hexX, bX, hexX, dX, hexX, hexX, AlphaX, HhX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, OoQqX,
 // p   q   r   s   t   u   v   w   x   y   z   {   vb  }   ~   del
    AlphaX, OoQqX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, AlphaX, EtcX, EtcX, EtcX, AlphaX, SkipX
 };
@@ -431,11 +431,11 @@ int Scan(void) {
                break;
             // Accumulate [A-F].
                case 11:
-                  consaccum = consbase*consaccum + (nextchar - 'A' + 10);
+                  consaccum = consbase*consaccum + (nextchar - 'A' + 0xA);
                break;
             // Accumulate [a-f].
                case 12:
-                  consaccum = consbase*consaccum + (nextchar - 'a' + 10);
+                  consaccum = consbase*consaccum + (nextchar - 'a' + 0xa);
                break;
             // Load a Constant token.
                case 13:
@@ -499,11 +499,11 @@ int Scan(void) {
                break;
             // Save a numeric character [A-F].
                case 25:
-                  *tptrstr++ = nextchar - 'A' + 10;
+                  *tptrstr++ = nextchar - 'A' + 0xA;
                break;
             // Save a numeric character [a-f].
                case 26:
-                  *tptrstr++ = nextchar - 'a' + 10;
+                  *tptrstr++ = nextchar - 'a' + 0xa;
                break;
             // Convert a numeric string base 2.
                case 27:
