@@ -1,14 +1,6 @@
-/*
- * AS-Portierung
- *
- * AS-Codegeneratormodul fuer die Texas Instruments TMS320C2x-Familie
- *
- * (C) 1996 Thomas Sailer <sailer@ife.ee.ethz.ch>
- *
- * 19.08.96: Erstellung
- * 18.01.97: Anpassungen fuer Case-Sensitivitaet
- */
-
+// AS-Portierung
+// AS-Codegeneratormodul fuer die Texas Instruments TMS320C2x-Familie
+// (C) 1996 Thomas Sailer <sailer@ife.ee.ethz.ch>
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -28,135 +20,138 @@
 static const struct cmd_fixed_order {
    char *name;
    Word code;
-} cmd_fixed_order[] = { { "ABS", 0xce1b },
-{ "CMPL", 0xce27 },
-{ "NEG", 0xce23 },
-{ "ROL", 0xce34 },
-{ "ROR", 0xce35 },
-{ "SFL", 0xce18 },
-{ "SFR", 0xce19 },
-{ "ZAC", 0xca00 },
-{ "APAC", 0xce15 },
-{ "PAC", 0xce14 },
-{ "SPAC", 0xce16 },
-{ "BACC", 0xce25 },
-{ "CALA", 0xce24 },
-{ "RET", 0xce26 },
-{ "RFSM", 0xce36 },
-{ "RTXM", 0xce20 },
-{ "RXF", 0xce0c },
-{ "SFSM", 0xce37 },
-{ "STXM", 0xce21 },
-{ "SXF", 0xce0d },
-{ "DINT", 0xce01 },
-{ "EINT", 0xce00 },
-{ "IDLE", 0xce1f },
-{ "NOP", 0x5500 },
-{ "POP", 0xce1d },
-{ "PUSH", 0xce1c },
-{ "RC", 0xce30 },
-{ "RHM", 0xce38 },
-{ "ROVM", 0xce02 },
-{ "RSXM", 0xce06 },
-{ "RTC", 0xce32 },
-{ "SC", 0xce31 },
-{ "SHM", 0xce39 },
-{ "SOVM", 0xce03 },
-{ "SSXM", 0xce07 },
-{ "STC", 0xce33 },
-{ "TRAP", 0xce1e },
-{ NULL, 0 }
+} cmd_fixed_order[] = {
+   { "ABS", 0xce1b },
+   { "CMPL", 0xce27 },
+   { "NEG", 0xce23 },
+   { "ROL", 0xce34 },
+   { "ROR", 0xce35 },
+   { "SFL", 0xce18 },
+   { "SFR", 0xce19 },
+   { "ZAC", 0xca00 },
+   { "APAC", 0xce15 },
+   { "PAC", 0xce14 },
+   { "SPAC", 0xce16 },
+   { "BACC", 0xce25 },
+   { "CALA", 0xce24 },
+   { "RET", 0xce26 },
+   { "RFSM", 0xce36 },
+   { "RTXM", 0xce20 },
+   { "RXF", 0xce0c },
+   { "SFSM", 0xce37 },
+   { "STXM", 0xce21 },
+   { "SXF", 0xce0d },
+   { "DINT", 0xce01 },
+   { "EINT", 0xce00 },
+   { "IDLE", 0xce1f },
+   { "NOP", 0x5500 },
+   { "POP", 0xce1d },
+   { "PUSH", 0xce1c },
+   { "RC", 0xce30 },
+   { "RHM", 0xce38 },
+   { "ROVM", 0xce02 },
+   { "RSXM", 0xce06 },
+   { "RTC", 0xce32 },
+   { "SC", 0xce31 },
+   { "SHM", 0xce39 },
+   { "SOVM", 0xce03 },
+   { "SSXM", 0xce07 },
+   { "STC", 0xce33 },
+   { "TRAP", 0xce1e },
+   { NULL, 0 }
 };
 
-static const struct cmd_fixed_order
- cmd_jmp_order[] = { { "B", 0xff80 },
-{ "BANZ", 0xfb80 },
-{ "BBNZ", 0xf980 },
-{ "BBZ", 0xf880 },
-{ "BC", 0x5e80 },
-{ "BGEZ", 0xf480 },
-{ "BGZ", 0xf180 },
-{ "BIOZ", 0xfa80 },
-{ "BLEZ", 0xf280 },
-{ "BLZ", 0xf380 },
-{ "BNC", 0x5f80 },
-{ "BNV", 0xf780 },
-{ "BNZ", 0xf580 },
-{ "BV", 0xf080 },
-{ "BZ", 0xf680 },
-{ "CALL", 0xfe80 },
-{ NULL, 0 }
+static const struct cmd_fixed_order cmd_jmp_order[] = {
+   { "B", 0xff80 },
+   { "BANZ", 0xfb80 },
+   { "BBNZ", 0xf980 },
+   { "BBZ", 0xf880 },
+   { "BC", 0x5e80 },
+   { "BGEZ", 0xf480 },
+   { "BGZ", 0xf180 },
+   { "BIOZ", 0xfa80 },
+   { "BLEZ", 0xf280 },
+   { "BLZ", 0xf380 },
+   { "BNC", 0x5f80 },
+   { "BNV", 0xf780 },
+   { "BNZ", 0xf580 },
+   { "BV", 0xf080 },
+   { "BZ", 0xf680 },
+   { "CALL", 0xfe80 },
+   { NULL, 0 }
 };
 
 static const struct cmd_adr_order {
    char *name;
    Word code;
    bool must1;
-} cmd_adr_order[] = { { "ADDC", 0x4300, false },
-{ "ADDH", 0x4800, false },
-{ "ADDS", 0x4900, false },
-{ "ADDT", 0x4a00, false },
-{ "AND", 0x4e00, false },
-{ "LACT", 0x4200, false },
-{ "OR", 0x4d00, false },
-{ "SUBB", 0x4f00, false },
-{ "SUBC", 0x4700, false },
-{ "SUBH", 0x4400, false },
-{ "SUBS", 0x4500, false },
-{ "SUBT", 0x4600, false },
-{ "XOR", 0x4c00, false },
-{ "ZALH", 0x4000, false },
-{ "ZALR", 0x7b00, false },
-{ "ZALS", 0x4100, false },
-{ "LDP", 0x5200, false },
-{ "MAR", 0x5500, false },
-{ "LPH", 0x5300, false },
-{ "LT", 0x3c00, false },
-{ "LTA", 0x3d00, false },
-{ "LTD", 0x3f00, false },
-{ "LTP", 0x3e00, false },
-{ "LTS", 0x5b00, false },
-{ "MPY", 0x3800, false },
-{ "MPYA", 0x3a00, false },
-{ "MPYS", 0x3b00, false },
-{ "MPYU", 0xcf00, false },
-{ "SPH", 0x7d00, false },
-{ "SPL", 0x7c00, false },
-{ "SQRA", 0x3900, false },
-{ "SQRS", 0x5a00, false },
-{ "DMOV", 0x5600, false },
-{ "TBLR", 0x5800, false },
-{ "TBLW", 0x5900, false },
-{ "BITT", 0x5700, false },
-{ "LST", 0x5000, false },
-{ "LST1", 0x5100, false },
-{ "POPD", 0x7a00, false },
-{ "PSHD", 0x5400, false },
-{ "RPT", 0x4b00, false },
-{ "SST", 0x7800, true },
-{ "SST1", 0x7900, true },
-{ NULL, 0, false }
+} cmd_adr_order[] = {
+   { "ADDC", 0x4300, false },
+   { "ADDH", 0x4800, false },
+   { "ADDS", 0x4900, false },
+   { "ADDT", 0x4a00, false },
+   { "AND", 0x4e00, false },
+   { "LACT", 0x4200, false },
+   { "OR", 0x4d00, false },
+   { "SUBB", 0x4f00, false },
+   { "SUBC", 0x4700, false },
+   { "SUBH", 0x4400, false },
+   { "SUBS", 0x4500, false },
+   { "SUBT", 0x4600, false },
+   { "XOR", 0x4c00, false },
+   { "ZALH", 0x4000, false },
+   { "ZALR", 0x7b00, false },
+   { "ZALS", 0x4100, false },
+   { "LDP", 0x5200, false },
+   { "MAR", 0x5500, false },
+   { "LPH", 0x5300, false },
+   { "LT", 0x3c00, false },
+   { "LTA", 0x3d00, false },
+   { "LTD", 0x3f00, false },
+   { "LTP", 0x3e00, false },
+   { "LTS", 0x5b00, false },
+   { "MPY", 0x3800, false },
+   { "MPYA", 0x3a00, false },
+   { "MPYS", 0x3b00, false },
+   { "MPYU", 0xcf00, false },
+   { "SPH", 0x7d00, false },
+   { "SPL", 0x7c00, false },
+   { "SQRA", 0x3900, false },
+   { "SQRS", 0x5a00, false },
+   { "DMOV", 0x5600, false },
+   { "TBLR", 0x5800, false },
+   { "TBLW", 0x5900, false },
+   { "BITT", 0x5700, false },
+   { "LST", 0x5000, false },
+   { "LST1", 0x5100, false },
+   { "POPD", 0x7a00, false },
+   { "PSHD", 0x5400, false },
+   { "RPT", 0x4b00, false },
+   { "SST", 0x7800, true },
+   { "SST1", 0x7900, true },
+   { NULL, 0, false }
 };
 
-static const struct cmd_adr_order
- cmd_adr_2ndadr_order[] = { { "BLKD", 0xfd00, false },
-{ "BLKP", 0xfc00, false },
-{ "MAC", 0x5d00, false },
-{ "MACD", 0x5c00, false },
-{ NULL, 0, false }
+static const struct cmd_adr_order cmd_adr_2ndadr_order[] = {
+   { "BLKD", 0xfd00, false },
+   { "BLKP", 0xfc00, false },
+   { "MAC", 0x5d00, false },
+   { "MACD", 0x5c00, false },
+   { NULL, 0, false }
 };
 
 static const struct cmd_adr_shift_order {
    char *name;
    Word code;
    Word allow_shifts;
-} cmd_adr_shift_order[] = { { "ADD", 0x0000, 0xf },
-{ "LAC", 0x2000, 0xf },
-{ "SACH", 0x6800, 0x7 },
-{ "SACL", 0x6000, 0x7 },
-{ "SUB", 0x1000, 0xf },
-{ "BIT", 0x9000, 0xf },
-{ NULL, 0, 0 }
+} cmd_adr_shift_order[] = {
+   { "ADD", 0x0000, 0xf },
+   { "LAC", 0x2000, 0xf },
+   { "SACH", 0x6800, 0x7 },
+   { "SACL", 0x6000, 0x7 },
+   { "SUB", 0x1000, 0xf },
+   { "BIT", 0x9000, 0xf },
+   { NULL, 0, 0 }
 };
 
 static const struct cmd_imm_order {
@@ -165,23 +160,24 @@ static const struct cmd_imm_order {
    Integer Min;
    Integer Max;
    Word mask;
-} cmd_imm_order[] = { { "ADDK", 0xcc00, 0, 255, 0xff },
-{ "LACK", 0xca00, 0, 255, 0xff },
-{ "SUBK", 0xcd00, 0, 255, 0xff },
-{ "ADRK", 0x7e00, 0, 255, 0xff },
-{ "SBRK", 0x7f00, 0, 255, 0xff },
-{ "RPTK", 0xcb00, 0, 255, 0xff },
-{ "MPYK", 0xa000, -4096, 4095, 0x1fff },
-{ "SPM", 0xce08, 0, 3, 0x3 },
-{ "CMPR", 0xce50, 0, 3, 0x3 },
-{ "FORT", 0xce0e, 0, 1, 0x1 },
-{ "ADLK", 0xd002, 0, 0x7fff, 0xffff },
-{ "ANDK", 0xd004, 0, 0x7fff, 0xffff },
-{ "LALK", 0xd001, 0, 0x7fff, 0xffff },
-{ "ORK", 0xd005, 0, 0x7fff, 0xffff },
-{ "SBLK", 0xd003, 0, 0x7fff, 0xffff },
-{ "XORK", 0xd006, 0, 0x7fff, 0xffff },
-{ NULL, 0, 0, 0, 0 }
+} cmd_imm_order[] = {
+   { "ADDK", 0xcc00, 0, 255, 0xff },
+   { "LACK", 0xca00, 0, 255, 0xff },
+   { "SUBK", 0xcd00, 0, 255, 0xff },
+   { "ADRK", 0x7e00, 0, 255, 0xff },
+   { "SBRK", 0x7f00, 0, 255, 0xff },
+   { "RPTK", 0xcb00, 0, 255, 0xff },
+   { "MPYK", 0xa000, -4096, 4095, 0x1fff },
+   { "SPM", 0xce08, 0, 3, 0x3 },
+   { "CMPR", 0xce50, 0, 3, 0x3 },
+   { "FORT", 0xce0e, 0, 1, 0x1 },
+   { "ADLK", 0xd002, 0, 0x7fff, 0xffff },
+   { "ANDK", 0xd004, 0, 0x7fff, 0xffff },
+   { "LALK", 0xd001, 0, 0x7fff, 0xffff },
+   { "ORK", 0xd005, 0, 0x7fff, 0xffff },
+   { "SBLK", 0xd003, 0, 0x7fff, 0xffff },
+   { "XORK", 0xd006, 0, 0x7fff, 0xffff },
+   { NULL, 0, 0, 0, 0 }
 };
 
 /* ---------------------------------------------------------------------- */
@@ -206,16 +202,17 @@ static void decode_adr(char *arg, Integer aux, bool must1) {
    static const struct adr_modes {
       char *name;
       Word mode;
-   } adr_modes[] = { { "*-", 0x90 },
-   { "*+", 0xa0 },
-   { "*BR0-", 0xc0 },
-   { "*0-", 0xd0 },
-   { "*AR0-", 0xd0 },
-   { "*0+", 0xe0 },
-   { "*AR0+", 0xe0 },
-   { "*BR0+", 0xf0 },
-   { "*", 0x80 },
-   { NULL, 0 }
+   } adr_modes[] = {
+      { "*-", 0x90 },
+      { "*+", 0xa0 },
+      { "*BR0-", 0xc0 },
+      { "*0-", 0xd0 },
+      { "*AR0-", 0xd0 },
+      { "*0+", 0xe0 },
+      { "*AR0+", 0xe0 },
+      { "*BR0+", 0xf0 },
+      { "*", 0x80 },
+      { NULL, 0 }
    };
    const struct adr_modes *am = adr_modes;
    Byte h;
@@ -1011,7 +1008,8 @@ static bool check_pc_3202x(void) {
 /* ---------------------------------------------------------------------- */
 
 static bool is_def_3202x(void) {
-   static const char *defs[] = { "BSS", "PORT", "STRING", "RSTRING",
+   static const char *defs[] = {
+      "BSS", "PORT", "STRING", "RSTRING",
       "BYTE", "WORD", "LONG", "FLOAT",
       "DOUBLE", "EFLOAT", "BFLOAT",
       "TFLOAT", NULL

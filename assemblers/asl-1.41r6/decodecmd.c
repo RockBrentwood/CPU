@@ -1,14 +1,5 @@
-/* decodecmd.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Verarbeitung Kommandozeilenparameter                                      */
-/*                                                                           */
-/* Historie:  4. 5.1996 Grundsteinlegung                                     */
-/*            1. 6.1996 Empty-Funktion                                       */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Verarbeitung Kommandozeilenparameter
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>

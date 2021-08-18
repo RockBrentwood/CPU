@@ -1,4 +1,95 @@
-2021/08/14	Unpacked the archive.
+1996/05/04	as.c: the main driver module.
+1996/05/04	asmdef.{c,h}: for the global variables, definitions and functions.
+1996/05/04	asmsub.{c,h}: for other global functions.
+1996/05/04	decodecmd.{c,h}: command-line driver; the same functionality as getopt().
+1996/05/04	stdhandl.{c,h}: standard I/O functions inherited from Pascal. (Dated 1996/04/05 in the source.)
+1996/05/04	stringlists.{c,h}: functions for string lists. (The *.c file was dated 1996/04/05 in the source.)
+1996/05/05	asmpars.{c,h}: for symbol management.
+1996/05/05	stringutil.{c,h}: auxiliary functions to embody Pascal string-processing.
+1996/05/10	codeallg.{c,h}: pseudo-operators common to the code generators.
+		The following code generators are undated:
+		∙	code86.{c,h}: 8086/V-series.
+		∙	code97c241.{c,h}: TLCS-9000.
+		∙	codemsp.{c,h}: MSP430.
+1996/05/15	asmfnums.{c,h}: for file number handling.
+1996/05/15	asmif.{c,h}: for the handling conditional assembly.
+1996/05/16	asminclist.{c,h}: for handling nested file inclusion.
+1996/05/16	asmdebug.{c,h}: for assembly-time error messaging.
+1996/05/16	asmmac.{c,h}: for the management of macros.
+1996/05/16	chunks.{c,h}: for address segmenting.
+1996/05/16	code48.{c,h}: MCS-48 family.
+1996/05/16	nls.{c,h}: the internationalization handler.
+1996/05/18	asmcode.{c,h}: for code file management.
+1996/05/20	bpemu.{c,h}: for functions from the Borland Pascal library.
+1996/05/21	stdinc.h: the master include file for subsidiary system-dependent includes; both system and local.
+1996/05/23	codepseudo.{c,h}: pseudo-commands common to the code generators.
+1996/05/30	endian.{c,h}: byte-ordering routines.
+1996/05/31	plist.c: routines for code file listing.
+1996/05/31	toolutils.{c,h}: functions for the main driver for AS-Tools.
+1996/06/01	p2hex.c: converting from AS-P files to hex.
+1996/06/01	pbind.c: editing the AS-P-files.
+1996/06/01	decodecmd.c: empty-Function
+1996/06/02	hex.{c,h}: base 10 to base 16 conversion, with uppercase A-F.
+1996/06/03	p2bin.c: converting from AS-Codefiles to binary files.
+1996/06/05	code51.{c,h}: MCS-51/252 processors.
+1996/06/10	code56k.{c,h}: DSP56K family.
+1996/06/27	code96c141.{c,h}: TLCS-900(L).
+1996/08/13	code68.{c,h}: 68xx-processors.
+1996/08/17	code65.{c,h}: 65xx/MELPS740.
+1996/08/19	code16c5x.{c,h}: PIC16C6x.
+1996/08/19	code3202x.{c,h}: Texas Instruments TMS320C2x family.
+1996/08/19	code3205x.{c,h}: Texas Instruments TMS320C5x family.
+1996/08/21	code16c8x.{c,h}: PIC16C8x.
+1996/08/21	code17c4x.{c,h}: PIC17C4x.
+1996/08/26	codez80.{c,h}: Zilog Z80/180/380.
+1996/09/09	code68k.{c,h}: 680x0 family.
+1996/10/07	codecop8.{c,h}: COP8 family.
+1996/10/09	code6805.{c,h}: 68(HC)05/08.
+1996/10/10	code6809.{c,h}: 6809/6309.
+1996/10/11	ioerrors.{c,h}: I/O error messaging.
+1996/10/13	code6812.{c,h}: CPU12.
+1996/10/15	code6816.{c,h}: CPU16.
+1996/10/17	code601.{c,h}: PowerPC family.
+1996/10/17	code6804.{c,h}: Motorola/ST 6804.
+1996/10/24	code85.{c,h}: 8080/8085.
+1996/10/25	codexa.{c,h}: Philips XA.
+1996/10/30	asmitree.{c,h}: for binary trees.
+1996/10/30	code90c141.{c,h}: TLCS-90.
+1996/11/05	code7700.{c,h}: MELPS-7700.
+1996/11/08	codez8.{c,h}: Zilog Z8.
+1996/11/10	code96.{c,h}: MCS-96 family.
+1996/11/11	code166.{c,h}: (alaaf) Siemens 80C16x.
+1996/11/14	codest6.{c,h}: ST6 family.
+1996/11/18	code29k.{c,h}: AM29xxx family.
+1996/11/22	codeh8_3.{c,h}: H8/300(L/H).
+1996/11/28	code3201x.{c,h}: TMS3201x family.
+1996/12/01	code78k0.{c,h}: 78K0 family.
+1996/12/03	fileformat.h: constants for the P-format.
+1996/12/10	code370.{c,h}: 370 family.
+1996/12/12	code3203x.{c,h}: TMS320C3x family.
+1996/12/17	codem16c.{c,h}: M16C.
+1996/12/24	codeh8_5.{c,h}: H8/500 family.
+1996/12/25	code7000.{c,h}: SH7x00.
+1996/12/26	codeavr.{c,h}: Atmel AVR
+1996/12/27	codem16.{c,h}: Mitsubishi M16.
+1996/12/29	code78c10.{c,h}: NEC uPD78(C)1x.
+1996/12/29	code87c800.{c,h}: TLCS-870.
+1996/12/30	code47c00.{c,h}: Toshiba TLCS-47(0(A)).
+1996/12/31	code75k0.{c,h}: NEC75K0.
+1996/12/31 	(at 23:44) code4500.{c,h}: MELPS-4500.
+1997/01/04	asmpars.c: modification for case-sensitivity.
+1997/01/18	code3202x.c: modification for case-sensitivity.
+1997/02/10	codest9.{c,h}: SGS-Thomson ST9.
+1997/02/17	codescmp.{c,h}: National SC/MP. (Dated 1996/02/17 in the source.)
+1997/02/26	codetms7.{c,h}: TMS7000 family.
+1997/03/09	code9900.{c,h}: TMS99xx.
+1997/03/16	code96.c: added 80196N/80296.
+1997/05/11	stdinc.h: added DOS-related includes.
+1997/05/21	codest7.{c,h}: SGS-Thomson ST7.
+1997/05/26	codevars.{c,h}: variables common to the code generators.
+1997/06/25	code8x30x.{c,h}: Signetics 8X30x.
+1997/07/06	endian.{c,h}: added Dec32BlankString().
+2021/08/14	Unpacked the archive file and resurrected asl-1.41r6.
 		Source: http://john.ccac.rwth-aachen.de:8000/ftp/as/source/c_version/
 		∙	1998-04-09 22:45	asl-1.41r6.tar.gz
 		∙	1998-06-22 17:56	asl-1.41r7.tar.gz
@@ -15,5 +106,8 @@
 		Locking in function prototypes, removing "PROTOS".
 		No degradation: 4/55 tests succeed.
 		Versions 1.41r{7,8} are even less viable: the bounds check errors occur even during the build process.
-2021/08/15	Pre-C90 operational baseline established.
-		Recoding, bug fixes: eliminated the strcat(), strcpy() related bounds check errors.
+2021/08/16	Recoding, bug fixes: eliminated the strcat(), strcpy() related bounds check errors.
+2021/08/16	Pre-C90 operational baseline established.
+2021/08/17	Layout normalization round 4: for compound if-else; in part to remove ‟dangling-else” warnings.
+		Locking in STDC; C99 is part of POSIX now.
+		Inclusion of the history-related comments in the source files into ‟History”.

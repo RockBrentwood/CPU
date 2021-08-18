@@ -1,13 +1,5 @@
-/* asmmac.c  */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Unterroutinen des Makroprozessors                                         */
-/*                                                                           */
-/* Historie: 16. 5.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Unterroutinen des Makroprozessors
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -45,14 +37,14 @@ static void EnterDefine(char *Name, char *Definition) {
    if (!ChkSymbName(Name)) {
       WrXError(1020, Name);
       return;
-   };
+   }
 
    Neu = FirstDefine;
    while (Neu != NULL) {
       if (strcmp(Neu->TransFrom, Name) == 0) {
          if (PassNo == 1) WrXError(1000, Name);
          return;
-      };
+      }
       Neu = Neu->Next;
    }
 
@@ -76,19 +68,19 @@ static void RemoveDefine(char *Name_O) {
 
    Del = NULL;
 
-   if (FirstDefine != NULL)
-      if (strcmp(FirstDefine->TransFrom, Name) == 0) {
-         Del = FirstDefine;
-         FirstDefine = FirstDefine->Next;
-      } else {
-         Lauf = FirstDefine;
-         while ((Lauf->Next != NULL) && (strcmp(Lauf->Next->TransFrom, Name) != 0))
-            Lauf = Lauf->Next;
-         if (Lauf->Next != NULL) {
-            Del = Lauf->Next;
-            Lauf->Next = Del->Next;
-         }
+   if (FirstDefine == NULL) ;
+   else if (strcmp(FirstDefine->TransFrom, Name) == 0) {
+      Del = FirstDefine;
+      FirstDefine = FirstDefine->Next;
+   } else {
+      Lauf = FirstDefine;
+      while ((Lauf->Next != NULL) && (strcmp(Lauf->Next->TransFrom, Name) != 0))
+         Lauf = Lauf->Next;
+      if (Lauf->Next != NULL) {
+         Del = Lauf->Next;
+         Lauf->Next = Del->Next;
       }
+   }
 
    if (Del == NULL) WrXError(1010, Name);
    else FreeDefine(Del);

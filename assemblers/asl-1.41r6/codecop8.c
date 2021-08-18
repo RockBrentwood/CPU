@@ -1,13 +1,5 @@
-/* codecop8.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegeneratormodul COP8-Familie                                           */
-/*                                                                           */
-/* Historie: 7.10.1996 Grundsteinlegung                                      */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegeneratormodul COP8-Familie
 #include "stdinc.h"
 
 #include <string.h>
@@ -200,7 +192,7 @@ static bool DecodePseudo(void) {
    if (Memo("SFR")) {
       CodeEquate(SegData, 0, 0xff);
       return true;
-   };
+   }
 
    if (Memo("ADDR")) {
       strcpy(OpPart, "DB");
@@ -239,15 +231,15 @@ static bool DecodePseudo(void) {
          FirstPassUnknown = false;
          Size = EvalIntExpression(ArgStr[1], UInt16, &ValOK);
          if (FirstPassUnknown) WrError(1820);
-         if ((ValOK) && (!FirstPassUnknown))
-            if (Size > MaxCodeLen) WrError(1920);
-            else {
-               BAsmCode[0] = EvalIntExpression(ArgStr[2], Int8, &ValOK);
-               if (ValOK) {
-                  CodeLen = Size;
-                  memset(BAsmCode + 1, BAsmCode[0], Size - 1);
-               }
+         if (!ValOK || FirstPassUnknown) ;
+         else if (Size > MaxCodeLen) WrError(1920);
+         else {
+            BAsmCode[0] = EvalIntExpression(ArgStr[2], Int8, &ValOK);
+            if (ValOK) {
+               CodeLen = Size;
+               memset(BAsmCode + 1, BAsmCode[0], Size - 1);
             }
+         }
       }
       return true;
    }
@@ -258,19 +250,19 @@ static bool DecodePseudo(void) {
          FirstPassUnknown = false;
          Size = EvalIntExpression(ArgStr[1], UInt16, &ValOK);
          if (FirstPassUnknown) WrError(1820);
-         if ((ValOK) && (!FirstPassUnknown))
-            if ((Size << 1) > MaxCodeLen) WrError(1920);
-            else {
-               Value = EvalIntExpression(ArgStr[2], Int16, &ValOK);
-               if (ValOK) {
-                  CodeLen = Size << 1;
-                  t = 0;
-                  for (z = 0; z < Size; z++) {
-                     BAsmCode[t++] = Lo(Value);
-                     BAsmCode[t++] = Hi(Value);
-                  }
+         if (!ValOK || FirstPassUnknown) ;
+         else if ((Size << 1) > MaxCodeLen) WrError(1920);
+         else {
+            Value = EvalIntExpression(ArgStr[2], Int16, &ValOK);
+            if (ValOK) {
+               CodeLen = Size << 1;
+               t = 0;
+               for (z = 0; z < Size; z++) {
+                  BAsmCode[t++] = Lo(Value);
+                  BAsmCode[t++] = Hi(Value);
                }
             }
+         }
       }
       return true;
    }
@@ -301,15 +293,14 @@ static void MakeCode_COP8(void) {
 /* ohne Argument */
 
    for (z = 0; z < FixedOrderCnt; z++)
-      if Memo
-         (FixedOrders[z].Name) {
+      if (Memo(FixedOrders[z].Name)) {
          if (ArgCnt != 0) WrError(1110);
          else {
             BAsmCode[0] = FixedOrders[z].Code;
             CodeLen = 1;
          }
          return;
-         }
+      }
 
 /* Datentransfer */
 
@@ -360,25 +351,25 @@ static void MakeCode_COP8(void) {
             case ModDir:
                HReg = AdrVal;
                DecodeAdr(ArgStr[2], MModImm);
-               if (AdrMode == ModImm)
-                  if (HReg == BReg)
-                     if (AdrVal <= 15) {
-                        BAsmCode[0] = 0x5f - AdrVal;
-                        CodeLen = 1;
-                     } else {
-                        BAsmCode[0] = 0x9f;
-                        BAsmCode[1] = AdrVal;
-                        CodeLen = 2;
-                  } else if (HReg >= 0xf0) {
-                     BAsmCode[0] = HReg - 0x20;
+               if (AdrMode != ModImm) ;
+               else if (HReg == BReg)
+                  if (AdrVal <= 15) {
+                     BAsmCode[0] = 0x5f - AdrVal;
+                     CodeLen = 1;
+                  } else {
+                     BAsmCode[0] = 0x9f;
                      BAsmCode[1] = AdrVal;
                      CodeLen = 2;
-                  } else {
-                     BAsmCode[0] = 0xbc;
-                     BAsmCode[1] = HReg;
-                     BAsmCode[2] = AdrVal;
-                     CodeLen = 3;
-                  }
+               } else if (HReg >= 0xf0) {
+                  BAsmCode[0] = HReg - 0x20;
+                  BAsmCode[1] = AdrVal;
+                  CodeLen = 2;
+               } else {
+                  BAsmCode[0] = 0xbc;
+                  BAsmCode[1] = HReg;
+                  BAsmCode[2] = AdrVal;
+                  CodeLen = 3;
+               }
                break;
             case ModBInd:
                DecodeAdr(ArgStr[2], MModImm);
@@ -459,8 +450,7 @@ static void MakeCode_COP8(void) {
 /* Arithmetik */
 
    for (z = 0; z < AccOrderCnt; z++)
-      if Memo
-         (AccOrders[z].Name) {
+      if (Memo(AccOrders[z].Name)) {
          if (ArgCnt != 1) WrError(1110);
          else {
             DecodeAdr(ArgStr[1], MModAcc);
@@ -470,11 +460,10 @@ static void MakeCode_COP8(void) {
             }
          }
          return;
-         }
+      }
 
    for (z = 0; z < AccMemOrderCnt; z++)
-      if Memo
-         (AccMemOrders[z].Name) {
+      if (Memo(AccMemOrders[z].Name)) {
          if (ArgCnt != 2) WrError(1110);
          else {
             DecodeAdr(ArgStr[1], MModAcc);
@@ -500,7 +489,7 @@ static void MakeCode_COP8(void) {
             }
          }
          return;
-         }
+      }
 
    if (Memo("ANDSZ")) {
       if (ArgCnt != 2) WrError(1110);
@@ -605,8 +594,7 @@ static void MakeCode_COP8(void) {
 /* Bitbefehle */
 
    for (z = 0; z < BitOrderCnt; z++)
-      if Memo
-         (BitOrders[z].Name) {
+      if (Memo(BitOrders[z].Name)) {
          if (ArgCnt != 2) WrError(1110);
          else {
             HReg = EvalIntExpression(ArgStr[1], UInt3, &OK);
@@ -627,7 +615,7 @@ static void MakeCode_COP8(void) {
             }
          }
          return;
-         }
+      }
 
 /* Spruenge */
 
@@ -635,14 +623,14 @@ static void MakeCode_COP8(void) {
       if (ArgCnt != 1) WrError(1110);
       else {
          AdrWord = EvalIntExpression(ArgStr[1], UInt16, &OK);
-         if (OK)
-            if (((EProgCounter() + 2) >> 12) != (AdrWord >> 12)) WrError(1910);
-            else {
-               ChkSpace(SegCode);
-               BAsmCode[0] = 0x20 + (Memo("JSR") << 4) + ((AdrWord >> 8) & 15);
-               BAsmCode[1] = Lo(AdrWord);
-               CodeLen = 2;
-            }
+         if (!OK) ;
+         else if (((EProgCounter() + 2) >> 12) != (AdrWord >> 12)) WrError(1910);
+         else {
+            ChkSpace(SegCode);
+            BAsmCode[0] = 0x20 + (Memo("JSR") << 4) + ((AdrWord >> 8) & 15);
+            BAsmCode[1] = Lo(AdrWord);
+            CodeLen = 2;
+         }
       }
       return;
    }
@@ -666,16 +654,16 @@ static void MakeCode_COP8(void) {
       if (ArgCnt != 1) WrError(1110);
       else {
          AdrInt = EvalIntExpression(ArgStr[1], UInt16, &OK) - (EProgCounter() + 1);
-         if (OK)
-            if (AdrInt == 0) {
-               BAsmCode[0] = NOPCode;
-               CodeLen = 1;
-               WrError(60);
-            } else if (((AdrInt > 31) || (AdrInt < -32)) && (!SymbolQuestionable)) WrError(1370);
-            else {
-               BAsmCode[0] = AdrInt & 0xff;
-               CodeLen = 1;
-            }
+         if (!OK) ;
+         else if (AdrInt == 0) {
+            BAsmCode[0] = NOPCode;
+            CodeLen = 1;
+            WrError(60);
+         } else if (((AdrInt > 31) || (AdrInt < -32)) && (!SymbolQuestionable)) WrError(1370);
+         else {
+            BAsmCode[0] = AdrInt & 0xff;
+            CodeLen = 1;
+         }
       }
       return;
    }

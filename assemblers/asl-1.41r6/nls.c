@@ -1,13 +1,5 @@
-/* nls.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Abhandlung landesspezifischer Unterschiede                                */
-/*                                                                           */
-/* Historie: 16. 5.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Abhandlung landesspezifischer Unterschiede
 #include "stdinc.h"
 #include <string.h>
 #include <time.h>
@@ -316,7 +308,7 @@ void NLS_CurrencyString(double inp, char *erg) {
       strins(s, NLSInfo.ThouSep, z - s - 3);
       z -= 3;
       p += strlen(NLSInfo.ThouSep);
-   };
+   }
 
 /* Schritt 4: Komma anpassen */
 

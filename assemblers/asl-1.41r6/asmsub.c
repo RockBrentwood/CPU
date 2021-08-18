@@ -1,13 +1,5 @@
-/* asmsub.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Unterfunktionen, vermischtes                                              */
-/*                                                                           */
-/* Historie:  4. 5. 1996  Grundsteinlegung                                   */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Unterfunktionen, vermischtes
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -1279,11 +1271,7 @@ void PrintChunk(ChunkList * NChunk) {
    do {
    /* niedrigsten Start finden, der ueberhalb des letzten Endes liegt */
       Found = false;
-#ifdef __STDC__
       FMin = 0xffffffffu;
-#else
-      FMin = 0xffffffff;
-#endif
       for (z = 0; z < NChunk->RealLen; z++)
          if (NChunk->Chunks[z].Start >= NewMin)
             if (FMin > NChunk->Chunks[z].Start) {
@@ -1427,7 +1415,7 @@ void CompressLine(char *TokNam, Byte Num, char *Line) {
          strmove(Line + z + 1, e - z - 1);
          Line[z] = Num;
          llen = strlen(Line);
-      };
+      }
       z++;
    }
 }
@@ -1499,17 +1487,14 @@ long GTime(void) {
 }
 
 #endif
-/**
-{****************************************************************************}
-{ Heapfehler abfedern }
+#if 0
+// Heapfehler abfedern
 
-        FUNCTION MyHeapError(Size:Word):Integer;
-        Far;
- {
-   IF Size<>0 THEN WrError(10006);
-   MyHeapError:=1;
-};
-**/
+Integer MyHeapError(Word Size) Far {
+   if (Size != 0) WrError(10006);
+   MyHeapError = 1;
+}
+#endif
 /*-------------------------------------------------------------------------*/
 /* Stackfehler abfangen - bis auf DOS nur Dummies */
 
@@ -1561,36 +1546,31 @@ void asmsub_init(void) {
    Word z;
    LongWord XORVal;
 
-/**
-   { Fuer DPMI evtl. Swapfile anlegen }
+#if 0
+// Fuer DPMI evtl. Swapfile anlegen
 
-{$IFDEF DPMI}
-   MemFlag:=GetEnv('ASXSWAP');
-   IF MemFlag<>'' THEN
-    {
-     p:=Pos(',',MemFlag);
-     IF p=0 THEN TempName:='ASX.TMP'
-     ELSE
-      {
-       TempName:=Copy(MemFlag,p+1,Length(MemFlag)-p);
-       MemFlag:=Copy(MemFlag,1,p-1);
-      };
-     KillBlanks(TempName); KillBlanks(MemFlag);
-     TempName:=TempName+#0;
-     Val(MemFlag,FileLen,Err);
-     IF Err<>0 THEN
-      {
-       WriteLn(StdErr,ErrMsgInvSwapSize); Halt(4);
-      };
-     IF MemInitSwapFile(@TempName[1],FileLen SHL 20)<>0 THEN
-      {
-       WriteLn(StdErr,ErrMsgSwapTooBig); Halt(4);
-      };
-    };
-{$ENDIF}
-
-   HeapError:=@MyHeapError;
-**/
+#ifdef DPMI
+   MemFlag = GetEnv("ASXSWAP");
+   if (MemFlag != '') {
+      p = Pos(',', MemFlag);
+      if (p == 0) TempName = "ASX.TMP";
+      else {
+         TempName = Copy(MemFlag, p + 1, Length(MemFlag) - p);
+         MemFlag = Copy(MemFlag, 1, p - 1);
+      }
+      KillBlanks(TempName), KillBlanks(MemFlag);
+      TempName = TempName + #0;
+      Val(MemFlag, FileLen, Err);
+      if (Err != 0) {
+         WriteLn(StdErr, ErrMsgInvSwapSize), Halt(4);
+      }
+      if (MemInitSwapFile(@TempName[1], FileLen << 20) != 0) {
+         WriteLn(StdErr, ErrMsgSwapTooBig), Halt(4);
+      }
+   }
+#endif
+   HeapError = @MyHeapError;
+#endif
 
    for (z = 0; z < strlen(CMess); z++) {
       XORVal = CMess[z];

@@ -1,13 +1,5 @@
-/* codeh8_3.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator H8/300(L/H)                                                 */
-/*                                                                           */
-/* Historie: 22.11.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator H8/300(L/H)
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -294,7 +286,7 @@ static Byte DecodeBaseReg(char *Asc, Byte * Erg) {
    if ((HSize == 0) || ((HSize == 1) && (*Erg > 7))) {
       WrError(1350);
       return 1;
-   };
+   }
    if ((CPU16) != (HSize == 1)) {
       WrError(1505);
       return 1;
@@ -588,8 +580,9 @@ static LongInt ImmVal(void) {
 
 static bool DecodePseudo(void) {
 #define ONOFFH8_3Count 2
-   static ONOFFRec ONOFFH8_3s[ONOFFH8_3Count] = { { "MAXMODE", &Maximum, MaximumName },
-   { "PADDING", &DoPadding, DoPaddingName }
+   static ONOFFRec ONOFFH8_3s[ONOFFH8_3Count] = {
+      { "MAXMODE", &Maximum, MaximumName },
+      { "PADDING", &DoPadding, DoPaddingName }
    };
 
    if (CodeONOFF(ONOFFH8_3s, ONOFFH8_3Count)) return true;
@@ -666,7 +659,7 @@ static void MakeCode_H8_3(void) {
          else {
             CodeLen = 2;
             WAsmCode[0] = FixedOrders[z].Code;
-         };
+         }
          return;
       }
 
@@ -1012,18 +1005,18 @@ static void MakeCode_H8_3(void) {
             strcopy(ArgStr[1], ArgStr[3]);
          }
          DecodeAdr(ArgStr[2], MModReg);
-         if (AdrMode != ModNone)
-            if (OpSize != 0) WrError(1130);
-            else {
-               HReg = AdrPart;
-               DecodeAdr(ArgStr[1], MModAbs16);
-               if (AdrMode != ModNone) {
-                  CodeLen = 4;
-                  WAsmCode[0] = 0x6a40 + HReg;
-                  WAsmCode[1] = AdrVals[0];
-                  if (Memo("MOVTPE")) WAsmCode[0] += 0x80;
-               }
+         if (AdrMode == ModNone) ;
+         else if (OpSize != 0) WrError(1130);
+         else {
+            HReg = AdrPart;
+            DecodeAdr(ArgStr[1], MModAbs16);
+            if (AdrMode != ModNone) {
+               CodeLen = 4;
+               WAsmCode[0] = 0x6a40 + HReg;
+               WAsmCode[1] = AdrVals[0];
+               if (Memo("MOVTPE")) WAsmCode[0] += 0x80;
             }
+         }
       }
       return;
    }
@@ -1033,14 +1026,14 @@ static void MakeCode_H8_3(void) {
       else {
          z = Memo("PUSH");
          DecodeAdr(ArgStr[1], MModReg);
-         if (AdrMode != ModNone)
-            if (OpSize == 0) WrError(1130);
-            else if ((CPU16) && (OpSize == 2)) WrError(1500);
-            else {
-               if (OpSize == 2) WAsmCode[0] = 0x0100;
-               CodeLen = 2 * OpSize;
-               WAsmCode[(CodeLen - 2) >> 1] = 0x6d70 + (z << 7) + AdrPart;
-            }
+         if (AdrMode == ModNone) ;
+         else if (OpSize == 0) WrError(1130);
+         else if ((CPU16) && (OpSize == 2)) WrError(1500);
+         else {
+            if (OpSize == 2) WAsmCode[0] = 0x0100;
+            CodeLen = 2 * OpSize;
+            WAsmCode[(CodeLen - 2) >> 1] = 0x6d70 + (z << 7) + AdrPart;
+         }
       }
       return;
    }
@@ -1122,47 +1115,45 @@ static void MakeCode_H8_3(void) {
          if (AdrMode != ModNone) {
             HReg = AdrPart;
             DecodeAdr(ArgStr[1], MModReg + MModImm);
-            if (AdrMode != ModNone)
-               if ((CPU16) && ((OpSize > 1) || ((OpSize == 1) && (AdrMode == ModImm)))) WrError(1500);
-               else switch (AdrMode) {
-                     case ModImm:
-                        switch (OpSize) {
-                           case 0:
-                              if (z == 1) WrError(1350);
-                              else {
-                                 CodeLen = 2;
-                                 WAsmCode[0] = 0x8000 + (((Word) HReg) << 8) + Lo(AdrVals[0]);
-                              }
-                              break;
-                           case 1:
-                              CodeLen = 4;
-                              WAsmCode[1] = AdrVals[0];
-                              WAsmCode[0] = 0x7910 + (z << 5) + HReg;
-                              break;
-                           case 2:
-                              CodeLen = 6;
-                              memcpy(WAsmCode + 1, AdrVals, 4);
-                              WAsmCode[0] = 0x7a10 + (z << 5) + HReg;
-                              break;
-                        }
-                        break;
-                     case ModReg:
-                        switch (OpSize) {
-                           case 0:
-                              CodeLen = 2;
-                              WAsmCode[0] = 0x0800 + (z << 12) + (AdrPart << 4) + HReg;
-                              break;
-                           case 1:
-                              CodeLen = 2;
-                              WAsmCode[0] = 0x0900 + (z << 12) + (AdrPart << 4) + HReg;
-                              break;
-                           case 2:
-                              CodeLen = 2;
-                              WAsmCode[0] = 0x0a00 + (z << 12) + 0x80 + (AdrPart << 4) + HReg;
-                              break;
-                        }
-                        break;
+            if (AdrMode == ModNone) ;
+            else if ((CPU16) && ((OpSize > 1) || ((OpSize == 1) && (AdrMode == ModImm)))) WrError(1500);
+            else switch (AdrMode) {
+               case ModImm: switch (OpSize) {
+                  case 0:
+                     if (z == 1) WrError(1350);
+                     else {
+                        CodeLen = 2;
+                        WAsmCode[0] = 0x8000 + (((Word) HReg) << 8) + Lo(AdrVals[0]);
+                     }
+                     break;
+                  case 1:
+                     CodeLen = 4;
+                     WAsmCode[1] = AdrVals[0];
+                     WAsmCode[0] = 0x7910 + (z << 5) + HReg;
+                     break;
+                  case 2:
+                     CodeLen = 6;
+                     memcpy(WAsmCode + 1, AdrVals, 4);
+                     WAsmCode[0] = 0x7a10 + (z << 5) + HReg;
+                     break;
                }
+               break;
+               case ModReg: switch (OpSize) {
+                  case 0:
+                     CodeLen = 2;
+                     WAsmCode[0] = 0x0800 + (z << 12) + (AdrPart << 4) + HReg;
+                     break;
+                  case 1:
+                     CodeLen = 2;
+                     WAsmCode[0] = 0x0900 + (z << 12) + (AdrPart << 4) + HReg;
+                     break;
+                  case 2:
+                     CodeLen = 2;
+                     WAsmCode[0] = 0x0a00 + (z << 12) + 0x80 + (AdrPart << 4) + HReg;
+                     break;
+               }
+               break;
+            }
          }
       }
       return;
@@ -1175,43 +1166,41 @@ static void MakeCode_H8_3(void) {
          if (AdrMode != ModNone) {
             HReg = AdrPart;
             DecodeAdr(ArgStr[1], MModReg + MModImm);
-            if (AdrMode != ModNone)
-               if ((CPU16) && ((OpSize > 1) || ((OpSize == 1) && (AdrMode == ModImm)))) WrError(1500);
-               else switch (AdrMode) {
-                     case ModImm:
-                        switch (OpSize) {
-                           case 0:
-                              CodeLen = 2;
-                              WAsmCode[0] = 0xa000 + (((Word) HReg) << 8) + Lo(AdrVals[0]);
-                              break;
-                           case 1:
-                              CodeLen = 4;
-                              WAsmCode[1] = AdrVals[0];
-                              WAsmCode[0] = 0x7920 + HReg;
-                              break;
-                           case 2:
-                              CodeLen = 6;
-                              memcpy(WAsmCode + 1, AdrVals, 4);
-                              WAsmCode[0] = 0x7a20 + HReg;
-                        }
-                        break;
-                     case ModReg:
-                        switch (OpSize) {
-                           case 0:
-                              CodeLen = 2;
-                              WAsmCode[0] = 0x1c00 + (AdrPart << 4) + HReg;
-                              break;
-                           case 1:
-                              CodeLen = 2;
-                              WAsmCode[0] = 0x1d00 + (AdrPart << 4) + HReg;
-                              break;
-                           case 2:
-                              CodeLen = 2;
-                              WAsmCode[0] = 0x1f80 + (AdrPart << 4) + HReg;
-                              break;
-                        }
-                        break;
+            if (AdrMode == ModNone) ;
+            else if ((CPU16) && ((OpSize > 1) || ((OpSize == 1) && (AdrMode == ModImm)))) WrError(1500);
+            else switch (AdrMode) {
+               case ModImm: switch (OpSize) {
+                  case 0:
+                     CodeLen = 2;
+                     WAsmCode[0] = 0xa000 + (((Word) HReg) << 8) + Lo(AdrVals[0]);
+                     break;
+                  case 1:
+                     CodeLen = 4;
+                     WAsmCode[1] = AdrVals[0];
+                     WAsmCode[0] = 0x7920 + HReg;
+                     break;
+                  case 2:
+                     CodeLen = 6;
+                     memcpy(WAsmCode + 1, AdrVals, 4);
+                     WAsmCode[0] = 0x7a20 + HReg;
                }
+               break;
+               case ModReg: switch (OpSize) {
+                  case 0:
+                     CodeLen = 2;
+                     WAsmCode[0] = 0x1c00 + (AdrPart << 4) + HReg;
+                     break;
+                  case 1:
+                     CodeLen = 2;
+                     WAsmCode[0] = 0x1d00 + (AdrPart << 4) + HReg;
+                     break;
+                  case 2:
+                     CodeLen = 2;
+                     WAsmCode[0] = 0x1f80 + (AdrPart << 4) + HReg;
+                     break;
+               }
+               break;
+            }
          }
       }
       return;
@@ -1224,49 +1213,49 @@ static void MakeCode_H8_3(void) {
                if (ArgCnt != 2) WrError(1110);
                else {
                   DecodeAdr(ArgStr[2], MModReg);
-                  if (AdrMode != ModNone)
-                     if ((CPU16) && (OpSize > 0)) WrError(1500);
-                     else {
-                        HReg = AdrPart;
-                        DecodeAdr(ArgStr[1], MModImm + MModReg);
-                        switch (AdrMode) {
-                           case ModImm:
-                              switch (OpSize) {
-                                 case 0:
-                                    CodeLen = 2;
-                                    WAsmCode[0] = 0xc000 + (((Word) LogicOrders[z].Code) << 12) + (((Word) HReg) << 8) + Lo(AdrVals[0]);
-                                    break;
-                                 case 1:
-                                    CodeLen = 4;
-                                    WAsmCode[1] = AdrVals[0];
-                                    WAsmCode[0] = 0x7940 + (((Word) LogicOrders[z].Code) << 4) + HReg;
-                                    break;
-                                 case 2:
-                                    CodeLen = 6;
-                                    memcpy(WAsmCode + 1, AdrVals, AdrCnt);
-                                    WAsmCode[0] = 0x7a40 + (((Word) LogicOrders[z].Code) << 4) + HReg;
-                                    break;
-                              }
-                              break;
-                           case ModReg:
-                              switch (OpSize) {
-                                 case 0:
-                                    CodeLen = 2;
-                                    WAsmCode[0] = 0x1400 + (((Word) LogicOrders[z].Code) << 8) + (AdrPart << 4) + HReg;
-                                    break;
-                                 case 1:
-                                    CodeLen = 2;
-                                    WAsmCode[0] = 0x6400 + (((Word) LogicOrders[z].Code) << 8) + (AdrPart << 4) + HReg;
-                                    break;
-                                 case 2:
-                                    CodeLen = 4;
-                                    WAsmCode[0] = 0x01f0;
-                                    WAsmCode[1] = 0x6400 + (((Word) LogicOrders[z].Code) << 8) + (AdrPart << 4) + HReg;
-                                    break;
-                              }
-                              break;
-                        }
+                  if (AdrMode == ModNone) ;
+                  else if ((CPU16) && (OpSize > 0)) WrError(1500);
+                  else {
+                     HReg = AdrPart;
+                     DecodeAdr(ArgStr[1], MModImm + MModReg);
+                     switch (AdrMode) {
+                        case ModImm:
+                           switch (OpSize) {
+                              case 0:
+                                 CodeLen = 2;
+                                 WAsmCode[0] = 0xc000 + (((Word) LogicOrders[z].Code) << 12) + (((Word) HReg) << 8) + Lo(AdrVals[0]);
+                                 break;
+                              case 1:
+                                 CodeLen = 4;
+                                 WAsmCode[1] = AdrVals[0];
+                                 WAsmCode[0] = 0x7940 + (((Word) LogicOrders[z].Code) << 4) + HReg;
+                                 break;
+                              case 2:
+                                 CodeLen = 6;
+                                 memcpy(WAsmCode + 1, AdrVals, AdrCnt);
+                                 WAsmCode[0] = 0x7a40 + (((Word) LogicOrders[z].Code) << 4) + HReg;
+                                 break;
+                           }
+                           break;
+                        case ModReg:
+                           switch (OpSize) {
+                              case 0:
+                                 CodeLen = 2;
+                                 WAsmCode[0] = 0x1400 + (((Word) LogicOrders[z].Code) << 8) + (AdrPart << 4) + HReg;
+                                 break;
+                              case 1:
+                                 CodeLen = 2;
+                                 WAsmCode[0] = 0x6400 + (((Word) LogicOrders[z].Code) << 8) + (AdrPart << 4) + HReg;
+                                 break;
+                              case 2:
+                                 CodeLen = 4;
+                                 WAsmCode[0] = 0x01f0;
+                                 WAsmCode[1] = 0x6400 + (((Word) LogicOrders[z].Code) << 8) + (AdrPart << 4) + HReg;
+                                 break;
+                           }
+                           break;
                      }
+                  }
                }
                return;
             case 'C':
@@ -1287,24 +1276,24 @@ static void MakeCode_H8_3(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          DecodeAdr(ArgStr[2], MModReg);
-         if (AdrMode != ModNone)
-            if (OpSize != 0) WrError(1130);
-            else {
-               HReg = AdrPart;
-               DecodeAdr(ArgStr[1], MModImm + MModReg);
-               switch (AdrMode) {
-                  case ModImm:
-                     CodeLen = 2;
-                     WAsmCode[0] = 0x9000 + (((Word) HReg) << 8) + Lo(AdrVals[0]);
-                     if (Memo("SUBX")) WAsmCode[0] += 0x2000;
-                     break;
-                  case ModReg:
-                     CodeLen = 2;
-                     WAsmCode[0] = 0x0e00 + (AdrPart << 4) + HReg;
-                     if (Memo("SUBX")) WAsmCode[0] += 0x1000;
-                     break;
-               }
+         if (AdrMode == ModNone) ;
+         else if (OpSize != 0) WrError(1130);
+         else {
+            HReg = AdrPart;
+            DecodeAdr(ArgStr[1], MModImm + MModReg);
+            switch (AdrMode) {
+               case ModImm:
+                  CodeLen = 2;
+                  WAsmCode[0] = 0x9000 + (((Word) HReg) << 8) + Lo(AdrVals[0]);
+                  if (Memo("SUBX")) WAsmCode[0] += 0x2000;
+                  break;
+               case ModReg:
+                  CodeLen = 2;
+                  WAsmCode[0] = 0x0e00 + (AdrPart << 4) + HReg;
+                  if (Memo("SUBX")) WAsmCode[0] += 0x1000;
+                  break;
             }
+         }
       }
       return;
    }
@@ -1313,32 +1302,32 @@ static void MakeCode_H8_3(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          DecodeAdr(ArgStr[2], MModReg);
-         if (AdrMode != ModNone)
-            if (((CPU16) && (OpSize != 1)) || ((!CPU16) && (OpSize != 2))) WrError(1130);
-            else {
-               HReg = AdrPart;
-               DecodeAdr(ArgStr[1], MModImm);
-               if (AdrMode != ModNone) {
-                  AdrLong = ImmVal();
-                  if ((AdrLong != 1) && (AdrLong != 2) && (AdrLong != 4)) WrError(1320);
-                  else {
-                     switch (AdrLong) {
-                        case 1:
-                           WAsmCode[0] = 0x0b00;
-                           break;
-                        case 2:
-                           WAsmCode[0] = 0x0b80;
-                           break;
-                        case 4:
-                           WAsmCode[0] = 0x0b90;
-                           break;
-                     }
-                     CodeLen = 2;
-                     WAsmCode[0] += HReg;
-                     if (Memo("SUBS")) WAsmCode[0] += 0x1000;
+         if (AdrMode == ModNone) ;
+         else if (((CPU16) && (OpSize != 1)) || ((!CPU16) && (OpSize != 2))) WrError(1130);
+         else {
+            HReg = AdrPart;
+            DecodeAdr(ArgStr[1], MModImm);
+            if (AdrMode != ModNone) {
+               AdrLong = ImmVal();
+               if ((AdrLong != 1) && (AdrLong != 2) && (AdrLong != 4)) WrError(1320);
+               else {
+                  switch (AdrLong) {
+                     case 1:
+                        WAsmCode[0] = 0x0b00;
+                        break;
+                     case 2:
+                        WAsmCode[0] = 0x0b80;
+                        break;
+                     case 4:
+                        WAsmCode[0] = 0x0b90;
+                        break;
                   }
+                  CodeLen = 2;
+                  WAsmCode[0] += HReg;
+                  if (Memo("SUBS")) WAsmCode[0] += 0x1000;
                }
             }
+         }
       }
       return;
    }
@@ -1349,24 +1338,24 @@ static void MakeCode_H8_3(void) {
          else {
             if (OpSize != -1) OpSize++;
             DecodeAdr(ArgStr[2], MModReg);
-            if (AdrMode != ModNone)
-               if (OpSize == 0) WrError(1130);
-               else if ((CPU16) && (OpSize == 2)) WrError(1500);
-               else {
-                  HReg = AdrPart;
-                  OpSize--;
-                  DecodeAdr(ArgStr[1], MModReg);
-                  if (AdrMode != ModNone) {
-                     if ((MulOrders[z].Code & 2) == 2) {
-                        CodeLen = 4;
-                        WAsmCode[0] = 0x01c0;
-                        if ((MulOrders[z].Code & 1) == 1) WAsmCode[0] += 0x10;
-                     } else CodeLen = 2;
-                     WAsmCode[CodeLen >> 2] = 0x5000 + (((Word) OpSize) << 9)
-                        + (((Word) MulOrders[z].Code & 1) << 8)
-                        + (AdrPart << 4) + HReg;
-                  }
+            if (AdrMode == ModNone) ;
+            else if (OpSize == 0) WrError(1130);
+            else if ((CPU16) && (OpSize == 2)) WrError(1500);
+            else {
+               HReg = AdrPart;
+               OpSize--;
+               DecodeAdr(ArgStr[1], MModReg);
+               if (AdrMode != ModNone) {
+                  if ((MulOrders[z].Code & 2) == 2) {
+                     CodeLen = 4;
+                     WAsmCode[0] = 0x01c0;
+                     if ((MulOrders[z].Code & 1) == 1) WAsmCode[0] += 0x10;
+                  } else CodeLen = 2;
+                  WAsmCode[CodeLen >> 2] = 0x5000 + (((Word) OpSize) << 9)
+                     + (((Word) MulOrders[z].Code & 1) << 8)
+                     + (AdrPart << 4) + HReg;
                }
+            }
          }
          return;
       }
@@ -1383,26 +1372,26 @@ static void MakeCode_H8_3(void) {
                HReg = EvalIntExpression(ArgStr[1] + 1, UInt3, &OK);
                if (OK) {
                   DecodeAdr(ArgStr[2], MModReg + MModIReg + MModAbs8);
-                  if (AdrMode != ModNone)
-                     if (OpSize > 0) WrError(1130);
-                     else switch (AdrMode) {
-                           case ModReg:
-                              CodeLen = 2;
-                              WAsmCode[0] = (((Word) OpCode) << 8) + (Bit1Orders[z].Code & 0x80) + (HReg << 4) + AdrPart;
-                              break;
-                           case ModIReg:
-                              CodeLen = 4;
-                              WAsmCode[0] = 0x7c00 + (AdrPart << 4);
-                              WAsmCode[1] = (((Word) OpCode) << 8) + (Bit1Orders[z].Code & 0x80) + (HReg << 4);
-                              if (OpCode < 0x70) WAsmCode[0] += 0x100;
-                              break;
-                           case ModAbs8:
-                              CodeLen = 4;
-                              WAsmCode[0] = 0x7e00 + Lo(AdrVals[0]);
-                              WAsmCode[1] = (((Word) OpCode) << 8) + (Bit1Orders[z].Code & 0x80) + (HReg << 4);
-                              if (OpCode < 0x70) WAsmCode[0] += 0x100;
-                              break;
-                     }
+                  if (AdrMode == ModNone) ;
+                  else if (OpSize > 0) WrError(1130);
+                  else switch (AdrMode) {
+                     case ModReg:
+                        CodeLen = 2;
+                        WAsmCode[0] = (((Word) OpCode) << 8) + (Bit1Orders[z].Code & 0x80) + (HReg << 4) + AdrPart;
+                        break;
+                     case ModIReg:
+                        CodeLen = 4;
+                        WAsmCode[0] = 0x7c00 + (AdrPart << 4);
+                        WAsmCode[1] = (((Word) OpCode) << 8) + (Bit1Orders[z].Code & 0x80) + (HReg << 4);
+                        if (OpCode < 0x70) WAsmCode[0] += 0x100;
+                        break;
+                     case ModAbs8:
+                        CodeLen = 4;
+                        WAsmCode[0] = 0x7e00 + Lo(AdrVals[0]);
+                        WAsmCode[1] = (((Word) OpCode) << 8) + (Bit1Orders[z].Code & 0x80) + (HReg << 4);
+                        if (OpCode < 0x70) WAsmCode[0] += 0x100;
+                        break;
+                  }
                }
             }
          }
@@ -1427,26 +1416,26 @@ static void MakeCode_H8_3(void) {
             }
             if (OK) {
                DecodeAdr(ArgStr[2], MModReg + MModIReg + MModAbs8);
-               if (AdrMode != ModNone)
-                  if (OpSize > 0) WrError(1130);
-                  else switch (AdrMode) {
-                        case ModReg:
-                           CodeLen = 2;
-                           WAsmCode[0] = (((Word) OpCode) << 8) + (HReg << 4) + AdrPart;
-                           break;
-                        case ModIReg:
-                           CodeLen = 4;
-                           WAsmCode[0] = 0x7d00 + (AdrPart << 4);
-                           WAsmCode[1] = (((Word) OpCode) << 8) + (HReg << 4);
-                           if (Bit2Orders[z].Code == 3) WAsmCode[0] -= 0x100;
-                           break;
-                        case ModAbs8:
-                           CodeLen = 4;
-                           WAsmCode[0] = 0x7f00 + Lo(AdrVals[0]);
-                           WAsmCode[1] = (((Word) OpCode) << 8) + (HReg << 4);
-                           if (Bit2Orders[z].Code == 3) WAsmCode[0] -= 0x100;
-                           break;
-                  }
+               if (AdrMode == ModNone) ;
+               else if (OpSize > 0) WrError(1130);
+               else switch (AdrMode) {
+                     case ModReg:
+                        CodeLen = 2;
+                        WAsmCode[0] = (((Word) OpCode) << 8) + (HReg << 4) + AdrPart;
+                        break;
+                     case ModIReg:
+                        CodeLen = 4;
+                        WAsmCode[0] = 0x7d00 + (AdrPart << 4);
+                        WAsmCode[1] = (((Word) OpCode) << 8) + (HReg << 4);
+                        if (Bit2Orders[z].Code == 3) WAsmCode[0] -= 0x100;
+                        break;
+                     case ModAbs8:
+                        CodeLen = 4;
+                        WAsmCode[0] = 0x7f00 + Lo(AdrVals[0]);
+                        WAsmCode[1] = (((Word) OpCode) << 8) + (HReg << 4);
+                        if (Bit2Orders[z].Code == 3) WAsmCode[0] -= 0x100;
+                        break;
+               }
             }
          }
          return;
@@ -1458,43 +1447,43 @@ static void MakeCode_H8_3(void) {
       if ((ArgCnt != 1) && (ArgCnt != 2)) WrError(1110);
       else {
          DecodeAdr(ArgStr[ArgCnt], MModReg);
-         if (AdrMode != ModNone)
-            if ((OpSize > 0) && (CPU16)) WrError(1500);
-            else {
-               HReg = AdrPart;
-               if (ArgCnt == 1) {
-                  OK = true;
-                  z = 1;
-               } else {
-                  DecodeAdr(ArgStr[1], MModImm);
-                  OK = (AdrMode == ModImm);
-                  if (OK) {
-                     z = ImmVal();
-                     if (z < 1) {
-                        WrError(1315);
-                        OK = false;
-                     } else if (((OpSize == 0) && (z > 1)) || (z > 2)) {
-                        WrError(1320);
-                        OK = false;
-                     }
-                  }
-               }
+         if (AdrMode == ModNone) ;
+         else if ((OpSize > 0) && (CPU16)) WrError(1500);
+         else {
+            HReg = AdrPart;
+            if (ArgCnt == 1) {
+               OK = true;
+               z = 1;
+            } else {
+               DecodeAdr(ArgStr[1], MModImm);
+               OK = (AdrMode == ModImm);
                if (OK) {
-                  CodeLen = 2;
-                  z--;
-                  switch (OpSize) {
-                     case 0:
-                        WAsmCode[0] = 0x0a00 + HReg;
-                        break;
-                     case 1:
-                        WAsmCode[0] = 0x0b50 + HReg + (z << 7);
-                        break;
-                     case 2:
-                        WAsmCode[0] = 0x0b70 + HReg + (z << 7);
+                  z = ImmVal();
+                  if (z < 1) {
+                     WrError(1315);
+                     OK = false;
+                  } else if (((OpSize == 0) && (z > 1)) || (z > 2)) {
+                     WrError(1320);
+                     OK = false;
                   }
-                  if (Memo("DEC")) WAsmCode[0] += 0x1000;
                }
             }
+            if (OK) {
+               CodeLen = 2;
+               z--;
+               switch (OpSize) {
+                  case 0:
+                     WAsmCode[0] = 0x0a00 + HReg;
+                     break;
+                  case 1:
+                     WAsmCode[0] = 0x0b50 + HReg + (z << 7);
+                     break;
+                  case 2:
+                     WAsmCode[0] = 0x0b70 + HReg + (z << 7);
+               }
+               if (Memo("DEC")) WAsmCode[0] += 0x1000;
+            }
+         }
       }
       return;
    }
@@ -1504,22 +1493,22 @@ static void MakeCode_H8_3(void) {
          if (ArgCnt != 1) WrError(1110);
          else {
             DecodeAdr(ArgStr[1], MModReg);
-            if (AdrMode != ModNone)
-               if ((OpSize > 0) && (CPU16)) WrError(1500);
-               else {
-                  CodeLen = 2;
-                  switch (OpSize) {
-                     case 0:
-                        WAsmCode[0] = ShiftOrders[z].Code + AdrPart;
-                        break;
-                     case 1:
-                        WAsmCode[0] = ShiftOrders[z].Code + AdrPart + 0x10;
-                        break;
-                     case 2:
-                        WAsmCode[0] = ShiftOrders[z].Code + AdrPart + 0x30;
-                        break;
-                  }
+            if (AdrMode == ModNone) ;
+            else if ((OpSize > 0) && (CPU16)) WrError(1500);
+            else {
+               CodeLen = 2;
+               switch (OpSize) {
+                  case 0:
+                     WAsmCode[0] = ShiftOrders[z].Code + AdrPart;
+                     break;
+                  case 1:
+                     WAsmCode[0] = ShiftOrders[z].Code + AdrPart + 0x10;
+                     break;
+                  case 2:
+                     WAsmCode[0] = ShiftOrders[z].Code + AdrPart + 0x30;
+                     break;
                }
+            }
          }
          return;
       }
@@ -1528,23 +1517,23 @@ static void MakeCode_H8_3(void) {
       if (ArgCnt != 1) WrError(1110);
       else {
          DecodeAdr(ArgStr[1], MModReg);
-         if (AdrMode != ModNone)
-            if ((OpSize > 0) && (CPU16)) WrError(1500);
-            else {
-               CodeLen = 2;
-               switch (OpSize) {
-                  case 0:
-                     WAsmCode[0] = 0x1700 + AdrPart;
-                     break;
-                  case 1:
-                     WAsmCode[0] = 0x1710 + AdrPart;
-                     break;
-                  case 2:
-                     WAsmCode[0] = 0x1730 + AdrPart;
-                     break;
-               }
-               if (Memo("NEG")) WAsmCode[0] += 0x80;
+         if (AdrMode == ModNone) ;
+         else if ((OpSize > 0) && (CPU16)) WrError(1500);
+         else {
+            CodeLen = 2;
+            switch (OpSize) {
+               case 0:
+                  WAsmCode[0] = 0x1700 + AdrPart;
+                  break;
+               case 1:
+                  WAsmCode[0] = 0x1710 + AdrPart;
+                  break;
+               case 2:
+                  WAsmCode[0] = 0x1730 + AdrPart;
+                  break;
             }
+            if (Memo("NEG")) WAsmCode[0] += 0x80;
+         }
       }
       return;
    }
@@ -1554,20 +1543,20 @@ static void MakeCode_H8_3(void) {
       else if (CPU16) WrError(1500);
       else {
          DecodeAdr(ArgStr[1], MModReg);
-         if (AdrMode != ModNone)
-            if ((OpSize != 1) && (OpSize != 2)) WrError(1130);
-            else {
-               CodeLen = 2;
-               switch (OpSize) {
-                  case 1:
-                     WAsmCode[0] = (Memo("EXTS")) ? 0x17d0 : 0x1750;
-                     break;
-                  case 2:
-                     WAsmCode[0] = (Memo("EXTS")) ? 0x17f0 : 0x1770;
-                     break;
-               }
-               WAsmCode[0] += AdrPart;
+         if (AdrMode == ModNone) ;
+         else if ((OpSize != 1) && (OpSize != 2)) WrError(1130);
+         else {
+            CodeLen = 2;
+            switch (OpSize) {
+               case 1:
+                  WAsmCode[0] = (Memo("EXTS")) ? 0x17d0 : 0x1750;
+                  break;
+               case 2:
+                  WAsmCode[0] = (Memo("EXTS")) ? 0x17f0 : 0x1770;
+                  break;
             }
+            WAsmCode[0] += AdrPart;
+         }
       }
       return;
    }
@@ -1576,13 +1565,13 @@ static void MakeCode_H8_3(void) {
       if (ArgCnt != 1) WrError(1110);
       else {
          DecodeAdr(ArgStr[1], MModReg);
-         if (AdrMode != ModNone)
-            if (OpSize != 0) WrError(1130);
-            else {
-               CodeLen = 2;
-               WAsmCode[0] = 0x0f00 + AdrPart;
-               if (Memo("DAS")) WAsmCode[0] += 0x1000;
-            }
+         if (AdrMode == ModNone) ;
+         else if (OpSize != 0) WrError(1130);
+         else {
+            CodeLen = 2;
+            WAsmCode[0] = 0x0f00 + AdrPart;
+            if (Memo("DAS")) WAsmCode[0] += 0x1000;
+         }
       }
       return;
    }

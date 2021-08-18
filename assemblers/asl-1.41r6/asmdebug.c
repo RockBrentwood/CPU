@@ -1,13 +1,5 @@
-/* asmdebug.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Verwaltung der Debug-Informationen zur Assemblierzeit                     */
-/*                                                                           */
-/* Historie: 16. 5.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Verwaltung der Debug-Informationen zur Assemblierzeit
 #include "stdinc.h"
 #include <string.h>
 
@@ -124,7 +116,7 @@ static void DumpDebugInfo_MAP(void) {
          errno = 0;
          fprintf(MAPFile, "File %s\n", GetFileName(Run->Contents.FileName));
          ChkIO(10004);
-      };
+      }
       errno = 0;
       fprintf(MAPFile, "%5d:%08x ", Run->Contents.LineNum, Run->Contents.Address);
       ChkIO(10004);

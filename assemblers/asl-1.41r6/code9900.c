@@ -1,13 +1,5 @@
-/* code9900.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator TMS99xx                                                     */
-/*                                                                           */
-/* Historie:  9. 3.1997 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator TMS99xx
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -536,7 +528,7 @@ static void MakeCode_9900(void) {
             CodeLen = 2;
          }
          return;
-      };
+      }
 
 /* ein Operand */
 
@@ -579,14 +571,14 @@ static void MakeCode_9900(void) {
          if (ArgCnt != 1) WrError(1110);
          else {
             AdrInt = EvalIntExpression(ArgStr[1], UInt16, &OK) - (EProgCounter() + 2);
-            if (OK)
-               if (Odd(AdrInt)) WrError(1375);
-               else if ((!SymbolQuestionable) && ((AdrInt < -256) || (AdrInt > 254))) WrError(1370);
-               else {
-                  WAsmCode[0] = ((AdrInt >> 1) & 0xff) | (JmpOrders[z].Code << 8);
-                  CodeLen = 2;
-               }
-         };
+            if (!OK) ;
+            else if (Odd(AdrInt)) WrError(1375);
+            else if ((!SymbolQuestionable) && ((AdrInt < -256) || (AdrInt > 254))) WrError(1370);
+            else {
+               WAsmCode[0] = ((AdrInt >> 1) & 0xff) | (JmpOrders[z].Code << 8);
+               CodeLen = 2;
+            }
+         }
          return;
       }
 

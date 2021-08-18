@@ -1,13 +1,5 @@
-/* code85.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator 8080/8085                                                   */
-/*                                                                           */
-/* Historie: 24.10.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator 8080/8085
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -277,12 +269,12 @@ static void MakeCode_85(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          BAsmCode[1] = EvalIntExpression(ArgStr[2], Int8, &OK);
-         if (OK)
-            if (!DecodeReg8(ArgStr[1], &AdrByte)) WrError(1980);
-            else {
-               BAsmCode[0] = 0x06 + (AdrByte << 3);
-               CodeLen = 2;
-            }
+         if (!OK) ;
+         else if (!DecodeReg8(ArgStr[1], &AdrByte)) WrError(1980);
+         else {
+            BAsmCode[0] = 0x06 + (AdrByte << 3);
+            CodeLen = 2;
+         }
       }
       return;
    }
@@ -291,14 +283,14 @@ static void MakeCode_85(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          AdrWord = EvalIntExpression(ArgStr[2], Int16, &OK);
-         if (OK)
-            if (!DecodeReg16(ArgStr[1], &AdrByte)) WrError(1980);
-            else {
-               BAsmCode[0] = 0x01 + (AdrByte << 4);
-               BAsmCode[1] = Lo(AdrWord);
-               BAsmCode[2] = Hi(AdrWord);
-               CodeLen = 3;
-            }
+         if (!OK) ;
+         else if (!DecodeReg16(ArgStr[1], &AdrByte)) WrError(1980);
+         else {
+            BAsmCode[0] = 0x01 + (AdrByte << 4);
+            BAsmCode[1] = Lo(AdrWord);
+            BAsmCode[2] = Hi(AdrWord);
+            CodeLen = 3;
+         }
       }
       return;
    }

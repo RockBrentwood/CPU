@@ -1,14 +1,5 @@
-/* asmpars.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Verwaltung von Symbolen und das ganze Drumherum...                        */
-/*                                                                           */
-/* Historie:  5. 5.1996 Grundsteinlegung                                     */
-/*            4. 1.1997 Umstellung wg. case-sensitiv                         */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Verwaltung von Symbolen und das ganze Drumherum...
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -24,7 +15,8 @@
 
 #include "asmpars.h"
 
-LargeWord IntMasks[IntTypeCnt] = { 0x00000001l, 0x00000002l, 0x00000007l, 0x00000007l, 0x0000000fl, 0x0000000fl,
+LargeWord IntMasks[IntTypeCnt] = {
+   0x00000001l, 0x00000002l, 0x00000007l, 0x00000007l, 0x0000000fl, 0x0000000fl,
    0x0000000fl, 0x0000001fl, 0x0000001fl, 0x0000003fl, 0x0000007fl, 0x0000007fl, 0x000000ffl,
    0x000000ffl, 0x000001ffl, 0x000003ffl, 0x000003ffl, 0x000007ffl, 0x00000fffl, 0x00000fffl,
    0x00001fffl, 0x00007fffl, 0x0000ffffl, 0x0000ffffl, 0x0003ffffl, 0x0007ffffl,
@@ -35,7 +27,8 @@ LargeWord IntMasks[IntTypeCnt] = { 0x00000001l, 0x00000002l, 0x00000007l, 0x0000
 #endif
 };
 
-LargeInt IntMins[IntTypeCnt] = { 0l, 0l, 0l, -8l, 0l, -8l,
+LargeInt IntMins[IntTypeCnt] = {
+   0l, 0l, 0l, -8l, 0l, -8l,
    -16l, 0l, -16l, 0l, 0l, -128l, 0l,
    -128l, 0l, 0l, -512l, 0l, 0l, -2047l,
    0l, -32768l, 0l, -32768l, 0l, -524288l,
@@ -46,17 +39,13 @@ LargeInt IntMins[IntTypeCnt] = { 0l, 0l, 0l, -8l, 0l, -8l,
 #endif
 };
 
-LargeInt IntMaxs[IntTypeCnt] = { 1l, 3l, 7l, 7l, 15l, 15l,
+LargeInt IntMaxs[IntTypeCnt] = {
+   1l, 3l, 7l, 7l, 15l, 15l,
    31l, 31l, 31l, 63l, 127l, 127l, 255l,
    255l, 511l, 1023l, 1023l, 2047l, 4095l, 4095l,
    8191l, 32767l, 65535l, 65535l, 262143l, 524287l,
-#ifdef __STDC__
    1048575l, 1048575l, 4194303l, 8388607l, 16777215l, 16777215l, 2147483647l, 4294967295ul,
    4294967295ul
-#else
-   1048575l, 1048575l, 4194303l, 8388607l, 16777215l, 16777215l, 2147483647l, 4294967295l,
-   4294967295l
-#endif
 #ifdef HAS64
       , 9223372036854775807ll
 #endif
@@ -264,7 +253,7 @@ static void ReplaceBkSlashes(char *s) {
             break;
          default:
             WrError(1135);
-      };
+      }
       *p = ErgChar;
       strmove(p + 1, cnt - 1);
       p = strchr(p + 1, '\\');
@@ -884,14 +873,14 @@ void EvalExpression(char *Asc_O, TempResult * Erg) {
 
       switch (RVal.Typ) {
          case TempInt:
-            if (!Op->MayInt)
-               if (!Op->MayFloat) {
-                  WrError(1135);
-                  return;
-               } else {
-                  EvalExpression_ChgFloat(&RVal);
-                  if (Op->Dyadic) EvalExpression_ChgFloat(&LVal);
-               }
+            if (Op->MayInt) ;
+            else if (!Op->MayFloat) {
+               WrError(1135);
+               return;
+            } else {
+               EvalExpression_ChgFloat(&RVal);
+               if (Op->Dyadic) EvalExpression_ChgFloat(&LVal);
+            }
             break;
          case TempFloat:
             if (!Op->MayFloat) {
@@ -903,7 +892,7 @@ void EvalExpression(char *Asc_O, TempResult * Erg) {
             if (!Op->MayString) {
                WrError(1135);
                return;
-            };
+            }
             break;
          default:
             break;
@@ -1214,7 +1203,7 @@ void EvalExpression(char *Asc_O, TempResult * Erg) {
             if (Asc[0] == '\0') {
                WrError(1490);
                return;
-            };
+            }
             KlPos = QuotPos(Asc, ',');
             if (KlPos != NULL) *KlPos = '\0';
             EvalExpression(Asc, &LVal);
@@ -1600,7 +1589,7 @@ void EvalExpression(char *Asc_O, TempResult * Erg) {
       Erg->Typ = TempString;
       strmaxcpy(Erg->Contents.Ascii, CurrFileName, 255);
       return;
-   };
+   }
 
    if (strcasecmp(Asc, "MOMLINE") == 0) {
       Erg->Typ = TempInt;
@@ -1638,7 +1627,7 @@ void EvalExpression(char *Asc_O, TempResult * Erg) {
    if (!OK) {
       WrXError(1020, Asc);
       return;
-   };
+   }
 
    Ptr = FindLocNode(Asc, TempInt);
    if (Ptr == NULL) Ptr = FindNode(Asc, TempInt);
@@ -1933,7 +1922,7 @@ bool EnterTreeNode(SymbolPtr * Node, SymbolPtr Neu, bool MayChange, bool DoCross
                      WrXError(80, serr);
                   }
                }
-            };
+            }
             Neu->Left = (*Node)->Left;
             Neu->Right = (*Node)->Right;
             Neu->Balance = (*Node)->Balance;
@@ -1981,21 +1970,20 @@ static void EnterSymbol(SymbolPtr Neu, bool MayChange, LongInt ResHandle) {
    LongInt MSect;
    SymbolPtr Copy;
 
-/*   Neu^.Attribute:=MomSectionHandle;
-   IF SectionStack<>NULL THEN
-    {
-     Search(SectionStack^.GlobSyms);
-     IF Lauf<>NULL THEN Neu^.Attribute:=Lauf^.DestSection
-     ELSE Search(SectionStack^.LocSyms);
-     IF Lauf<>NULL THEN
-      {
-       FreeMem(Lauf^.Name,Length(Lauf^.Name^)+1);
-       IF Prev=NULL THEN RRoot^:=Lauf^.Next
-       ELSE Prev^.Next:=Lauf^.Next;
-       Dispose(Lauf);
-      };
-    };
-   IF EnterTreeNode(FirstSymbol,Neu,MayChange,MakeCrossList) THEN;*/
+#if 0
+   Neu->Attribute = MomSectionHandle;
+   if (SectionStack != NULL) {
+      Search(SectionStack->GlobSyms);
+      if (Lauf != NULL) Neu->Attribute = Lauf->DestSection;
+      else Search(SectionStack->LocSyms);
+      if (Lauf != NULL) {
+         FreeMem(Lauf->Name, Length(*Lauf->Name) + 1);
+         if (Prev == NULL) *RRoot = Lauf->Next; else Prev->Next = Lauf->Next;
+         Dispose(Lauf);
+      }
+   }
+   if (EnterTreeNode(FirstSymbol, Neu, MayChange, MakeCrossList)) ;
+#endif
 
    if (!CaseSensitive) NLS_UpString(Neu->SymName);
 
@@ -2956,16 +2944,17 @@ LongInt GetSectionHandle(char *SName_O, bool AddEmpt, LongInt Parent) {
       Lauf = Lauf->Next;
    }
 
-   if (Lauf == NULL)
-      if (AddEmpt) {
-         Lauf = (PCToken) malloc(sizeof(TCToken));
-         Lauf->Parent = MomSectionHandle;
-         Lauf->Name = strdup(SName);
-         Lauf->Next = NULL;
-         InitChunk(&(Lauf->Usage));
-         if (Prev == NULL) FirstSection = Lauf;
-         else Prev->Next = Lauf;
-      } else z = (-2);
+   if (Lauf != NULL) ;
+   else if (!AddEmpt) z = -2;
+   else {
+      Lauf = (PCToken) malloc(sizeof(TCToken));
+      Lauf->Parent = MomSectionHandle;
+      Lauf->Name = strdup(SName);
+      Lauf->Next = NULL;
+      InitChunk(&(Lauf->Usage));
+      if (Prev == NULL) FirstSection = Lauf;
+      else Prev->Next = Lauf;
+   }
    return z;
 }
 

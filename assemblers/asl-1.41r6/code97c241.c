@@ -1,13 +1,5 @@
-/* code97c241.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator TLCS-9000                                                   */
-/*                                                                           */
-/* Historie:                                                                 */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator TLCS-9000
 #include "stdinc.h"
 
 #include <string.h>
@@ -540,7 +532,7 @@ static void DecodeAdr(char *Asc, Byte PrefInd, bool MayImm, bool MayReg) {
                IndReg = BaseReg;
                BaseReg = FreeReg;
                ScaleFact = 0;
-            };
+            }
             if ((BaseReg != FreeReg) || (MinFlag)) {
                WrError(1350);
                return;
@@ -720,7 +712,7 @@ static void DecodeAdr(char *Asc, Byte PrefInd, bool MayImm, bool MayReg) {
             AdrOK = true;
          }
          return;
-      };
+      }
    }
 
 /* II. Arbeitsregister */
@@ -917,77 +909,77 @@ static bool CodeAri(void) {
             if (AdrOK) {
                CopyAdr();
                DecodeAdr(ArgStr[2], 0, true, true);
-               if (AdrOK)
-                  if (OpSize == -1) WrError(1132);
-                  else {
-                     if (Format == ' ') {
-                        if ((IsReg() && Is2Short()) || (Is2Reg() && IsShort())) Format = 'S';
-                        else if ((IsAbsolute() && Is2Short()) || (Is2Absolute() && IsShort())) Format = 'A';
-                        else if (IsImmediate() && OpSize > 0 && (ImmVal() > 127 || ImmVal() < -128)) Format = 'I';
-                        else Format = 'G';
-                     }
-                     switch (Format) {
-                        case 'G':
-                           WAsmCode[0] = 0x700 + (((Word) OpSize + 1) << 14);
-                           if ((IsImmediate()) && (ImmVal() <= 127) && (ImmVal() >= -128)) {
-                              AdrMode = ImmVal() & 0xff;
-                              AdrCnt = 0;
-                           } else WAsmCode[0] += 0x800;
-                           WAsmCode[0] += AdrMode;
-                           memcpy(WAsmCode + 1, AdrVals, AdrCnt);
-                           WAsmCode[1 + (AdrCnt >> 1)] = 0x8400 + (z << 8) + AdrMode2;
-                           memcpy(WAsmCode + 2 + (AdrCnt >> 1), AdrVals2, AdrCnt2);
-                           CodeLen = 4 + AdrCnt + AdrCnt2;
-                           break;
-                        case 'A':
-                           if ((IsShort()) && (Is2Absolute())) {
-                              ConvertShort();
-                              WAsmCode[0] = 0x3900 + (((Word) OpSize + 1) << 14)
-                                 + (((Word) AdrMode & 0xf0) << 5) + (AdrMode & 15);
-                              memcpy(WAsmCode + 1, AdrVals, AdrCnt);
-                              WAsmCode[1 + (AdrCnt >> 1)] = (AdrVals2[0] & 0x1fff) + (z << 13);
-                              CodeLen = 4 + AdrCnt;
-                           } else if ((Is2Short()) && (IsAbsolute())) {
-                              Convert2Short();
-                              WAsmCode[0] = 0x3980 + (((Word) OpSize + 1) << 14)
-                                 + (((Word) AdrMode2 & 0xf0) << 5) + (AdrMode2 & 15);
-                              memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
-                              WAsmCode[1 + (AdrCnt2 >> 1)] = (AdrVals[0] & 0x1fff) + (z << 13);
-                              CodeLen = 4 + AdrCnt2;
-                           } else WrError(1350);
-                           break;
-                        case 'S':
-                           if ((IsShort()) && (Is2Reg())) {
-                              ConvertShort();
-                              WAsmCode[0] = 0x0000 + (((Word) OpSize + 1) << 14)
-                                 + (AdrMode & 15) + (((Word) AdrMode & 0xf0) << 5)
-                                 + (((Word) AdrMode2 & 1) << 12) + ((AdrMode2 & 14) << 4)
-                                 + ((z & 1) << 4) + ((z & 2) << 10);
-                              memcpy(WAsmCode + 1, AdrVals, AdrCnt);
-                              CodeLen = 2 + AdrCnt;
-                           } else if ((Is2Short()) && (IsReg())) {
-                              Convert2Short();
-                              WAsmCode[0] = 0x0100 + (((Word) OpSize + 1) << 14)
-                                 + (AdrMode2 & 15) + (((Word) AdrMode2 & 0xf0) << 5)
-                                 + (((Word) AdrMode & 1) << 12) + ((AdrMode & 14) << 4)
-                                 + ((z & 1) << 4) + ((z & 2) << 11);
-                              memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
-                              CodeLen = 2 + AdrCnt2;
-                           } else WrError(1350);
-                           break;
-                        case 'I':
-                           if ((!IsImmediate()) || (OpSize == 0)) WrError(1350);
-                           else {
-                              WAsmCode[0] = AdrMode2 + (((Word) OpSize - 1) << 11) + (z << 8);
-                              memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
-                              memcpy(WAsmCode + 1 + (AdrCnt2 >> 1), AdrVals, AdrCnt);
-                              CodeLen = 2 + AdrCnt + AdrCnt2;
-                           }
-                           break;
-                        default:
-                           WrError(1090);
-                     }
+               if (!AdrOK) ;
+               else if (OpSize == -1) WrError(1132);
+               else {
+                  if (Format == ' ') {
+                     if ((IsReg() && Is2Short()) || (Is2Reg() && IsShort())) Format = 'S';
+                     else if ((IsAbsolute() && Is2Short()) || (Is2Absolute() && IsShort())) Format = 'A';
+                     else if (IsImmediate() && OpSize > 0 && (ImmVal() > 127 || ImmVal() < -128)) Format = 'I';
+                     else Format = 'G';
                   }
+                  switch (Format) {
+                     case 'G':
+                        WAsmCode[0] = 0x700 + (((Word) OpSize + 1) << 14);
+                        if ((IsImmediate()) && (ImmVal() <= 127) && (ImmVal() >= -128)) {
+                           AdrMode = ImmVal() & 0xff;
+                           AdrCnt = 0;
+                        } else WAsmCode[0] += 0x800;
+                        WAsmCode[0] += AdrMode;
+                        memcpy(WAsmCode + 1, AdrVals, AdrCnt);
+                        WAsmCode[1 + (AdrCnt >> 1)] = 0x8400 + (z << 8) + AdrMode2;
+                        memcpy(WAsmCode + 2 + (AdrCnt >> 1), AdrVals2, AdrCnt2);
+                        CodeLen = 4 + AdrCnt + AdrCnt2;
+                        break;
+                     case 'A':
+                        if ((IsShort()) && (Is2Absolute())) {
+                           ConvertShort();
+                           WAsmCode[0] = 0x3900 + (((Word) OpSize + 1) << 14)
+                              + (((Word) AdrMode & 0xf0) << 5) + (AdrMode & 15);
+                           memcpy(WAsmCode + 1, AdrVals, AdrCnt);
+                           WAsmCode[1 + (AdrCnt >> 1)] = (AdrVals2[0] & 0x1fff) + (z << 13);
+                           CodeLen = 4 + AdrCnt;
+                        } else if ((Is2Short()) && (IsAbsolute())) {
+                           Convert2Short();
+                           WAsmCode[0] = 0x3980 + (((Word) OpSize + 1) << 14)
+                              + (((Word) AdrMode2 & 0xf0) << 5) + (AdrMode2 & 15);
+                           memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
+                           WAsmCode[1 + (AdrCnt2 >> 1)] = (AdrVals[0] & 0x1fff) + (z << 13);
+                           CodeLen = 4 + AdrCnt2;
+                        } else WrError(1350);
+                        break;
+                     case 'S':
+                        if ((IsShort()) && (Is2Reg())) {
+                           ConvertShort();
+                           WAsmCode[0] = 0x0000 + (((Word) OpSize + 1) << 14)
+                              + (AdrMode & 15) + (((Word) AdrMode & 0xf0) << 5)
+                              + (((Word) AdrMode2 & 1) << 12) + ((AdrMode2 & 14) << 4)
+                              + ((z & 1) << 4) + ((z & 2) << 10);
+                           memcpy(WAsmCode + 1, AdrVals, AdrCnt);
+                           CodeLen = 2 + AdrCnt;
+                        } else if ((Is2Short()) && (IsReg())) {
+                           Convert2Short();
+                           WAsmCode[0] = 0x0100 + (((Word) OpSize + 1) << 14)
+                              + (AdrMode2 & 15) + (((Word) AdrMode2 & 0xf0) << 5)
+                              + (((Word) AdrMode & 1) << 12) + ((AdrMode & 14) << 4)
+                              + ((z & 1) << 4) + ((z & 2) << 11);
+                           memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
+                           CodeLen = 2 + AdrCnt2;
+                        } else WrError(1350);
+                        break;
+                     case 'I':
+                        if ((!IsImmediate()) || (OpSize == 0)) WrError(1350);
+                        else {
+                           WAsmCode[0] = AdrMode2 + (((Word) OpSize - 1) << 11) + (z << 8);
+                           memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
+                           memcpy(WAsmCode + 1 + (AdrCnt2 >> 1), AdrVals, AdrCnt);
+                           CodeLen = 2 + AdrCnt + AdrCnt2;
+                        }
+                        break;
+                     default:
+                        WrError(1090);
+                  }
+               }
             }
          }
          AddPrefixes();
@@ -1002,67 +994,67 @@ static bool CodeAri(void) {
             if (AdrOK) {
                CopyAdr();
                DecodeAdr(ArgStr[2], 0, true, true);
-               if (AdrOK)
-                  if (OpSize == -1) WrError(1132);
-                  else {
-                     if (Format == ' ') {
-                        if ((IsReg()) && (Is2Reg())) Format = 'S';
-                        else if (((IsAbsolute()) && (Is2Short()))
-                           || ((Is2Absolute()) && (IsShort()))) Format = 'A';
-                        else if ((IsImmediate()) && (OpSize > 0) && ((ImmVal() > 127) || (ImmVal() < -128))) Format = 'I';
-                        else Format = 'G';
-                     }
-                     switch (Format) {
-                        case 'G':
-                           WAsmCode[0] = 0x700 + (((Word) OpSize + 1) << 14);
-                           if ((IsImmediate()) && (ImmVal() <= 127) && (ImmVal() >= -128)) {
-                              AdrMode = ImmVal() & 0xff;
-                              AdrCnt = 0;
-                           } else WAsmCode[0] += 0x800;
-                           WAsmCode[0] += AdrMode;
-                           memcpy(WAsmCode + 1, AdrVals, AdrCnt);
-                           WAsmCode[1 + (AdrCnt >> 1)] = 0xc400 + (z << 8) + AdrMode2;
-                           memcpy(WAsmCode + 2 + (AdrCnt >> 1), AdrVals2, AdrCnt2);
-                           CodeLen = 4 + AdrCnt + AdrCnt2;
-                           break;
-                        case 'A':
-                           if ((IsShort()) && (Is2Absolute())) {
-                              ConvertShort();
-                              WAsmCode[0] = 0x3940 + (((Word) OpSize + 1) << 14)
-                                 + (((Word) AdrMode & 0xf0) << 5) + (AdrMode & 15);
-                              memcpy(WAsmCode + 1, AdrVals, AdrCnt);
-                              WAsmCode[1 + (AdrCnt >> 1)] = (AdrVals2[0] & 0x1fff) + (z << 13);
-                              CodeLen = 4 + AdrCnt;
-                           } else if ((Is2Short()) && (IsAbsolute())) {
-                              Convert2Short();
-                              WAsmCode[0] = 0x39c0 + (((Word) OpSize + 1) << 14)
-                                 + (((Word) AdrMode2 & 0xf0) << 5) + (AdrMode2 & 15);
-                              memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
-                              WAsmCode[1 + (AdrCnt2 >> 1)] = (AdrVals[0] & 0x1fff) + (z << 13);
-                              CodeLen = 4 + AdrCnt2;
-                           } else WrError(1350);
-                           break;
-                        case 'S':
-                           if ((IsReg()) && (Is2Reg())) {
-                              WAsmCode[0] = 0x3800 + (((Word) OpSize + 1) << 14)
-                                 + (AdrMode & 15) + (AdrMode2 << 4)
-                                 + (z << 9);
-                              CodeLen = 2;
-                           } else WrError(1350);
-                           break;
-                        case 'I':
-                           if ((!IsImmediate()) || (OpSize == 0)) WrError(1350);
-                           else {
-                              WAsmCode[0] = 0x400 + AdrMode2 + (((Word) OpSize - 1) << 11) + (z << 8);
-                              memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
-                              memcpy(WAsmCode + 1 + (AdrCnt2 >> 1), AdrVals, AdrCnt);
-                              CodeLen = 2 + AdrCnt + AdrCnt2;
-                           }
-                           break;
-                        default:
-                           WrError(1090);
-                     }
+            if (!AdrOK) ;
+               else if (OpSize == -1) WrError(1132);
+               else {
+                  if (Format == ' ') {
+                     if ((IsReg()) && (Is2Reg())) Format = 'S';
+                     else if (((IsAbsolute()) && (Is2Short()))
+                        || ((Is2Absolute()) && (IsShort()))) Format = 'A';
+                     else if ((IsImmediate()) && (OpSize > 0) && ((ImmVal() > 127) || (ImmVal() < -128))) Format = 'I';
+                     else Format = 'G';
                   }
+                  switch (Format) {
+                     case 'G':
+                        WAsmCode[0] = 0x700 + (((Word) OpSize + 1) << 14);
+                        if ((IsImmediate()) && (ImmVal() <= 127) && (ImmVal() >= -128)) {
+                           AdrMode = ImmVal() & 0xff;
+                           AdrCnt = 0;
+                        } else WAsmCode[0] += 0x800;
+                        WAsmCode[0] += AdrMode;
+                        memcpy(WAsmCode + 1, AdrVals, AdrCnt);
+                        WAsmCode[1 + (AdrCnt >> 1)] = 0xc400 + (z << 8) + AdrMode2;
+                        memcpy(WAsmCode + 2 + (AdrCnt >> 1), AdrVals2, AdrCnt2);
+                        CodeLen = 4 + AdrCnt + AdrCnt2;
+                        break;
+                     case 'A':
+                        if ((IsShort()) && (Is2Absolute())) {
+                           ConvertShort();
+                           WAsmCode[0] = 0x3940 + (((Word) OpSize + 1) << 14)
+                              + (((Word) AdrMode & 0xf0) << 5) + (AdrMode & 15);
+                           memcpy(WAsmCode + 1, AdrVals, AdrCnt);
+                           WAsmCode[1 + (AdrCnt >> 1)] = (AdrVals2[0] & 0x1fff) + (z << 13);
+                           CodeLen = 4 + AdrCnt;
+                        } else if ((Is2Short()) && (IsAbsolute())) {
+                           Convert2Short();
+                           WAsmCode[0] = 0x39c0 + (((Word) OpSize + 1) << 14)
+                              + (((Word) AdrMode2 & 0xf0) << 5) + (AdrMode2 & 15);
+                           memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
+                           WAsmCode[1 + (AdrCnt2 >> 1)] = (AdrVals[0] & 0x1fff) + (z << 13);
+                           CodeLen = 4 + AdrCnt2;
+                        } else WrError(1350);
+                        break;
+                     case 'S':
+                        if ((IsReg()) && (Is2Reg())) {
+                           WAsmCode[0] = 0x3800 + (((Word) OpSize + 1) << 14)
+                              + (AdrMode & 15) + (AdrMode2 << 4)
+                              + (z << 9);
+                           CodeLen = 2;
+                        } else WrError(1350);
+                        break;
+                     case 'I':
+                        if ((!IsImmediate()) || (OpSize == 0)) WrError(1350);
+                        else {
+                           WAsmCode[0] = 0x400 + AdrMode2 + (((Word) OpSize - 1) << 11) + (z << 8);
+                           memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
+                           memcpy(WAsmCode + 1 + (AdrCnt2 >> 1), AdrVals, AdrCnt);
+                           CodeLen = 2 + AdrCnt + AdrCnt2;
+                        }
+                        break;
+                     default:
+                        WrError(1090);
+                  }
+               }
             }
          }
          AddPrefixes();
@@ -1118,15 +1110,15 @@ static bool CodeAri(void) {
             memcpy(WAsmCode + 1, AdrVals, AdrCnt);
             Cnt = AdrCnt;
             DecodeAdr(ArgStr[1], 1, false, true);
-            if (AdrOK)
-               if (OpSize == -1) WrError(1132);
-               else {
-                  WAsmCode[0] += ((Word) OpSize + 1) << 14;
-                  WAsmCode[1 + (Cnt >> 1)] = 0x400 + (((Word) Reg) << 11) + AdrMode;
-                  if (Memo("RRM")) WAsmCode[1 + (Cnt >> 1)] += 0x100;
-                  memcpy(WAsmCode + 2 + (Cnt >> 1), AdrVals, AdrCnt);
-                  CodeLen = 4 + AdrCnt + Cnt;
-               }
+            if (!AdrOK) ;
+            else if (OpSize == -1) WrError(1132);
+            else {
+               WAsmCode[0] += ((Word) OpSize + 1) << 14;
+               WAsmCode[1 + (Cnt >> 1)] = 0x400 + (((Word) Reg) << 11) + AdrMode;
+               if (Memo("RRM")) WAsmCode[1 + (Cnt >> 1)] += 0x100;
+               memcpy(WAsmCode + 2 + (Cnt >> 1), AdrVals, AdrCnt);
+               CodeLen = 4 + AdrCnt + Cnt;
+            }
          }
       }
       AddPrefixes();
@@ -1233,14 +1225,14 @@ static void MakeCode_97C241(void) {
                strcopy(ArgStr[1], ArgStr[2]);
             }
             DecodeAdr(ArgStr[1], 0, (RMWOrders[z].Mask & 0x10) == 0, (RMWOrders[z].Mask & 0x20) == 0);
-            if (AdrOK)
-               if (OpSize == -1) WrError(1132);
-               else if ((RMWOrders[z].Mask & (1 << OpSize)) == 0) WrError(1130);
-               else {
-                  WAsmCode[0] = (((Word) OpSize + 1) << 14) + (((Word) RMWOrders[z].Code) << 8) + AdrMode;
-                  memcpy(WAsmCode + 1, AdrVals, AdrCnt);
-                  CodeLen = 2 + AdrCnt;
-               }
+            if (!AdrOK) ;
+            else if (OpSize == -1) WrError(1132);
+            else if ((RMWOrders[z].Mask & (1 << OpSize)) == 0) WrError(1130);
+            else {
+               WAsmCode[0] = (((Word) OpSize + 1) << 14) + (((Word) RMWOrders[z].Code) << 8) + AdrMode;
+               memcpy(WAsmCode + 1, AdrVals, AdrCnt);
+               CodeLen = 2 + AdrCnt;
+            }
          }
          AddPrefixes();
          return;
@@ -1255,75 +1247,75 @@ static void MakeCode_97C241(void) {
          if (ArgCnt != 2) WrError(1110);
          else {
             DecodeAdr(ArgStr[1], 1, false, true);
-            if (AdrOK)
-               if (OpSize == -1) WrError(1132);
-               else {
-                  CopyAdr();
-                  OpSize = (-1);
-                  MinOneIs0 = true;
-                  DecodeAdr(ArgStr[2], 0, true, true);
-                  if (AdrOK) {
-                     OpSize = OpSize2;
-                     if (Format == ' ') {
-                        if ((Is2Reg()) && (IsImmediate())
-                           && (ImmVal() > 0) && (ImmVal() < (1 << (OpSize + 3)))) Format = 'S';
-                        else if (((IsShort()) && (Is2Absolute()))
-                           || ((Is2Short()) && (IsAbsolute()))) Format = 'A';
-                        else Format = 'G';
-                     }
-                     switch (Format) {
-                        case 'G':
-                           WAsmCode[0] = 0x700 + (((Word) OpSize + 1) << 14);
-                           if ((IsImmediate()) && (ImmVal() >= LowLim8) && (ImmVal() < 127)) {
-                              AdrMode = ImmVal() & 0xff;
-                              AdrCnt = 0;
-                           } else WAsmCode[0] += 0x800;
-                           WAsmCode[0] += AdrMode;
+            if (!AdrOK) ;
+            else if (OpSize == -1) WrError(1132);
+            else {
+               CopyAdr();
+               OpSize = (-1);
+               MinOneIs0 = true;
+               DecodeAdr(ArgStr[2], 0, true, true);
+               if (AdrOK) {
+                  OpSize = OpSize2;
+                  if (Format == ' ') {
+                     if ((Is2Reg()) && (IsImmediate())
+                        && (ImmVal() > 0) && (ImmVal() < (1 << (OpSize + 3)))) Format = 'S';
+                     else if (((IsShort()) && (Is2Absolute()))
+                        || ((Is2Short()) && (IsAbsolute()))) Format = 'A';
+                     else Format = 'G';
+                  }
+                  switch (Format) {
+                     case 'G':
+                        WAsmCode[0] = 0x700 + (((Word) OpSize + 1) << 14);
+                        if ((IsImmediate()) && (ImmVal() >= LowLim8) && (ImmVal() < 127)) {
+                           AdrMode = ImmVal() & 0xff;
+                           AdrCnt = 0;
+                        } else WAsmCode[0] += 0x800;
+                        WAsmCode[0] += AdrMode;
+                        memcpy(WAsmCode + 1, AdrVals, AdrCnt);
+                        WAsmCode[1 + (AdrCnt >> 1)] = 0xd400 + (z << 8) + AdrMode2;
+                        memcpy(WAsmCode + 2 + (AdrCnt >> 1), AdrVals2, AdrCnt2);
+                        CodeLen = 4 + AdrCnt + AdrCnt2;
+                        break;
+                     case 'A':
+                        if ((IsAbsolute()) && (Is2Short())) {
+                           Convert2Short();
+                           WAsmCode[0] = 0x39d0 + (((Word) OpSize + 1) << 14)
+                              + (((Word) AdrMode2 & 0xf0) << 5) + (AdrMode2 & 15);
+                           memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
+                           WAsmCode[1 + (AdrCnt2 >> 1)] = (AdrVals[0] & 0x1fff) + (z << 13);
+                           CodeLen = 4 + AdrCnt2;
+                        } else if ((Is2Absolute()) && (IsShort())) {
+                           ConvertShort();
+                           WAsmCode[0] = 0x3950 + (((Word) OpSize + 1) << 14)
+                              + (((Word) AdrMode & 0xf0) << 5) + (AdrMode & 15);
                            memcpy(WAsmCode + 1, AdrVals, AdrCnt);
-                           WAsmCode[1 + (AdrCnt >> 1)] = 0xd400 + (z << 8) + AdrMode2;
-                           memcpy(WAsmCode + 2 + (AdrCnt >> 1), AdrVals2, AdrCnt2);
-                           CodeLen = 4 + AdrCnt + AdrCnt2;
-                           break;
-                        case 'A':
-                           if ((IsAbsolute()) && (Is2Short())) {
-                              Convert2Short();
-                              WAsmCode[0] = 0x39d0 + (((Word) OpSize + 1) << 14)
-                                 + (((Word) AdrMode2 & 0xf0) << 5) + (AdrMode2 & 15);
-                              memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
-                              WAsmCode[1 + (AdrCnt2 >> 1)] = (AdrVals[0] & 0x1fff) + (z << 13);
-                              CodeLen = 4 + AdrCnt2;
-                           } else if ((Is2Absolute()) && (IsShort())) {
-                              ConvertShort();
-                              WAsmCode[0] = 0x3950 + (((Word) OpSize + 1) << 14)
-                                 + (((Word) AdrMode & 0xf0) << 5) + (AdrMode & 15);
-                              memcpy(WAsmCode + 1, AdrVals, AdrCnt);
-                              WAsmCode[1 + (AdrCnt >> 1)] = (AdrVals2[0] & 0x1fff) + (z << 13);
-                              CodeLen = 4 + AdrCnt;
-                           } else WrError(1350);
-                           break;
-                        case 'S':
-                           if ((Is2Reg()) && (IsImmediate()) && (ImmVal() >= 0) && (ImmVal() < (1 << (3 + OpSize)))) {
-                              if (OpSize == 2) {
-                                 if (ImmVal() >= 16) {
-                                    AdrVals[0] -= 16;
-                                    AdrMode2++;
-                                 }
-                                 OpSize = 1;
+                           WAsmCode[1 + (AdrCnt >> 1)] = (AdrVals2[0] & 0x1fff) + (z << 13);
+                           CodeLen = 4 + AdrCnt;
+                        } else WrError(1350);
+                        break;
+                     case 'S':
+                        if ((Is2Reg()) && (IsImmediate()) && (ImmVal() >= 0) && (ImmVal() < (1 << (3 + OpSize)))) {
+                           if (OpSize == 2) {
+                              if (ImmVal() >= 16) {
+                                 AdrVals[0] -= 16;
+                                 AdrMode2++;
                               }
-                              if (OpSize == 1)
-                                 if (ImmVal() < 8) OpSize = 0;
-                                 else AdrVals[0] -= 8;
-                              WAsmCode[0] = 0x1700 + (((Word) OpSize + 1) << 14)
-                                 + ((z & 1) << 7) + ((z & 2) << 10)
-                                 + (ImmVal() << 4) + AdrMode2;
-                              CodeLen = 2;
-                           } else WrError(1350);
-                           break;
-                        default:
-                           WrError(1090);
-                     }
+                              OpSize = 1;
+                           }
+                           if (OpSize != 1) ;
+                           else if (ImmVal() < 8) OpSize = 0;
+                           else AdrVals[0] -= 8;
+                           WAsmCode[0] = 0x1700 + (((Word) OpSize + 1) << 14)
+                              + ((z & 1) << 7) + ((z & 2) << 10)
+                              + (ImmVal() << 4) + AdrMode2;
+                           CodeLen = 2;
+                        } else WrError(1350);
+                        break;
+                     default:
+                        WrError(1090);
                   }
                }
+            }
          }
          AddPrefixes();
          return;
@@ -1334,63 +1326,63 @@ static void MakeCode_97C241(void) {
          if (ArgCnt != 2) WrError(1110);
          else {
             DecodeAdr(ArgStr[1], 1, false, true);
-            if (AdrOK)
-               if (OpSize == -1) WrError(1132);
-               else {
-                  CopyAdr();
-                  OpSize = (-1);
-                  MinOneIs0 = true;
-                  DecodeAdr(ArgStr[2], 0, true, true);
-                  if (AdrOK) {
-                     OpSize = OpSize2;
-                     if (Format == ' ') {
-                        if ((IsImmediate()) && (ImmVal() == 1)) Format = 'S';
-                        else if (((IsShort()) && (Is2Absolute()))
-                           || ((Is2Short()) && (IsAbsolute()))) Format = 'A';
-                        else Format = 'G';
-                     }
-                     switch (Format) {
-                        case 'G':
-                           WAsmCode[0] = 0x700 + (((Word) OpSize + 1) << 14);
-                           if ((IsImmediate()) && (ImmVal() >= LowLim8) && (ImmVal() < 127)) {
-                              AdrMode = ImmVal() & 0xff;
-                              AdrCnt = 0;
-                           } else WAsmCode[0] += 0x800;
-                           WAsmCode[0] += AdrMode;
+            if (!AdrOK) ;
+            if (OpSize == -1) WrError(1132);
+            else {
+               CopyAdr();
+               OpSize = (-1);
+               MinOneIs0 = true;
+               DecodeAdr(ArgStr[2], 0, true, true);
+               if (AdrOK) {
+                  OpSize = OpSize2;
+                  if (Format == ' ') {
+                     if ((IsImmediate()) && (ImmVal() == 1)) Format = 'S';
+                     else if (((IsShort()) && (Is2Absolute()))
+                        || ((Is2Short()) && (IsAbsolute()))) Format = 'A';
+                     else Format = 'G';
+                  }
+                  switch (Format) {
+                     case 'G':
+                        WAsmCode[0] = 0x700 + (((Word) OpSize + 1) << 14);
+                        if ((IsImmediate()) && (ImmVal() >= LowLim8) && (ImmVal() < 127)) {
+                           AdrMode = ImmVal() & 0xff;
+                           AdrCnt = 0;
+                        } else WAsmCode[0] += 0x800;
+                        WAsmCode[0] += AdrMode;
+                        memcpy(WAsmCode + 1, AdrVals, AdrCnt);
+                        WAsmCode[1 + (AdrCnt >> 1)] = 0xb400 + ((z & 3) << 8) + ((z & 4) << 9) + AdrMode2;
+                        memcpy(WAsmCode + 2 + (AdrCnt >> 1), AdrVals2, AdrCnt2);
+                        CodeLen = 4 + AdrCnt + AdrCnt2;
+                        break;
+                     case 'A':
+                        if ((IsAbsolute()) && (Is2Short())) {
+                           Convert2Short();
+                           WAsmCode[0] = 0x39b0 + (((Word) OpSize + 1) << 14)
+                              + (((Word) AdrMode2 & 0xf0) << 5) + (AdrMode2 & 15);
+                           memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
+                           WAsmCode[1 + (AdrCnt2 >> 1)] = (AdrVals[0] & 0x1fff) + (z << 13);
+                           CodeLen = 4 + AdrCnt2;
+                        } else if ((Is2Absolute()) && (IsShort())) {
+                           ConvertShort();
+                           WAsmCode[0] = 0x3930 + (((Word) OpSize + 1) << 14)
+                              + (((Word) AdrMode & 0xf0) << 5) + (AdrMode & 15);
                            memcpy(WAsmCode + 1, AdrVals, AdrCnt);
-                           WAsmCode[1 + (AdrCnt >> 1)] = 0xb400 + ((z & 3) << 8) + ((z & 4) << 9) + AdrMode2;
-                           memcpy(WAsmCode + 2 + (AdrCnt >> 1), AdrVals2, AdrCnt2);
-                           CodeLen = 4 + AdrCnt + AdrCnt2;
-                           break;
-                        case 'A':
-                           if ((IsAbsolute()) && (Is2Short())) {
-                              Convert2Short();
-                              WAsmCode[0] = 0x39b0 + (((Word) OpSize + 1) << 14)
-                                 + (((Word) AdrMode2 & 0xf0) << 5) + (AdrMode2 & 15);
-                              memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
-                              WAsmCode[1 + (AdrCnt2 >> 1)] = (AdrVals[0] & 0x1fff) + (z << 13);
-                              CodeLen = 4 + AdrCnt2;
-                           } else if ((Is2Absolute()) && (IsShort())) {
-                              ConvertShort();
-                              WAsmCode[0] = 0x3930 + (((Word) OpSize + 1) << 14)
-                                 + (((Word) AdrMode & 0xf0) << 5) + (AdrMode & 15);
-                              memcpy(WAsmCode + 1, AdrVals, AdrCnt);
-                              WAsmCode[1 + (AdrCnt >> 1)] = (AdrVals2[0] & 0x1fff) + (z << 13);
-                              CodeLen = 4 + AdrCnt;
-                           } else WrError(1350);
-                           break;
-                        case 'S':
-                           if ((IsImmediate()) && (ImmVal() == 1)) {
-                              WAsmCode[0] = 0x2400 + (((Word) OpSize + 1) << 14) + AdrMode2 + ((z & 3) << 8) + ((z & 4) << 9);
-                              memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
-                              CodeLen = 2 + AdrCnt2;
-                           } else WrError(1350);
-                           break;
-                        default:
-                           WrError(1090);
-                     }
+                           WAsmCode[1 + (AdrCnt >> 1)] = (AdrVals2[0] & 0x1fff) + (z << 13);
+                           CodeLen = 4 + AdrCnt;
+                        } else WrError(1350);
+                        break;
+                     case 'S':
+                        if ((IsImmediate()) && (ImmVal() == 1)) {
+                           WAsmCode[0] = 0x2400 + (((Word) OpSize + 1) << 14) + AdrMode2 + ((z & 3) << 8) + ((z & 4) << 9);
+                           memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
+                           CodeLen = 2 + AdrCnt2;
+                        } else WrError(1350);
+                        break;
+                     default:
+                        WrError(1090);
                   }
                }
+            }
          }
          AddPrefixes();
          return;
@@ -1463,55 +1455,55 @@ static void MakeCode_97C241(void) {
             if (AdrOK) {
                CopyAdr();
                DecodeAdr(ArgStr[2], 0, true, true);
-               if (AdrOK)
-                  if (OpSize == -1) WrError(1132);
-                  else {
-                     if (OpSize == 0) LowLim8 = (-128);
-                     if (Format == ' ') {
-                        if (((Is2Absolute()) && (IsShort()))
-                           || ((Is2Short()) && (IsAbsolute()))) Format = 'A';
-                        else Format = 'G';
-                     }
-                     switch (Format) {
-                        case 'G':
-                           WAsmCode[0] = 0x700 + (((Word) OpSize + 1) << 14);
-                           if ((IsImmediate()) && (ImmVal() < 127) && (ImmVal() > LowLim8)) {
-                              AdrMode = ImmVal() & 0xff;
-                              AdrCnt = 0;
-                           } else WAsmCode[0] += 0x800;
-                           WAsmCode[0] += AdrMode;
-                           memcpy(WAsmCode + 1, AdrVals, AdrCnt);
-                           WAsmCode[1 + (AdrCnt >> 1)] = 0x8400 + AdrMode2 + (((Word) GAEqOrders[z].Code & 0xf0) << 8)
-                              + (((Word) GAEqOrders[z].Code & 4) << 9)
-                              + (((Word) GAEqOrders[z].Code & 3) << 8);
-                           memcpy(WAsmCode + 2 + (AdrCnt >> 1), AdrVals2, AdrCnt2);
-                           CodeLen = 4 + AdrCnt + AdrCnt2;
-                           break;
-                        case 'A':
-                           if ((IsAbsolute()) && (Is2Short())) {
-                              Convert2Short();
-                              WAsmCode[0] = 0x3980 + (((Word) OpSize + 1) << 14)
-                                 + (((Word) AdrMode2 & 0xf0) << 5) + (AdrMode2 & 15)
-                                 + (GAEqOrders[z].Code & 0xf0);
-                              memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
-                              WAsmCode[1 + (AdrCnt2 >> 1)] = (AdrVals[0] & 0x1fff)
-                                 + (((Word) GAEqOrders[z].Code & 15) << 13);
-                              CodeLen = 4 + AdrCnt2;
-                           } else if ((Is2Absolute()) && (IsShort())) {
-                              ConvertShort();
-                              WAsmCode[0] = 0x3900 + (((Word) OpSize + 1) << 14)
-                                 + (((Word) AdrMode & 0xf0) << 5) + (AdrMode & 15)
-                                 + (GAEqOrders[z].Code & 0xf0);
-                              memcpy(WAsmCode + 1, AdrVals, AdrCnt);
-                              WAsmCode[1 + (AdrCnt >> 1)] = (AdrVals2[0] & 0x1fff)
-                                 + (((Word) GAEqOrders[z].Code & 15) << 13);
-                              CodeLen = 4 + AdrCnt;
-                           } else WrError(1350);
-                           break;
-                        default:
-                           WrError(1090);
-                     }
+               if (!AdrOK) ;
+               if (OpSize == -1) WrError(1132);
+               else {
+                  if (OpSize == 0) LowLim8 = (-128);
+                  if (Format == ' ') {
+                     if (((Is2Absolute()) && (IsShort()))
+                        || ((Is2Short()) && (IsAbsolute()))) Format = 'A';
+                     else Format = 'G';
                   }
+                  switch (Format) {
+                     case 'G':
+                        WAsmCode[0] = 0x700 + (((Word) OpSize + 1) << 14);
+                        if ((IsImmediate()) && (ImmVal() < 127) && (ImmVal() > LowLim8)) {
+                           AdrMode = ImmVal() & 0xff;
+                           AdrCnt = 0;
+                        } else WAsmCode[0] += 0x800;
+                        WAsmCode[0] += AdrMode;
+                        memcpy(WAsmCode + 1, AdrVals, AdrCnt);
+                        WAsmCode[1 + (AdrCnt >> 1)] = 0x8400 + AdrMode2 + (((Word) GAEqOrders[z].Code & 0xf0) << 8)
+                           + (((Word) GAEqOrders[z].Code & 4) << 9)
+                           + (((Word) GAEqOrders[z].Code & 3) << 8);
+                        memcpy(WAsmCode + 2 + (AdrCnt >> 1), AdrVals2, AdrCnt2);
+                        CodeLen = 4 + AdrCnt + AdrCnt2;
+                        break;
+                     case 'A':
+                        if ((IsAbsolute()) && (Is2Short())) {
+                           Convert2Short();
+                           WAsmCode[0] = 0x3980 + (((Word) OpSize + 1) << 14)
+                              + (((Word) AdrMode2 & 0xf0) << 5) + (AdrMode2 & 15)
+                              + (GAEqOrders[z].Code & 0xf0);
+                           memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
+                           WAsmCode[1 + (AdrCnt2 >> 1)] = (AdrVals[0] & 0x1fff)
+                              + (((Word) GAEqOrders[z].Code & 15) << 13);
+                           CodeLen = 4 + AdrCnt2;
+                        } else if ((Is2Absolute()) && (IsShort())) {
+                           ConvertShort();
+                           WAsmCode[0] = 0x3900 + (((Word) OpSize + 1) << 14)
+                              + (((Word) AdrMode & 0xf0) << 5) + (AdrMode & 15)
+                              + (GAEqOrders[z].Code & 0xf0);
+                           memcpy(WAsmCode + 1, AdrVals, AdrCnt);
+                           WAsmCode[1 + (AdrCnt >> 1)] = (AdrVals2[0] & 0x1fff)
+                              + (((Word) GAEqOrders[z].Code & 15) << 13);
+                           CodeLen = 4 + AdrCnt;
+                        } else WrError(1350);
+                        break;
+                     default:
+                        WrError(1090);
+                  }
+               }
             }
          }
          AddPrefixes();
@@ -1523,62 +1515,62 @@ static void MakeCode_97C241(void) {
          if (ArgCnt != 2) WrError(1110);
          else {
             DecodeAdr(ArgStr[1], 1, false, true);
-            if (AdrOK)
-               if (OpSize == 0) WrError(1130);
+            if (!AdrOK) ;
+            else if (OpSize == 0) WrError(1130);
+            else {
+               if (OpSize != -1) OpSize--;
+               CopyAdr();
+               DecodeAdr(ArgStr[2], 0, true, true);
+               if (!AdrOK) ;
+               else if (OpSize == 2) WrError(1130);
+               else if (OpSize == -1) WrError(1132);
                else {
-                  if (OpSize != -1) OpSize--;
-                  CopyAdr();
-                  DecodeAdr(ArgStr[2], 0, true, true);
-                  if (AdrOK)
-                     if (OpSize == 2) WrError(1130);
-                     else if (OpSize == -1) WrError(1132);
-                     else {
-                        if (Format == ' ') {
-                           if (((Is2Absolute()) && (IsShort()))
-                              || ((Is2Short()) && (IsAbsolute()))) Format = 'A';
-                           else Format = 'G';
-                        };
-                        switch (Format) {
-                           case 'G':
-                              WAsmCode[0] = 0x700 + (((Word) OpSize + 1) << 14);
-                              if ((IsImmediate()) && (ImmVal() < 127) && (ImmVal() > LowLim8)) {
-                                 AdrMode = ImmVal() & 0xff;
-                                 AdrCnt = 0;
-                              } else WAsmCode[0] += 0x800;
-                              WAsmCode[0] += AdrMode;
-                              memcpy(WAsmCode + 1, AdrVals, AdrCnt);
-                              WAsmCode[1 + (AdrCnt >> 1)] = 0x8400 + AdrMode2 + (((Word) GAHalfOrders[z].Code & 0xf0) << 8)
-                                 + (((Word) GAHalfOrders[z].Code & 4) << 9)
-                                 + (((Word) GAHalfOrders[z].Code & 3) << 8);
-                              memcpy(WAsmCode + 2 + (AdrCnt >> 1), AdrVals2, AdrCnt2);
-                              CodeLen = 4 + AdrCnt + AdrCnt2;
-                              break;
-                           case 'A':
-                              if ((IsAbsolute()) && (Is2Short())) {
-                                 Convert2Short();
-                                 WAsmCode[0] = 0x3980 + (((Word) OpSize + 1) << 14)
-                                    + (((Word) AdrMode2 & 0xf0) << 5) + (AdrMode2 & 15)
-                                    + (GAHalfOrders[z].Code & 0xf0);
-                                 memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
-                                 WAsmCode[1 + (AdrCnt2 >> 1)] = (AdrVals[0] & 0x1fff)
-                                    + (((Word) GAHalfOrders[z].Code & 15) << 13);
-                                 CodeLen = 4 + AdrCnt2;
-                              } else if ((Is2Absolute()) && (IsShort())) {
-                                 ConvertShort();
-                                 WAsmCode[0] = 0x3900 + (((Word) OpSize + 1) << 14)
-                                    + (((Word) AdrMode & 0xf0) << 5) + (AdrMode & 15)
-                                    + (GAHalfOrders[z].Code & 0xf0);
-                                 memcpy(WAsmCode + 1, AdrVals, AdrCnt);
-                                 WAsmCode[1 + (AdrCnt >> 1)] = (AdrVals2[0] & 0x1fff)
-                                    + (((Word) GAHalfOrders[z].Code & 15) << 13);
-                                 CodeLen = 4 + AdrCnt;
-                              } else WrError(1350);
-                              break;
-                           default:
-                              WrError(1090);
-                        }
-                     }
+                  if (Format == ' ') {
+                     if (((Is2Absolute()) && (IsShort()))
+                        || ((Is2Short()) && (IsAbsolute()))) Format = 'A';
+                     else Format = 'G';
+                  }
+                  switch (Format) {
+                     case 'G':
+                        WAsmCode[0] = 0x700 + (((Word) OpSize + 1) << 14);
+                        if ((IsImmediate()) && (ImmVal() < 127) && (ImmVal() > LowLim8)) {
+                           AdrMode = ImmVal() & 0xff;
+                           AdrCnt = 0;
+                        } else WAsmCode[0] += 0x800;
+                        WAsmCode[0] += AdrMode;
+                        memcpy(WAsmCode + 1, AdrVals, AdrCnt);
+                        WAsmCode[1 + (AdrCnt >> 1)] = 0x8400 + AdrMode2 + (((Word) GAHalfOrders[z].Code & 0xf0) << 8)
+                           + (((Word) GAHalfOrders[z].Code & 4) << 9)
+                           + (((Word) GAHalfOrders[z].Code & 3) << 8);
+                        memcpy(WAsmCode + 2 + (AdrCnt >> 1), AdrVals2, AdrCnt2);
+                        CodeLen = 4 + AdrCnt + AdrCnt2;
+                        break;
+                     case 'A':
+                        if ((IsAbsolute()) && (Is2Short())) {
+                           Convert2Short();
+                           WAsmCode[0] = 0x3980 + (((Word) OpSize + 1) << 14)
+                              + (((Word) AdrMode2 & 0xf0) << 5) + (AdrMode2 & 15)
+                              + (GAHalfOrders[z].Code & 0xf0);
+                           memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
+                           WAsmCode[1 + (AdrCnt2 >> 1)] = (AdrVals[0] & 0x1fff)
+                              + (((Word) GAHalfOrders[z].Code & 15) << 13);
+                           CodeLen = 4 + AdrCnt2;
+                        } else if ((Is2Absolute()) && (IsShort())) {
+                           ConvertShort();
+                           WAsmCode[0] = 0x3900 + (((Word) OpSize + 1) << 14)
+                              + (((Word) AdrMode & 0xf0) << 5) + (AdrMode & 15)
+                              + (GAHalfOrders[z].Code & 0xf0);
+                           memcpy(WAsmCode + 1, AdrVals, AdrCnt);
+                           WAsmCode[1 + (AdrCnt >> 1)] = (AdrVals2[0] & 0x1fff)
+                              + (((Word) GAHalfOrders[z].Code & 15) << 13);
+                           CodeLen = 4 + AdrCnt;
+                        } else WrError(1350);
+                        break;
+                     default:
+                        WrError(1090);
+                  }
                }
+            }
          }
          AddPrefixes();
          return;
@@ -1589,61 +1581,61 @@ static void MakeCode_97C241(void) {
          if (ArgCnt != 2) WrError(1110);
          else {
             DecodeAdr(ArgStr[1], 1, !(Memo("STCF") || Memo("TSET")), true);
-            if (AdrOK)
-               if (OpSize == -1) WrError(1132);
-               else {
-                  CopyAdr();
-                  OpSize = (-1);
-                  MinOneIs0 = true;
-                  DecodeAdr(ArgStr[2], 0, true, true);
-                  OpSize = OpSize2;
-                  if (AdrOK) {
-                     if (Format == ' ') {
-                        if (((Is2Absolute()) && (IsShort()))
-                           || ((Is2Short()) && (IsAbsolute()))) Format = 'A';
-                        else Format = 'G';
-                     }
-                     switch (Format) {
-                        case 'G':
-                           WAsmCode[0] = 0x700 + (((Word) OpSize + 1) << 14);
-                           if ((IsImmediate()) && (ImmVal() < 127) && (ImmVal() > LowLim8)) {
-                              AdrMode = ImmVal() & 0xff;
-                              AdrCnt = 0;
-                           } else WAsmCode[0] += 0x800;
-                           WAsmCode[0] += AdrMode;
+            if (!AdrOK) ;
+            else if (OpSize == -1) WrError(1132);
+            else {
+               CopyAdr();
+               OpSize = (-1);
+               MinOneIs0 = true;
+               DecodeAdr(ArgStr[2], 0, true, true);
+               OpSize = OpSize2;
+               if (AdrOK) {
+                  if (Format == ' ') {
+                     if (((Is2Absolute()) && (IsShort()))
+                        || ((Is2Short()) && (IsAbsolute()))) Format = 'A';
+                     else Format = 'G';
+                  }
+                  switch (Format) {
+                     case 'G':
+                        WAsmCode[0] = 0x700 + (((Word) OpSize + 1) << 14);
+                        if ((IsImmediate()) && (ImmVal() < 127) && (ImmVal() > LowLim8)) {
+                           AdrMode = ImmVal() & 0xff;
+                           AdrCnt = 0;
+                        } else WAsmCode[0] += 0x800;
+                        WAsmCode[0] += AdrMode;
+                        memcpy(WAsmCode + 1, AdrVals, AdrCnt);
+                        WAsmCode[1 + (AdrCnt >> 1)] = 0x8400 + AdrMode2 + (((Word) GAFirstOrders[z].Code & 0xf0) << 8)
+                           + (((Word) GAFirstOrders[z].Code & 4) << 9)
+                           + (((Word) GAFirstOrders[z].Code & 3) << 8);
+                        memcpy(WAsmCode + 2 + (AdrCnt >> 1), AdrVals2, AdrCnt2);
+                        CodeLen = 4 + AdrCnt + AdrCnt2;
+                        break;
+                     case 'A':
+                        if ((IsAbsolute()) && (Is2Short())) {
+                           Convert2Short();
+                           WAsmCode[0] = 0x3980 + (((Word) OpSize + 1) << 14)
+                              + (((Word) AdrMode2 & 0xf0) << 5) + (AdrMode2 & 15)
+                              + (GAFirstOrders[z].Code & 0xf0);
+                           memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
+                           WAsmCode[1 + (AdrCnt2 >> 1)] = (AdrVals[0] & 0x1fff)
+                              + (((Word) GAFirstOrders[z].Code & 15) << 13);
+                           CodeLen = 4 + AdrCnt2;
+                        } else if ((Is2Absolute()) && (IsShort())) {
+                           ConvertShort();
+                           WAsmCode[0] = 0x3900 + (((Word) OpSize + 1) << 14)
+                              + (((Word) AdrMode & 0xf0) << 5) + (AdrMode & 15)
+                              + (GAFirstOrders[z].Code & 0xf0);
                            memcpy(WAsmCode + 1, AdrVals, AdrCnt);
-                           WAsmCode[1 + (AdrCnt >> 1)] = 0x8400 + AdrMode2 + (((Word) GAFirstOrders[z].Code & 0xf0) << 8)
-                              + (((Word) GAFirstOrders[z].Code & 4) << 9)
-                              + (((Word) GAFirstOrders[z].Code & 3) << 8);
-                           memcpy(WAsmCode + 2 + (AdrCnt >> 1), AdrVals2, AdrCnt2);
-                           CodeLen = 4 + AdrCnt + AdrCnt2;
-                           break;
-                        case 'A':
-                           if ((IsAbsolute()) && (Is2Short())) {
-                              Convert2Short();
-                              WAsmCode[0] = 0x3980 + (((Word) OpSize + 1) << 14)
-                                 + (((Word) AdrMode2 & 0xf0) << 5) + (AdrMode2 & 15)
-                                 + (GAFirstOrders[z].Code & 0xf0);
-                              memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
-                              WAsmCode[1 + (AdrCnt2 >> 1)] = (AdrVals[0] & 0x1fff)
-                                 + (((Word) GAFirstOrders[z].Code & 15) << 13);
-                              CodeLen = 4 + AdrCnt2;
-                           } else if ((Is2Absolute()) && (IsShort())) {
-                              ConvertShort();
-                              WAsmCode[0] = 0x3900 + (((Word) OpSize + 1) << 14)
-                                 + (((Word) AdrMode & 0xf0) << 5) + (AdrMode & 15)
-                                 + (GAFirstOrders[z].Code & 0xf0);
-                              memcpy(WAsmCode + 1, AdrVals, AdrCnt);
-                              WAsmCode[1 + (AdrCnt >> 1)] = (AdrVals2[0] & 0x1fff)
-                                 + (((Word) GAFirstOrders[z].Code & 15) << 13);
-                              CodeLen = 4 + AdrCnt;
-                           } else WrError(1350);
-                           break;
-                        default:
+                           WAsmCode[1 + (AdrCnt >> 1)] = (AdrVals2[0] & 0x1fff)
+                              + (((Word) GAFirstOrders[z].Code & 15) << 13);
+                           CodeLen = 4 + AdrCnt;
+                        } else WrError(1350);
+                        break;
+                     default:
                            WrError(1090);
-                     }
                   }
                }
+            }
          }
          AddPrefixes();
          return;
@@ -1654,60 +1646,60 @@ static void MakeCode_97C241(void) {
          if (ArgCnt != 2) WrError(1110);
          else {
             DecodeAdr(ArgStr[2], 0, true, true);
-            if (AdrOK)
-               if (OpSize == -1) WrError(1132);
-               else {
-                  CopyAdr();
-                  OpSize = (-1);
-                  DecodeAdr(ArgStr[1], 1, false, true);
-                  OpSize = OpSize2;
-                  if (AdrOK) {
-                     if (Format == ' ') {
-                        if (((Is2Absolute()) && (IsShort()))
-                           || ((Is2Short()) && (IsAbsolute()))) Format = 'A';
-                        else Format = 'G';
-                     }
-                     switch (Format) {
-                        case 'G':
-                           WAsmCode[0] = 0x700 + (((Word) OpSize + 1) << 14);
-                           if ((Is2Immediate()) && (ImmVal2() < 127) && (ImmVal2() > LowLim8)) {
-                              AdrMode2 = ImmVal2() & 0xff;
-                              AdrCnt = 0;
-                           } else WAsmCode[0] += 0x800;
-                           WAsmCode[0] += AdrMode2;
+            if (!AdrOK) ;
+            else if (OpSize == -1) WrError(1132);
+            else {
+               CopyAdr();
+               OpSize = (-1);
+               DecodeAdr(ArgStr[1], 1, false, true);
+               OpSize = OpSize2;
+               if (AdrOK) {
+                  if (Format == ' ') {
+                     if (((Is2Absolute()) && (IsShort()))
+                        || ((Is2Short()) && (IsAbsolute()))) Format = 'A';
+                     else Format = 'G';
+                  }
+                  switch (Format) {
+                     case 'G':
+                        WAsmCode[0] = 0x700 + (((Word) OpSize + 1) << 14);
+                        if ((Is2Immediate()) && (ImmVal2() < 127) && (ImmVal2() > LowLim8)) {
+                           AdrMode2 = ImmVal2() & 0xff;
+                           AdrCnt = 0;
+                        } else WAsmCode[0] += 0x800;
+                        WAsmCode[0] += AdrMode2;
+                        memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
+                        WAsmCode[1 + (AdrCnt2 >> 1)] = 0x8400 + AdrMode + (((Word) GASecondOrders[z].Code & 0xf0) << 8)
+                           + (((Word) GASecondOrders[z].Code & 4) << 9)
+                           + (((Word) GASecondOrders[z].Code & 3) << 8);
+                        memcpy(WAsmCode + 2 + (AdrCnt2 >> 1), AdrVals, AdrCnt);
+                        CodeLen = 4 + AdrCnt + AdrCnt2;
+                        break;
+                     case 'A':
+                        if ((IsAbsolute()) && (Is2Short())) {
+                           Convert2Short();
+                           WAsmCode[0] = 0x3900 + (((Word) OpSize + 1) << 14)
+                              + (((Word) AdrMode2 & 0xf0) << 5) + (AdrMode2 & 15)
+                              + (GASecondOrders[z].Code & 0xf0);
                            memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
-                           WAsmCode[1 + (AdrCnt2 >> 1)] = 0x8400 + AdrMode + (((Word) GASecondOrders[z].Code & 0xf0) << 8)
-                              + (((Word) GASecondOrders[z].Code & 4) << 9)
-                              + (((Word) GASecondOrders[z].Code & 3) << 8);
-                           memcpy(WAsmCode + 2 + (AdrCnt2 >> 1), AdrVals, AdrCnt);
-                           CodeLen = 4 + AdrCnt + AdrCnt2;
-                           break;
-                        case 'A':
-                           if ((IsAbsolute()) && (Is2Short())) {
-                              Convert2Short();
-                              WAsmCode[0] = 0x3900 + (((Word) OpSize + 1) << 14)
-                                 + (((Word) AdrMode2 & 0xf0) << 5) + (AdrMode2 & 15)
-                                 + (GASecondOrders[z].Code & 0xf0);
-                              memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
-                              WAsmCode[1 + (AdrCnt2 >> 1)] = (AdrVals[0] & 0x1fff)
-                                 + (((Word) GASecondOrders[z].Code & 15) << 13);
-                              CodeLen = 4 + AdrCnt2;
-                           } else if ((Is2Absolute()) && (IsShort())) {
-                              ConvertShort();
-                              WAsmCode[0] = 0x3980 + (((Word) OpSize + 1) << 14)
-                                 + (((Word) AdrMode & 0xf0) << 5) + (AdrMode & 15)
-                                 + (GASecondOrders[z].Code & 0xf0);
-                              memcpy(WAsmCode + 1, AdrVals, AdrCnt);
-                              WAsmCode[1 + (AdrCnt >> 1)] = (AdrVals2[0] & 0x1fff)
-                                 + (((Word) GASecondOrders[z].Code & 15) << 13);
-                              CodeLen = 4 + AdrCnt;
-                           } else WrError(1350);
-                           break;
-                        default:
-                           WrError(1090);
-                     }
+                           WAsmCode[1 + (AdrCnt2 >> 1)] = (AdrVals[0] & 0x1fff)
+                              + (((Word) GASecondOrders[z].Code & 15) << 13);
+                           CodeLen = 4 + AdrCnt2;
+                        } else if ((Is2Absolute()) && (IsShort())) {
+                           ConvertShort();
+                           WAsmCode[0] = 0x3980 + (((Word) OpSize + 1) << 14)
+                              + (((Word) AdrMode & 0xf0) << 5) + (AdrMode & 15)
+                              + (GASecondOrders[z].Code & 0xf0);
+                           memcpy(WAsmCode + 1, AdrVals, AdrCnt);
+                           WAsmCode[1 + (AdrCnt >> 1)] = (AdrVals2[0] & 0x1fff)
+                              + (((Word) GASecondOrders[z].Code & 15) << 13);
+                           CodeLen = 4 + AdrCnt;
+                        } else WrError(1350);
+                        break;
+                     default:
+                        WrError(1090);
                   }
                }
+            }
          }
          AddPrefixes();
          return;
@@ -1718,51 +1710,51 @@ static void MakeCode_97C241(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          DecodeAdr(ArgStr[2], 1, false, true);
-         if (AdrOK)
-            if ((OpSize != 1) && (OpSize != 2)) WrError(1130);
-            else if (OpSize == -1) WrError(1132);
-            else {
-               CopyAdr();
-               DecodeAdr(ArgStr[1], 0, false, false);
-               if (AdrOK) {
-                  if (OpSize == 0) LowLim8 = (-128);
-                  if (Format == ' ') {
-                     if (((Is2Absolute()) && (IsShort()))
-                        || ((Is2Short()) && (IsAbsolute()))) Format = 'A';
-                     else Format = 'G';
-                  }
-                  switch (Format) {
-                     case 'G':
-                        WAsmCode[0] = 0xf00 + (((Word) OpSize + 1) << 14) + AdrMode2;
+         if (!AdrOK) ;
+         else if ((OpSize != 1) && (OpSize != 2)) WrError(1130);
+         else if (OpSize == -1) WrError(1132);
+         else {
+            CopyAdr();
+            DecodeAdr(ArgStr[1], 0, false, false);
+            if (AdrOK) {
+               if (OpSize == 0) LowLim8 = (-128);
+               if (Format == ' ') {
+                  if (((Is2Absolute()) && (IsShort()))
+                     || ((Is2Short()) && (IsAbsolute()))) Format = 'A';
+                  else Format = 'G';
+               }
+               switch (Format) {
+                  case 'G':
+                     WAsmCode[0] = 0xf00 + (((Word) OpSize + 1) << 14) + AdrMode2;
+                     memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
+                     WAsmCode[1 + (AdrCnt2 >> 1)] = 0xa600 + AdrMode + (((Word) Memo("CHKS")) << 8);
+                     memcpy(WAsmCode + 2 + (AdrCnt2 >> 1), AdrVals, AdrCnt);
+                     CodeLen = 4 + AdrCnt + AdrCnt2;
+                     break;
+                  case 'A':
+                     if ((IsAbsolute()) && (Is2Short())) {
+                        Convert2Short();
+                        WAsmCode[0] = 0x3920 + (((Word) OpSize + 1) << 14)
+                           + (((Word) AdrMode2 & 0xf0) << 5) + (AdrMode2 & 15);
                         memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
-                        WAsmCode[1 + (AdrCnt2 >> 1)] = 0xa600 + AdrMode + (((Word) Memo("CHKS")) << 8);
-                        memcpy(WAsmCode + 2 + (AdrCnt2 >> 1), AdrVals, AdrCnt);
-                        CodeLen = 4 + AdrCnt + AdrCnt2;
-                        break;
-                     case 'A':
-                        if ((IsAbsolute()) && (Is2Short())) {
-                           Convert2Short();
-                           WAsmCode[0] = 0x3920 + (((Word) OpSize + 1) << 14)
-                              + (((Word) AdrMode2 & 0xf0) << 5) + (AdrMode2 & 15);
-                           memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
-                           WAsmCode[1 + (AdrCnt2 >> 1)] = 0x4000 + (AdrVals[0] & 0x1fff)
-                              + (((Word) Memo("CHKS")) << 13);
-                           CodeLen = 4 + AdrCnt2;
-                        } else if ((Is2Absolute()) && (IsShort())) {
-                           ConvertShort();
-                           WAsmCode[0] = 0x39a0 + (((Word) OpSize + 1) << 14)
-                              + (((Word) AdrMode & 0xf0) << 5) + (AdrMode & 15);
-                           memcpy(WAsmCode + 1, AdrVals, AdrCnt);
-                           WAsmCode[1 + (AdrCnt >> 1)] = 0x4000 + (AdrVals2[0] & 0x1fff)
-                              + (((Word) Memo("CHKS")) << 13);
-                           CodeLen = 4 + AdrCnt;
-                        } else WrError(1350);
-                        break;
-                     default:
-                        WrError(1090);
-                  }
+                        WAsmCode[1 + (AdrCnt2 >> 1)] = 0x4000 + (AdrVals[0] & 0x1fff)
+                           + (((Word) Memo("CHKS")) << 13);
+                        CodeLen = 4 + AdrCnt2;
+                     } else if ((Is2Absolute()) && (IsShort())) {
+                        ConvertShort();
+                        WAsmCode[0] = 0x39a0 + (((Word) OpSize + 1) << 14)
+                           + (((Word) AdrMode & 0xf0) << 5) + (AdrMode & 15);
+                        memcpy(WAsmCode + 1, AdrVals, AdrCnt);
+                        WAsmCode[1 + (AdrCnt >> 1)] = 0x4000 + (AdrVals2[0] & 0x1fff)
+                           + (((Word) Memo("CHKS")) << 13);
+                        CodeLen = 4 + AdrCnt;
+                     } else WrError(1350);
+                     break;
+                  default:
+                     WrError(1090);
                }
             }
+         }
       }
       AddPrefixes();
       return;
@@ -1788,19 +1780,19 @@ static void MakeCode_97C241(void) {
                memcpy(WAsmCode + 1, AdrVals, AdrCnt);
                Cnt = AdrCnt;
                DecodeAdr(ArgStr[1], 1, true, true);
-               if (AdrOK)
-                  if (OpSize == -1) WrError(1132);
-                  else {
-                     WAsmCode[0] += ((Word) OpSize + 1) << 14;
-                     WAsmCode[1 + (Cnt >> 1)] = 0x8000 + AdrMode + (z << 8) + (((Word) Reg) << 11);
-                     memcpy(WAsmCode + 2 + (Cnt >> 1), AdrVals, AdrCnt);
-                     CodeLen = 4 + AdrCnt + Cnt;
-                  }
+               if (!AdrOK) ;
+               else if (OpSize == -1) WrError(1132);
+               else {
+                  WAsmCode[0] += ((Word) OpSize + 1) << 14;
+                  WAsmCode[1 + (Cnt >> 1)] = 0x8000 + AdrMode + (z << 8) + (((Word) Reg) << 11);
+                  memcpy(WAsmCode + 2 + (Cnt >> 1), AdrVals, AdrCnt);
+                  CodeLen = 4 + AdrCnt + Cnt;
+               }
             }
          }
          AddPrefixes();
          return;
-      };
+      }
 
    if (Memo("EX")) {
       if (ArgCnt != 2) WrError(1110);
@@ -1809,50 +1801,50 @@ static void MakeCode_97C241(void) {
          if (AdrOK) {
             CopyAdr();
             DecodeAdr(ArgStr[2], 0, false, true);
-            if (AdrOK)
-               if (OpSize == -1) WrError(1132);
-               else {
-                  if (Format == ' ') {
-                     if ((IsReg()) && (Is2Reg())) Format = 'S';
-                     else if (((IsShort()) && (Is2Absolute()))
-                        || ((Is2Short()) && (IsAbsolute()))) Format = 'A';
-                     else Format = 'G';
-                  }
-                  switch (Format) {
-                     case 'G':
-                        WAsmCode[0] = 0x0f00 + (((Word) OpSize + 1) << 14) + AdrMode;
-                        memcpy(WAsmCode + 1, AdrVals, AdrCnt);
-                        WAsmCode[1 + (AdrCnt >> 1)] = 0x8f00 + AdrMode2;
-                        memcpy(WAsmCode + 2 + (AdrCnt >> 1), AdrVals2, AdrCnt2);
-                        CodeLen = 4 + AdrCnt + AdrCnt2;
-                        break;
-                     case 'A':
-                        if ((IsAbsolute()) && (Is2Short())) {
-                           Convert2Short();
-                           WAsmCode[0] = 0x3980 + (((Word) OpSize + 1) << 14)
-                              + (((Word) AdrMode2 & 0xf0) << 5) + (AdrMode2 & 15);
-                           memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
-                           WAsmCode[1 + (AdrCnt2 >> 1)] = AdrVals[0];
-                           CodeLen = 4 + AdrCnt2;
-                        } else if ((Is2Absolute()) && (IsShort())) {
-                           ConvertShort();
-                           WAsmCode[0] = 0x3900 + (((Word) OpSize + 1) << 14)
-                              + (((Word) AdrMode & 0xf0) << 5) + (AdrMode & 15);
-                           memcpy(WAsmCode + 1, AdrVals, AdrCnt);
-                           WAsmCode[1 + (AdrCnt >> 1)] = AdrVals2[0];
-                           CodeLen = 4 + AdrCnt;
-                        } else WrError(1350);
-                        break;
-                     case 'S':
-                        if ((IsReg()) && (Is2Reg())) {
-                           WAsmCode[0] = 0x3e00 + (((Word) OpSize + 1) << 14) + (AdrMode2 << 4) + AdrMode;
-                           CodeLen = 2;
-                        } else WrError(1350);
-                        break;
-                     default:
-                        WrError(1090);
-                  }
+            if (!AdrOK) ;
+            else if (OpSize == -1) WrError(1132);
+            else {
+               if (Format == ' ') {
+                  if ((IsReg()) && (Is2Reg())) Format = 'S';
+                  else if (((IsShort()) && (Is2Absolute()))
+                     || ((Is2Short()) && (IsAbsolute()))) Format = 'A';
+                  else Format = 'G';
                }
+               switch (Format) {
+                  case 'G':
+                     WAsmCode[0] = 0x0f00 + (((Word) OpSize + 1) << 14) + AdrMode;
+                     memcpy(WAsmCode + 1, AdrVals, AdrCnt);
+                     WAsmCode[1 + (AdrCnt >> 1)] = 0x8f00 + AdrMode2;
+                     memcpy(WAsmCode + 2 + (AdrCnt >> 1), AdrVals2, AdrCnt2);
+                     CodeLen = 4 + AdrCnt + AdrCnt2;
+                     break;
+                  case 'A':
+                     if ((IsAbsolute()) && (Is2Short())) {
+                        Convert2Short();
+                        WAsmCode[0] = 0x3980 + (((Word) OpSize + 1) << 14)
+                           + (((Word) AdrMode2 & 0xf0) << 5) + (AdrMode2 & 15);
+                        memcpy(WAsmCode + 1, AdrVals2, AdrCnt2);
+                        WAsmCode[1 + (AdrCnt2 >> 1)] = AdrVals[0];
+                        CodeLen = 4 + AdrCnt2;
+                     } else if ((Is2Absolute()) && (IsShort())) {
+                        ConvertShort();
+                        WAsmCode[0] = 0x3900 + (((Word) OpSize + 1) << 14)
+                           + (((Word) AdrMode & 0xf0) << 5) + (AdrMode & 15);
+                        memcpy(WAsmCode + 1, AdrVals, AdrCnt);
+                        WAsmCode[1 + (AdrCnt >> 1)] = AdrVals2[0];
+                        CodeLen = 4 + AdrCnt;
+                     } else WrError(1350);
+                     break;
+                  case 'S':
+                     if ((IsReg()) && (Is2Reg())) {
+                        WAsmCode[0] = 0x3e00 + (((Word) OpSize + 1) << 14) + (AdrMode2 << 4) + AdrMode;
+                        CodeLen = 2;
+                     } else WrError(1350);
+                     break;
+                  default:
+                     WrError(1090);
+               }
+            }
          }
       }
       AddPrefixes();
@@ -1866,13 +1858,12 @@ static void MakeCode_97C241(void) {
       else if (*AttrPart != '\0') WrError(1100);
       else {
          AdrInt = EvalIntExpression(ArgStr[1], Int32, &OK) - EProgCounter();
-         if (OK)
-            if (AddRelPrefix(0, 13, &AdrInt))
-               if (Odd(AdrInt)) WrError(1375);
-               else {
-                  WAsmCode[0] = 0x2000 + (AdrInt & 0x1ffe) + Memo("CALR");
-                  CodeLen = 2;
-               }
+         if (!OK || !AddRelPrefix(0, 13, &AdrInt)) ;
+         else if (Odd(AdrInt)) WrError(1375);
+         else {
+            WAsmCode[0] = 0x2000 + (AdrInt & 0x1ffe) + Memo("CALR");
+            CodeLen = 2;
+         }
       }
       AddPrefixes();
       return;
@@ -1889,13 +1880,12 @@ static void MakeCode_97C241(void) {
          else {
             z %= 16;
             AdrInt = EvalIntExpression(ArgStr[2], Int32, &OK) - EProgCounter();
-            if (OK)
-               if (AddRelPrefix(0, 9, &AdrInt))
-                  if (Odd(AdrInt)) WrError(1375);
-                  else {
-                     WAsmCode[0] = 0x1000 + ((z & 14) << 8) + (AdrInt & 0x1fe) + (z & 1);
-                     CodeLen = 2;
-                  }
+            if (!OK || !AddRelPrefix(0, 9, &AdrInt)) ;
+            else if (Odd(AdrInt)) WrError(1375);
+            else {
+               WAsmCode[0] = 0x1000 + ((z & 14) << 8) + (AdrInt & 0x1fe) + (z & 1);
+               CodeLen = 2;
+            }
          }
       }
       AddPrefixes();
@@ -1913,14 +1903,13 @@ static void MakeCode_97C241(void) {
             if (OK) {
                AddAbsPrefix(1, 13, AdrLong);
                AdrInt = EvalIntExpression(ArgStr[3], Int32, &OK) - EProgCounter();
-               if (OK)
-                  if (AddRelPrefix(0, 9, &AdrInt))
-                     if (Odd(AdrInt)) WrError(1375);
-                     else {
-                        CodeLen = 4;
-                        WAsmCode[1] = (z << 13) + (AdrLong & 0x1fff);
-                        WAsmCode[0] = 0x1e00 + (AdrInt & 0x1fe) + Memo("JRBS");
-                     }
+               if (!OK || !AddRelPrefix(0, 9, &AdrInt)) ;
+               else if (Odd(AdrInt)) WrError(1375);
+               else {
+                  CodeLen = 4;
+                  WAsmCode[1] = (z << 13) + (AdrLong & 0x1fff);
+                  WAsmCode[0] = 0x1e00 + (AdrInt & 0x1fe) + Memo("JRBS");
+               }
             }
          }
       }
@@ -1932,20 +1921,19 @@ static void MakeCode_97C241(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          DecodeAdr(ArgStr[1], 0, false, true);
-         if (AdrOK)
-            if ((OpSize != 1) && (OpSize != 2)) WrError(1130);
+         if (!AdrOK) ;
+         else if ((OpSize != 1) && (OpSize != 2)) WrError(1130);
+         else {
+            AdrInt = EvalIntExpression(ArgStr[2], Int32, &OK) - (EProgCounter() + 4 + AdrCnt + 2 * PrefUsed[0]);
+            if (!OK || !AddRelPrefix(1, 13, &AdrInt)) ;
+            else if (Odd(AdrInt)) WrError(1375);
             else {
-               AdrInt = EvalIntExpression(ArgStr[2], Int32, &OK) - (EProgCounter() + 4 + AdrCnt + 2 * PrefUsed[0]);
-               if (OK)
-                  if (AddRelPrefix(1, 13, &AdrInt))
-                     if (Odd(AdrInt)) WrError(1375);
-                     else {
-                        WAsmCode[0] = 0x3700 + (((Word) OpSize + 1) << 14) + AdrMode;
-                        memcpy(WAsmCode + 1, AdrVals, AdrCnt);
-                        WAsmCode[1 + (AdrCnt >> 1)] = 0xe000 + (AdrInt & 0x1ffe);
-                        CodeLen = 4 + AdrCnt;
-                     }
+               WAsmCode[0] = 0x3700 + (((Word) OpSize + 1) << 14) + AdrMode;
+               memcpy(WAsmCode + 1, AdrVals, AdrCnt);
+               WAsmCode[1 + (AdrCnt >> 1)] = 0xe000 + (AdrInt & 0x1ffe);
+               CodeLen = 4 + AdrCnt;
             }
+         }
       }
       AddPrefixes();
       return;
@@ -1961,20 +1949,19 @@ static void MakeCode_97C241(void) {
          else {
             z %= 16;
             DecodeAdr(ArgStr[1], 0, false, true);
-            if (AdrOK)
-               if ((OpSize != 1) && (OpSize != 2)) WrError(1130);
+            if (!AdrOK) ;
+            else if ((OpSize != 1) && (OpSize != 2)) WrError(1130);
+            else {
+               AdrInt = EvalIntExpression(ArgStr[3], Int32, &OK) - EProgCounter();
+               if (!OK || !AddRelPrefix(1, 13, &AdrInt)) ;
+               else if (Odd(AdrInt)) WrError(1375);
                else {
-                  AdrInt = EvalIntExpression(ArgStr[3], Int32, &OK) - EProgCounter();
-                  if (OK)
-                     if (AddRelPrefix(1, 13, &AdrInt))
-                        if (Odd(AdrInt)) WrError(1375);
-                        else {
-                           WAsmCode[0] = 0x3700 + (((Word) OpSize + 1) << 14) + AdrMode;
-                           memcpy(WAsmCode + 1, AdrVals, AdrCnt);
-                           WAsmCode[1 + (AdrCnt >> 1)] = ((z & 14) << 12) + (AdrInt & 0x1ffe) + (z & 1);
-                           CodeLen = 4 + AdrCnt;
-                        }
+                  WAsmCode[0] = 0x3700 + (((Word) OpSize + 1) << 14) + AdrMode;
+                  memcpy(WAsmCode + 1, AdrVals, AdrCnt);
+                  WAsmCode[1 + (AdrCnt >> 1)] = ((z & 14) << 12) + (AdrInt & 0x1ffe) + (z & 1);
+                  CodeLen = 4 + AdrCnt;
                }
+            }
          }
       }
       AddPrefixes();
@@ -2023,14 +2010,14 @@ static void MakeCode_97C241(void) {
             z = AdrCnt;
             memcpy(WAsmCode + 1, AdrVals, z);
             DecodeAdr(ArgStr[1], 1, false, true);
-            if (AdrOK)
-               if ((OpSize != 1) && (OpSize != 2)) WrError(1130);
-               else {
-                  WAsmCode[0] += ((Word) OpSize) << 14;
-                  WAsmCode[1 + (z >> 1)] = 0x9700 + AdrMode;
-                  memcpy(WAsmCode + 2 + (z >> 1), AdrVals, AdrCnt);
-                  CodeLen = 4 + z + AdrCnt;
-               }
+            if (!AdrOK) ;
+            else if ((OpSize != 1) && (OpSize != 2)) WrError(1130);
+            else {
+               WAsmCode[0] += ((Word) OpSize) << 14;
+               WAsmCode[1 + (z >> 1)] = 0x9700 + AdrMode;
+               memcpy(WAsmCode + 2 + (z >> 1), AdrVals, AdrCnt);
+               CodeLen = 4 + z + AdrCnt;
+            }
          }
       }
       AddPrefixes();

@@ -1,13 +1,5 @@
-/* codepseudo.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Haeufiger benutzte Pseudo-Befehle                                         */
-/*                                                                           */
-/* Historie: 23. 5.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Haeufiger benutzte Pseudo-Befehle
 #include "stdinc.h"
 #include <string.h>
 
@@ -108,7 +100,7 @@ static bool LayoutByte(char *Asc, Word * Cnt, bool Turn) {
             BAsmCode[CodeLen++] = t.Contents.Int;
             *Cnt = 1;
             Result = true;
-         };
+         }
          break;
       case TempFloat:
          WrError(1135);
@@ -581,15 +573,15 @@ bool DecodeMotoPseudo(bool Turn) {
          OK = true;
          do {
             EvalStringExpression(ArgStr[z], &OK, SVal);
-            if (OK)
-               if (CodeLen + strlen(SVal) >= MaxCodeLen) {
-                  WrError(1920);
-                  OK = false;
-               } else {
-                  TranslateString(SVal);
-                  memcpy(BAsmCode + CodeLen, SVal, strlen(SVal));
-                  CodeLen += strlen(SVal);
-               }
+            if (!OK) ;
+            else if (CodeLen + strlen(SVal) >= MaxCodeLen) {
+               WrError(1920);
+               OK = false;
+            } else {
+               TranslateString(SVal);
+               memcpy(BAsmCode + CodeLen, SVal, strlen(SVal));
+               CodeLen += strlen(SVal);
+            }
             z++;
          }
          while ((z <= ArgCnt) && (OK));
@@ -717,236 +709,220 @@ bool DecodeMoto16Pseudo(ShortInt OpSize, bool Turn) {
                   strcopy(ArgStr[z], p + 1);
                }
             }
-            if (OK)
-               if (FirstPassUnknown) WrError(1820);
-               else {
-                  switch (OpSize) {
-                     case 0:
-                        FirstPassUnknown = false;
-                        EvalExpression(ArgStr[z], &t);
-                        if ((FirstPassUnknown) && (t.Typ == TempInt)) t.Contents.Int &= 0xff;
-                        switch (t.Typ) {
-                           case TempInt:
-                              if (!RangeCheck(t.Contents.Int, Int8)) {
-                                 WrError(1320);
-                                 OK = false;
-                              } else if (CodeLen + Rep > MaxCodeLen) {
-                                 WrError(1920);
-                                 OK = false;
-                                 } else for (z2 = 0; z2 < Rep; z2++) EnterByte(t.Contents.Int);
-                              break;
-                           case TempFloat:
-                              WrError(1135);
-                              OK = false;
-                              break;
-                           case TempString:
-                              if (CodeLen + Rep * strlen(t.Contents.Ascii) > MaxCodeLen) {
-                                 WrError(1920);
-                                 OK = false;
-                              } else
-                                 for (z2 = 0; z2 < Rep; z2++)
-                                    for (zp = t.Contents.Ascii; *zp != '\0'; EnterByte(CharTransTable[(unsigned int)*(zp++)]));
-                              break;
-                           default:
-                              OK = false;
-                        }
+            if (!OK) ;
+            else if (FirstPassUnknown) WrError(1820);
+            else switch (OpSize) {
+               case 0:
+                  FirstPassUnknown = false;
+                  EvalExpression(ArgStr[z], &t);
+                  if ((FirstPassUnknown) && (t.Typ == TempInt)) t.Contents.Int &= 0xff;
+                  switch (t.Typ) {
+                     case TempInt:
+                        if (!RangeCheck(t.Contents.Int, Int8)) {
+                           WrError(1320);
+                           OK = false;
+                        } else if (CodeLen + Rep > MaxCodeLen) {
+                           WrError(1920);
+                           OK = false;
+                           } else for (z2 = 0; z2 < Rep; z2++) EnterByte(t.Contents.Int);
                         break;
-                     case 1:
-                        HVal16 = EvalIntExpression(ArgStr[z], Int16, &OK);
-                        if (OK)
-                           if (CodeLen + (Rep << 1) > MaxCodeLen) {
-                              WrError(1920);
-                              OK = false;
-                           } else {
-                              if (ListGran() == 1)
-                                 for (z2 = 0; z2 < Rep; z2++) {
-                                    BAsmCode[(WLen << 1)] = Hi(HVal16);
-                                    BAsmCode[(WLen << 1) + 1] = Lo(HVal16);
-                                    WLen++;
-                              } else
-                                 for (z2 = 0; z2 < Rep; z2++) WAsmCode[WLen++] = HVal16;
-                              CodeLen += Rep << 1;
-                           }
+                     case TempFloat:
+                        WrError(1135);
+                        OK = false;
                         break;
-                     case 2:
-                        HVal = EvalIntExpression(ArgStr[z], Int32, &OK);
-                        if (OK)
-                           if (CodeLen + (Rep << 2) > MaxCodeLen) {
-                              WrError(1920);
-                              OK = false;
-                           } else {
-                              if (ListGran() == 1)
-                                 for (z2 = 0; z2 < Rep; z2++) {
-                                    BAsmCode[(WLen << 1)] = (HVal >> 24) & 0xff;
-                                    BAsmCode[(WLen << 1) + 1] = (HVal >> 16) & 0xff;
-                                    BAsmCode[(WLen << 1) + 2] = (HVal >> 8) & 0xff;
-                                    BAsmCode[(WLen << 1) + 3] = (HVal) & 0xff;
-                                    WLen += 2;
-                              } else
-                                 for (z2 = 0; z2 < Rep; z2++) {
-                                    WAsmCode[WLen++] = HVal >> 16;
-                                    WAsmCode[WLen++] = HVal & 0xffff;
-                                 }
-                              CodeLen += Rep << 2;
-                           }
+                     case TempString:
+                        if (CodeLen + Rep * strlen(t.Contents.Ascii) > MaxCodeLen) {
+                           WrError(1920);
+                           OK = false;
+                        } else
+                           for (z2 = 0; z2 < Rep; z2++)
+                              for (zp = t.Contents.Ascii; *zp != '\0'; EnterByte(CharTransTable[(unsigned int)*(zp++)]));
                         break;
-#ifdef HAS64
-                     case 3:
-                        QVal = EvalIntExpression(ArgStr[z], Int64, &OK);
-                        if (OK)
-                           if (CodeLen + (Rep << 3) > MaxCodeLen) {
-                              WrError(1920);
-                              OK = false;
-                           } else {
-                              if (ListGran() == 1)
-                                 for (z2 = 0; z2 < Rep; z2++) {
-                                    BAsmCode[(WLen << 1)] = (QVal >> 56) & 0xff;
-                                    BAsmCode[(WLen << 1) + 1] = (QVal >> 48) & 0xff;
-                                    BAsmCode[(WLen << 1) + 2] = (QVal >> 40) & 0xff;
-                                    BAsmCode[(WLen << 1) + 3] = (QVal >> 32) & 0xff;
-                                    BAsmCode[(WLen << 1) + 4] = (QVal >> 24) & 0xff;
-                                    BAsmCode[(WLen << 1) + 5] = (QVal >> 16) & 0xff;
-                                    BAsmCode[(WLen << 1) + 6] = (QVal >> 8) & 0xff;
-                                    BAsmCode[(WLen << 1) + 7] = (QVal) & 0xff;
-                                    WLen += 4;
-                              } else
-                                 for (z2 = 0; z2 < Rep; z2++) {
-                                    WAsmCode[WLen++] = (QVal >> 48) & 0xffff;
-                                    WAsmCode[WLen++] = (QVal >> 32) & 0xffff;
-                                    WAsmCode[WLen++] = (QVal >> 16) & 0xffff;
-                                    WAsmCode[WLen++] = QVal & 0xffff;
-                                 }
-                              CodeLen += Rep << 3;
-                           }
-                        break;
-#endif
-                     case 4:
-                        FVal = EvalFloatExpression(ArgStr[z], Float32, &OK);
-                        if (OK)
-                           if (CodeLen + (Rep << 2) > MaxCodeLen) {
-                              WrError(1920);
-                              OK = false;
-                           } else {
-                              memcpy(TurnField, &FVal, 4);
-                              if (BigEndian) DWSwap((void *)TurnField, 4);
-                              if (ListGran() == 1)
-                                 for (z2 = 0; z2 < Rep; z2++) {
-                                    BAsmCode[(WLen << 1)] = Hi(TurnField[1]);
-                                    BAsmCode[(WLen << 1) + 1] = Lo(TurnField[1]);
-                                    BAsmCode[(WLen << 1) + 2] = Hi(TurnField[0]);
-                                    BAsmCode[(WLen << 1) + 3] = Lo(TurnField[0]);
-                                    WLen += 2;
-                              } else
-                                 for (z2 = 0; z2 < Rep; z2++) {
-                                    WAsmCode[WLen++] = TurnField[1];
-                                    WAsmCode[WLen++] = TurnField[0];
-                                 }
-                              CodeLen += Rep << 2;
-                           }
-                        break;
-                     case 5:
-                        DVal = EvalFloatExpression(ArgStr[z], Float64, &OK);
-                        if (OK)
-                           if (CodeLen + (Rep << 3) > MaxCodeLen) {
-                              WrError(1920);
-                              OK = false;
-                           } else {
-                              memcpy(TurnField, &DVal, 8);
-                              if (BigEndian) QWSwap((void *)TurnField, 8);
-                              if (ListGran() == 1)
-                                 for (z2 = 0; z2 < Rep; z2++) {
-                                    BAsmCode[(WLen << 1)] = Hi(TurnField[3]);
-                                    BAsmCode[(WLen << 1) + 1] = Lo(TurnField[3]);
-                                    BAsmCode[(WLen << 1) + 2] = Hi(TurnField[2]);
-                                    BAsmCode[(WLen << 1) + 3] = Lo(TurnField[2]);
-                                    BAsmCode[(WLen << 1) + 4] = Hi(TurnField[1]);
-                                    BAsmCode[(WLen << 1) + 5] = Lo(TurnField[1]);
-                                    BAsmCode[(WLen << 1) + 6] = Hi(TurnField[0]);
-                                    BAsmCode[(WLen << 1) + 7] = Lo(TurnField[0]);
-                                    WLen += 4;
-                              } else
-                                 for (z2 = 0; z2 < Rep; z2++) {
-                                    WAsmCode[WLen++] = TurnField[3];
-                                    WAsmCode[WLen++] = TurnField[2];
-                                    WAsmCode[WLen++] = TurnField[1];
-                                    WAsmCode[WLen++] = TurnField[0];
-                                 }
-                              CodeLen += Rep << 3;
-                           }
-                        break;
-                     case 6:
-                        DVal = EvalFloatExpression(ArgStr[z], Float64, &OK);
-                        if (OK)
-                           if (CodeLen + (Rep * 12) > MaxCodeLen) {
-                              WrError(1920);
-                              OK = false;
-                           } else {
-                              Double_2_TenBytes(DVal, (Byte *) TurnField);
-                              if (BigEndian) WSwap((void *)TurnField, 10);
-                              if (ListGran() == 1)
-                                 for (z2 = 0; z2 < Rep; z2++) {
-                                    BAsmCode[(WLen << 1)] = Hi(TurnField[4]);
-                                    BAsmCode[(WLen << 1) + 1] = Lo(TurnField[4]);
-                                    BAsmCode[(WLen << 1) + 2] = 0;
-                                    BAsmCode[(WLen << 1) + 3] = 0;
-                                    BAsmCode[(WLen << 1) + 4] = Hi(TurnField[3]);
-                                    BAsmCode[(WLen << 1) + 5] = Lo(TurnField[3]);
-                                    BAsmCode[(WLen << 1) + 6] = Hi(TurnField[2]);
-                                    BAsmCode[(WLen << 1) + 7] = Lo(TurnField[2]);
-                                    BAsmCode[(WLen << 1) + 8] = Hi(TurnField[1]);
-                                    BAsmCode[(WLen << 1) + 9] = Lo(TurnField[1]);
-                                    BAsmCode[(WLen << 1) + 10] = Hi(TurnField[0]);
-                                    BAsmCode[(WLen << 1) + 11] = Lo(TurnField[0]);
-                                    WLen += 6;
-                              } else
-                                 for (z2 = 0; z2 < Rep; z2++) {
-                                    WAsmCode[WLen++] = TurnField[4];
-                                    WAsmCode[WLen++] = 0;
-                                    WAsmCode[WLen++] = TurnField[3];
-                                    WAsmCode[WLen++] = TurnField[2];
-                                    WAsmCode[WLen++] = TurnField[1];
-                                    WAsmCode[WLen++] = TurnField[0];
-                                 }
-                              CodeLen += Rep * 12;
-                           }
-                        break;
-                     case 7:
-                        DVal = EvalFloatExpression(ArgStr[z], Float64, &OK);
-                        if (OK)
-                           if (CodeLen + (Rep * 12) > MaxCodeLen) {
-                              WrError(1920);
-                              OK = false;
-                           } else {
-                              ConvertDec(DVal, TurnField);
-                              if (ListGran() == 1)
-                                 for (z2 = 0; z2 < Rep; z2++) {
-                                    BAsmCode[(WLen << 1)] = Hi(TurnField[5]);
-                                    BAsmCode[(WLen << 1) + 1] = Lo(TurnField[5]);
-                                    BAsmCode[(WLen << 1) + 2] = Hi(TurnField[4]);
-                                    BAsmCode[(WLen << 1) + 3] = Lo(TurnField[4]);
-                                    BAsmCode[(WLen << 1) + 4] = Hi(TurnField[3]);
-                                    BAsmCode[(WLen << 1) + 5] = Lo(TurnField[3]);
-                                    BAsmCode[(WLen << 1) + 6] = Hi(TurnField[2]);
-                                    BAsmCode[(WLen << 1) + 7] = Lo(TurnField[2]);
-                                    BAsmCode[(WLen << 1) + 8] = Hi(TurnField[1]);
-                                    BAsmCode[(WLen << 1) + 9] = Lo(TurnField[1]);
-                                    BAsmCode[(WLen << 1) + 10] = Hi(TurnField[0]);
-                                    BAsmCode[(WLen << 1) + 11] = Lo(TurnField[0]);
-                                    WLen += 6;
-                              } else
-                                 for (z2 = 0; z2 < Rep; z2++) {
-                                    WAsmCode[WLen++] = TurnField[5];
-                                    WAsmCode[WLen++] = TurnField[4];
-                                    WAsmCode[WLen++] = TurnField[3];
-                                    WAsmCode[WLen++] = TurnField[2];
-                                    WAsmCode[WLen++] = TurnField[1];
-                                    WAsmCode[WLen++] = TurnField[0];
-                                 }
-                              CodeLen += Rep * 12;
-                           }
-                        break;
+                     default:
+                        OK = false;
                   }
-               }
+                  break;
+               case 1:
+                  HVal16 = EvalIntExpression(ArgStr[z], Int16, &OK);
+                  if (!OK) ;
+                  else if (CodeLen + (Rep << 1) > MaxCodeLen) {
+                     WrError(1920);
+                     OK = false;
+                  } else {
+                     if (ListGran() == 1) for (z2 = 0; z2 < Rep; z2++) {
+                        BAsmCode[(WLen << 1)] = Hi(HVal16);
+                        BAsmCode[(WLen << 1) + 1] = Lo(HVal16);
+                        WLen++;
+                     } else for (z2 = 0; z2 < Rep; z2++) WAsmCode[WLen++] = HVal16;
+                     CodeLen += Rep << 1;
+                  }
+                  break;
+               case 2:
+                  HVal = EvalIntExpression(ArgStr[z], Int32, &OK);
+                  if (!OK) ;
+                  else if (CodeLen + (Rep << 2) > MaxCodeLen) {
+                     WrError(1920);
+                     OK = false;
+                  } else {
+                     if (ListGran() == 1) for (z2 = 0; z2 < Rep; z2++) {
+                        BAsmCode[(WLen << 1)] = (HVal >> 24) & 0xff;
+                        BAsmCode[(WLen << 1) + 1] = (HVal >> 16) & 0xff;
+                        BAsmCode[(WLen << 1) + 2] = (HVal >> 8) & 0xff;
+                        BAsmCode[(WLen << 1) + 3] = (HVal) & 0xff;
+                        WLen += 2;
+                     } else for (z2 = 0; z2 < Rep; z2++) {
+                        WAsmCode[WLen++] = HVal >> 16;
+                        WAsmCode[WLen++] = HVal & 0xffff;
+                     }
+                     CodeLen += Rep << 2;
+                  }
+                  break;
+#ifdef HAS64
+               case 3:
+                  QVal = EvalIntExpression(ArgStr[z], Int64, &OK);
+                  if (!OK) ;
+                  else if (CodeLen + (Rep << 3) > MaxCodeLen) {
+                     WrError(1920);
+                     OK = false;
+                  } else {
+                     if (ListGran() == 1) for (z2 = 0; z2 < Rep; z2++) {
+                        BAsmCode[(WLen << 1)] = (QVal >> 56) & 0xff;
+                        BAsmCode[(WLen << 1) + 1] = (QVal >> 48) & 0xff;
+                        BAsmCode[(WLen << 1) + 2] = (QVal >> 40) & 0xff;
+                        BAsmCode[(WLen << 1) + 3] = (QVal >> 32) & 0xff;
+                        BAsmCode[(WLen << 1) + 4] = (QVal >> 24) & 0xff;
+                        BAsmCode[(WLen << 1) + 5] = (QVal >> 16) & 0xff;
+                        BAsmCode[(WLen << 1) + 6] = (QVal >> 8) & 0xff;
+                        BAsmCode[(WLen << 1) + 7] = (QVal) & 0xff;
+                        WLen += 4;
+                     } else for (z2 = 0; z2 < Rep; z2++) {
+                        WAsmCode[WLen++] = (QVal >> 48) & 0xffff;
+                        WAsmCode[WLen++] = (QVal >> 32) & 0xffff;
+                        WAsmCode[WLen++] = (QVal >> 16) & 0xffff;
+                        WAsmCode[WLen++] = QVal & 0xffff;
+                     }
+                     CodeLen += Rep << 3;
+                  }
+                  break;
+#endif
+               case 4:
+                  FVal = EvalFloatExpression(ArgStr[z], Float32, &OK);
+                  if (!OK) ;
+                  else if (CodeLen + (Rep << 2) > MaxCodeLen) {
+                     WrError(1920);
+                     OK = false;
+                  } else {
+                     memcpy(TurnField, &FVal, 4);
+                     if (BigEndian) DWSwap((void *)TurnField, 4);
+                     if (ListGran() == 1) for (z2 = 0; z2 < Rep; z2++) {
+                        BAsmCode[(WLen << 1)] = Hi(TurnField[1]);
+                        BAsmCode[(WLen << 1) + 1] = Lo(TurnField[1]);
+                        BAsmCode[(WLen << 1) + 2] = Hi(TurnField[0]);
+                        BAsmCode[(WLen << 1) + 3] = Lo(TurnField[0]);
+                        WLen += 2;
+                     } else for (z2 = 0; z2 < Rep; z2++) {
+                        WAsmCode[WLen++] = TurnField[1];
+                        WAsmCode[WLen++] = TurnField[0];
+                     }
+                     CodeLen += Rep << 2;
+                  }
+                  break;
+               case 5:
+                  DVal = EvalFloatExpression(ArgStr[z], Float64, &OK);
+                  if (!OK) ;
+                  else if (CodeLen + (Rep << 3) > MaxCodeLen) {
+                     WrError(1920);
+                     OK = false;
+                  } else {
+                     memcpy(TurnField, &DVal, 8);
+                     if (BigEndian) QWSwap((void *)TurnField, 8);
+                     if (ListGran() == 1) for (z2 = 0; z2 < Rep; z2++) {
+                        BAsmCode[(WLen << 1)] = Hi(TurnField[3]);
+                        BAsmCode[(WLen << 1) + 1] = Lo(TurnField[3]);
+                        BAsmCode[(WLen << 1) + 2] = Hi(TurnField[2]);
+                        BAsmCode[(WLen << 1) + 3] = Lo(TurnField[2]);
+                        BAsmCode[(WLen << 1) + 4] = Hi(TurnField[1]);
+                        BAsmCode[(WLen << 1) + 5] = Lo(TurnField[1]);
+                        BAsmCode[(WLen << 1) + 6] = Hi(TurnField[0]);
+                        BAsmCode[(WLen << 1) + 7] = Lo(TurnField[0]);
+                        WLen += 4;
+                     } else for (z2 = 0; z2 < Rep; z2++) {
+                        WAsmCode[WLen++] = TurnField[3];
+                        WAsmCode[WLen++] = TurnField[2];
+                        WAsmCode[WLen++] = TurnField[1];
+                        WAsmCode[WLen++] = TurnField[0];
+                     }
+                     CodeLen += Rep << 3;
+                  }
+                  break;
+               case 6:
+                  DVal = EvalFloatExpression(ArgStr[z], Float64, &OK);
+                  if (!OK) ;
+                  else if (CodeLen + (Rep * 12) > MaxCodeLen) {
+                     WrError(1920);
+                     OK = false;
+                  } else {
+                     Double_2_TenBytes(DVal, (Byte *) TurnField);
+                     if (BigEndian) WSwap((void *)TurnField, 10);
+                     if (ListGran() == 1) for (z2 = 0; z2 < Rep; z2++) {
+                        BAsmCode[(WLen << 1)] = Hi(TurnField[4]);
+                        BAsmCode[(WLen << 1) + 1] = Lo(TurnField[4]);
+                        BAsmCode[(WLen << 1) + 2] = 0;
+                        BAsmCode[(WLen << 1) + 3] = 0;
+                        BAsmCode[(WLen << 1) + 4] = Hi(TurnField[3]);
+                        BAsmCode[(WLen << 1) + 5] = Lo(TurnField[3]);
+                        BAsmCode[(WLen << 1) + 6] = Hi(TurnField[2]);
+                        BAsmCode[(WLen << 1) + 7] = Lo(TurnField[2]);
+                        BAsmCode[(WLen << 1) + 8] = Hi(TurnField[1]);
+                        BAsmCode[(WLen << 1) + 9] = Lo(TurnField[1]);
+                        BAsmCode[(WLen << 1) + 10] = Hi(TurnField[0]);
+                        BAsmCode[(WLen << 1) + 11] = Lo(TurnField[0]);
+                        WLen += 6;
+                     } else for (z2 = 0; z2 < Rep; z2++) {
+                        WAsmCode[WLen++] = TurnField[4];
+                        WAsmCode[WLen++] = 0;
+                        WAsmCode[WLen++] = TurnField[3];
+                        WAsmCode[WLen++] = TurnField[2];
+                        WAsmCode[WLen++] = TurnField[1];
+                        WAsmCode[WLen++] = TurnField[0];
+                     }
+                     CodeLen += Rep * 12;
+                  }
+                  break;
+               case 7:
+                  DVal = EvalFloatExpression(ArgStr[z], Float64, &OK);
+                  if (!OK) ;
+                  else if (CodeLen + (Rep * 12) > MaxCodeLen) {
+                     WrError(1920);
+                     OK = false;
+                  } else {
+                     ConvertDec(DVal, TurnField);
+                     if (ListGran() == 1) for (z2 = 0; z2 < Rep; z2++) {
+                        BAsmCode[(WLen << 1)] = Hi(TurnField[5]);
+                        BAsmCode[(WLen << 1) + 1] = Lo(TurnField[5]);
+                        BAsmCode[(WLen << 1) + 2] = Hi(TurnField[4]);
+                        BAsmCode[(WLen << 1) + 3] = Lo(TurnField[4]);
+                        BAsmCode[(WLen << 1) + 4] = Hi(TurnField[3]);
+                        BAsmCode[(WLen << 1) + 5] = Lo(TurnField[3]);
+                        BAsmCode[(WLen << 1) + 6] = Hi(TurnField[2]);
+                        BAsmCode[(WLen << 1) + 7] = Lo(TurnField[2]);
+                        BAsmCode[(WLen << 1) + 8] = Hi(TurnField[1]);
+                        BAsmCode[(WLen << 1) + 9] = Lo(TurnField[1]);
+                        BAsmCode[(WLen << 1) + 10] = Hi(TurnField[0]);
+                        BAsmCode[(WLen << 1) + 11] = Lo(TurnField[0]);
+                        WLen += 6;
+                     } else for (z2 = 0; z2 < Rep; z2++) {
+                        WAsmCode[WLen++] = TurnField[5];
+                        WAsmCode[WLen++] = TurnField[4];
+                        WAsmCode[WLen++] = TurnField[3];
+                        WAsmCode[WLen++] = TurnField[2];
+                        WAsmCode[WLen++] = TurnField[1];
+                        WAsmCode[WLen++] = TurnField[0];
+                     }
+                     CodeLen += Rep * 12;
+                  }
+                  break;
+            }
             z++;
          }
          while ((z <= ArgCnt) && (OK));
@@ -1012,19 +988,19 @@ void CodeEquate(ShortInt DestSeg, LargeInt Min, LargeInt Max) {
    if (ArgCnt != 1) WrError(1110);
    else {
       Erg = EvalIntExpression(ArgStr[1], Int32, &OK);
-      if ((OK) && (!FirstPassUnknown))
-         if (Min > Erg) WrError(1315);
-         else if (Erg > Max) WrError(1320);
-         else {
-            PushLocHandle(-1);
-            EnterIntSymbol(LabPart, Erg, DestSeg, false);
-            PopLocHandle();
-            if ((MakeUseList) && (MakeUseList))
-               if (AddChunk(SegChunks + DestSeg, Erg, 1, false)) WrError(90);
-            t.Typ = TempInt;
-            t.Contents.Int = Erg;
-            SetListLineVal(&t);
-         }
+      if (!OK || FirstPassUnknown) ;
+      else if (Min > Erg) WrError(1315);
+      else if (Erg > Max) WrError(1320);
+      else {
+         PushLocHandle(-1);
+         EnterIntSymbol(LabPart, Erg, DestSeg, false);
+         PopLocHandle();
+         if ((MakeUseList) && (MakeUseList))
+            if (AddChunk(SegChunks + DestSeg, Erg, 1, false)) WrError(90);
+         t.Typ = TempInt;
+         t.Contents.Int = Erg;
+         SetListLineVal(&t);
+      }
    }
 }
 
@@ -1051,11 +1027,11 @@ void CodeASSUME(ASSUMERec * Def, Integer Cnt) {
          else {
             FirstPassUnknown = false;
             HVal = EvalIntExpression(ValPart, Int32, &OK);
-            if (OK)
-               if (FirstPassUnknown) {
-                  WrError(1820);
-                  OK = false;
-               } else if (ChkRange(HVal, Def[z2].Min, Def[z2].Max)) *Def[z2].Dest = HVal;
+            if (!OK) ;
+            else if (FirstPassUnknown) {
+               WrError(1820);
+               OK = false;
+            } else if (ChkRange(HVal, Def[z2].Min, Def[z2].Max)) *Def[z2].Dest = HVal;
          }
          z1++;
       }

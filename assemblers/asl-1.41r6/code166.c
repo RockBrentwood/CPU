@@ -1,13 +1,5 @@
-/* code166.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* AS-Codegenerator Siemens 80C16x                                           */
-/*                                                                           */
-/* Historie: 11.11.1996 (alaaf) Grundsteinlegung                             */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// AS-Codegenerator Siemens 80C16x
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -503,9 +495,9 @@ static void DecodeAdr(char *Asc, Word Mask, bool InCode, bool Dest) {
             else {
                if (*Part == '#') strmove(Part, 1);
                HDisp = EvalIntExpression(Part, Int32, &OK);
-               if (OK)
-                  if (NegFlag) DispAcc -= HDisp;
-                  else DispAcc += HDisp;
+               if (!OK) ;
+               else if (NegFlag) DispAcc -= HDisp;
+               else DispAcc += HDisp;
             }
             NegFlag = NNegFlag;
          }
@@ -626,10 +618,11 @@ static bool DecodePref(char *Asc, Byte * Erg) {
 /*-------------------------------------------------------------------------*/
 
 #define ASSUME166Count 4
-static ASSUMERec ASSUME166s[ASSUME166Count] = { { "DPP0", DPPAssumes + 0, 0, 15, -1 },
-{ "DPP1", DPPAssumes + 1, 0, 15, -1 },
-{ "DPP2", DPPAssumes + 2, 0, 15, -1 },
-{ "DPP3", DPPAssumes + 3, 0, 15, -1 }
+static ASSUMERec ASSUME166s[ASSUME166Count] = {
+   { "DPP0", DPPAssumes + 0, 0, 15, -1 },
+   { "DPP1", DPPAssumes + 1, 0, 15, -1 },
+   { "DPP2", DPPAssumes + 2, 0, 15, -1 },
+   { "DPP3", DPPAssumes + 3, 0, 15, -1 }
 };
 
 static bool DecodePseudo(void) {
@@ -1348,14 +1341,14 @@ static void MakeCode_166(void) {
          if (Cond >= ConditionCount) WrXError(1360, ArgStr[1]);
          else {
             AdrLong = EvalIntExpression(ArgStr[ArgCnt], MemInt, &OK) - (EProgCounter() + 2);
-            if (OK)
-               if ((AdrLong & 1) == 1) WrError(1375);
-               else if ((!SymbolQuestionable) && ((AdrLong > 254) || (AdrLong < -256))) WrError(1370);
-               else {
-                  CodeLen = 2;
-                  BAsmCode[0] = 0x0d + (Conditions[Cond].Code << 4);
-                  BAsmCode[1] = (AdrLong / 2) & 0xff;
-               }
+            if (!OK) ;
+            else if ((AdrLong & 1) == 1) WrError(1375);
+            else if ((!SymbolQuestionable) && ((AdrLong > 254) || (AdrLong < -256))) WrError(1370);
+            else {
+               CodeLen = 2;
+               BAsmCode[0] = 0x0d + (Conditions[Cond].Code << 4);
+               BAsmCode[1] = (AdrLong / 2) & 0xff;
+            }
          }
       }
       return;
@@ -1365,14 +1358,14 @@ static void MakeCode_166(void) {
       if (ArgCnt != 1) WrError(1110);
       else {
          AdrLong = EvalIntExpression(ArgStr[ArgCnt], MemInt, &OK) - (EProgCounter() + 2);
-         if (OK)
-            if ((AdrLong & 1) == 1) WrError(1375);
-            else if ((!SymbolQuestionable) && ((AdrLong > 254) || (AdrLong < -256))) WrError(1370);
-            else {
-               CodeLen = 2;
-               BAsmCode[0] = 0xbb;
-               BAsmCode[1] = (AdrLong / 2) & 0xff;
-            }
+         if (!OK) ;
+         else if ((AdrLong & 1) == 1) WrError(1375);
+         else if ((!SymbolQuestionable) && ((AdrLong > 254) || (AdrLong < -256))) WrError(1370);
+         else {
+            CodeLen = 2;
+            BAsmCode[0] = 0xbb;
+            BAsmCode[1] = (AdrLong / 2) & 0xff;
+         }
       }
       return;
    }
@@ -1384,15 +1377,15 @@ static void MakeCode_166(void) {
          if (Cond >= ConditionCount) WrXError(1360, ArgStr[1]);
          else {
             AdrLong = EvalIntExpression(ArgStr[ArgCnt], MemInt, &OK);
-            if (OK)
-               if ((AdrLong >> 16) != (EProgCounter() >> 16)) WrError(1910);
-               else {
-                  CodeLen = 4;
-                  BAsmCode[0] = (Memo("JMPA")) ? 0xea : 0xca;
-                  BAsmCode[1] = 0x00 + (Conditions[Cond].Code << 4);
-                  BAsmCode[2] = Lo(AdrLong);
-                  BAsmCode[3] = Hi(AdrLong);
-               }
+            if (!OK) ;
+            else if ((AdrLong >> 16) != (EProgCounter() >> 16)) WrError(1910);
+            else {
+               CodeLen = 4;
+               BAsmCode[0] = (Memo("JMPA")) ? 0xea : 0xca;
+               BAsmCode[1] = 0x00 + (Conditions[Cond].Code << 4);
+               BAsmCode[2] = Lo(AdrLong);
+               BAsmCode[3] = Hi(AdrLong);
+            }
          }
       }
       return;
@@ -1445,16 +1438,16 @@ static void MakeCode_166(void) {
          if (ArgCnt != 2) WrError(1110);
          else if (DecodeBitAddr(ArgStr[1], &BAdr1, &BOfs1, false)) {
             AdrLong = EvalIntExpression(ArgStr[2], MemInt, &OK) - (EProgCounter() + 4);
-            if (OK)
-               if ((AdrLong & 1) == 1) WrError(1375);
-               else if ((!SymbolQuestionable) && ((AdrLong < -256) || (AdrLong > 254))) WrError(1370);
-               else {
-                  CodeLen = 4;
-                  BAsmCode[0] = 0x8a + (z << 4);
-                  BAsmCode[1] = BAdr1;
-                  BAsmCode[2] = (AdrLong / 2) & 0xff;
-                  BAsmCode[3] = BOfs1 << 4;
-               }
+            if (!OK) ;
+            else if ((AdrLong & 1) == 1) WrError(1375);
+            else if ((!SymbolQuestionable) && ((AdrLong < -256) || (AdrLong > 254))) WrError(1370);
+            else {
+               CodeLen = 4;
+               BAsmCode[0] = 0x8a + (z << 4);
+               BAsmCode[1] = BAdr1;
+               BAsmCode[2] = (AdrLong / 2) & 0xff;
+               BAsmCode[3] = BOfs1 << 4;
+            }
          }
          return;
       }

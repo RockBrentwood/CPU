@@ -1,13 +1,5 @@
-/* codeallg.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* von allen Codegeneratoren benutzte Pseudobefehle                          */
-/*                                                                           */
-/* Historie:  10. 5.1996 Grundsteinlegung                                    */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// von allen Codegeneratoren benutzte Pseudobefehle
 #include "stdinc.h"
 #include <string.h>
 
@@ -83,19 +75,19 @@ static void CodeSECTION(void) {
    PSaveSection Neu;
 
    if (ArgCnt != 1) WrError(1110);
-   else if (ExpandSymbol(ArgStr[1]))
-      if (!ChkSymbName(ArgStr[1])) WrXError(1020, ArgStr[1]);
-      else if ((PassNo == 1) && (GetSectionHandle(ArgStr[1], false, MomSectionHandle) != -2)) WrError(1483);
-      else {
-         Neu = (PSaveSection) malloc(sizeof(TSaveSection));
-         Neu->Next = SectionStack;
-         Neu->Handle = MomSectionHandle;
-         Neu->LocSyms = NULL;
-         Neu->GlobSyms = NULL;
-         Neu->ExportSyms = NULL;
-         SetMomSection(GetSectionHandle(ArgStr[1], true, MomSectionHandle));
-         SectionStack = Neu;
-      }
+   else if (!ExpandSymbol(ArgStr[1])) ;
+   else if (!ChkSymbName(ArgStr[1])) WrXError(1020, ArgStr[1]);
+   else if ((PassNo == 1) && (GetSectionHandle(ArgStr[1], false, MomSectionHandle) != -2)) WrError(1483);
+   else {
+      Neu = (PSaveSection) malloc(sizeof(TSaveSection));
+      Neu->Next = SectionStack;
+      Neu->Handle = MomSectionHandle;
+      Neu->LocSyms = NULL;
+      Neu->GlobSyms = NULL;
+      Neu->ExportSyms = NULL;
+      SetMomSection(GetSectionHandle(ArgStr[1], true, MomSectionHandle));
+      SectionStack = Neu;
+   }
 }
 
 static void CodeENDSECTION_ChkEmptList(PForwardSymbol * Root) {
@@ -115,19 +107,19 @@ static void CodeENDSECTION(void) {
 
    if (ArgCnt > 1) WrError(1110);
    else if (SectionStack == NULL) WrError(1487);
-   else if ((ArgCnt == 0) || (ExpandSymbol(ArgStr[1])))
-      if ((ArgCnt == 1) && (GetSectionHandle(ArgStr[1], false, SectionStack->Handle) != MomSectionHandle)) WrError(1486);
-      else {
-         Tmp = SectionStack;
-         SectionStack = Tmp->Next;
-         CodeENDSECTION_ChkEmptList(&(Tmp->LocSyms));
-         CodeENDSECTION_ChkEmptList(&(Tmp->GlobSyms));
-         CodeENDSECTION_ChkEmptList(&(Tmp->ExportSyms));
-         if (ArgCnt == 0)
-            sprintf(ListLine, "[%s]", GetSectionName(MomSectionHandle));
-         SetMomSection(Tmp->Handle);
-         free(Tmp);
-      }
+   else if (ArgCnt != 0 && !ExpandSymbol(ArgStr[1])) ;
+   else if ((ArgCnt == 1) && (GetSectionHandle(ArgStr[1], false, SectionStack->Handle) != MomSectionHandle)) WrError(1486);
+   else {
+      Tmp = SectionStack;
+      SectionStack = Tmp->Next;
+      CodeENDSECTION_ChkEmptList(&(Tmp->LocSyms));
+      CodeENDSECTION_ChkEmptList(&(Tmp->GlobSyms));
+      CodeENDSECTION_ChkEmptList(&(Tmp->ExportSyms));
+      if (ArgCnt == 0)
+         sprintf(ListLine, "[%s]", GetSectionName(MomSectionHandle));
+      SetMomSection(Tmp->Handle);
+      free(Tmp);
+   }
 }
 
 static void CodeCPU(void) {
@@ -591,16 +583,16 @@ static void CodeALIGN(void) {
    else {
       FirstPassUnknown = false;
       Dummy = EvalIntExpression(ArgStr[1], Int16, &OK);
-      if (OK)
-         if (FirstPassUnknown) WrError(1820);
-         else {
-            NewPC = ProgCounter() + Dummy - 1;
-            NewPC -= NewPC % Dummy;
-            CodeLen = NewPC - ProgCounter();
-            DontPrint = (CodeLen != 0);
-            if ((MakeUseList) && (DontPrint))
-               if (AddChunk(SegChunks + ActPC, ProgCounter(), CodeLen, ActPC == SegCode)) WrError(90);
-         }
+      if (!OK) ;
+      else if (FirstPassUnknown) WrError(1820);
+      else {
+         NewPC = ProgCounter() + Dummy - 1;
+         NewPC -= NewPC % Dummy;
+         CodeLen = NewPC - ProgCounter();
+         DontPrint = (CodeLen != 0);
+         if ((MakeUseList) && (DontPrint))
+            if (AddChunk(SegChunks + ActPC, ProgCounter(), CodeLen, ActPC == SegCode)) WrError(90);
+      }
    }
 }
 
@@ -696,15 +688,15 @@ static void CodeBINCLUDE(void) {
             WrError(1820);
             OK = false;
          }
-         if (OK)
-            if (ArgCnt == 2) Len = (-1);
-            else {
-               Len = EvalIntExpression(ArgStr[3], Int32, &OK);
-               if (FirstPassUnknown) {
-                  WrError(1820);
-                  OK = false;
-               }
+         if (!OK) ;
+         else if (ArgCnt == 2) Len = (-1);
+         else {
+            Len = EvalIntExpression(ArgStr[3], Int32, &OK);
+            if (FirstPassUnknown) {
+               WrError(1820);
+               OK = false;
             }
+         }
       }
       if (OK) {
          strmaxcpy(Name, ArgStr[1], 255);
@@ -804,52 +796,55 @@ static void CodePPSyms(PForwardSymbol * Orig, PForwardSymbol * Alt1, PForwardSym
 }
 
 #define ONOFFAllgCount 2
-static ONOFFRec ONOFFAllgs[ONOFFAllgCount] = { { "MACEXP", &LstMacroEx, LstMacroExName },
-{ "RELAXED", &RelaxedMode, RelaxedName }
+static ONOFFRec ONOFFAllgs[ONOFFAllgCount] = {
+   { "MACEXP", &LstMacroEx, LstMacroExName },
+   { "RELAXED", &RelaxedMode, RelaxedName }
 };
 
 typedef struct {
    char *Name;
    void (*Proc)(void);
 } PseudoOrder;
-static PseudoOrder Pseudos[] = { { "ALIGN", CodeALIGN },
-{ "BINCLUDE", CodeBINCLUDE },
-{ "CHARSET", CodeCHARSET },
-{ "CPU", CodeCPU },
-{ "DEPHASE", CodeDEPHASE },
-{ "END", CodeEND },
-{ "ENDSECTION", CodeENDSECTION },
-{ "ENUM", CodeENUM },
-{ "ERROR", CodeERROR },
-{ "FATAL", CodeFATAL },
-{ "FUNCTION", CodeFUNCTION },
-{ "LABEL", CodeLABEL },
-{ "LISTING", CodeLISTING },
-{ "MESSAGE", CodeMESSAGE },
-{ "NEWPAGE", CodeNEWPAGE },
-{ "ORG", CodeORG },
-{ "PAGE", CodePAGE },
-{ "PHASE", CodePHASE },
-{ "POPV", CodePOPV },
-{ "PUSHV", CodePUSHV },
-{ "READ", CodeREAD },
-{ "RESTORE", CodeRESTORE },
-{ "SAVE", CodeSAVE },
-{ "SECTION", CodeSECTION },
-{ "SEGMENT", CodeSEGMENT },
-{ "SHARED", CodeSHARED },
-{ "WARNING", CodeWARNING },
-{ "", NULL }
+static PseudoOrder Pseudos[] = {
+   { "ALIGN", CodeALIGN },
+   { "BINCLUDE", CodeBINCLUDE },
+   { "CHARSET", CodeCHARSET },
+   { "CPU", CodeCPU },
+   { "DEPHASE", CodeDEPHASE },
+   { "END", CodeEND },
+   { "ENDSECTION", CodeENDSECTION },
+   { "ENUM", CodeENUM },
+   { "ERROR", CodeERROR },
+   { "FATAL", CodeFATAL },
+   { "FUNCTION", CodeFUNCTION },
+   { "LABEL", CodeLABEL },
+   { "LISTING", CodeLISTING },
+   { "MESSAGE", CodeMESSAGE },
+   { "NEWPAGE", CodeNEWPAGE },
+   { "ORG", CodeORG },
+   { "PAGE", CodePAGE },
+   { "PHASE", CodePHASE },
+   { "POPV", CodePOPV },
+   { "PUSHV", CodePUSHV },
+   { "READ", CodeREAD },
+   { "RESTORE", CodeRESTORE },
+   { "SAVE", CodeSAVE },
+   { "SECTION", CodeSECTION },
+   { "SEGMENT", CodeSEGMENT },
+   { "SHARED", CodeSHARED },
+   { "WARNING", CodeWARNING },
+   { "", NULL }
 };
 
 typedef struct {
    char *Name;
    char *p;
 } PseudoStrOrder;
-static PseudoStrOrder PseudoStrs[] = { { "PRTINIT", PrtInitString },
-{ "PRTEXIT", PrtExitString },
-{ "TITLE", PrtTitleString },
-{ "", NULL }
+static PseudoStrOrder PseudoStrs[] = {
+   { "PRTINIT", PrtInitString },
+   { "PRTEXIT", PrtExitString },
+   { "TITLE", PrtTitleString },
+   { "", NULL }
 };
 
 bool CodeGlobalPseudo(void) {

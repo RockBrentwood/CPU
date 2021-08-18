@@ -1,13 +1,5 @@
-/* code3203x.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator TMS320C3x-Familie                                           */
-/*                                                                           */
-/* Historie: 12.12.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator TMS320C3x-Familie
 #include "stdinc.h"
 #include <ctype.h>
 #include <string.h>
@@ -860,14 +852,14 @@ static void MakeCode_3203X(void) {
          && ((OpPart[GenOrders[z].NameLen] == '\0') || (OpPart[GenOrders[z].NameLen] == '3'))) {
          NextPar = false;
       /* Argumentzahl abgleichen */
-         if (ArgCnt == 1)
-            if (GenOrders[z].May1) {
-               ArgCnt = 2;
-               strcopy(ArgStr[2], ArgStr[1]);
-            } else {
-               WrError(1110);
-               return;
-            }
+         if (ArgCnt != 1) ;
+         else if (GenOrders[z].May1) {
+            ArgCnt = 2;
+            strcopy(ArgStr[2], ArgStr[1]);
+         } else {
+            WrError(1110);
+            return;
+         }
          if ((ArgCnt == 3) && (OpPart[strlen(OpPart) - 1] != '3')) strcat(OpPart, "3");
          Is3 = (OpPart[strlen(OpPart) - 1] == '3');
          if ((GenOrders[z].SwapOps) && (!Is3)) {
@@ -1187,7 +1179,7 @@ static void MakeCode_3203X(void) {
                DAsmCode[0] = SingOrders[z].Code + (((LongWord) AdrMode) << 21) + AdrPart;
                CodeLen = 1;
             }
-         };
+         }
          NextPar = false;
          return;
       }
@@ -1261,12 +1253,12 @@ static void MakeCode_3203X(void) {
                CodeLen = 1;
             } else {
                AdrLong = EvalAdrExpression(ArgStr[1], &OK) - (EProgCounter() + Disp);
-               if (OK)
-                  if ((!SymbolQuestionable) && ((AdrLong > 0x7fffl) || (AdrLong < -0x8000l))) WrError(1370);
-                  else {
-                     DAsmCode[0] = 0x6a000000 + (((LongWord) Conditions[z].Code) << 16) + DFlag + (AdrLong & 0xffff);
-                     CodeLen = 1;
-                  }
+               if (!OK) ;
+               else if ((!SymbolQuestionable) && ((AdrLong > 0x7fffl) || (AdrLong < -0x8000l))) WrError(1370);
+               else {
+                  DAsmCode[0] = 0x6a000000 + (((LongWord) Conditions[z].Code) << 16) + DFlag + (AdrLong & 0xffff);
+                  CodeLen = 1;
+               }
             }
             NextPar = false;
             return;
@@ -1288,12 +1280,12 @@ static void MakeCode_3203X(void) {
                CodeLen = 1;
             } else {
                AdrLong = EvalAdrExpression(ArgStr[1], &OK) - (EProgCounter() + 1);
-               if (OK)
-                  if ((!SymbolQuestionable) && ((AdrLong > 0x7fffl) || (AdrLong < -0x8000l))) WrError(1370);
-                  else {
-                     DAsmCode[0] = 0x72000000 + (((LongWord) Conditions[z].Code) << 16) + (AdrLong & 0xffff);
-                     CodeLen = 1;
-                  }
+               if (!OK) ;
+               else if ((!SymbolQuestionable) && ((AdrLong > 0x7fffl) || (AdrLong < -0x8000l))) WrError(1370);
+               else {
+                  DAsmCode[0] = 0x72000000 + (((LongWord) Conditions[z].Code) << 16) + (AdrLong & 0xffff);
+                  CodeLen = 1;
+               }
             }
             NextPar = false;
             return;
@@ -1329,14 +1321,14 @@ static void MakeCode_3203X(void) {
                   CodeLen = 1;
                } else {
                   AdrLong = EvalAdrExpression(ArgStr[2], &OK) - (EProgCounter() + Disp);
-                  if (OK)
-                     if ((!SymbolQuestionable) && ((AdrLong > 0x7fffl) || (AdrLong < -0x8000l))) WrError(1370);
-                     else {
-                        DAsmCode[0] = 0x6e000000 + (((LongWord) Conditions[z].Code) << 16)
-                           + DFlag + (((LongWord) HReg2) << 22)
-                           + (AdrLong & 0xffff);
-                        CodeLen = 1;
-                     }
+                  if (!OK) ;
+                  else if ((!SymbolQuestionable) && ((AdrLong > 0x7fffl) || (AdrLong < -0x8000l))) WrError(1370);
+                  else {
+                     DAsmCode[0] = 0x6e000000 + (((LongWord) Conditions[z].Code) << 16)
+                        + DFlag + (((LongWord) HReg2) << 22)
+                        + (AdrLong & 0xffff);
+                     CodeLen = 1;
+                  }
                }
             }
             NextPar = false;

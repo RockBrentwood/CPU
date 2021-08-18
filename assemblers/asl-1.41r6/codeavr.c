@@ -1,13 +1,5 @@
-/* codeavr.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator Atmel AVR                                                   */
-/*                                                                           */
-/* Historie: 26.12.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator Atmel AVR
 #include "stdinc.h"
 
 #include <ctype.h>
@@ -293,9 +285,9 @@ static bool DecodePseudo(void) {
                if ((FirstPassUnknown) && (t.Typ == TempInt)) t.Contents.Int &= MaxV;
                switch (t.Typ) {
                   case TempInt:
-                     if (ChkRange(t.Contents.Int, MinV, MaxV))
-                        if (ActPC == SegCode) WAsmCode[CodeLen++] = t.Contents.Int;
-                        else BAsmCode[CodeLen++] = t.Contents.Int;
+                     if (!ChkRange(t.Contents.Int, MinV, MaxV)) ;
+                     else if (ActPC == SegCode) WAsmCode[CodeLen++] = t.Contents.Int;
+                     else BAsmCode[CodeLen++] = t.Contents.Int;
                      break;
                   case TempFloat:
                      WrError(1135);
@@ -591,13 +583,13 @@ static void MakeCode_AVR(void) {
          if (ArgCnt != 1) WrError(1110);
          else {
             AdrInt = EvalIntExpression(ArgStr[1], UInt16, &OK) - (EProgCounter() + 1);
-            if (OK)
-               if ((!SymbolQuestionable) && ((AdrInt < -64) || (AdrInt > 63))) WrError(1370);
-               else {
-                  ChkSpace(SegCode);
-                  WAsmCode[0] = RelOrders[z].Code + ((AdrInt & 0x7f) << 3);
-                  CodeLen = 1;
-               }
+            if (!OK) ;
+            else if ((!SymbolQuestionable) && ((AdrInt < -64) || (AdrInt > 63))) WrError(1370);
+            else {
+               ChkSpace(SegCode);
+               WAsmCode[0] = RelOrders[z].Code + ((AdrInt & 0x7f) << 3);
+               CodeLen = 1;
+            }
          }
          return;
       }
@@ -608,13 +600,13 @@ static void MakeCode_AVR(void) {
          Reg1 = EvalIntExpression(ArgStr[1], UInt3, &OK);
          if (OK) {
             AdrInt = EvalIntExpression(ArgStr[2], UInt16, &OK) - (EProgCounter() + 1);
-            if (OK)
-               if ((!SymbolQuestionable) && ((AdrInt < -64) || (AdrInt > 63))) WrError(1370);
-               else {
-                  ChkSpace(SegCode);
-                  WAsmCode[0] = 0xf000 + (Memo("BRBC") << 10) + ((AdrInt & 0x7f) << 3) + Reg1;
-                  CodeLen = 1;
-               }
+            if (!OK) ;
+            else if ((!SymbolQuestionable) && ((AdrInt < -64) || (AdrInt > 63))) WrError(1370);
+            else {
+               ChkSpace(SegCode);
+               WAsmCode[0] = 0xf000 + (Memo("BRBC") << 10) + ((AdrInt & 0x7f) << 3) + Reg1;
+               CodeLen = 1;
+            }
          }
       }
       return;
@@ -639,13 +631,13 @@ static void MakeCode_AVR(void) {
       if (ArgCnt != 1) WrError(1110);
       else {
          AdrInt = EvalIntExpression(ArgStr[1], UInt22, &OK) - (EProgCounter() + 1);
-         if (OK)
-            if ((!SymbolQuestionable) && ((AdrInt < -2048) || (AdrInt > 2047))) WrError(1370);
-            else {
-               ChkSpace(SegCode);
-               WAsmCode[0] = 0xc000 + (Memo("RCALL") << 12) + (AdrInt & 0xfff);
-               CodeLen = 1;
-            }
+         if (!OK) ;
+         else if ((!SymbolQuestionable) && ((AdrInt < -2048) || (AdrInt > 2047))) WrError(1370);
+         else {
+            ChkSpace(SegCode);
+            WAsmCode[0] = 0xc000 + (Memo("RCALL") << 12) + (AdrInt & 0xfff);
+            CodeLen = 1;
+         }
       }
       return;
    }

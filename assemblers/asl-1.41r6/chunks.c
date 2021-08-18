@@ -1,13 +1,5 @@
-/* chunks.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Verwaltung von Adressbereichslisten                                       */
-/*                                                                           */
-/* Historie: 16. 5.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Verwaltung von Adressbereichslisten
 #include "stdinc.h"
 
 #include "stringutil.h"

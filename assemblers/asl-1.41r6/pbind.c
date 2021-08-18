@@ -1,13 +1,5 @@
-/* bind.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Bearbeitung von AS-P-Dateien                                              */
-/*                                                                           */
-/* Historie:  1. 6.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Bearbeitung von AS-P-Dateien
 #include "stdinc.h"
 #include <ctype.h>
 #include <string.h>
@@ -109,23 +101,23 @@ static void ProcessFile(char *FileName) {
 }
 
 static void ProcessGroup(char *GroupName) {
-/**
-   s:SearchRec;
-   Path,Name,Ext:String;**/
+#if 0
+   SearchRec s;
+   String Path, Name, Ext;
+#endif
    String Name;
 
    strmaxcpy(Name, GroupName, 255);
    AddSuffix(Name, Suffix);
    ProcessFile(Name);
-/**
-   FSplit(GroupName,Path,Name,Ext);
-
-   FindFirst(GroupName,Archive,s);
-   WHILE DosError=0 DO
-    {
-     ProcessFile(Path+s.Name);
-     FindNext(s);
-    };**/
+#if 0
+   FSplit(GroupName, Path, Name, Ext);
+   FindFirst(GroupName, Archive, s);
+   while (!DosError) {
+      ProcessFile(Path + s.Name);
+      FindNext(s);
+   }
+#endif
 }
 
 static void ParamError(bool InEnv, char *Arg) {

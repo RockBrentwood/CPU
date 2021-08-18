@@ -1,13 +1,5 @@
-/* codez8.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator Zilog Z8                                                    */
-/*                                                                           */
-/* Historie: 8.11.1996 Grundsteinlegung                                      */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator Zilog Z8
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -238,7 +230,7 @@ static void DecodeAdr(char *Asc, Byte Mask, bool Is16) {
       if (OK) AdrType = ModImm;
       ChkAdr(Mask, Is16);
       return;
-   };
+   }
 
 /* Register ? */
 
@@ -688,14 +680,14 @@ static void MakeCode_Z8(void) {
          }
          if (z < CondCnt) {
             AdrInt = EvalIntExpression(ArgStr[ArgCnt], Int16, &OK) - (EProgCounter() + 2);
-            if (OK)
-               if ((!SymbolQuestionable) && ((AdrInt > 127) || (AdrInt < -128))) WrError(1370);
-               else {
-                  ChkSpace(SegCode);
-                  BAsmCode[0] = (Conditions[z].Code << 4) + 0x0b;
-                  BAsmCode[1] = Lo(AdrInt);
-                  CodeLen = 2;
-               }
+            if (!OK) ;
+            else if ((!SymbolQuestionable) && ((AdrInt > 127) || (AdrInt < -128))) WrError(1370);
+            else {
+               ChkSpace(SegCode);
+               BAsmCode[0] = (Conditions[z].Code << 4) + 0x0b;
+               BAsmCode[1] = Lo(AdrInt);
+               CodeLen = 2;
+            }
          }
       }
       return;
@@ -707,13 +699,13 @@ static void MakeCode_Z8(void) {
          DecodeAdr(ArgStr[1], MModWReg, false);
          if (AdrType != ModNone) {
             AdrInt = EvalIntExpression(ArgStr[2], Int16, &OK) - (EProgCounter() + 2);
-            if (OK)
-               if ((!SymbolQuestionable) && ((AdrInt > 127) || (AdrInt < -128))) WrError(1370);
-               else {
-                  BAsmCode[0] = (AdrMode << 4) + 0x0a;
-                  BAsmCode[1] = Lo(AdrInt);
-                  CodeLen = 2;
-               }
+            if (!OK) ;
+            else if ((!SymbolQuestionable) && ((AdrInt > 127) || (AdrInt < -128))) WrError(1370);
+            else {
+               BAsmCode[0] = (AdrMode << 4) + 0x0a;
+               BAsmCode[1] = Lo(AdrInt);
+               CodeLen = 2;
+            }
          }
       }
       return;
@@ -792,13 +784,13 @@ static void MakeCode_Z8(void) {
       if (ArgCnt != 1) WrError(1110);
       else {
          DecodeAdr(ArgStr[1], MModImm, false);
-         if (AdrType == ModImm)
-            if (((AdrMode & 15) != 0) || ((AdrMode > 0x70) && (AdrMode < 0xf0))) WrError(120);
-            else {
-               BAsmCode[0] = 0x31;
-               BAsmCode[1] = AdrMode;
-               CodeLen = 2;
-            }
+         if (AdrType != ModImm) ;
+         else if (((AdrMode & 15) != 0) || ((AdrMode > 0x70) && (AdrMode < 0xf0))) WrError(120);
+         else {
+            BAsmCode[0] = 0x31;
+            BAsmCode[1] = AdrMode;
+            CodeLen = 2;
+         }
       }
       return;
    }

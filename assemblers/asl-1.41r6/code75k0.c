@@ -1,13 +1,5 @@
-/* code75k0.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator NEC 75K0                                                    */
-/*                                                                           */
-/* Historie: 31.12.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator NEC 75K0
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -165,9 +157,9 @@ static void DecodeAdr(char *Asc, Byte Mask) {
 
       if (strlen(Asc) == 1) {
          AdrPart = pos ^ 1;
-         if (SetOpSize(0))
-            if ((AdrPart > 4) && (MomCPU < CPU75004)) WrError(1505);
-            else AdrMode = ModReg4;
+         if (!SetOpSize(0)) ;
+         else if ((AdrPart > 4) && (MomCPU < CPU75004)) WrError(1505);
+         else AdrMode = ModReg4;
          ChkAdr(Mask);
          return;
       }
@@ -176,9 +168,9 @@ static void DecodeAdr(char *Asc, Byte Mask) {
 
       if ((strlen(Asc) == 2) && (!Odd(pos))) {
          AdrPart = pos;
-         if (SetOpSize(1))
-            if ((AdrPart > 2) && (MomCPU < CPU75004)) WrError(1505);
-            else AdrMode = ModReg8;
+         if (!SetOpSize(1)) ;
+         else if ((AdrPart > 2) && (MomCPU < CPU75004)) WrError(1505);
+         else AdrMode = ModReg8;
          ChkAdr(Mask);
          return;
       }
@@ -187,9 +179,9 @@ static void DecodeAdr(char *Asc, Byte Mask) {
 
       if ((strlen(Asc) == 3) && ((Asc[2] == '\'') || (Asc[2] == '`')) && (!Odd(pos))) {
          AdrPart = pos + 1;
-         if (SetOpSize(1))
-            if (MomCPU < CPU75104) WrError(1505);
-            else AdrMode = ModReg8;
+         if (!SetOpSize(1)) ;
+         else if (MomCPU < CPU75104) WrError(1505);
+         else AdrMode = ModReg8;
          ChkAdr(Mask);
          return;
       }
@@ -210,7 +202,7 @@ static void DecodeAdr(char *Asc, Byte Mask) {
          case 1:
             AdrPart = EvalIntExpression(Asc + 1, Int8, &OK);
             break;
-      };
+      }
       if (OK) AdrMode = ModImm;
       ChkAdr(Mask);
       return;
@@ -285,32 +277,32 @@ static bool DecodeBitAddr(char *Asc, Word * Erg) {
       }
    } else {
       Num = EvalIntExpression(bpart, UInt2, &OK);
-      if (OK)
-         if (strncasecmp(Asc, "@H", 2) == 0) {
-            Adr = EvalIntExpression(Asc + 2, UInt4, &OK);
-            if (OK)
-               if (MomCPU < CPU75004) WrError(1505);
-               else {
-                  *Erg = (Num << 4) + Adr;
-                  sprintf(BName, "@H%s.%c", HexString(Adr, 1), Num + '0');
-                  return true;
-               }
-         } else {
-            FirstPassUnknown = false;
-            Adr = EvalIntExpression(Asc, UInt12, &OK);
-            if (FirstPassUnknown) Adr = (Adr | 0xff0);
-            if (OK) {
-               ChkSpace(SegData);
-               if ((Adr >= 0xfb0) && (Adr < 0xfc0))
-                  *Erg = 0x80 + (Num << 4) + (Adr & 15);
-               else if (Adr >= 0xff0)
-                  *Erg = 0xc0 + (Num << 4) + (Adr & 15);
-               else
-                  *Erg = 0x400 + (((Word) Num) << 8) + Lo(Adr) + (Hi(Adr) << 12);
-               sprintf(BName, "%sH.%c", HexString(Adr, 3), '0' + Num);
-               return true;
-            }
+      if (!OK) ;
+      else if (strncasecmp(Asc, "@H", 2) == 0) {
+         Adr = EvalIntExpression(Asc + 2, UInt4, &OK);
+         if (!OK) ;
+         else if (MomCPU < CPU75004) WrError(1505);
+         else {
+            *Erg = (Num << 4) + Adr;
+            sprintf(BName, "@H%s.%c", HexString(Adr, 1), Num + '0');
+            return true;
          }
+      } else {
+         FirstPassUnknown = false;
+         Adr = EvalIntExpression(Asc, UInt12, &OK);
+         if (FirstPassUnknown) Adr = (Adr | 0xff0);
+         if (OK) {
+            ChkSpace(SegData);
+            if ((Adr >= 0xfb0) && (Adr < 0xfc0))
+               *Erg = 0x80 + (Num << 4) + (Adr & 15);
+            else if (Adr >= 0xff0)
+               *Erg = 0xc0 + (Num << 4) + (Adr & 15);
+            else
+               *Erg = 0x400 + (((Word) Num) << 8) + Lo(Adr) + (Hi(Adr) << 12);
+            sprintf(BName, "%sH.%c", HexString(Adr, 3), '0' + Num);
+            return true;
+         }
+      }
    }
    return false;
 }
@@ -354,8 +346,9 @@ static bool DecodeIntName(char *Asc, Byte * Erg) {
 
 static bool DecodePseudo(void) {
 #define ASSUME75Count 2
-   static ASSUMERec ASSUME75s[ASSUME75Count] = { { "MBS", &MBSValue, 0, 0x0f, 0x10 },
-   { "MBE", &MBEValue, 0, 0x01, 0x01 }
+   static ASSUMERec ASSUME75s[ASSUME75Count] = {
+      { "MBS", &MBSValue, 0, 0x0f, 0x10 },
+      { "MBE", &MBEValue, 0, 0x01, 0x01 }
    };
 
    Word BErg;
@@ -656,7 +649,7 @@ static void MakeCode_75K0(void) {
                      else {
                         PutCode(0x11aa);
                         CheckCPU(CPU75004);
-                     };
+                     }
                      break;
                }
                break;
@@ -1008,14 +1001,14 @@ static void MakeCode_75K0(void) {
          else if (strcasecmp(ArgStr[2], "CY") == 0) z = 0x9b;
          else OK = false;
          if (!OK) WrError(1350);
-         else if (DecodeBitAddr(ArgStr[((z >> 2) & 3) - 1], &BVal))
-            if (Hi(BVal) != 0) WrError(1350);
-            else {
-               BAsmCode[0] = z;
-               BAsmCode[1] = BVal;
-               CodeLen = 2;
-               CheckCPU(CPU75104);
-            }
+         else if (!DecodeBitAddr(ArgStr[((z >> 2) & 3) - 1], &BVal)) ;
+         else if (Hi(BVal) != 0) WrError(1350);
+         else {
+            BAsmCode[0] = z;
+            BAsmCode[1] = BVal;
+            CodeLen = 2;
+            CheckCPU(CPU75104);
+         }
       }
       return;
    }
@@ -1024,16 +1017,16 @@ static void MakeCode_75K0(void) {
       OK = Memo("SET1");
       if (ArgCnt != 1) WrError(1110);
       else if (strcasecmp(ArgStr[1], "CY") == 0) PutCode(0xe6 + OK);
-      else if (DecodeBitAddr(ArgStr[1], &BVal))
-         if (Hi(BVal) != 0) {
-            BAsmCode[0] = 0x84 + OK + (Hi(BVal & 0x300) << 4);
-            BAsmCode[1] = Lo(BVal);
-            CodeLen = 2;
-         } else {
-            BAsmCode[0] = 0x9c + OK;
-            BAsmCode[1] = BVal;
-            CodeLen = 2;
-         }
+      else if (!DecodeBitAddr(ArgStr[1], &BVal)) ;
+      else if (Hi(BVal) != 0) {
+         BAsmCode[0] = 0x84 + OK + (Hi(BVal & 0x300) << 4);
+         BAsmCode[1] = Lo(BVal);
+         CodeLen = 2;
+      } else {
+         BAsmCode[0] = 0x9c + OK;
+         BAsmCode[1] = BVal;
+         CodeLen = 2;
+      }
       return;
    }
 
@@ -1043,16 +1036,16 @@ static void MakeCode_75K0(void) {
       else if (strcasecmp(ArgStr[1], "CY") == 0)
          if (Memo("SKT")) PutCode(0xd7);
          else WrError(1350);
-      else if (DecodeBitAddr(ArgStr[1], &BVal))
-         if (Hi(BVal) != 0) {
-            BAsmCode[0] = 0x86 + OK + (Hi(BVal & 0x300) << 4);
-            BAsmCode[1] = Lo(BVal);
-            CodeLen = 2;
-         } else {
-            BAsmCode[0] = 0xbe + OK; /* ANSI :-0 */
-            BAsmCode[1] = BVal;
-            CodeLen = 2;
-         }
+      else if (!DecodeBitAddr(ArgStr[1], &BVal)) ;
+      else if (Hi(BVal) != 0) {
+         BAsmCode[0] = 0x86 + OK + (Hi(BVal & 0x300) << 4);
+         BAsmCode[1] = Lo(BVal);
+         CodeLen = 2;
+      } else {
+         BAsmCode[0] = 0xbe + OK; /* ANSI :-0 */
+         BAsmCode[1] = BVal;
+         CodeLen = 2;
+      }
       return;
    }
 
@@ -1065,13 +1058,13 @@ static void MakeCode_75K0(void) {
 
    if (Memo("SKTCLR")) {
       if (ArgCnt != 1) WrError(1110);
-      else if (DecodeBitAddr(ArgStr[1], &BVal))
-         if (Hi(BVal) != 0) WrError(1350);
-         else {
-            BAsmCode[0] = 0x9f;
-            BAsmCode[1] = BVal;
-            CodeLen = 2;
-         }
+      else if (!DecodeBitAddr(ArgStr[1], &BVal)) ;
+      else if (Hi(BVal) != 0) WrError(1350);
+      else {
+         BAsmCode[0] = 0x9f;
+         BAsmCode[1] = BVal;
+         CodeLen = 2;
+      }
       return;
    }
 
@@ -1080,13 +1073,13 @@ static void MakeCode_75K0(void) {
          if (strncmp(LogOrders[z], OpPart, strlen(LogOrders[z])) == 0) {
             if (ArgCnt != 2) WrError(1110);
             else if (strcasecmp(ArgStr[1], "CY") != 0) WrError(1350);
-            else if (DecodeBitAddr(ArgStr[2], &BVal))
-               if (Hi(BVal) != 0) WrError(1350);
-               else {
-                  BAsmCode[0] = 0xac + ((z & 1) << 1) + ((z & 2) << 3);
-                  BAsmCode[1] = BVal;
-                  CodeLen = 2;
-               }
+            else if (!DecodeBitAddr(ArgStr[2], &BVal)) ;
+            else if (Hi(BVal) != 0) WrError(1350);
+            else {
+               BAsmCode[0] = 0xac + ((z & 1) << 1) + ((z & 2) << 3);
+               BAsmCode[1] = BVal;
+               CodeLen = 2;
+            }
             return;
          }
 
@@ -1145,15 +1138,15 @@ static void MakeCode_75K0(void) {
       if (ArgCnt != 1) WrError(1110);
       else {
          AdrInt = EvalIntExpression(ArgStr[1], UInt16, &OK);
-         if (OK)
-            if ((AdrInt >> 12) != (EProgCounter() >> 12)) WrError(1910);
-            else if ((EProgCounter() & 0xfff) >= 0xffe) WrError(1905);
-            else {
-               BAsmCode[0] = 0x50 + ((AdrInt >> 8) & 15);
-               BAsmCode[1] = Lo(AdrInt);
-               CodeLen = 2;
-               ChkSpace(SegCode);
-            }
+         if (!OK) ;
+         else if ((AdrInt >> 12) != (EProgCounter() >> 12)) WrError(1910);
+         else if ((EProgCounter() & 0xfff) >= 0xffe) WrError(1905);
+         else {
+            BAsmCode[0] = 0x50 + ((AdrInt >> 8) & 15);
+            BAsmCode[1] = Lo(AdrInt);
+            CodeLen = 2;
+            ChkSpace(SegCode);
+         }
       }
       return;
    }

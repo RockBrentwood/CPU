@@ -1,13 +1,5 @@
-/* codest7.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator SGS-Thomson ST7                                             */
-/*                                                                           */
-/* Historie: 21.5.1997 Grundsteinlegung                                      */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator SGS-Thomson ST7
 #include "stdinc.h"
 
 #include <ctype.h>
@@ -216,19 +208,19 @@ static void DecideSize(LongInt Mask, char *Asc, LongInt Type1, LongInt Type2, By
    if (Size == I8) Value = EvalIntExpression(Asc, UInt8, &OK);
    else Value = EvalIntExpression(Asc, Int16, &OK);
 
-   if (OK)
-      if ((Size == I8) || (((Mask & (1l << Type1)) != 0) && (Size == None) && (Hi(Value) == 0))) {
-         AdrVals[0] = Lo(Value);
-         AdrCnt = 1;
-         AdrPart = Part1;
-         AdrType = Type1;
-      } else {
-         AdrVals[0] = Hi(Value);
-         AdrVals[1] = Lo(Value);
-         AdrCnt = 2;
-         AdrPart = Part2;
-         AdrType = Type2;
-      }
+   if (!OK) ;
+   else if ((Size == I8) || (((Mask & (1l << Type1)) != 0) && (Size == None) && (Hi(Value) == 0))) {
+      AdrVals[0] = Lo(Value);
+      AdrCnt = 1;
+      AdrPart = Part1;
+      AdrType = Type1;
+   } else {
+      AdrVals[0] = Hi(Value);
+      AdrVals[1] = Lo(Value);
+      AdrCnt = 2;
+      AdrPart = Part2;
+      AdrType = Type2;
+   }
 }
 
 static void DecideASize(LongInt Mask, char *Asc, LongInt Type1, LongInt Type2, Byte Part1, Byte Part2) {
@@ -764,12 +756,12 @@ static void MakeCode_ST7(void) {
                BAsmCode[PrefixCnt] = 0x00 + Memo("BTJF") + (z << 1);
                memcpy(BAsmCode + 1 + PrefixCnt, AdrVals, AdrCnt);
                AdrInt = EvalIntExpression(ArgStr[3], UInt16, &OK) - (EProgCounter() + PrefixCnt + 1 + AdrCnt);
-               if (OK)
-                  if ((!SymbolQuestionable) && ((AdrInt < -128) || (AdrInt > 127))) WrError(1370);
-                  else {
-                     BAsmCode[PrefixCnt + 1 + AdrCnt] = AdrInt & 0xff;
-                     CodeLen = PrefixCnt + 1 + AdrCnt + 1;
-                  }
+               if (!OK) ;
+               else if ((!SymbolQuestionable) && ((AdrInt < -128) || (AdrInt > 127))) WrError(1370);
+               else {
+                  BAsmCode[PrefixCnt + 1 + AdrCnt] = AdrInt & 0xff;
+                  CodeLen = PrefixCnt + 1 + AdrCnt + 1;
+               }
             }
          }
       }
@@ -806,13 +798,13 @@ static void MakeCode_ST7(void) {
             }
          } else {
             AdrInt = EvalIntExpression(ArgStr[1], UInt16, &OK) - (EProgCounter() + 2);
-            if (OK)
-               if ((!SymbolQuestionable) && ((AdrInt < -128) || (AdrInt > 127))) WrError(1370);
-               else {
-                  BAsmCode[0] = RelOrders[z].Code;
-                  BAsmCode[1] = AdrInt & 0xff;
-                  CodeLen = 2;
-               }
+            if (!OK) ;
+            else if ((!SymbolQuestionable) && ((AdrInt < -128) || (AdrInt > 127))) WrError(1370);
+            else {
+               BAsmCode[0] = RelOrders[z].Code;
+               BAsmCode[1] = AdrInt & 0xff;
+               CodeLen = 2;
+            }
          }
          return;
       }

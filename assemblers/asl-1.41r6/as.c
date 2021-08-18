@@ -1,13 +1,5 @@
-/* as.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Hauptmodul                                                                */
-/*                                                                           */
-/* Historie:  4. 5.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Hauptmodul
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -89,12 +81,15 @@
 #include "codescmp.h"
 #include "codecop8.h"
 #include "as1750.h"
-/**          Code21xx};**/
+#if 0
+   Code21xx
+};
+#endif
 
-/**
-VAR
-   ParCnt,k:Integer;
-   CPU:CPUVar;**/
+#if 0
+   Integer ParCnt, k;
+   CPUVar CPU;
+#endif
 static String FileMask;
 static long StartTime, StopTime;
 static bool ErrFlag;
@@ -1178,11 +1173,10 @@ static void Produce_Code(void) {
 
 /* Includefile? */
 
-   else if Memo
-      ("INCLUDE") {
+   else if (Memo("INCLUDE")) {
       ExpandINCLUDE(true);
       MasterFile = false;
-      }
+   }
 
 /* Makroaufruf ? */
 
@@ -1321,78 +1315,61 @@ static void SplitLine(void) {
    so lang sind, koennen wir uns Laengenabfragen sparen */
    ArgCnt = 0;
    strcopy(h, ArgPart);
-   if (*h != '\0')
-      do {
-         KillPrefBlanks(h);
-         i = h + strlen(h);
-         for (z = 0; z < strlen(DivideChars); z++) {
-            p = QuotPos(h, DivideChars[z]);
-            if ((p != NULL) && (p < i)) i = p;
-         }
-         lpos = (i == h + strlen(h) - 1);
-         if (i >= h) SplitString(h, ArgStr[++ArgCnt], h, i);
-         if ((lpos) && (ArgCnt != ParMax)) *ArgStr[++ArgCnt] = '\0';
-         KillPostBlanks(ArgStr[ArgCnt]);
+   if (*h != '\0') do {
+      KillPrefBlanks(h);
+      i = h + strlen(h);
+      for (z = 0; z < strlen(DivideChars); z++) {
+         p = QuotPos(h, DivideChars[z]);
+         if ((p != NULL) && (p < i)) i = p;
       }
-      while ((*h != '\0') && (ArgCnt != ParMax));
+      lpos = (i == h + strlen(h) - 1);
+      if (i >= h) SplitString(h, ArgStr[++ArgCnt], h, i);
+      if ((lpos) && (ArgCnt != ParMax)) *ArgStr[++ArgCnt] = '\0';
+      KillPostBlanks(ArgStr[ArgCnt]);
+   } while ((*h != '\0') && (ArgCnt != ParMax));
 
    if (*h != '\0') WrError(1140);
 
    Produce_Code();
 }
 
-/**
-CONST
-   LineBuffer:String='';
-   InComment:bool=false;
+#if 0
+const String LineBuffer = '';
+const bool InComment = false;
 
-	static void C_SplitLine(void)
-{
-   p,p2:Integer;
-   SaveLine,h:String;
-
-   { alten Inhalt sichern }
-
-   SaveLine:=OneLine; h:=OneLine;
-
-   { Falls in Kommentar, nach schliessender Klammer suchen und den Teil bis
-     dahin verwerfen; falls keine Klammer drin ist, die ganze Zeile weg-
-     schmeissen; da wir dann OneLine bisher noch nicht veraendert hatten,
-     stoert der Abbruch ohne Wiederherstellung von Oneline nicht. }
-
-   IF InComment THEN
-    {
-     p:=Pos('}',h);
-     IF p>Length(h) THEN Exit
-     ELSE
-      {
-       Delete(h,1,p); InComment:=false;
-      };
-    };
-
-   { in der Zeile befindliche Teile loeschen; falls am Ende keine
-     schliessende Klammer kommt, muessen wir das Kommentarflag setzen. }
-
-   REPEAT
-    p:=QuotPos(h,'{');
-    IF p>Length(h) THEN p:=0
-    ELSE
-     {
-      p2:=QuotPos(h,'}');
-      IF (p2>p) && (Length(h)>=p2) THEN Delete(h,p,p2-p+1)
-      ELSE
-       {
-        Byte(h[0]):=Pred(p);
-        InComment:=true;
-        p:=0;
-       };
-     };
-   UNTIL p=0;
-
-   { alten Inhalt zurueckkopieren }
-
-   OneLine:=SaveLine;
-};**/
+static void C_SplitLine(void) {
+   Integer p, p2;
+   String SaveLine, h;
+// alten Inhalt sichern.
+   SaveLine = OneLine, h = OneLine;
+// Falls in Kommentar, nach schliessender Klammer suchen und den Teil bis dahin verwerfen;
+// falls keine Klammer drin ist, die ganze Zeile wegschmeissen;
+// da wir dann OneLine bisher noch nicht veraendert hatten, stoert der Abbruch ohne Wiederherstellung von Oneline nicht.
+   if (InComment) {
+      p = Pos('}',h);
+      if (p > Length(h)) Exit();
+      else {
+         Delete(h, 1, p), InComment = false;
+      }
+   }
+// in der Zeile befindliche Teile loeschen; falls am Ende keine schliessende Klammer kommt, muessen wir das Kommentarflag setzen.
+   do {
+      p = QuotPos(h, '{');
+      if (p > Length(h)) p = 0;
+      else {
+         p2 = QuotPos(h, '}');
+         if (p2 > p && Length(h) >= p2) Delete(h, p, p2 - p + 1);
+         else {
+            Byte(h[0]) = Pred(p);
+            InComment = true;
+            p = 0;
+         }
+      }
+   } while (p != 0);
+// alten Inhalt zurueckkopieren
+   OneLine = SaveLine;
+}
+#endif
 
 /*------------------------------------------------------------------------*/
 
@@ -1903,22 +1880,20 @@ static void AssembleGroup(void) {
    AddSuffix(FileMask, SrcSuffix);
    strmaxcpy(SourceFile, FileMask, 255);
    AssembleFile();
-
-/**   FileMask:=FExpand(FileMask);
-   AddSuffix(FileMask,SrcSuffix);
-   FindFirst(FileMask,AnyFile,Search);
-   PathPrefix:=PathPart(FileMask);
-
-   IF DosError<>0 THEN WriteLn(StdErr,FileMask,InfoMessNFilesFound,Char_LF)
-   ELSE
-    REPEAT
-     IF (Search.Attr && (Hidden || SysFile || VolumeID || Directory)=0) THEN
-      {
-       SourceFile:=PathPrefix+Search.Name;
-       AssembleFile;
-      };
-     FindNext(Search);
-    UNTIL DosError<>0**/
+#if 0
+   FileMask = FExpand(FileMask);
+   AddSuffix(FileMask, SrcSuffix);
+   FindFirst(FileMask, AnyFile, Search);
+   PathPrefix = PathPart(FileMask);
+   if (DosError) WriteLn(StdErr, FileMask, InfoMessNFilesFound, Char_LF);
+   else do {
+      if (Search.Attr & ~(Hidden || SysFile || VolumeID || Directory)) {
+         SourceFile = PathPrefix + Search.Name;
+         AssembleFile();
+      }
+      FindNext(Search);
+   } while (!DosError);
+#endif
 }
 
 /*-------------------------------------------------------------------------*/
@@ -2290,36 +2265,37 @@ static void ParamError(bool InEnv, char *Arg) {
 }
 
 #define ASParamCnt 30
-static CMDRec ASParams[ASParamCnt] = { { "A", CMD_BalanceTree },
-{ "ALIAS", CMD_CPUAlias },
-{ "a", CMD_ShareAssembler },
-{ "C", CMD_CrossList },
-{ "c", CMD_ShareC },
-{ "D", CMD_DefSymbol },
-{ "E", CMD_ErrorPath },
-{ "g", CMD_DebugMode },
-{ "G", CMD_CodeOutput },
-{ "h", CMD_HexLowerCase },
-{ "i", CMD_IncludeList },
-{ "I", CMD_MakeIncludeList },
-{ "L", CMD_ListFile },
-{ "l", CMD_ListConsole },
-{ "M", CMD_MacroOutput },
-{ "n", CMD_NumericErrors },
-{ "o", CMD_OutFile },
-{ "P", CMD_MacProOutput },
-{ "p", CMD_SharePascal },
-{ "q", CMD_QuietMode },
-{ "QUIET", CMD_QuietMode },
-{ "r", CMD_MsgIfRepass },
-{ "s", CMD_SectionList },
-{ "t", CMD_ListMask },
-{ "u", CMD_UseList },
-{ "U", CMD_CaseSensitive },
-{ "w", CMD_SuppWarns },
-{ "x", CMD_ExtendErrors },
-{ "X", CMD_MakeDebug },
-{ "Y", CMD_ThrowErrors }
+static CMDRec ASParams[ASParamCnt] = {
+   { "A", CMD_BalanceTree },
+   { "ALIAS", CMD_CPUAlias },
+   { "a", CMD_ShareAssembler },
+   { "C", CMD_CrossList },
+   { "c", CMD_ShareC },
+   { "D", CMD_DefSymbol },
+   { "E", CMD_ErrorPath },
+   { "g", CMD_DebugMode },
+   { "G", CMD_CodeOutput },
+   { "h", CMD_HexLowerCase },
+   { "i", CMD_IncludeList },
+   { "I", CMD_MakeIncludeList },
+   { "L", CMD_ListFile },
+   { "l", CMD_ListConsole },
+   { "M", CMD_MacroOutput },
+   { "n", CMD_NumericErrors },
+   { "o", CMD_OutFile },
+   { "P", CMD_MacProOutput },
+   { "p", CMD_SharePascal },
+   { "q", CMD_QuietMode },
+   { "QUIET", CMD_QuietMode },
+   { "r", CMD_MsgIfRepass },
+   { "s", CMD_SectionList },
+   { "t", CMD_ListMask },
+   { "u", CMD_UseList },
+   { "U", CMD_CaseSensitive },
+   { "w", CMD_SuppWarns },
+   { "x", CMD_ExtendErrors },
+   { "X", CMD_MakeDebug },
+   { "Y", CMD_ThrowErrors }
 };
 
 /*--------------------------------------------------------------------------*/

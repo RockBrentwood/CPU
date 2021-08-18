@@ -1,13 +1,5 @@
-/* code78c10.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator NEC uPD78(C)1x                                              */
-/*                                                                           */
-/* Historie: 29.12.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator NEC uPD78(C)1x
 #include "stdinc.h"
 #include <ctype.h>
 #include <string.h>
@@ -292,7 +284,8 @@ static bool Decode_rp3(char *Asc, ShortInt * Erg) {
 
 static bool Decode_rpa2(char *Asc, ShortInt * Erg, ShortInt * Disp) {
 #define OpCnt 13
-   static char *OpNames[OpCnt] = { "B", "D", "H", "D+", "H+", "D-", "H-",
+   static char *OpNames[OpCnt] = {
+      "B", "D", "H", "D+", "H+", "D-", "H-",
       "H+A", "A+H", "H+B", "B+H", "H+EA", "EA+H"
    };
    static Byte OpCodes[OpCnt] = { 1, 2, 3, 4, 5, 6, 7, 12, 12, 13, 13, 14, 14 };
@@ -529,16 +522,16 @@ static void MakeCode_78C10(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          BAsmCode[1] = EvalIntExpression(ArgStr[2], Int8, &OK);
-         if (OK)
-            if (Decode_r(ArgStr[1], &HReg)) {
-               CodeLen = 2;
-               BAsmCode[0] = 0x68 + HReg;
-            } else if (Decode_sr2(ArgStr[1], &HReg)) {
-               CodeLen = 3;
-               BAsmCode[2] = BAsmCode[1];
-               BAsmCode[0] = 0x64;
-               BAsmCode[1] = (HReg & 7) + ((HReg & 8) << 4);
-            } else WrError(1350);
+         if (!OK) ;
+         else if (Decode_r(ArgStr[1], &HReg)) {
+            CodeLen = 2;
+            BAsmCode[0] = 0x68 + HReg;
+         } else if (Decode_sr2(ArgStr[1], &HReg)) {
+            CodeLen = 3;
+            BAsmCode[2] = BAsmCode[1];
+            BAsmCode[0] = 0x64;
+            BAsmCode[1] = (HReg & 7) + ((HReg & 8) << 4);
+         } else WrError(1350);
       }
       return;
    }
@@ -644,22 +637,22 @@ static void MakeCode_78C10(void) {
          if (ArgCnt != 2) WrError(1110);
          else {
             HVal8 = EvalIntExpression(ArgStr[2], Int8, &OK);
-            if (OK)
-               if (strcasecmp(ArgStr[1], "A") == 0) {
-                  CodeLen = 2;
-                  BAsmCode[0] = 0x06 + ((ALUOrderCodes[z] & 14) << 3) + (ALUOrderCodes[z] & 1);
-                  BAsmCode[1] = HVal8;
-               } else if (Decode_r(ArgStr[1], &HReg)) {
-                  CodeLen = 3;
-                  BAsmCode[0] = 0x74;
-                  BAsmCode[2] = HVal8;
-                  BAsmCode[1] = HReg + (ALUOrderCodes[z] << 3);
-               } else if (Decode_sr2(ArgStr[1], &HReg)) {
-                  CodeLen = 3;
-                  BAsmCode[0] = 0x64;
-                  BAsmCode[2] = HVal8;
-                  BAsmCode[1] = (HReg & 7) + (ALUOrderCodes[z] << 3) + ((HReg & 8) << 4);
-               } else WrError(1350);
+            if (!OK) ;
+            else if (strcasecmp(ArgStr[1], "A") == 0) {
+               CodeLen = 2;
+               BAsmCode[0] = 0x06 + ((ALUOrderCodes[z] & 14) << 3) + (ALUOrderCodes[z] & 1);
+               BAsmCode[1] = HVal8;
+            } else if (Decode_r(ArgStr[1], &HReg)) {
+               CodeLen = 3;
+               BAsmCode[0] = 0x74;
+               BAsmCode[2] = HVal8;
+               BAsmCode[1] = HReg + (ALUOrderCodes[z] << 3);
+            } else if (Decode_sr2(ArgStr[1], &HReg)) {
+               CodeLen = 3;
+               BAsmCode[0] = 0x64;
+               BAsmCode[2] = HVal8;
+               BAsmCode[1] = (HReg & 7) + (ALUOrderCodes[z] << 3) + ((HReg & 8) << 4);
+            } else WrError(1350);
          }
          return;
       } else if (Memo(ALUOrderRegOps[z])) {
@@ -787,19 +780,19 @@ static void MakeCode_78C10(void) {
       if (ArgCnt != 1) WrError(1110);
       else {
          AdrInt = EvalIntExpression(ArgStr[1], Int16, &OK) - (EProgCounter() + 1 + Memo("JRE"));
-         if (OK)
-            if (Memo("JR"))
-               if ((!SymbolQuestionable) && ((AdrInt < -32) || (AdrInt > 31))) WrError(1370);
-               else {
-                  CodeLen = 1;
-                  BAsmCode[0] = 0xc0 + (AdrInt & 0x3f);
-            } else if ((!SymbolQuestionable) && ((AdrInt < -256) || (AdrInt > 255))) WrError(1370);
+         if (!OK) ;
+         else if (Memo("JR"))
+            if ((!SymbolQuestionable) && ((AdrInt < -32) || (AdrInt > 31))) WrError(1370);
             else {
-               if ((AdrInt >= -32) && (AdrInt <= 31)) WrError(20);
-               CodeLen = 2;
-               BAsmCode[0] = 0x4e + (Hi(AdrInt) & 1); /* ANSI :-O */
-               BAsmCode[1] = Lo(AdrInt);
-            }
+               CodeLen = 1;
+               BAsmCode[0] = 0xc0 + (AdrInt & 0x3f);
+         } else if ((!SymbolQuestionable) && ((AdrInt < -256) || (AdrInt > 255))) WrError(1370);
+         else {
+            if ((AdrInt >= -32) && (AdrInt <= 31)) WrError(20);
+            CodeLen = 2;
+            BAsmCode[0] = 0x4e + (Hi(AdrInt) & 1); /* ANSI :-O */
+            BAsmCode[1] = Lo(AdrInt);
+         }
       }
       return;
    }
@@ -809,13 +802,13 @@ static void MakeCode_78C10(void) {
       else {
          FirstPassUnknown = false;
          AdrInt = EvalIntExpression(ArgStr[1], Int16, &OK);
-         if (OK)
-            if ((!FirstPassUnknown) && ((AdrInt >> 11) != 1)) WrError(1905);
-            else {
-               CodeLen = 2;
-               BAsmCode[0] = Hi(AdrInt) + 0x70;
-               BAsmCode[1] = Lo(AdrInt);
-            }
+         if (!OK) ;
+         else if ((!FirstPassUnknown) && ((AdrInt >> 11) != 1)) WrError(1905);
+         else {
+            CodeLen = 2;
+            BAsmCode[0] = Hi(AdrInt) + 0x70;
+            BAsmCode[1] = Lo(AdrInt);
+         }
       }
       return;
    }
@@ -825,12 +818,12 @@ static void MakeCode_78C10(void) {
       else {
          FirstPassUnknown = false;
          AdrInt = EvalIntExpression(ArgStr[1], Int16, &OK);
-         if (OK)
-            if ((!FirstPassUnknown) && ((AdrInt & 0xffc1) != 0x80)) WrError(1905);
-            else {
-               CodeLen = 1;
-               BAsmCode[0] = 0x80 + ((AdrInt & 0x3f) >> 1);
-            }
+         if (!OK) ;
+         else if ((!FirstPassUnknown) && ((AdrInt & 0xffc1) != 0x80)) WrError(1905);
+         else {
+            CodeLen = 1;
+            BAsmCode[0] = 0x80 + ((AdrInt & 0x3f) >> 1);
+         }
       }
       return;
    }

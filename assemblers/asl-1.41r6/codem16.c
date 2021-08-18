@@ -1,13 +1,5 @@
-/* codem16.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator Mitsubishi M16                                              */
-/*                                                                           */
-/* Historie: 27.12.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator Mitsubishi M16
 #include "stdinc.h"
 
 #include <string.h>
@@ -605,23 +597,23 @@ static bool DecodeAdr(char *Asc, Integer Index, Word Mask) {
 
       /* Displacement-Groesse entscheiden */
 
-         if (RootChain->DSize == DispSizeNone)
-            if ((RootChain->DispAcc == 0) && (RootChain->Regs[0] < 16));
-            else if (IsD16(RootChain->DispAcc))
-               RootChain->DSize = DispSize16;
-            else RootChain->DSize = DispSize32;
+         if (RootChain->DSize != DispSizeNone) ;
+         else if ((RootChain->DispAcc == 0) && (RootChain->Regs[0] < 16));
+         else if (IsD16(RootChain->DispAcc))
+            RootChain->DSize = DispSize16;
+         else RootChain->DSize = DispSize32;
 
          switch (RootChain->DSize) {
 
             /* kein Displacement mit Register */
 
             case DispSizeNone:
-               if (ChkRange(RootChain->DispAcc, 0, 0))
-                  if (RootChain->Regs[0] >= 16) WrError(1350);
-                  else {
-                     AdrType[Index] = ModIReg;
-                     AdrMode[Index] = 0x30 + RootChain->Regs[0];
-                  }
+               if (!ChkRange(RootChain->DispAcc, 0, 0)) ;
+               else if (RootChain->Regs[0] >= 16) WrError(1350);
+               else {
+                  AdrType[Index] = ModIReg;
+                  AdrMode[Index] = 0x30 + RootChain->Regs[0];
+               }
                break;
 
             /* 16-Bit-Displacement */
@@ -690,7 +682,7 @@ static bool DecodeAdr(char *Asc, Integer Index, Word Mask) {
                RunChain->Scales[z2] = RunChain->Scales[z2 + 1];
             }
             RunChain->RegCnt--;
-         };
+         }
 
       /* Jetzt ueber die einzelnen Komponenten iterieren */
 
@@ -701,7 +693,7 @@ static bool DecodeAdr(char *Asc, Integer Index, Word Mask) {
             while (RunChain->Next != NULL) {
                PrevChain = RunChain;
                RunChain = RunChain->Next;
-            };
+            }
 
          /* noch etwas abzulegen ? */
 
@@ -746,12 +738,12 @@ static bool DecodeAdr(char *Asc, Integer Index, Word Mask) {
                      /* Fall 1: passt komplett in 4er-Displacement */
 
                      case DispSize4:
-                        if (ChkRange(RunChain->DispAcc, -32, 28))
-                           if ((RunChain->DispAcc & 3) != 0) WrError(1325);
-                           else {
-                              AdrVals[Index][LastChain] += (RunChain->DispAcc >> 2) & 0x000f;
-                              RunChain->HasDisp = false;
-                           }
+                        if (!ChkRange(RunChain->DispAcc, -32, 28)) ;
+                        else if ((RunChain->DispAcc & 3) != 0) WrError(1325);
+                        else {
+                           AdrVals[Index][LastChain] += (RunChain->DispAcc >> 2) & 0x000f;
+                           RunChain->HasDisp = false;
+                        }
                         break;
 
                      /* Fall 2: passt nicht mehr in naechstkleineres Displacement, aber wir
@@ -939,7 +931,7 @@ static bool DecodeRegList(char *Asc, Word * Erg, bool Turn) {
          if (!DecodeReg(Part, &r1)) {
             WrXError(1410, Part);
             return false;
-         };
+         }
          if (!DecodeReg(p + 1, &r2)) {
             WrXError(1410, p + 1);
             return false;
@@ -980,7 +972,7 @@ static bool CheckFormat(char *FSet) {
       if (p != NULL) FormatCode = p - FSet + 1;
       else WrError(1090);
       return (p != NULL);
-   };
+   }
    return true;
 }
 
@@ -1065,10 +1057,10 @@ static void DecideBranch(LongInt Adr, Byte Index) {
    /* ansonsten allgemein */
       else FormatCode = 1;
    }
-   if ((FormatCode == 1) && (OpSize[Index] == -1))
-      if ((Dist <= 127) && (Dist >= -128)) OpSize[Index] = 0;
-      else if ((Dist <= 32767) && (Dist >= -32768)) OpSize[Index] = 1;
-      else OpSize[Index] = 2;
+   if (FormatCode != 1 || OpSize[Index] != -1) ;
+   else if ((Dist <= 127) && (Dist >= -128)) OpSize[Index] = 0;
+   else if ((Dist <= 32767) && (Dist >= -32768)) OpSize[Index] = 1;
+   else OpSize[Index] = 2;
 }
 
 static bool DecideBranchLength(LongInt * Addr, Integer Index) {
@@ -1388,7 +1380,7 @@ static bool CodeAri(void) {
             Mask = MModReg;
             Mask2 = Mask_Dest;
             AdrWord = 2;
-         };
+         }
          if (ArgCnt != 2) WrError(1110);
          else if (CheckFormat("G"))
             if (GetOpSize(ArgStr[1], 1))
@@ -1414,9 +1406,9 @@ static bool CodeAri(void) {
             if (OpSize[2] != 2) WrError(1110);
             else if (DecodeAdr(ArgStr[1], 1, Mask_PureMem))
                if (DecodeAdr(ArgStr[2], 2, Mask_Dest)) {
-                  if (FormatCode == 0)
-                     if ((AdrType[1] == ModDisp16) && (AdrType[2] == ModReg)) FormatCode = 2;
-                     else FormatCode = 1;
+                  if (FormatCode != 0) ;
+                  else if ((AdrType[1] == ModDisp16) && (AdrType[2] == ModReg)) FormatCode = 2;
+                  else FormatCode = 1;
                   switch (FormatCode) {
                      case 1:
                         Make_G(0xb400);
@@ -1500,15 +1492,15 @@ static bool CodeAri(void) {
                            if ((AdrType[1] != ModImm) || (!IsShort(2))) WrError(1350);
                            else {
                               HVal = ImmVal(1);
-                              if (ChkRange(HVal, -8, (1 - z) << 3))
-                                 if (HVal == 0) WrError(1135);
-                                 else {
-                                    if (HVal < 0) HVal += 16;
-                                    else HVal &= 7;
-                                    WAsmCode[0] = 0x4080 + (HVal << 10) + (z << 6) + (OpSize[2] << 8) + AdrMode[2];
-                                    memcpy(WAsmCode + 1, AdrVals[2], AdrCnt1[2]);
-                                    CodeLen = 2 + AdrCnt1[2];
-                                 }
+                              if (!ChkRange(HVal, -8, (1 - z) << 3)) ;
+                              else if (HVal == 0) WrError(1135);
+                              else {
+                                 if (HVal < 0) HVal += 16;
+                                 else HVal &= 7;
+                                 WAsmCode[0] = 0x4080 + (HVal << 10) + (z << 6) + (OpSize[2] << 8) + AdrMode[2];
+                                 memcpy(WAsmCode + 1, AdrVals[2], AdrCnt1[2]);
+                                 CodeLen = 2 + AdrCnt1[2];
+                              }
                            }
                            break;
                      }
@@ -1546,48 +1538,45 @@ static bool CodeBits(void) {
       if (Memo(BitOrders[z].Name)) {
          strcpy(Form, (BitOrders[z].Code2 != 0) ? "GER" : "GE");
          if (ArgCnt != 2) WrError(1110);
-         else if (CheckFormat(Form))
-            if (GetOpSize(ArgStr[1], 1))
-               if (GetOpSize(ArgStr[2], 2)) {
-                  if (OpSize[1] == -1) OpSize[1] = 2;
-                  if (DecodeAdr(ArgStr[1], 1, Mask_Source))
-                     if (DecodeAdr(ArgStr[2], 2, Mask_PureDest)) {
-                        if (OpSize[2] == -1)
-                           if ((AdrType[2] == ModReg) && (!BitOrders[z].MustByte)) OpSize[2] = 2;
-                           else OpSize[2] = 0;
-                        if (((AdrType[2] != ModReg) || (BitOrders[z].MustByte)) && (OpSize[2] != 0)) WrError(1130);
+         else if (CheckFormat(Form) && GetOpSize(ArgStr[1], 1) && GetOpSize(ArgStr[2], 2)) {
+            if (OpSize[1] == -1) OpSize[1] = 2;
+            if (DecodeAdr(ArgStr[1], 1, Mask_Source) && DecodeAdr(ArgStr[2], 2, Mask_PureDest)) {
+               if (OpSize[2] != -1) ;
+               else if ((AdrType[2] == ModReg) && (!BitOrders[z].MustByte)) OpSize[2] = 2;
+               else OpSize[2] = 0;
+               if (((AdrType[2] != ModReg) || (BitOrders[z].MustByte)) && (OpSize[2] != 0)) WrError(1130);
+               else {
+                  if (FormatCode == 0) {
+                     if (AdrType[1] == ModImm) {
+                        HVal = ImmVal(1);
+                        if ((HVal >= 0) && (HVal <= 7) && (IsShort(2)) && (BitOrders[z].Code2 != 0) && (OpSize[2] == 0)) FormatCode = 3;
+                        else if ((HVal >= -128) && (HVal < 127)) FormatCode = 2;
+                        else FormatCode = 1;
+                     } else FormatCode = 1;
+                  }
+                  switch (FormatCode) {
+                     case 1:
+                        Make_G(BitOrders[z].Code1);
+                        break;
+                     case 2:
+                        Make_E(BitOrders[z].Code1, true);
+                        break;
+                     case 3:
+                        if ((AdrType[1] != ModImm) || (!IsShort(2))) WrError(1350);
+                        else if (OpSize[2] != 0) WrError(1130);
                         else {
-                           if (FormatCode == 0) {
-                              if (AdrType[1] == ModImm) {
-                                 HVal = ImmVal(1);
-                                 if ((HVal >= 0) && (HVal <= 7) && (IsShort(2)) && (BitOrders[z].Code2 != 0) && (OpSize[2] == 0)) FormatCode = 3;
-                                 else if ((HVal >= -128) && (HVal < 127)) FormatCode = 2;
-                                 else FormatCode = 1;
-                              } else FormatCode = 1;
-                           };
-                           switch (FormatCode) {
-                              case 1:
-                                 Make_G(BitOrders[z].Code1);
-                                 break;
-                              case 2:
-                                 Make_E(BitOrders[z].Code1, true);
-                                 break;
-                              case 3:
-                                 if ((AdrType[1] != ModImm) || (!IsShort(2))) WrError(1350);
-                                 else if (OpSize[2] != 0) WrError(1130);
-                                 else {
-                                    HVal = ImmVal(1);
-                                    if (ChkRange(HVal, 0, 7)) {
-                                       WAsmCode[0] = BitOrders[z].Code2 + ((HVal & 7) << 10) + AdrMode[2];
-                                       memcpy(WAsmCode + 1, AdrVals[2], AdrCnt1[2]);
-                                       CodeLen = 2 + AdrCnt1[2];
-                                    }
-                                 }
-                                 break;
+                           HVal = ImmVal(1);
+                           if (ChkRange(HVal, 0, 7)) {
+                              WAsmCode[0] = BitOrders[z].Code2 + ((HVal & 7) << 10) + AdrMode[2];
+                              memcpy(WAsmCode + 1, AdrVals[2], AdrCnt1[2]);
+                              CodeLen = 2 + AdrCnt1[2];
                            }
                         }
-                     }
+                        break;
+                  }
                }
+            }
+         }
          return true;
       }
 
@@ -1867,7 +1856,7 @@ static void MakeCode_M16(void) {
          } else {
             WAsmCode[1] = 0x5761;
             WAsmCode[2] = 0x6974;
-         };
+         }
          WAsmCode[3] = 0x9e09;
          WAsmCode[4] = 0x0700;
       }
@@ -2201,44 +2190,44 @@ static void MakeCode_M16(void) {
                                        }
                                        break;
                                     case 2:
-                                       if (DecideBranchLength(&AdrLong, 4)) /* ??? */
-                                          if (AdrType[1] != ModImm) WrError(1350);
-                                          else {
-                                             HVal = ImmVal(1);
-                                             if (ChkRange(HVal, -128, 127)) {
-                                                WAsmCode[0] = 0xbf00 + (HVal & 0xff);
-                                                WAsmCode[1] = 0xf000 + (AdrWord << 11) + (OpSize[2] << 8) + AdrMode[2];
-                                                memcpy(WAsmCode + 2, AdrVals[2], AdrCnt1[2]);
-                                                WAsmCode[2 + AdrCnt2[2]] = (HReg << 10) + (OpSize[4] << 8);
-                                                CodeLen = 6 + AdrCnt1[2];
-                                             }
+                                       if (!DecideBranchLength(&AdrLong, 4)) ; /* ??? */
+                                       else if (AdrType[1] != ModImm) WrError(1350);
+                                       else {
+                                          HVal = ImmVal(1);
+                                          if (ChkRange(HVal, -128, 127)) {
+                                             WAsmCode[0] = 0xbf00 + (HVal & 0xff);
+                                             WAsmCode[1] = 0xf000 + (AdrWord << 11) + (OpSize[2] << 8) + AdrMode[2];
+                                             memcpy(WAsmCode + 2, AdrVals[2], AdrCnt1[2]);
+                                             WAsmCode[2 + AdrCnt2[2]] = (HReg << 10) + (OpSize[4] << 8);
+                                             CodeLen = 6 + AdrCnt1[2];
                                           }
+                                       }
                                        break;
                                     case 3:
-                                       if (DecideBranchLength(&AdrLong, 4)) /* ??? */
-                                          if (AdrType[1] != ModImm) WrError(1350);
-                                          else if (ImmVal(1) != 1) WrError(1135);
-                                          else if (AdrType[2] != ModImm) WrError(1350);
-                                          else {
-                                             HVal = ImmVal(2);
-                                             if (ChkRange(HVal, 1 - AdrWord, 64 - AdrWord)) {
-                                                WAsmCode[0] = 0x03d1 + (HReg << 10) + (AdrWord << 1);
-                                                WAsmCode[1] = ((HVal & 0x3f) << 10) + (OpSize[4] << 8);
-                                                CodeLen = 4;
-                                             }
-                                          }
-                                       break;
-                                    case 4:
-                                       if (DecideBranchLength(&AdrLong, 4)) /* ??? */
-                                          if (AdrType[1] != ModImm) WrError(1350);
-                                          else if (ImmVal(1) != 1) WrError(1135);
-                                          else if (OpSize[2] != 2) WrError(1130);
-                                          else if (AdrType[2] != ModReg) WrError(1350);
-                                          else {
-                                             WAsmCode[0] = 0x03d0 + (HReg << 10) + (AdrWord << 1);
-                                             WAsmCode[1] = ((AdrMode[2] & 15) << 10) + (OpSize[4] << 8);
+                                       if (!DecideBranchLength(&AdrLong, 4)) ; /* ??? */
+                                       else if (AdrType[1] != ModImm) WrError(1350);
+                                       else if (ImmVal(1) != 1) WrError(1135);
+                                       else if (AdrType[2] != ModImm) WrError(1350);
+                                       else {
+                                          HVal = ImmVal(2);
+                                          if (ChkRange(HVal, 1 - AdrWord, 64 - AdrWord)) {
+                                             WAsmCode[0] = 0x03d1 + (HReg << 10) + (AdrWord << 1);
+                                             WAsmCode[1] = ((HVal & 0x3f) << 10) + (OpSize[4] << 8);
                                              CodeLen = 4;
                                           }
+                                       }
+                                       break;
+                                    case 4:
+                                       if (!DecideBranchLength(&AdrLong, 4)) ; /* ??? */
+                                       else if (AdrType[1] != ModImm) WrError(1350);
+                                       else if (ImmVal(1) != 1) WrError(1135);
+                                       else if (OpSize[2] != 2) WrError(1130);
+                                       else if (AdrType[2] != ModReg) WrError(1350);
+                                       else {
+                                          WAsmCode[0] = 0x03d0 + (HReg << 10) + (AdrWord << 1);
+                                          WAsmCode[1] = ((AdrMode[2] & 15) << 10) + (OpSize[4] << 8);
+                                          CodeLen = 4;
+                                       }
                                        break;
                                  }
                                  if (CodeLen > 0)
@@ -2304,45 +2293,43 @@ static void MakeCode_M16(void) {
          strcopy(ArgStr[2], ArgStr[3]);
       } else z = 0;
       if (ArgCnt != 2) WrError(1110);
-      else if (CheckFormat("GE"))
-         if (GetOpSize(ArgStr[1], 1))
-            if (GetOpSize(ArgStr[2], 2)) {
-               if (OpSize[1] == -1) OpSize[1] = 2;
-               if (OpSize[2] == -1) OpSize[2] = 2;
-               if (OpSize[2] != 2) WrError(1130);
-               else if (DecodeAdr(ArgStr[1], 1, MModReg + MModImm))
-                  if (DecodeRegList(ArgStr[2], &AdrWord, z == 1))
-                     if ((z & 0xc000) != 0) WrXError(1410, "SP/FP");
-                     else {
-                        if (FormatCode == 0) {
-                           if (AdrType[1] == ModImm) {
-                              HVal = ImmVal(1);
-                              if ((HVal >= -128) && (HVal <= 127)) FormatCode = 2;
-                              else FormatCode = 1;
-                           } else FormatCode = 1;
-                        }
-                        switch (FormatCode) {
-                           case 1:
-                              WAsmCode[0] = 0x02f7;
-                              WAsmCode[1] = 0x8c00 + (z << 12) + (OpSize[1] << 8) + AdrMode[1];
-                              memcpy(WAsmCode + 2, AdrVals[1], AdrCnt1[1]);
-                              WAsmCode[2 + AdrCnt2[1]] = AdrWord;
-                              CodeLen = 6 + AdrCnt1[1];
-                              break;
-                           case 2:
-                              if (AdrType[1] != ModImm) WrError(1350);
-                              else {
-                                 HVal = ImmVal(1);
-                                 if (ChkRange(HVal, -128, 127)) {
-                                    WAsmCode[0] = 0x8e00 + (z << 12) + (HVal & 0xff);
-                                    WAsmCode[1] = AdrWord;
-                                    CodeLen = 4;
-                                 }
-                              }
-                              break;
-                        }
-                     }
+      else if (CheckFormat("GE") && GetOpSize(ArgStr[1], 1) && GetOpSize(ArgStr[2], 2)) {
+         if (OpSize[1] == -1) OpSize[1] = 2;
+         if (OpSize[2] == -1) OpSize[2] = 2;
+         if (OpSize[2] != 2) WrError(1130);
+         else if (!DecodeAdr(ArgStr[1], 1, MModReg + MModImm)) ;
+         else if (!DecodeRegList(ArgStr[2], &AdrWord, z == 1)) ;
+         else if ((z & 0xc000) != 0) WrXError(1410, "SP/FP");
+         else {
+            if (FormatCode == 0) {
+               if (AdrType[1] == ModImm) {
+                  HVal = ImmVal(1);
+                  if ((HVal >= -128) && (HVal <= 127)) FormatCode = 2;
+                  else FormatCode = 1;
+               } else FormatCode = 1;
             }
+            switch (FormatCode) {
+               case 1:
+                  WAsmCode[0] = 0x02f7;
+                  WAsmCode[1] = 0x8c00 + (z << 12) + (OpSize[1] << 8) + AdrMode[1];
+                  memcpy(WAsmCode + 2, AdrVals[1], AdrCnt1[1]);
+                  WAsmCode[2 + AdrCnt2[1]] = AdrWord;
+                  CodeLen = 6 + AdrCnt1[1];
+                  break;
+               case 2:
+                  if (AdrType[1] != ModImm) WrError(1350);
+                  else {
+                     HVal = ImmVal(1);
+                     if (ChkRange(HVal, -128, 127)) {
+                        WAsmCode[0] = 0x8e00 + (z << 12) + (HVal & 0xff);
+                        WAsmCode[1] = AdrWord;
+                        CodeLen = 4;
+                     }
+                  }
+                  break;
+            }
+         }
+      }
       return;
    }
 

@@ -1,13 +1,5 @@
-/* code86.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator 8086/V-Serie                                                */
-/*                                                                           */
-/* Historie:                                                                 */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator 8086/V-Serie
 #include "stdinc.h"
 #include <string.h>
 
@@ -1040,7 +1032,7 @@ static bool DecodeFPU(void) {
                   if (FMemo("FCOMP")) BAsmCode[CodeLen + 1] += 8;
                   MoveAdr(2);
                   CodeLen += 2 + AdrCnt;
-               };
+               }
                break;
             default:
                if (AdrType != TypeNone) WrError(1350);
@@ -1124,7 +1116,7 @@ static bool DecodeFPU(void) {
                      default:
                         if (AdrType != TypeNone) WrError(1350);
                   }
-               };
+               }
                break;
             default:
                if (AdrType != TypeNone) WrError(1350);
@@ -1561,8 +1553,7 @@ static void MakeCode_86(void) {
    }
 
    for (z = 0; z < ALU2OrderCnt; z++)
-      if Memo
-         (ALU2Orders[z]) {
+      if (Memo(ALU2Orders[z])) {
          if (ArgCnt != 2) WrError(1110);
          else {
             DecodeAdr(ArgStr[1]);
@@ -1636,7 +1627,7 @@ static void MakeCode_86(void) {
          }
          AddPrefixes();
          return;
-         }
+      }
 
    if ((Memo("INC")) || (Memo("DEC"))) {
       if (ArgCnt != 1) WrError(1110);
@@ -1674,8 +1665,7 @@ static void MakeCode_86(void) {
    }
 
    for (z = 0; z < MulOrderCnt; z++)
-      if Memo
-         (MulOrders[z]) {
+      if (Memo(MulOrders[z])) {
          switch (ArgCnt) {
             case 1:
                DecodeAdr(ArgStr[1]);
@@ -1749,18 +1739,18 @@ static void MakeCode_86(void) {
          }
          AddPrefixes();
          return;
-         };
+      }
 
    if (Memo("INT")) {
       if (ArgCnt != 1) WrError(1110);
       else {
          BAsmCode[CodeLen + 1] = EvalIntExpression(ArgStr[1], Int8, &OK);
-         if (OK)
-            if (BAsmCode[1] == 3) BAsmCode[CodeLen++] = 0xcc;
-            else {
-               BAsmCode[CodeLen] = 0xcd;
-               CodeLen += 2;
-            }
+         if (!OK) ;
+         else if (BAsmCode[1] == 3) BAsmCode[CodeLen++] = 0xcc;
+         else {
+            BAsmCode[CodeLen] = 0xcd;
+            CodeLen += 2;
+         }
       }
       AddPrefixes();
       return;
@@ -1834,11 +1824,12 @@ static void MakeCode_86(void) {
             KillPrefBlanks(ArgStr[1]);
          } else AdrByte = 0;
          OK = true;
-         if (Memo("CALL"))
+         if (Memo("CALL")) {
             if (AdrByte == 2) {
                WrError(1350);
                OK = false;
             } else AdrByte = 1;
+         }
 
          if (OK) {
             OpSize = 1;
@@ -2017,15 +2008,15 @@ static void MakeCode_86(void) {
                         CodeLen += 2 + AdrCnt;
                      } else {
                         BAsmCode[CodeLen + 2 + AdrCnt] = EvalIntExpression(ArgStr[2], Int8, &OK);
-                        if (OK)
-                           if (BAsmCode[CodeLen + 2 + AdrCnt] == 1) {
-                              BAsmCode[CodeLen] += 0xd0;
-                              CodeLen += 2 + AdrCnt;
-                           } else if (MomCPU < CPU80186) WrError(1500);
-                           else {
-                              BAsmCode[CodeLen] += 0xc0;
-                              CodeLen += 3 + AdrCnt;
-                           }
+                        if (!OK) ;
+                        else if (BAsmCode[CodeLen + 2 + AdrCnt] == 1) {
+                           BAsmCode[CodeLen] += 0xd0;
+                           CodeLen += 2 + AdrCnt;
+                        } else if (MomCPU < CPU80186) WrError(1500);
+                        else {
+                           BAsmCode[CodeLen] += 0xc0;
+                           CodeLen += 3 + AdrCnt;
+                        }
                      }
                      break;
                   default:
@@ -2297,31 +2288,31 @@ static void MakeCode_86(void) {
       else if (MomCPU < CPUV30) WrError(1500);
       else {
          DecodeAdr(ArgStr[1]);
-         if (AdrType != TypeNone)
-            if (AdrType != TypeReg8) WrError(1350);
-            else {
-               BAsmCode[CodeLen] = 0x0f;
-               BAsmCode[CodeLen + 1] = 0x31;
-               if (Memo("EXT")) BAsmCode[CodeLen + 1] += 2;
-               BAsmCode[CodeLen + 2] = 0xc0 + AdrMode;
-               DecodeAdr(ArgStr[2]);
-               switch (AdrType) {
-                  case TypeReg8:
-                     BAsmCode[CodeLen + 2] += (AdrMode << 3);
-                     CodeLen += 3;
-                     break;
-                  case TypeImm:
-                     if (AdrVals[0] > 15) WrError(1320);
-                     else {
-                        BAsmCode[CodeLen + 1] += 8;
-                        BAsmCode[CodeLen + 3] = AdrVals[1];
-                        CodeLen += 4;
-                     }
-                     break;
-                  default:
-                     if (AdrType != TypeNone) WrError(1350);
-               }
+         if (AdrType == TypeNone) ;
+         else if (AdrType != TypeReg8) WrError(1350);
+         else {
+            BAsmCode[CodeLen] = 0x0f;
+            BAsmCode[CodeLen + 1] = 0x31;
+            if (Memo("EXT")) BAsmCode[CodeLen + 1] += 2;
+            BAsmCode[CodeLen + 2] = 0xc0 + AdrMode;
+            DecodeAdr(ArgStr[2]);
+            switch (AdrType) {
+               case TypeReg8:
+                  BAsmCode[CodeLen + 2] += (AdrMode << 3);
+                  CodeLen += 3;
+                  break;
+               case TypeImm:
+                  if (AdrVals[0] > 15) WrError(1320);
+                  else {
+                     BAsmCode[CodeLen + 1] += 8;
+                     BAsmCode[CodeLen + 3] = AdrVals[1];
+                     CodeLen += 4;
+                  }
+                  break;
+               default:
+                  if (AdrType != TypeNone) WrError(1350);
             }
+         }
       }
       AddPrefixes();
       return;
@@ -2371,12 +2362,12 @@ static void MakeCode_86(void) {
             BAsmCode[CodeLen + 3] = EvalIntExpression(ArgStr[2], UInt3, &OK);
             if (OK) {
                AdrWord = EvalIntExpression(ArgStr[3], Int16, &OK) - (EProgCounter() + 5);
-               if (OK)
-                  if ((!SymbolQuestionable) && ((AdrWord > 0x7f) && (AdrWord < 0xff80))) WrError(1330);
-                  else {
-                     BAsmCode[CodeLen + 4] = Lo(AdrWord);
-                     CodeLen += 5;
-                  }
+               if (!OK) ;
+               else if ((!SymbolQuestionable) && ((AdrWord > 0x7f) && (AdrWord < 0xff80))) WrError(1330);
+               else {
+                  BAsmCode[CodeLen + 4] = Lo(AdrWord);
+                  CodeLen += 5;
+               }
             }
          }
       }

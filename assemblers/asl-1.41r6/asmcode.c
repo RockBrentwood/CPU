@@ -1,13 +1,5 @@
-/* asmcode.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Verwaltung der Code-Datei                                                 */
-/*                                                                           */
-/* Historie: 18. 5.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Verwaltung der Code-Datei
 #include "stdinc.h"
 #include <string.h>
 
@@ -63,11 +55,7 @@ void DreheCodes(void) {
          break;
       case 4:
          for (z = 0; z < (l >> 2); z++) {
-#ifdef __STDC__
             DAsmCode[z] = ((DAsmCode[z] & 0xff000000u) >> 24) + ((DAsmCode[z] & 0x00ff0000u) >> 8) + ((DAsmCode[z] & 0x0000ff00u) << 8) + ((DAsmCode[z] & 0x000000ffu) << 24);
-#else
-            DAsmCode[z] = ((DAsmCode[z] & 0xff000000) >> 24) + ((DAsmCode[z] & 0x00ff0000) >> 8) + ((DAsmCode[z] & 0x0000ff00) << 8) + ((DAsmCode[z] & 0x000000ff) << 24);
-#endif
          }
          break;
    }

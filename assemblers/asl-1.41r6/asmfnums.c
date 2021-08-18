@@ -1,13 +1,5 @@
-/* asmfnums.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Verwaltung von Datei-Nummern                                              */
-/*                                                                           */
-/* Historie: 15. 5.96 Grundsteinlegung                                       */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Verwaltung von Datei-Nummern
 #include "stdinc.h"
 #include <string.h>
 
@@ -84,7 +76,7 @@ Integer GetFileCount(void) {
    while (Lauf != NULL) {
       z++;
       Lauf = Lauf->Next;
-   };
+   }
    return z;
 }
 

@@ -1,13 +1,5 @@
-/* codez80.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator Zilog Z80/180/380                                           */
-/*                                                                           */
-/* Historie: 26.8.1996 Grundsteinlegung                                      */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator Zilog Z80/180/380
 #include "stdinc.h"
 #include <ctype.h>
 #include <string.h>
@@ -272,21 +264,13 @@ static void DeinitFields(void) {
 /* Adressbereiche */
 
 static LongInt CodeEnd(void) {
-#ifdef __STDC__
    if (ExtFlag) return 0xffffffffu;
-#else
-   if (ExtFlag) return 0xffffffff;
-#endif
    else if (MomCPU == CPUZ180) return 0x7ffff;
    else return 0xffff;
 }
 
 static LongInt PortEnd(void) {
-#ifdef __STDC__
    if (ExtFlag) return 0xffffffffu;
-#else
-   if (ExtFlag) return 0xffffffff;
-#endif
    else return 0xff;
 }
 
@@ -561,18 +545,10 @@ static void DecodeAdr(char *Asc_O) {
          AdrVals[0] = AdrLong & 0xff;
          AdrVals[1] = (AdrLong >> 8) & 0xff;
          AdrCnt = 2;
-#ifdef __STDC__
          if ((AdrLong & 0xffff0000u) == 0);
-#else
-         if ((AdrLong & 0xffff0000) == 0);
-#endif
          else {
             AdrVals[AdrCnt++] = ((AdrLong >> 16) & 0xff);
-#ifdef __STDC__
             if ((AdrLong & 0xff000000u) == 0) ChangeDDPrefix("IB");
-#else
-            if ((AdrLong & 0xff000000) == 0) ChangeDDPrefix("IB");
-#endif
             else {
                AdrVals[AdrCnt++] = ((AdrLong >> 24) & 0xff);
                ChangeDDPrefix("IW");
@@ -593,7 +569,7 @@ static void DecodeAdr(char *Asc_O) {
          if (OK) {
             AdrMode = ModImm;
             AdrCnt = 1;
-         };
+         }
          break;
       case 1:
          if (InLongMode()) {
@@ -603,18 +579,10 @@ static void DecodeAdr(char *Asc_O) {
                AdrVals[1] = Hi(AdrLong);
                AdrMode = ModImm;
                AdrCnt = 2;
-#ifdef __STDC__
                if ((AdrLong & 0xffff0000u) == 0);
-#else
-               if ((AdrLong & 0xffff0000) == 0);
-#endif
                else {
                   AdrVals[AdrCnt++] = (AdrLong >> 16) & 0xff;
-#ifdef __STDC__
                   if ((AdrLong & 0xff000000u) == 0) ChangeDDPrefix("IB");
-#else
-                  if ((AdrLong & 0xff000000) == 0) ChangeDDPrefix("IB");
-#endif
                   else {
                      AdrVals[AdrCnt++] = (AdrLong >> 24) & 0xff;
                      ChangeDDPrefix("IW");
@@ -669,8 +637,9 @@ static bool DecodeSFR(char *Inp, Byte * Erg) {
 
 static bool DecodePseudo(void) {
 #define ONOFFZ80Count 2
-   static ONOFFRec ONOFFZ80s[ONOFFZ80Count] = { { "EXTMODE", &ExtFlag, ExtFlagName },
-   { "LWORDMODE", &LWordFlag, LWordFlagName }
+   static ONOFFRec ONOFFZ80s[ONOFFZ80Count] = {
+      { "EXTMODE", &ExtFlag, ExtFlagName },
+      { "LWORDMODE", &LWordFlag, LWordFlagName }
    };
 
    if (Memo("PORT")) {
@@ -1815,12 +1784,10 @@ static void MakeCode_Z80(void) {
       if (Memo(FixedOrders[z].Name)) {
          if (ArgCnt != 0) WrError(1110);
          else if (MomCPU < FixedOrders[z].MinCPU) WrError(1500);
-         else {
-            if ((CodeLen = FixedOrders[z].Len) == 2) {
-               BAsmCode[0] = Hi(FixedOrders[z].Code);
-               BAsmCode[1] = Lo(FixedOrders[z].Code);
-            } else BAsmCode[0] = Lo(FixedOrders[z].Code);
-         };
+         else if ((CodeLen = FixedOrders[z].Len) == 2) {
+            BAsmCode[0] = Hi(FixedOrders[z].Code);
+            BAsmCode[1] = Lo(FixedOrders[z].Code);
+         } else BAsmCode[0] = Lo(FixedOrders[z].Code);
          return;
       }
 
@@ -1849,7 +1816,7 @@ static void MakeCode_Z80(void) {
          if (ArgCnt == 0) {
             ArgCnt = 1;
             strmaxcpy(ArgStr[1], "HL", 255);
-         };
+         }
          if (ArgCnt != 1) WrError(1110);
          else if (strcasecmp(ArgStr[1], "HL") != 0) WrError(1350);
          else if (MomCPU < HLOrders[z].MinCPU) WrError(1500);
@@ -2128,7 +2095,7 @@ static void MakeCode_Z80(void) {
             strcopy(ArgStr[3], ArgStr[1]);
             strcopy(ArgStr[1], ArgStr[2]);
             strcopy(ArgStr[2], ArgStr[3]);
-         };
+         }
          if (strcasecmp(ArgStr[2], "(C)") != 0) WrError(1350);
          else {
             OpSize = 1;
@@ -2296,39 +2263,28 @@ static void MakeCode_Z80(void) {
       }
       if (OK) {
          AdrLong = EvalAbsAdrExpression(ArgStr[ArgCnt], &OK);
-         if (OK)
-#ifdef __STDC__
-            if ((AdrLong & 0xffff0000u) == 0)
-#else
-            if ((AdrLong & 0xffff0000) == 0)
-#endif
-            {
-               CodeLen = 3;
-               BAsmCode[0] = 0xc2 + z;
-               BAsmCode[1] = Lo(AdrLong);
-               BAsmCode[2] = Hi(AdrLong);
-            }
-#ifdef __STDC__
-            else if ((AdrLong & 0xff000000u) == 0)
-#else
-            else if ((AdrLong & 0xff000000) == 0)
-#endif
-            {
-               ChangeDDPrefix("IB");
-               CodeLen = 4 + PrefixCnt;
-               BAsmCode[PrefixCnt] = 0xc2 + z;
-               BAsmCode[PrefixCnt + 1] = Lo(AdrLong);
-               BAsmCode[PrefixCnt + 2] = Hi(AdrLong);
-               BAsmCode[PrefixCnt + 3] = Hi(AdrLong >> 8);
-            } else {
-               ChangeDDPrefix("IW");
-               CodeLen = 5 + PrefixCnt;
-               BAsmCode[PrefixCnt] = 0xc2 + z;
-               BAsmCode[PrefixCnt + 1] = Lo(AdrLong);
-               BAsmCode[PrefixCnt + 2] = Hi(AdrLong);
-               BAsmCode[PrefixCnt + 3] = Hi(AdrLong >> 8);
-               BAsmCode[PrefixCnt + 4] = Hi(AdrLong >> 16);
-            }
+         if (!OK) ;
+         else if ((AdrLong & 0xffff0000u) == 0) {
+            CodeLen = 3;
+            BAsmCode[0] = 0xc2 + z;
+            BAsmCode[1] = Lo(AdrLong);
+            BAsmCode[2] = Hi(AdrLong);
+         } else if ((AdrLong & 0xff000000u) == 0) {
+            ChangeDDPrefix("IB");
+            CodeLen = 4 + PrefixCnt;
+            BAsmCode[PrefixCnt] = 0xc2 + z;
+            BAsmCode[PrefixCnt + 1] = Lo(AdrLong);
+            BAsmCode[PrefixCnt + 2] = Hi(AdrLong);
+            BAsmCode[PrefixCnt + 3] = Hi(AdrLong >> 8);
+         } else {
+            ChangeDDPrefix("IW");
+            CodeLen = 5 + PrefixCnt;
+            BAsmCode[PrefixCnt] = 0xc2 + z;
+            BAsmCode[PrefixCnt + 1] = Lo(AdrLong);
+            BAsmCode[PrefixCnt + 2] = Hi(AdrLong);
+            BAsmCode[PrefixCnt + 3] = Hi(AdrLong >> 8);
+            BAsmCode[PrefixCnt + 4] = Hi(AdrLong >> 16);
+         }
       }
       return;
    }
@@ -2347,39 +2303,28 @@ static void MakeCode_Z80(void) {
       }
       if (OK) {
          AdrLong = EvalAbsAdrExpression(ArgStr[ArgCnt], &OK);
-         if (OK)
-#ifdef __STDC__
-            if ((AdrLong & 0xffff0000u) == 0)
-#else
-            if ((AdrLong & 0xffff0000) == 0)
-#endif
-            {
-               CodeLen = 3;
-               BAsmCode[0] = 0xc4 + z;
-               BAsmCode[1] = Lo(AdrLong);
-               BAsmCode[2] = Hi(AdrLong);
-            }
-#ifdef __STDC__
-            else if ((AdrLong & 0xff000000u) == 0)
-#else
-            else if ((AdrLong & 0xff000000) == 0)
-#endif
-            {
-               ChangeDDPrefix("IB");
-               CodeLen = 4 + PrefixCnt;
-               BAsmCode[PrefixCnt] = 0xc4 + z;
-               BAsmCode[PrefixCnt + 1] = Lo(AdrLong);
-               BAsmCode[PrefixCnt + 2] = Hi(AdrLong);
-               BAsmCode[PrefixCnt + 3] = Hi(AdrLong >> 8);
-            } else {
-               ChangeDDPrefix("IW");
-               CodeLen = 5 + PrefixCnt;
-               BAsmCode[PrefixCnt] = 0xc4 + z;
-               BAsmCode[PrefixCnt + 1] = Lo(AdrLong);
-               BAsmCode[PrefixCnt + 2] = Hi(AdrLong);
-               BAsmCode[PrefixCnt + 3] = Hi(AdrLong >> 8);
-               BAsmCode[PrefixCnt + 4] = Hi(AdrLong >> 16);
-            }
+         if (!OK) ;
+         else if ((AdrLong & 0xffff0000u) == 0) {
+            CodeLen = 3;
+            BAsmCode[0] = 0xc4 + z;
+            BAsmCode[1] = Lo(AdrLong);
+            BAsmCode[2] = Hi(AdrLong);
+         } else if ((AdrLong & 0xff000000u) == 0) {
+            ChangeDDPrefix("IB");
+            CodeLen = 4 + PrefixCnt;
+            BAsmCode[PrefixCnt] = 0xc4 + z;
+            BAsmCode[PrefixCnt + 1] = Lo(AdrLong);
+            BAsmCode[PrefixCnt + 2] = Hi(AdrLong);
+            BAsmCode[PrefixCnt + 3] = Hi(AdrLong >> 8);
+         } else {
+            ChangeDDPrefix("IW");
+            CodeLen = 5 + PrefixCnt;
+            BAsmCode[PrefixCnt] = 0xc4 + z;
+            BAsmCode[PrefixCnt + 1] = Lo(AdrLong);
+            BAsmCode[PrefixCnt + 2] = Hi(AdrLong);
+            BAsmCode[PrefixCnt + 3] = Hi(AdrLong >> 8);
+            BAsmCode[PrefixCnt + 4] = Hi(AdrLong >> 16);
+         }
       }
       return;
    }
@@ -2443,39 +2388,39 @@ static void MakeCode_Z80(void) {
          WrError(1110);
          OK = false;
       }
-      if (OK)
-         if (MomCPU < CPUZ380) WrError(1500);
-         else {
-            AdrLInt = EvalAbsAdrExpression(ArgStr[ArgCnt], &OK);
-            if (OK) {
-               AdrLInt -= EProgCounter() + 3;
-               if ((AdrLInt <= 0x7fl) && (AdrLInt >= -0x80l)) {
-                  CodeLen = 3;
-                  BAsmCode[0] = 0xed;
+      if (!OK) ;
+      else if (MomCPU < CPUZ380) WrError(1500);
+      else {
+         AdrLInt = EvalAbsAdrExpression(ArgStr[ArgCnt], &OK);
+         if (OK) {
+            AdrLInt -= EProgCounter() + 3;
+            if ((AdrLInt <= 0x7fl) && (AdrLInt >= -0x80l)) {
+               CodeLen = 3;
+               BAsmCode[0] = 0xed;
+               BAsmCode[1] = 0xc4 + z;
+               BAsmCode[2] = AdrLInt & 0xff;
+            } else {
+               AdrLInt--;
+               if ((AdrLInt <= 0x7fffl) && (AdrLInt >= -0x8000l)) {
+                  CodeLen = 4;
+                  BAsmCode[0] = 0xdd;
                   BAsmCode[1] = 0xc4 + z;
                   BAsmCode[2] = AdrLInt & 0xff;
+                  BAsmCode[3] = (AdrLInt >> 8) & 0xff;
                } else {
                   AdrLInt--;
-                  if ((AdrLInt <= 0x7fffl) && (AdrLInt >= -0x8000l)) {
-                     CodeLen = 4;
-                     BAsmCode[0] = 0xdd;
+                  if ((AdrLInt <= 0x7fffffl) && (AdrLInt >= -0x800000l)) {
+                     CodeLen = 5;
+                     BAsmCode[0] = 0xfd;
                      BAsmCode[1] = 0xc4 + z;
                      BAsmCode[2] = AdrLInt & 0xff;
                      BAsmCode[3] = (AdrLInt >> 8) & 0xff;
-                  } else {
-                     AdrLInt--;
-                     if ((AdrLInt <= 0x7fffffl) && (AdrLInt >= -0x800000l)) {
-                        CodeLen = 5;
-                        BAsmCode[0] = 0xfd;
-                        BAsmCode[1] = 0xc4 + z;
-                        BAsmCode[2] = AdrLInt & 0xff;
-                        BAsmCode[3] = (AdrLInt >> 8) & 0xff;
-                        BAsmCode[4] = (AdrLInt >> 16) & 0xff;
-                     } else WrError(1370);
-                  }
+                     BAsmCode[4] = (AdrLInt >> 16) & 0xff;
+                  } else WrError(1370);
                }
             }
          }
+      }
       return;
    }
 
@@ -2521,12 +2466,12 @@ static void MakeCode_Z80(void) {
          FirstPassUnknown = false;
          AdrByte = EvalIntExpression(ArgStr[1], Int8, &OK);
          if (FirstPassUnknown) AdrByte = AdrByte & 0x38;
-         if (OK)
-            if ((AdrByte > 0x38) || ((AdrByte & 7) != 0)) WrError(1320);
-            else {
-               CodeLen = 1;
-               BAsmCode[0] = 0xc7 + AdrByte;
-            }
+         if (!OK) ;
+         else if ((AdrByte > 0x38) || ((AdrByte & 7) != 0)) WrError(1320);
+         else {
+            CodeLen = 1;
+            BAsmCode[0] = 0xc7 + AdrByte;
+         }
       }
       return;
    }
@@ -2555,16 +2500,16 @@ static void MakeCode_Z80(void) {
       if (ArgCnt != 1) WrError(1110);
       else {
          AdrByte = EvalIntExpression(ArgStr[1], UInt2, &OK);
-         if (OK)
-            if (AdrByte > 3) WrError(1320);
-            else if ((AdrByte == 3) && (MomCPU < CPUZ380)) WrError(1500);
-            else {
-               if (AdrByte == 3) AdrByte = 1;
-               else if (AdrByte >= 1) AdrByte++;
-               CodeLen = 2;
-               BAsmCode[0] = 0xed;
-               BAsmCode[1] = 0x46 + (AdrByte << 3);
-            }
+         if (!OK) ;
+         else if (AdrByte > 3) WrError(1320);
+         else if ((AdrByte == 3) && (MomCPU < CPUZ380)) WrError(1500);
+         else {
+            if (AdrByte == 3) AdrByte = 1;
+            else if (AdrByte >= 1) AdrByte++;
+            CodeLen = 2;
+            BAsmCode[0] = 0xed;
+            BAsmCode[1] = 0x46 + (AdrByte << 3);
+         }
       }
       return;
    }

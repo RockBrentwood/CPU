@@ -1,13 +1,5 @@
-/* code51.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator fuer MCS-51/252 Prozessoren                                 */
-/*                                                                           */
-/* Historie:  5. 6.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator fuer MCS-51/252 Prozessoren
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -361,20 +353,20 @@ static void DecodeAdr(char *Asc_O, Word Mask) {
    FirstFlag = false;
    SegType = (-1);
    PPos = QuotPos(Asc, ':');
-   if (PPos != NULL)
-      if (MomCPU < CPU80251) {
-         WrError(1350);
-         return;
-      } else {
-         SplitString(Asc, Part, Asc, PPos);
-         if (strcasecmp(Part, "S") == 0) SegType = (-2);
-         else {
-            FirstPassUnknown = false;
-            SegType = EvalIntExpression(Asc, UInt8, &OK);
-            if (!OK) return;
-            if (FirstPassUnknown) FirstFlag = true;
-         }
+   if (PPos == NULL) ;
+   else if (MomCPU < CPU80251) {
+      WrError(1350);
+      return;
+   } else {
+      SplitString(Asc, Part, Asc, PPos);
+      if (strcasecmp(Part, "S") == 0) SegType = (-2);
+      else {
+         FirstPassUnknown = false;
+         SegType = EvalIntExpression(Asc, UInt8, &OK);
+         if (!OK) return;
+         if (FirstPassUnknown) FirstFlag = true;
       }
+   }
 
    FirstPassUnknown = false;
    switch (SegType) {
@@ -400,9 +392,9 @@ static void DecodeAdr(char *Asc_O, Word Mask) {
 
    else {
       if (SegType >= 0) H32 += ((LongWord) SegType) << 16;
-      if (FirstFlag)
-         if ((MomCPU < CPU80251) || ((Mask & ModDir16) == 0)) H32 &= 0xff;
-         else H32 &= 0xffff;
+      if (!FirstFlag) ;
+      else if ((MomCPU < CPU80251) || ((Mask & ModDir16) == 0)) H32 &= 0xff;
+      else H32 &= 0xffff;
       if (((H32 < 128) || ((H32 < 256) && (MomCPU < CPU80251))) && ((Mask & MModDir8) != 0)) {
          if (MomCPU < CPU80251) ChkSpace(SegData);
          AdrMode = ModDir8;
@@ -436,12 +428,7 @@ static ShortInt DecodeBitAdr(char *Asc, LongInt * Erg, bool MayShorten) {
          FirstPassUnknown = false;
          *Erg = EvalIntExpression(Asc, Int32, &OK);
          if (FirstPassUnknown) (*Erg) &= 0x070000ff;
-#ifdef __STDC__
-         if (((*Erg) & 0xf8ffff00u) != 0)
-#else
-         if (((*Erg) & 0xf8ffff00) != 0)
-#endif
-         {
+         if (((*Erg) & 0xf8ffff00u) != 0) {
             WrError(1510);
             OK = false;
          }
@@ -477,8 +464,9 @@ static bool Chk504(LongInt Adr) {
 
 static bool DecodePseudo(void) {
 #define ONOFF51Count 2
-   static ONOFFRec ONOFF51s[ONOFF51Count] = { { "SRCMODE", &SrcMode, SrcModeName },
-   { "BIGENDIAN", &BigEndian, BigEndianName }
+   static ONOFFRec ONOFF51s[ONOFF51Count] = {
+      { "SRCMODE", &SrcMode, SrcModeName },
+      { "BIGENDIAN", &BigEndian, BigEndianName }
    };
 
    Integer z, DSeg;
@@ -1250,7 +1238,7 @@ static void MakeCode_51(void) {
                   PutCode(AccOrders[z].Code);
                   break;
             }
-         };
+         }
          return;
       }
 
@@ -1260,14 +1248,14 @@ static void MakeCode_51(void) {
       if (ArgCnt != 1) WrError(1110);
       else {
          AdrLong = EvalIntExpression(ArgStr[1], Int24, &OK);
-         if (OK)
-            if ((!SymbolQuestionable) && (((EProgCounter() + 2) >> 11) != (AdrLong >> 11))) WrError(1910);
-            else if (Chk504(EProgCounter())) WrError(1900);
-            else {
-               ChkSpace(SegCode);
-               PutCode(0x01 + (Memo("ACALL") << 4) + ((Hi(AdrLong) & 7) << 5));
-               BAsmCode[CodeLen++] = Lo(AdrLong);
-            }
+         if (!OK) ;
+         else if ((!SymbolQuestionable) && (((EProgCounter() + 2) >> 11) != (AdrLong >> 11))) WrError(1910);
+         else if (Chk504(EProgCounter())) WrError(1900);
+         else {
+            ChkSpace(SegCode);
+            PutCode(0x01 + (Memo("ACALL") << 4) + ((Hi(AdrLong) & 7) << 5));
+            BAsmCode[CodeLen++] = Lo(AdrLong);
+         }
       }
       return;
    }
@@ -1288,14 +1276,14 @@ static void MakeCode_51(void) {
          }
       } else {
          AdrLong = EvalIntExpression(ArgStr[1], Int24, &OK);
-         if (OK)
-            if ((MomCPU >= CPU80251) && (((EProgCounter() + 3) >> 16) != (AdrLong >> 16))) WrError(1910);
-            else {
-               ChkSpace(SegCode);
-               PutCode(0x02 + (Memo("LCALL") << 4));
-               BAsmCode[CodeLen++] = (AdrLong >> 8) & 0xff;
-               BAsmCode[CodeLen++] = AdrLong & 0xff;
-            }
+         if (!OK) ;
+         else if ((MomCPU >= CPU80251) && (((EProgCounter() + 3) >> 16) != (AdrLong >> 16))) WrError(1910);
+         else {
+            ChkSpace(SegCode);
+            PutCode(0x02 + (Memo("LCALL") << 4));
+            BAsmCode[CodeLen++] = (AdrLong >> 8) & 0xff;
+            BAsmCode[CodeLen++] = AdrLong & 0xff;
+         }
       }
       return;
    }
@@ -1590,7 +1578,7 @@ static void MakeCode_51(void) {
                      else {
                         PutCode(0x12c);
                         BAsmCode[CodeLen++] = AdrPart + (AccReg << 4);
-                     };
+                     }
                      break;
                }
                break;

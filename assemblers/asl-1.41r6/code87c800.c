@@ -1,13 +1,5 @@
-/* code87c800.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator TLCS-870                                                    */
-/*                                                                           */
-/* Historie: 29.12.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator TLCS-870
 #include "stdinc.h"
 
 #include <ctype.h>
@@ -900,15 +892,15 @@ static void MakeCode_87C800(void) {
          if (ArgCnt != 1) WrError(1110);
          else {
             DecodeAdr(ArgStr[1], MModReg8);
-            if (AdrType != ModNone)
-               if (AdrMode == AccReg) {
-                  CodeLen = 1;
-                  BAsmCode[0] = RegOrders[z].Code;
-               } else {
-                  CodeLen = 2;
-                  BAsmCode[0] = 0xe8 + AdrMode;
-                  BAsmCode[1] = RegOrders[z].Code;
-               }
+            if (AdrType == ModNone) ;
+            else if (AdrMode == AccReg) {
+               CodeLen = 1;
+               BAsmCode[0] = RegOrders[z].Code;
+            } else {
+               CodeLen = 2;
+               BAsmCode[0] = 0xe8 + AdrMode;
+               BAsmCode[1] = RegOrders[z].Code;
+            }
          }
          return;
       }
@@ -1099,19 +1091,19 @@ static void MakeCode_87C800(void) {
          if (AdrType == ModReg8) {
             HReg = AdrMode;
             DecodeAdr(ArgStr[2], MModReg8);
-            if (AdrType == ModReg8)
-               if ((HReg ^ AdrMode) != 1) WrError(1760);
-               else {
-                  HReg = HReg >> 1;
-                  if (HReg == 0) {
-                     CodeLen = 1;
-                     BAsmCode[0] = 0x02;
-                  } else {
-                     CodeLen = 2;
-                     BAsmCode[0] = 0xe8 + HReg;
-                     BAsmCode[1] = 0x02;
-                  }
+            if (AdrType != ModReg8) ;
+            else if ((HReg ^ AdrMode) != 1) WrError(1760);
+            else {
+               HReg = HReg >> 1;
+               if (HReg == 0) {
+                  CodeLen = 1;
+                  BAsmCode[0] = 0x02;
+               } else {
+                  CodeLen = 2;
+                  BAsmCode[0] = 0xe8 + HReg;
+                  BAsmCode[1] = 0x02;
                }
+            }
          }
       }
       return;
@@ -1124,17 +1116,17 @@ static void MakeCode_87C800(void) {
          if (AdrType == ModReg16) {
             HReg = AdrMode;
             DecodeAdr(ArgStr[2], MModReg8);
-            if (AdrType == ModReg8)
-               if (AdrMode != 2) WrError(1350); /* C */
-               else if (HReg == 0) {
-                  CodeLen = 1;
-                  BAsmCode[0] = 0x03;
-               } else {
-                  CodeLen = 2;
-                  BAsmCode[0] = 0xe8 + HReg;
-                  BAsmCode[1] = 0x03;
-                  if (HReg == 1) WrError(140);
-               }
+            if (AdrType != ModReg8) ;
+            else if (AdrMode != 2) WrError(1350); /* C */
+            else if (HReg == 0) {
+               CodeLen = 1;
+               BAsmCode[0] = 0x03;
+            } else {
+               CodeLen = 2;
+               BAsmCode[0] = 0xe8 + HReg;
+               BAsmCode[1] = 0x03;
+               if (HReg == 1) WrError(140);
+            }
          }
       }
       return;
@@ -1166,12 +1158,12 @@ static void MakeCode_87C800(void) {
          if (Condition >= ConditionCnt) WrXError(1360, ArgStr[1]);
          else {
             AdrInt = EvalIntExpression(ArgStr[2], Int16, &OK) - (EProgCounter() + 2);
-            if (OK)
-               if (((AdrInt < -16) || (AdrInt > 15)) && (!SymbolQuestionable)) WrError(1370);
-               else {
-                  CodeLen = 1;
-                  BAsmCode[0] = ((Conditions[Condition].Code - 2) << 5) + (AdrInt & 0x1f);
-               }
+            if (!OK) ;
+            else if (((AdrInt < -16) || (AdrInt > 15)) && (!SymbolQuestionable)) WrError(1370);
+            else {
+               CodeLen = 1;
+               BAsmCode[0] = ((Conditions[Condition].Code - 2) << 5) + (AdrInt & 0x1f);
+            }
          }
       }
       return;
@@ -1189,14 +1181,14 @@ static void MakeCode_87C800(void) {
          if (Condition >= ConditionCnt) WrXError(1360, ArgStr[1]);
          else {
             AdrInt = EvalIntExpression(ArgStr[2], Int16, &OK) - (EProgCounter() + 2);
-            if (OK)
-               if (((AdrInt < -128) || (AdrInt > 127)) && (!SymbolQuestionable)) WrError(1370);
-               else {
-                  CodeLen = 2;
-                  if (Condition == -1) BAsmCode[0] = 0xfb;
-                  else BAsmCode[0] = 0xd0 + Conditions[Condition].Code;
-                  BAsmCode[1] = AdrInt & 0xff;
-               }
+            if (!OK) ;
+            else if (((AdrInt < -128) || (AdrInt > 127)) && (!SymbolQuestionable)) WrError(1370);
+            else {
+               CodeLen = 2;
+               if (Condition == -1) BAsmCode[0] = 0xfb;
+               else BAsmCode[0] = 0xd0 + Conditions[Condition].Code;
+               BAsmCode[1] = AdrInt & 0xff;
+            }
          }
       }
       return;
@@ -1261,13 +1253,13 @@ static void MakeCode_87C800(void) {
       if (ArgCnt != 1) WrError(1110);
       else {
          AdrInt = EvalIntExpression(ArgStr[1], Int16, &OK);
-         if (OK)
-            if ((Hi(AdrInt) != 0xff) && (Hi(AdrInt) != 0)) WrError(1320);
-            else {
-               CodeLen = 2;
-               BAsmCode[0] = 0xfd;
-               BAsmCode[1] = Lo(AdrInt);
-            }
+         if (!OK) ;
+         else if ((Hi(AdrInt) != 0xff) && (Hi(AdrInt) != 0)) WrError(1320);
+         else {
+            CodeLen = 2;
+            BAsmCode[0] = 0xfd;
+            BAsmCode[1] = Lo(AdrInt);
+         }
       }
       return;
    }

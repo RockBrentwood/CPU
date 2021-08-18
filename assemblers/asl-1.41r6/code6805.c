@@ -1,13 +1,5 @@
-/* code6805.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator 68(HC)05/08                                                 */
-/*                                                                           */
-/* Historie:  9.10.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator 68(HC)05/08
 #include "stdinc.h"
 
 #include <string.h>
@@ -482,22 +474,21 @@ static void MakeCode_6805(void) {
 /* relative Spruenge */
 
    for (z = 0; z < RelOrderCnt; z++)
-      if Memo
-         (RelOrders[z].Name) {
+      if (Memo(RelOrders[z].Name)) {
          if (ArgCnt != 1) WrError(1110);
          else if (MomCPU < RelOrders[z].MinCPU) WrXError(1500, OpPart);
          else {
             AdrInt = EvalIntExpression(ArgStr[1], UInt16, &OK) - (EProgCounter() + 2);
-            if (OK)
-               if ((!SymbolQuestionable) && ((AdrInt < -128) || (AdrInt > 127))) WrError(1370);
-               else {
-                  CodeLen = 2;
-                  BAsmCode[0] = RelOrders[z].Code;
-                  BAsmCode[1] = Lo(AdrInt);
-               }
+            if (!OK) ;
+            else if ((!SymbolQuestionable) && ((AdrInt < -128) || (AdrInt > 127))) WrError(1370);
+            else {
+               CodeLen = 2;
+               BAsmCode[0] = RelOrders[z].Code;
+               BAsmCode[1] = Lo(AdrInt);
+            }
          }
          return;
-         }
+      }
 
    if ((Memo("CBEQA")) || (Memo("CBEQX"))) {
       if (ArgCnt != 2) WrError(1110);
@@ -508,13 +499,13 @@ static void MakeCode_6805(void) {
          if (AdrMode == ModImm) {
             BAsmCode[1] = AdrVals[0];
             AdrInt = EvalIntExpression(ArgStr[2], UInt16, &OK) - (EProgCounter() + 3);
-            if (OK)
-               if ((!SymbolQuestionable) && ((AdrInt < -128) || (AdrInt > 127))) WrError(1370);
-               else {
-                  BAsmCode[0] = 0x41 + (Memo("CBEQX") << 4);
-                  BAsmCode[2] = AdrInt & 0xff;
-                  CodeLen = 3;
-               }
+            if (!OK) ;
+            else if ((!SymbolQuestionable) && ((AdrInt < -128) || (AdrInt > 127))) WrError(1370);
+            else {
+               BAsmCode[0] = 0x41 + (Memo("CBEQX") << 4);
+               BAsmCode[2] = AdrInt & 0xff;
+               CodeLen = 3;
+            }
          }
       }
       return;
@@ -534,15 +525,15 @@ static void MakeCode_6805(void) {
                BAsmCode[0] = 0x71;
                z = 2;
                break;
-         };
+         }
          if (AdrMode != ModNone) {
             AdrInt = EvalIntExpression(ArgStr[2], UInt16, &OK) - (EProgCounter() + z);
-            if (OK)
-               if ((!SymbolQuestionable) && ((AdrInt < -128) || (AdrInt > 127))) WrError(1370);
-               else {
-                  BAsmCode[z - 1] = AdrInt & 0xff;
-                  CodeLen = z;
-               }
+            if (!OK) ;
+            else if ((!SymbolQuestionable) && ((AdrInt < -128) || (AdrInt > 127))) WrError(1370);
+            else {
+               BAsmCode[z - 1] = AdrInt & 0xff;
+               CodeLen = z;
+            }
          }
       } else if (ArgCnt == 3) {
          OK = true;
@@ -559,12 +550,12 @@ static void MakeCode_6805(void) {
             BAsmCode[z - 2] = EvalIntExpression(ArgStr[1], UInt8, &OK);
             if (OK) {
                AdrInt = EvalIntExpression(ArgStr[3], UInt16, &OK) - (EProgCounter() + z);
-               if (OK)
-                  if ((!SymbolQuestionable) && ((AdrInt < -128) || (AdrInt > 127))) WrError(1370);
-                  else {
-                     BAsmCode[z - 1] = AdrInt & 0xff;
-                     CodeLen = z;
-                  }
+               if (!OK) ;
+               else if ((!SymbolQuestionable) && ((AdrInt < -128) || (AdrInt > 127))) WrError(1370);
+               else {
+                  BAsmCode[z - 1] = AdrInt & 0xff;
+                  CodeLen = z;
+               }
             }
          }
       } else WrError(1110);
@@ -576,13 +567,13 @@ static void MakeCode_6805(void) {
       else if (MomCPU < CPU6808) WrXError(1500, OpPart);
       else {
          AdrInt = EvalIntExpression(ArgStr[1], UInt16, &OK) - (EProgCounter() + 2);
-         if (OK)
-            if ((!SymbolQuestionable) && ((AdrInt < -128) || (AdrInt > 127))) WrError(1370);
-            else {
-               BAsmCode[0] = 0x4b + (Memo("DBNZX") << 4);
-               BAsmCode[1] = AdrInt & 0xff;
-               CodeLen = 2;
-            }
+         if (!OK) ;
+         else if ((!SymbolQuestionable) && ((AdrInt < -128) || (AdrInt > 127))) WrError(1370);
+         else {
+            BAsmCode[0] = 0x4b + (Memo("DBNZX") << 4);
+            BAsmCode[1] = AdrInt & 0xff;
+            CodeLen = 2;
+         }
       }
       return;
    }
@@ -616,12 +607,12 @@ static void MakeCode_6805(void) {
          }
          if (AdrMode != ModNone) {
             AdrInt = EvalIntExpression(ArgStr[ArgCnt], UInt16, &OK) - (EProgCounter() + z);
-            if (OK)
-               if ((!SymbolQuestionable) && ((AdrInt < -128) || (AdrInt > 127))) WrError(1370);
-               else {
-                  BAsmCode[z - 1] = AdrInt & 0xff;
-                  CodeLen = z;
-               }
+            if (!OK) ;
+            else if ((!SymbolQuestionable) && ((AdrInt < -128) || (AdrInt > 127))) WrError(1370);
+            else {
+               BAsmCode[z - 1] = AdrInt & 0xff;
+               CodeLen = z;
+            }
          }
       }
       return;
@@ -630,8 +621,7 @@ static void MakeCode_6805(void) {
 /* ALU-Operationen */
 
    for (z = 0; z < ALUOrderCnt; z++)
-      if Memo
-         (ALUOrders[z].Name) {
+      if (Memo(ALUOrders[z].Name)) {
          if (MomCPU < ALUOrders[z].MinCPU) WrXError(1500, OpPart);
          else {
             OpSize = ALUOrders[z].Size;
@@ -678,7 +668,7 @@ static void MakeCode_6805(void) {
             }
          }
          return;
-         }
+      }
 
    if ((Memo("AIX")) || (Memo("AIS"))) {
       if (ArgCnt != 1) WrError(1110);
@@ -697,8 +687,7 @@ static void MakeCode_6805(void) {
 /* Read/Modify/Write-Operationen */
 
    for (z = 0; z < RMWOrderCnt; z++)
-      if Memo
-         (RMWOrders[z].Name) {
+      if (Memo(RMWOrders[z].Name)) {
          if (MomCPU < RMWOrders[z].MinCPU) WrXError(1500, OpPart);
          else {
             DecodeAdr(1, ArgCnt, RMWOrders[z].Mask);
@@ -727,7 +716,7 @@ static void MakeCode_6805(void) {
             }
          }
          return;
-         }
+      }
 
    ch = OpPart[strlen(OpPart) - 1];
    if ((ch >= '0') && (ch <= '7')) {
@@ -761,13 +750,13 @@ static void MakeCode_6805(void) {
             BAsmCode[0] = EvalIntExpression(ArgStr[1], UInt3, &OK);
             if (OK) {
                AdrInt = EvalIntExpression(ArgStr[3], UInt16, &OK) - (EProgCounter() + 3);
-               if (OK)
-                  if ((!SymbolQuestionable) && ((AdrInt < -128) || (AdrInt > 127))) WrError(1370);
-                  else {
-                     CodeLen = 3;
-                     BAsmCode[0] = (BAsmCode[0] << 1) + Memo("BRCLR");
-                     BAsmCode[2] = Lo(AdrInt);
-                  }
+               if (!OK) ;
+               else if ((!SymbolQuestionable) && ((AdrInt < -128) || (AdrInt > 127))) WrError(1370);
+               else {
+                  CodeLen = 3;
+                  BAsmCode[0] = (BAsmCode[0] << 1) + Memo("BRCLR");
+                  BAsmCode[2] = Lo(AdrInt);
+               }
             }
          }
       }

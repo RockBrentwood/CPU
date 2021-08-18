@@ -1,13 +1,5 @@
-/* ioerrors.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Abliefern der I/O-Fehlermeldungen                                         */
-/*                                                                           */
-/* Historie: 11.10.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Abliefern der I/O-Fehlermeldungen
 #include "stdinc.h"
 #include <errno.h>
 #include "ioerrors.rsc"

@@ -1,13 +1,5 @@
-/* codemsp.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator MSP430                                                      */
-/*                                                                           */
-/* Historie:                                                                 */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator MSP430
 #include "stdinc.h"
 
 #include <ctype.h>
@@ -234,13 +226,13 @@ static void DecodeAdr(char *Asc, Byte Mask, bool MayImm) {
          if (DecodeReg(p + 1, &AdrPart)) {
             *p = '\0';
             AdrVal = EvalIntExpression(Asc, Int16, &OK);
-            if (OK)
-               if ((AdrPart == 2) || (AdrPart == 3)) WrXError(1445, Asc);
-               else if ((AdrVal == 0) && ((Mask & 4) != 0)) AdrMode = 2;
-               else {
-                  AdrCnt = 1;
-                  AdrMode = 1;
-               }
+            if (!OK) ;
+            else if ((AdrPart == 2) || (AdrPart == 3)) WrXError(1445, Asc);
+            else if ((AdrVal == 0) && ((Mask & 4) != 0)) AdrMode = 2;
+            else {
+               AdrCnt = 1;
+               AdrMode = 1;
+            }
             *p = '(';
             ChkAdr(Mask);
             return;
@@ -488,13 +480,13 @@ static void MakeCode_MSP(void) {
          else if (OpSize != 0) WrError(1130);
          else {
             AdrInt = EvalIntExpression(ArgStr[1], UInt16, &OK) - (EProgCounter() + 2);
-            if (OK)
-               if (Odd(AdrInt)) WrError(1375);
-               else if ((!SymbolQuestionable) && ((AdrInt < -1024) || (AdrInt > 1022))) WrError(1370);
-               else {
-                  WAsmCode[0] = JmpOrders[z].Code + ((AdrInt >> 1) & 0x3ff);
-                  CodeLen = 2;
-               }
+            if (!OK) ;
+            else if (Odd(AdrInt)) WrError(1375);
+            else if ((!SymbolQuestionable) && ((AdrInt < -1024) || (AdrInt > 1022))) WrError(1370);
+            else {
+               WAsmCode[0] = JmpOrders[z].Code + ((AdrInt >> 1) & 0x3ff);
+               CodeLen = 2;
+            }
          }
          return;
       }

@@ -1,13 +1,5 @@
-/* stringutil.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* haeufig benoetigte String-Funktionen                                      */
-/*                                                                           */
-/* Historie:  5. 5.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// haeufig benoetigte String-Funktionen
 #include "stdinc.h"
 #include <ctype.h>
 #include <string.h>

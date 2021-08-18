@@ -1,13 +1,5 @@
-/* asmdef.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* global benutzte Variablen                                                 */
-/*                                                                           */
-/* Historie:  4. 5.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// global benutzte Variablen
 #include "stdinc.h"
 
 #include "stringlists.h"
@@ -30,7 +22,8 @@ LongInt VerNo = 0x1415;
 char *EnvName = "ASCMD"; /* Environment-Variable fuer Default-
                             Parameter */
 
-char *SegNames[PCMax + 1] = { "NOTHING", "CODE", "DATA", "IDATA", "XDATA", "YDATA",
+char *SegNames[PCMax + 1] = {
+   "NOTHING", "CODE", "DATA", "IDATA", "XDATA", "YDATA",
    "BITDATA", "IO", "REG"
 };
 char SegShorts[PCMax + 1] = { '-', 'C', 'D', 'I', 'X', 'Y', 'B', 'P', 'R' };
@@ -168,13 +161,18 @@ Word *WAsmCode;
 Byte *BAsmCode;
 
 bool DontPrint; /* Flag:PC veraendert, aber keinen Code erzeugt */
-/**   MultiFace:RECORD Case Byte OF
-		    0:(Feld:WordField);
-		    1:(Val32:Single);
-		    2:(Val64:Double);
-		    3:(Val80:Extended);
-		    4:(ValCo:Comp);
-		    };**/
+#if 0
+struct {
+   int Byte;
+   union {
+      WordField Feld; // 0
+      Single Val32; // 1
+      Double Val64; // 2
+      Extended Val80; // 3
+      Comp ValCo; // 4
+   } _;
+} MultiFace;
+#endif
 
 Byte StopfZahl; /* Anzahl der im 2.Pass festgestellten
                    ueberfluessigen Worte, die mit NOP ge-

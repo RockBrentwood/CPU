@@ -1,13 +1,5 @@
-/* code8x30x.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator Signetics 8X30x                                             */
-/*                                                                           */
-/* Historie: 25.6.1997 Grundsteinlegung                                      */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator Signetics 8X30x
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -90,9 +82,9 @@ static bool DecodeReg(char *Asc, Word * Erg, ShortInt * ErgLen) {
       Acc = 0;
       OK = true;
       for (z = Asc + 1; *z != '\0'; z++)
-         if (OK)
-            if ((*z < '0') || (*z > '7')) OK = false;
-            else Acc = (Acc << 3) + (*z - '0');
+         if (!OK) ;
+         else if ((*z < '0') || (*z > '7')) OK = false;
+         else Acc = (Acc << 3) + (*z - '0');
       if ((OK) && (Acc < 32)) {
          if ((MomCPU == CPU8x300) && (Acc > 9) && (Acc < 15)) {
             WrXError(1445, Asc);
@@ -102,7 +94,7 @@ static bool DecodeReg(char *Asc, Word * Erg, ShortInt * ErgLen) {
       }
    }
 
-   if ((strlen(Asc) == 4) && (strncasecmp(Asc + 1, "IV", 2) == 0) && (Asc[3] >= '0') && (Asc[3] <= '7'))
+   if (strlen(Asc) == 4 && strncasecmp(Asc + 1, "IV", 2) == 0 && Asc[3] >= '0' && Asc[3] <= '7') {
       if (toupper(*Asc) == 'L') {
          *Erg = Asc[3] - '0' + 0x10;
          return true;
@@ -110,6 +102,7 @@ static bool DecodeReg(char *Asc, Word * Erg, ShortInt * ErgLen) {
          *Erg = Asc[3] - '0' + 0x18;
          return true;
       }
+   }
 
 /* IV - Objekte */
 
@@ -261,34 +254,34 @@ static void MakeCode_8x30X(void) {
 
    if (Memo("XMIT")) {
       if ((ArgCnt != 2) && (ArgCnt != 3)) WrError(1110);
-      else if (DecodeReg(ArgStr[2], &SrcReg, &SrcLen))
-         if (SrcReg < 16) {
-            if (ArgCnt != 2) WrError(1110);
+      else if (!DecodeReg(ArgStr[2], &SrcReg, &SrcLen)) ;
+      else if (SrcReg < 16) {
+         if (ArgCnt != 2) WrError(1110);
+         else {
+            Adr = EvalIntExpression(ArgStr[1], Int8, &OK);
+            if (OK) {
+               WAsmCode[0] = 0xc000 + (SrcReg << 8) + (Adr & 0xff);
+               CodeLen = 1;
+            }
+         }
+      } else {
+         if (ArgCnt == 2) {
+            Rot = 0xffff;
+            OK = true;
+         } else OK = GetLen(ArgStr[3], &Rot);
+         if (OK) {
+            if (Rot == 0xffff)
+               Rot = (SrcLen == -1) ? 0 : SrcLen;
+            if ((SrcLen != -1) && (Rot != SrcLen)) WrError(1131);
             else {
-               Adr = EvalIntExpression(ArgStr[1], Int8, &OK);
+               Adr = EvalIntExpression(ArgStr[1], Int5, &OK);
                if (OK) {
-                  WAsmCode[0] = 0xc000 + (SrcReg << 8) + (Adr & 0xff);
+                  WAsmCode[0] = 0xc000 + (SrcReg << 8) + (Rot << 5) + (Adr & 0x1f);
                   CodeLen = 1;
                }
             }
-         } else {
-            if (ArgCnt == 2) {
-               Rot = 0xffff;
-               OK = true;
-            } else OK = GetLen(ArgStr[3], &Rot);
-            if (OK) {
-               if (Rot == 0xffff)
-                  Rot = (SrcLen == -1) ? 0 : SrcLen;
-               if ((SrcLen != -1) && (Rot != SrcLen)) WrError(1131);
-               else {
-                  Adr = EvalIntExpression(ArgStr[1], Int5, &OK);
-                  if (OK) {
-                     WAsmCode[0] = 0xc000 + (SrcReg << 8) + (Rot << 5) + (Adr & 0x1f);
-                     CodeLen = 1;
-                  }
-               }
-            }
          }
+      }
       return;
    }
 
@@ -297,41 +290,41 @@ static void MakeCode_8x30X(void) {
    for (z = 0; z < AriOrderCnt; z++)
       if (Memo(AriOrders[z].Name)) {
          if ((ArgCnt != 2) && (ArgCnt != 3)) WrError(1110);
-         else if (DecodeReg(ArgStr[ArgCnt], &DestReg, &DestLen))
-            if (DestReg < 16) { /* Ziel Register */
-               if (ArgCnt == 2) { /* wenn nur zwei Operanden und Ziel Register... */
-                  p = HasDisp(ArgStr[1]); /* kann eine Rotation dabei sein */
-                  if (p != NULL) { /* jau! */
-                     strcopy(tmp, p + 1);
-                     tmp[strlen(tmp) - 1] = '\0';
-                     Rot = EvalIntExpression(tmp, UInt3, &OK);
-                     if (OK) {
-                        *p = '\0';
-                        if (DecodeReg(ArgStr[1], &SrcReg, &SrcLen))
-                           if (SrcReg >= 16) WrXError(1445, ArgStr[1]);
-                           else {
-                              WAsmCode[0] = (AriOrders[z].Code << 13) + (SrcReg << 8) + (Rot << 5) + DestReg;
-                              CodeLen = 1;
-                           }
+         else if (!DecodeReg(ArgStr[ArgCnt], &DestReg, &DestLen)) ;
+         else if (DestReg < 16) { /* Ziel Register */
+            if (ArgCnt == 2) { /* wenn nur zwei Operanden und Ziel Register... */
+               p = HasDisp(ArgStr[1]); /* kann eine Rotation dabei sein */
+               if (p != NULL) { /* jau! */
+                  strcopy(tmp, p + 1);
+                  tmp[strlen(tmp) - 1] = '\0';
+                  Rot = EvalIntExpression(tmp, UInt3, &OK);
+                  if (OK) {
+                     *p = '\0';
+                     if (!DecodeReg(ArgStr[1], &SrcReg, &SrcLen)) ;
+                     else if (SrcReg >= 16) WrXError(1445, ArgStr[1]);
+                     else {
+                        WAsmCode[0] = (AriOrders[z].Code << 13) + (SrcReg << 8) + (Rot << 5) + DestReg;
+                        CodeLen = 1;
                      }
-                  } else { /* noi! */
+                  }
+               } else { /* noi! */
                   if (DecodeReg(ArgStr[1], &SrcReg, &SrcLen)) {
                      WAsmCode[0] = (AriOrders[z].Code << 13) + (SrcReg << 8) + DestReg;
                      if ((SrcReg >= 16) && (SrcLen != -1)) WAsmCode[0] += SrcLen << 5;
                      CodeLen = 1;
                   }
-                  }
-               } else { /* 3 Operanden --> Quelle ist I/O */
-               if (GetLen(ArgStr[2], &Rot))
-                  if (DecodeReg(ArgStr[1], &SrcReg, &SrcLen))
-                     if (SrcReg < 16) WrXError(1445, ArgStr[1]);
-                     else if ((SrcLen != -1) && (SrcLen != Rot)) WrError(1131);
-                     else {
-                        WAsmCode[0] = (AriOrders[z].Code << 13) + (SrcReg << 8) + (Rot << 5) + DestReg;
-                        CodeLen = 1;
-                     }
                }
-            } else { /* Ziel I/O */
+            } else { /* 3 Operanden --> Quelle ist I/O */
+               if (!GetLen(ArgStr[2], &Rot)) ;
+               else if (!DecodeReg(ArgStr[1], &SrcReg, &SrcLen)) ;
+               else if (SrcReg < 16) WrXError(1445, ArgStr[1]);
+               else if ((SrcLen != -1) && (SrcLen != Rot)) WrError(1131);
+               else {
+                  WAsmCode[0] = (AriOrders[z].Code << 13) + (SrcReg << 8) + (Rot << 5) + DestReg;
+                  CodeLen = 1;
+               }
+            }
+         } else { /* Ziel I/O */
             if (ArgCnt == 2) { /* 2 Argumente: Laenge=Laenge Ziel */
                Rot = DestLen;
                OK = true;
@@ -344,17 +337,17 @@ static void MakeCode_8x30X(void) {
                   if (!OK) WrError(1131);
                }
             }
-            if (OK)
-               if (DecodeReg(ArgStr[1], &SrcReg, &SrcLen)) {
-                  if ((Rot == 0xffff))
-                     Rot = ((SrcLen == -1)) ? 0 : SrcLen;
-                  if ((DestReg >= 16) && (SrcLen != -1) && (SrcLen != Rot)) WrError(1131);
-                  else {
-                     WAsmCode[0] = (AriOrders[z].Code << 13) + (SrcReg << 8) + (Rot << 5) + DestReg;
-                     CodeLen = 1;
-                  }
+            if (!OK) ;
+            else if (DecodeReg(ArgStr[1], &SrcReg, &SrcLen)) {
+               if ((Rot == 0xffff))
+                  Rot = ((SrcLen == -1)) ? 0 : SrcLen;
+               if ((DestReg >= 16) && (SrcLen != -1) && (SrcLen != Rot)) WrError(1131);
+               else {
+                  WAsmCode[0] = (AriOrders[z].Code << 13) + (SrcReg << 8) + (Rot << 5) + DestReg;
+                  CodeLen = 1;
                }
             }
+         }
          return;
       }
 
@@ -417,40 +410,40 @@ static void MakeCode_8x30X(void) {
 
    if (Memo("NZT")) {
       if ((ArgCnt != 2) && (ArgCnt != 3)) WrError(1110);
-      else if (DecodeReg(ArgStr[1], &SrcReg, &SrcLen))
-         if (SrcReg < 16) {
-            if (ArgCnt != 2) WrError(1110);
+      else if (!DecodeReg(ArgStr[1], &SrcReg, &SrcLen)) ;
+      else if (SrcReg < 16) {
+         if (ArgCnt != 2) WrError(1110);
+         else {
+            Adr = EvalIntExpression(ArgStr[2], UInt13, &OK);
+            if (!OK) ;
+            else if ((!SymbolQuestionable) && ((Adr >> 8) != (EProgCounter() >> 8))) WrError(1910);
             else {
-               Adr = EvalIntExpression(ArgStr[2], UInt13, &OK);
-               if (OK)
-                  if ((!SymbolQuestionable) && ((Adr >> 8) != (EProgCounter() >> 8))) WrError(1910);
-                  else {
-                     WAsmCode[0] = 0xa000 + (SrcReg << 8) + (Adr & 0xff);
-                     CodeLen = 1;
-                  }
+               WAsmCode[0] = 0xa000 + (SrcReg << 8) + (Adr & 0xff);
+               CodeLen = 1;
             }
-         } else {
-            if (ArgCnt == 2) {
-               Rot = 0xffff;
-               OK = true;
-            } else OK = GetLen(ArgStr[2], &Rot);
-            if (OK) {
-               if (Rot == 0xffff)
-                  Rot = (SrcLen == -1) ? 0 : SrcLen;
-               if ((SrcLen != -1) && (Rot != SrcLen)) WrError(1131);
+         }
+      } else {
+         if (ArgCnt == 2) {
+            Rot = 0xffff;
+            OK = true;
+         } else OK = GetLen(ArgStr[2], &Rot);
+         if (OK) {
+            if (Rot == 0xffff)
+               Rot = (SrcLen == -1) ? 0 : SrcLen;
+            if ((SrcLen != -1) && (Rot != SrcLen)) WrError(1131);
+            else {
+               Adr = EvalIntExpression(ArgStr[ArgCnt], UInt13, &OK);
+               if (!OK) ;
+               else if ((!SymbolQuestionable) && ((Adr >> 5) != (EProgCounter() >> 5))) WrError(1910);
                else {
-                  Adr = EvalIntExpression(ArgStr[ArgCnt], UInt13, &OK);
-                  if (OK)
-                     if ((!SymbolQuestionable) && ((Adr >> 5) != (EProgCounter() >> 5))) WrError(1910);
-                     else {
-                        WAsmCode[0] = 0xa000 + (SrcReg << 8) + (Rot << 5) + (Adr & 0x1f);
-                        CodeLen = 1;
-                     }
+                  WAsmCode[0] = 0xa000 + (SrcReg << 8) + (Rot << 5) + (Adr & 0x1f);
+                  CodeLen = 1;
                }
             }
          }
+      }
       return;
-   };
+   }
 
    WrXError(1200, OpPart);
 }

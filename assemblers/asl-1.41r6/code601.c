@@ -1,13 +1,5 @@
-/* code601.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator PowerPC-Familie                                             */
-/*                                                                           */
-/* Historie: 17.10.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator PowerPC-Familie
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -77,22 +69,17 @@ static bool BigEnd;
 
 static CPUVar CPU403, CPU505, CPU601, CPU6000;
 
-/*-------------------------------------------------------------------------*/
-/*
-        PROCEDURE EnterByte(b:Byte);
- {
-   if Odd(CodeLen)
-    {
-     BAsmCode[CodeLen]:=BAsmCode[CodeLen-1];
-     BAsmCode[CodeLen-1]:=b;
-    }
-   else
-    {
-     BAsmCode[CodeLen]:=b;
-    };
-   Inc(CodeLen);
-};
-*/
+#if 0
+void EnterByte(Byte b) {
+   if (Odd(CodeLen)) {
+      BAsmCode[CodeLen] = BAsmCode[CodeLen - 1];
+      BAsmCode[CodeLen - 1] = b;
+   } else {
+      BAsmCode[CodeLen] = b;
+   }
+   CodeLen++;
+}
+#endif
 /*-------------------------------------------------------------------------*/
 
 static void AddFixed(char *NName1, char *NName2, LongInt NCode, Byte NMask) {
@@ -375,115 +362,59 @@ static void AddImm16Swap(char *NName1, char *NName2, LongWord NCode, Byte NMask)
    Imm16SwapOrders[InstrZ++].CPUMask = NMask;
 }
 
-#ifdef __STDC__
 #   define T1  1lu
-#   define T3  3lu
-#   define T4  4lu
-#   define T7  7lu
-#   define T8  8lu
-#   define T9  9lu
-#   define T10 10lu
-#   define T11 11lu
-#   define T12 12lu
-#   define T13 13lu
-#   define T14 14lu
-#   define T15 15lu
-#   define T16 16lu
-#   define T17 17lu
-#   define T18 18lu
-#   define T19 19lu
-#   define T20 20lu
-#   define T21 21lu
-#   define T22 22lu
-#   define T23 23lu
-#   define T24 24lu
-#   define T25 25lu
-#   define T26 26lu
-#   define T27 27lu
-#   define T28 28lu
-#   define T29 29lu
-#   define T31 31lu
-#   define T32 32lu
-#   define T33 33lu
-#   define T34 34lu
-#   define T35 35lu
-#   define T36 36lu
-#   define T37 37lu
-#   define T38 38lu
-#   define T39 39lu
-#   define T40 40lu
-#   define T41 41lu
-#   define T42 42lu
-#   define T43 43lu
-#   define T44 44lu
-#   define T45 45lu
-#   define T46 46lu
-#   define T47 47lu
-#   define T48 48lu
-#   define T49 49lu
-#   define T50 50lu
-#   define T51 51lu
-#   define T52 52lu
-#   define T53 53lu
-#   define T54 54lu
-#   define T55 55lu
-#   define T59 59lu
-#   define T63 63lu
-#else
-#   define T1  1l
-#   define T3  3l
-#   define T4  4l
-#   define T7  7l
-#   define T8  8l
-#   define T9  9l
-#   define T10 10l
-#   define T11 11l
-#   define T12 12l
-#   define T13 13l
-#   define T14 14l
-#   define T15 15l
-#   define T16 16l
-#   define T17 17l
-#   define T18 18l
-#   define T19 19l
-#   define T20 20l
-#   define T21 21l
-#   define T22 22l
-#   define T23 23l
-#   define T24 24l
-#   define T25 25l
-#   define T26 26l
-#   define T27 27l
-#   define T28 28l
-#   define T29 29l
-#   define T31 31l
-#   define T32 32l
-#   define T33 33l
-#   define T34 34l
-#   define T35 35l
-#   define T36 36l
-#   define T37 37l
-#   define T38 38l
-#   define T39 39l
-#   define T40 40l
-#   define T41 41l
-#   define T42 42l
-#   define T43 43l
-#   define T44 44l
-#   define T45 45l
-#   define T46 46l
-#   define T47 47l
-#   define T48 48l
-#   define T49 49l
-#   define T50 50l
-#   define T51 51l
-#   define T52 52l
-#   define T53 53l
-#   define T54 54l
-#   define T55 55l
-#   define T59 59l
-#   define T63 63l
-#endif
+#define T3  3lu
+#define T4  4lu
+#define T7  7lu
+#define T8  8lu
+#define T9  9lu
+#define T10 10lu
+#define T11 11lu
+#define T12 12lu
+#define T13 13lu
+#define T14 14lu
+#define T15 15lu
+#define T16 16lu
+#define T17 17lu
+#define T18 18lu
+#define T19 19lu
+#define T20 20lu
+#define T21 21lu
+#define T22 22lu
+#define T23 23lu
+#define T24 24lu
+#define T25 25lu
+#define T26 26lu
+#define T27 27lu
+#define T28 28lu
+#define T29 29lu
+#define T31 31lu
+#define T32 32lu
+#define T33 33lu
+#define T34 34lu
+#define T35 35lu
+#define T36 36lu
+#define T37 37lu
+#define T38 38lu
+#define T39 39lu
+#define T40 40lu
+#define T41 41lu
+#define T42 42lu
+#define T43 43lu
+#define T44 44lu
+#define T45 45lu
+#define T46 46lu
+#define T47 47lu
+#define T48 48lu
+#define T49 49lu
+#define T50 50lu
+#define T51 51lu
+#define T52 52lu
+#define T53 53lu
+#define T54 54lu
+#define T55 55lu
+#define T59 59lu
+#define T63 63lu
 
 static void InitFields(void) {
 /* --> 0 0 0 */
@@ -932,8 +863,9 @@ static bool ChkCPU(Byte Mask) {
 
 static bool DecodePseudo(void) {
 #define ONOFF601Count 2
-   static ONOFFRec ONOFF601s[ONOFF601Count] = { { "SUPMODE", &SupAllowed, SupAllowedName },
-   { "BIGENDIAN", &BigEnd, BigEndianName }
+   static ONOFFRec ONOFF601s[ONOFF601Count] = {
+      { "SUPMODE", &SupAllowed, SupAllowedName },
+      { "BIGENDIAN", &BigEnd, BigEndianName }
    };
 
    if (CodeONOFF(ONOFF601s, ONOFF601Count)) return true;
@@ -1468,12 +1400,12 @@ static void MakeCode_601(void) {
       else if (!DecodeGenReg(ArgStr[2], &Src1)) WrError(1350);
       else {
          Dest = EvalIntExpression(ArgStr[1], UInt9, &OK);
-         if (OK)
-            if ((Dest & 1) == 1) WrError(1351);
-            else {
-               PutCode((T31 << 26) + (Src1 << 26) + (Dest << 11) + (144 << 1));
-               CodeLen = 4;
-            }
+         if (!OK) ;
+         else if ((Dest & 1) == 1) WrError(1351);
+         else {
+            PutCode((T31 << 26) + (Src1 << 26) + (Dest << 11) + (144 << 1));
+            CodeLen = 4;
+         }
       }
       return;
    }
@@ -1689,19 +1621,18 @@ static void MakeCode_601(void) {
       if (ArgCnt != 4) WrError(1110);
       else {
          Src2 = EvalIntExpression(ArgStr[4], Int16, &OK);
-         if (OK)
-            if (!DecodeGenReg(ArgStr[3], &Src1)) WrError(1350);
-            else if (!DecodeCondReg(ArgStr[1], &Dest)) WrError(1350);
-            else if ((Dest & 3) != 0) WrError(1351);
-            else {
-               Src3 = EvalIntExpression(ArgStr[2], UInt1, &OK);
-               if (OK) {
-                  PutCode((T10 << 26) + (Dest << 21) + (Src3 << 21)
-                     + (Src1 << 16) + (Src2 && 0xffff));
-                  if (Memo("CMPI")) IncCode(T1 << 26);
-                  CodeLen = 4;
-               }
+         if (!OK) ;
+         else if (!DecodeGenReg(ArgStr[3], &Src1)) WrError(1350);
+         else if (!DecodeCondReg(ArgStr[1], &Dest)) WrError(1350);
+         else if ((Dest & 3) != 0) WrError(1351);
+         else {
+            Src3 = EvalIntExpression(ArgStr[2], UInt1, &OK);
+            if (OK) {
+               PutCode((T10 << 26) + (Dest << 21) + (Src3 << 21) + (Src1 << 16) + (Src2 && 0xffff));
+               if (Memo("CMPI")) IncCode(T1 << 26);
+               CodeLen = 4;
             }
+         }
       }
       return;
    }

@@ -1,13 +1,5 @@
-/* asmif.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Befehle zur bedingten Assemblierung                                       */
-/*                                                                           */
-/* Historie: 15. 5.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Befehle zur bedingten Assemblierung
 #include "stdinc.h"
 #include <string.h>
 
@@ -266,7 +258,7 @@ static void CodeCASE(void) {
                z++;
             }
             while ((!eq) && (z <= ArgCnt));
-         };
+         }
          IfAsm = ((FirstIfSave->SaveIfAsm) && (eq) && (!FirstIfSave->CaseFound));
          if (FirstIfSave->SaveIfAsm) AddBoolFlag(eq && (!FirstIfSave->CaseFound));
          if (eq) FirstIfSave->CaseFound = true;

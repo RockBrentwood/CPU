@@ -1,13 +1,5 @@
-/* code16c8x.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* AS-Codegenerator PIC16C8x                                                 */
-/*                                                                           */
-/* Historie: 21.8.1996 Grundsteinlegung                                      */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// AS-Codegenerator PIC16C8x
 #include "stdinc.h"
 
 #include <string.h>
@@ -207,9 +199,9 @@ static bool DecodePseudo(void) {
                if ((FirstPassUnknown) && (t.Typ == TempInt)) t.Typ &= MaxV;
                switch (t.Typ) {
                   case TempInt:
-                     if (ChkRange(t.Contents.Int, MinV, MaxV))
-                        if (ActPC == SegCode) WAsmCode[CodeLen++] = t.Contents.Int & MaxV;
-                        else BAsmCode[CodeLen++] = t.Contents.Int & MaxV;
+                     if (!ChkRange(t.Contents.Int, MinV, MaxV)) ;
+                     else if (ActPC == SegCode) WAsmCode[CodeLen++] = t.Contents.Int & MaxV;
+                     else BAsmCode[CodeLen++] = t.Contents.Int & MaxV;
                      break;
                   case TempFloat:
                      WrError(1135);
@@ -237,12 +229,12 @@ static bool DecodePseudo(void) {
          FirstPassUnknown = false;
          Size = EvalIntExpression(ArgStr[1], Int16, &ValOK);
          if (FirstPassUnknown) WrError(1820);
-         if ((ValOK) && (!FirstPassUnknown))
-            if (Size << 1 > MaxCodeLen) WrError(1920);
-            else {
-               CodeLen = Size;
-               memset(WAsmCode, 0, 2 * Size);
-            }
+         if (!ValOK || FirstPassUnknown) ;
+         else if (Size << 1 > MaxCodeLen) WrError(1920);
+         else {
+            CodeLen = Size;
+            memset(WAsmCode, 0, 2 * Size);
+         }
       }
       return true;
    }
@@ -372,17 +364,17 @@ static void MakeCode_16c8x(void) {
       if (ArgCnt != 1) WrError(1110);
       else {
          AdrWord = EvalIntExpression(ArgStr[1], Int16, &OK);
-         if (OK)
-            if (AdrWord > ROMEnd()) WrError(1320);
-            else {
-               ChkSpace(SegCode);
-               if (((ProgCounter() ^ AdrWord) & 0x800) != 0)
-                  WAsmCode[CodeLen++] = 0x118a + ((AdrWord & 0x800) >> 1); /* BCF/BSF 10,3 */
-               if (((ProgCounter() ^ AdrWord) & 0x1000) != 0)
-                  WAsmCode[CodeLen++] = 0x120a + ((AdrWord & 0x400) >> 2); /* BCF/BSF 10,4 */
-               if (Memo("CALL")) WAsmCode[CodeLen++] = 0x2000 + (AdrWord & 0x7ff);
-               else WAsmCode[CodeLen++] = 0x2800 + (AdrWord & 0x7ff);
-            }
+         if (!OK) ;
+         else if (AdrWord > ROMEnd()) WrError(1320);
+         else {
+            ChkSpace(SegCode);
+            if (((ProgCounter() ^ AdrWord) & 0x800) != 0)
+               WAsmCode[CodeLen++] = 0x118a + ((AdrWord & 0x800) >> 1); /* BCF/BSF 10,3 */
+            if (((ProgCounter() ^ AdrWord) & 0x1000) != 0)
+               WAsmCode[CodeLen++] = 0x120a + ((AdrWord & 0x400) >> 2); /* BCF/BSF 10,4 */
+            if (Memo("CALL")) WAsmCode[CodeLen++] = 0x2000 + (AdrWord & 0x7ff);
+            else WAsmCode[CodeLen++] = 0x2800 + (AdrWord & 0x7ff);
+         }
       }
       return;
    }

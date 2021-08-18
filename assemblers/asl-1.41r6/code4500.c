@@ -1,13 +1,5 @@
-/* code4500.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator MELPS-4500                                                  */
-/*                                                                           */
-/* Historie: 31.12.1996 (23.44!!) Grundsteinlegung                           */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator MELPS-4500
 #include "stdinc.h"
 
 #include <string.h>
@@ -194,9 +186,9 @@ static bool DecodePseudo(void) {
             if (ValOK) {
                FirstPassUnknown = false;
                EvalExpression(ArgStr[z], &t);
-               if ((t.Typ == TempInt) && (FirstPassUnknown))
-                  if (ActPC == SegData) t.Contents.Int &= 7;
-                  else t.Contents.Int &= 511;
+               if (t.Typ != TempInt || !FirstPassUnknown) ;
+               else if (ActPC == SegData) t.Contents.Int &= 7;
+               else t.Contents.Int &= 511;
                switch (t.Typ) {
                   case TempInt:
                      if (ActPC == SegCode) {
@@ -304,12 +296,12 @@ static void MakeCode_4500(void) {
       if (ArgCnt != 1) WrError(1110);
       else {
          AdrWord = EvalIntExpression(ArgStr[1], UInt13, &OK);
-         if (OK)
-            if ((!SymbolQuestionable) && ((EProgCounter() >> 7) != (AdrWord >> 7))) WrError(1910);
-            else {
-               CodeLen = 1;
-               WAsmCode[0] = 0x180 + (AdrWord & 0x7f);
-            }
+         if (!OK) ;
+         else if ((!SymbolQuestionable) && ((EProgCounter() >> 7) != (AdrWord >> 7))) WrError(1910);
+         else {
+            CodeLen = 1;
+            WAsmCode[0] = 0x180 + (AdrWord & 0x7f);
+         }
       }
       return;
    }
@@ -321,7 +313,7 @@ static void MakeCode_4500(void) {
          else {
             AdrWord = EvalIntExpression(ArgStr[1], UInt6, &OK) << 7;
             if (OK) AdrWord += EvalIntExpression(ArgStr[2], UInt7, &OK);
-         };
+         }
          if (OK) {
             CodeLen = 2;
             WAsmCode[1] = 0x200 + (AdrWord & 0x7f) + ((AdrWord >> 12) << 7);
@@ -348,12 +340,12 @@ static void MakeCode_4500(void) {
       if (ArgCnt != 1) WrError(1110);
       else {
          AdrWord = EvalIntExpression(ArgStr[1], UInt13, &OK);
-         if (OK)
-            if ((AdrWord >> 7) != 2) WrError(1905);
-            else {
-               CodeLen = 1;
-               WAsmCode[0] = 0x100 + (AdrWord & 0x7f);
-            }
+         if (!OK) ;
+         else if ((AdrWord >> 7) != 2) WrError(1905);
+         else {
+            CodeLen = 1;
+            WAsmCode[0] = 0x100 + (AdrWord & 0x7f);
+         }
       }
       return;
    }

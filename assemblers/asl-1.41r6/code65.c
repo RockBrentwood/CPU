@@ -1,13 +1,5 @@
-/* code65.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator 65xx/MELPS740                                               */
-/*                                                                           */
-/* Historie: 17.8.1996 Grundsteinlegung                                      */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator 65xx/MELPS740
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -343,13 +335,13 @@ static void MakeCode_65(void) {
             }
             if (ValOK) {
                AdrInt = EvalIntExpression(ArgStr[3], Int16, &ValOK) - (EProgCounter() + 2 + b + CLI_SEI_Flag);
-               if (ValOK)
-                  if (((AdrInt > 127) || (AdrInt < -128)) && (!SymbolQuestionable)) WrError(1370);
-                  else {
-                     CodeLen = 2 + b;
-                     BAsmCode[CodeLen - 1] = AdrInt & 0xff;
-                     if (CLI_SEI_Flag) InsNOP();
-                  }
+               if (!ValOK) ;
+               else if (((AdrInt > 127) || (AdrInt < -128)) && (!SymbolQuestionable)) WrError(1370);
+               else {
+                  CodeLen = 2 + b;
+                  BAsmCode[CodeLen - 1] = AdrInt & 0xff;
+                  if (CLI_SEI_Flag) InsNOP();
+               }
             }
          }
       }
@@ -367,12 +359,12 @@ static void MakeCode_65(void) {
          if (ValOK) {
             BAsmCode[0] = ((OpPart[3] - '0') << 4) + ((OpPart[2] == 'S') << 7) + 15;
             AdrInt = EvalIntExpression(ArgStr[2], UInt16, &ValOK) - (EProgCounter() + 3);
-            if (ValOK)
-               if (((AdrInt > 127) || (AdrInt < -128)) && (!SymbolQuestionable)) WrError(1370);
-               else {
-                  CodeLen = 3;
-                  BAsmCode[2] = AdrInt & 0xff;
-               }
+            if (!ValOK) ;
+            else if (((AdrInt > 127) || (AdrInt < -128)) && (!SymbolQuestionable)) WrError(1370);
+            else {
+               CodeLen = 3;
+               BAsmCode[2] = AdrInt & 0xff;
+            }
          }
       }
       ChkFlags();
@@ -401,12 +393,12 @@ static void MakeCode_65(void) {
       else {
          BAsmCode[0] = 0x3c;
          BAsmCode[2] = EvalIntExpression(ArgStr[2], UInt8, &ValOK);
-         if (ValOK)
-            if (*ArgStr[1] != '#') WrError(1350);
-            else {
-               BAsmCode[1] = EvalIntExpression(ArgStr[1] + 1, Int8, &ValOK);
-               if (ValOK) CodeLen = 3;
-            }
+         if (!ValOK) ;
+         else if (*ArgStr[1] != '#') WrError(1350);
+         else {
+            BAsmCode[1] = EvalIntExpression(ArgStr[1] + 1, Int8, &ValOK);
+            if (ValOK) CodeLen = 3;
+         }
       }
       ChkFlags();
       return;
@@ -443,13 +435,13 @@ static void MakeCode_65(void) {
 
       else if (*ArgStr[1] == '\\') {
          AdrWord = EvalIntExpression(ArgStr[1] + 1, UInt16, &ValOK);
-         if (ValOK)
-            if (Hi(AdrWord) != SpecPage) WrError(1315);
-            else {
-               ErgMode = ModSpec;
-               AdrVals[0] = Lo(AdrWord);
-               AdrCnt = 1;
-            }
+         if (!ValOK) ;
+         else if (Hi(AdrWord) != SpecPage) WrError(1315);
+         else {
+            ErgMode = ModSpec;
+            AdrVals[0] = Lo(AdrWord);
+            AdrCnt = 1;
+         }
       }
 
    /* 4. X-indirekt ? */
@@ -570,7 +562,7 @@ static void MakeCode_65(void) {
       WrError(1110);
       ChkFlags();
       return;
-   };
+   }
 
 /* in Tabelle nach Opcode suchen */
 

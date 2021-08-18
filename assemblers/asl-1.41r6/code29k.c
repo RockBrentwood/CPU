@@ -1,13 +1,5 @@
-/* code29k.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator AM29xxx-Familie                                             */
-/*                                                                           */
-/* Historie: 18.11.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator AM29xxx-Familie
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -437,22 +429,22 @@ static void MakeCode_29K(void) {
             FirstPassUnknown = false;
             Dest = EvalIntExpression(ArgStr[1], UInt8, &OK);
             if (FirstPassUnknown) Dest = 64;
-            if (OK)
-               if (!DecodeReg(ArgStr[2], &Src1)) WrError(1445);
-               else {
-                  if (DecodeReg(ArgStr[ArgCnt], &Src2)) {
-                     OK = true;
-                     Src3 = 0;
-                  } else {
-                     Src2 = EvalIntExpression(ArgStr[ArgCnt], UInt8, &OK);
-                     Src3 = 0x1000000;
-                  }
-                  if (OK) {
-                     CodeLen = 4;
-                     DAsmCode[0] = (VecOrders[z].Code << 24) + Src3 + (Dest << 16) + (Src1 << 8) + Src2;
-                     if ((VecOrders[z].MustSup) || (Dest <= 63)) ChkSup();
-                  }
+            if (!OK) ;
+            else if (!DecodeReg(ArgStr[2], &Src1)) WrError(1445);
+            else {
+               if (DecodeReg(ArgStr[ArgCnt], &Src2)) {
+                  OK = true;
+                  Src3 = 0;
+               } else {
+                  Src2 = EvalIntExpression(ArgStr[ArgCnt], UInt8, &OK);
+                  Src3 = 0x1000000;
                }
+               if (OK) {
+                  CodeLen = 4;
+                  DAsmCode[0] = (VecOrders[z].Code << 24) + Src3 + (Dest << 16) + (Src1 << 8) + Src2;
+                  if ((VecOrders[z].MustSup) || (Dest <= 63)) ChkSup();
+               }
+            }
          }
          return;
       }
@@ -529,21 +521,21 @@ static void MakeCode_29K(void) {
             if (OK) {
                AdrLong = EvalIntExpression(ArgStr[ArgCnt], Int32, &OK);
                AdrInt = AdrLong - EProgCounter();
-               if (OK)
-                  if ((AdrLong & 3) != 0) WrError(1325);
-                  else if ((AdrInt <= 0x1ffff) && (AdrInt >= -0x20000)) {
-                     CodeLen = 4;
-                     AdrLong -= EProgCounter();
-                     DAsmCode[0] = (JmpOrders[z].Code << 24)
-                        + ((AdrLong & 0x3fc00) << 6)
-                        + (Dest << 8) + ((AdrLong & 0x3fc) >> 2);
-                  } else if ((!SymbolQuestionable) && (AdrLong > 0x3fffff)) WrError(1370);
-                  else {
-                     CodeLen = 4;
-                     DAsmCode[0] = ((JmpOrders[z].Code + 1) << 24)
-                        + ((AdrLong & 0x3fc00) << 6)
-                        + (Dest << 8) + ((AdrLong & 0x3fc) >> 2);
-                  }
+               if (!OK) ;
+               else if ((AdrLong & 3) != 0) WrError(1325);
+               else if ((AdrInt <= 0x1ffff) && (AdrInt >= -0x20000)) {
+                  CodeLen = 4;
+                  AdrLong -= EProgCounter();
+                  DAsmCode[0] = (JmpOrders[z].Code << 24)
+                     + ((AdrLong & 0x3fc00) << 6)
+                     + (Dest << 8) + ((AdrLong & 0x3fc) >> 2);
+               } else if ((!SymbolQuestionable) && (AdrLong > 0x3fffff)) WrError(1370);
+               else {
+                  CodeLen = 4;
+                  DAsmCode[0] = ((JmpOrders[z].Code + 1) << 24)
+                     + ((AdrLong & 0x3fc00) << 6)
+                     + (Dest << 8) + ((AdrLong & 0x3fc) >> 2);
+               }
             }
          }
          return;
@@ -573,14 +565,14 @@ static void MakeCode_29K(void) {
          FirstPassUnknown = false;
          Dest = EvalIntExpression(ArgStr[1], UInt8, &OK);
          if (FirstPassUnknown) Dest = 64;
-         if (OK)
-            if (!DecodeReg(ArgStr[2], &Src1)) WrError(1445);
-            else if (!DecodeReg(ArgStr[ArgCnt], &Src2)) WrError(1445);
-            else {
-               CodeLen = 4;
-               DAsmCode[0] = 0xd7000000 + (Dest << 16) + (Src1 << 8) + Src2;
-               if (Dest <= 63) ChkSup();
-            }
+         if (!OK) ;
+         else if (!DecodeReg(ArgStr[2], &Src1)) WrError(1445);
+         else if (!DecodeReg(ArgStr[ArgCnt], &Src2)) WrError(1445);
+         else {
+            CodeLen = 4;
+            DAsmCode[0] = 0xd7000000 + (Dest << 16) + (Src1 << 8) + Src2;
+            if (Dest <= 63) ChkSup();
+         }
       }
       return;
    }

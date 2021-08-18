@@ -1,13 +1,5 @@
-/* code370.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator 370-Familie                                                 */
-/*                                                                           */
-/* Historie: 10.12.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator 370-Familie
 #include "stdinc.h"
 
 #include <ctype.h>
@@ -353,22 +345,22 @@ static void DecodeAdr(char *Asc, Word Mask) {
 
    if (p == NULL) {
       HVal = EvalIntExpression(Asc, Int16, &OK);
-      if (OK)
-         if (((Mask & MModReg) != 0) && (Hi(HVal) == 0)) {
-            AdrVals[0] = Lo(HVal);
-            AdrCnt = 1;
-            AdrType = ModReg;
-         } else if (((Mask & MModPort) != 0) && (Hi(HVal) == 0x10)) {
-            AdrVals[0] = Lo(HVal);
-            AdrCnt = 1;
-            AdrType = ModPort;
-         } else {
-            if (AddrRel) HVal -= EProgCounter() + 3;
-            AdrVals[0] = Hi(HVal);
-            AdrVals[1] = Lo(HVal);
-            AdrCnt = 2;
-            AdrType = ModAbs;
-         }
+      if (!OK) ;
+      else if (((Mask & MModReg) != 0) && (Hi(HVal) == 0)) {
+         AdrVals[0] = Lo(HVal);
+         AdrCnt = 1;
+         AdrType = ModReg;
+      } else if (((Mask & MModPort) != 0) && (Hi(HVal) == 0x10)) {
+         AdrVals[0] = Lo(HVal);
+         AdrCnt = 1;
+         AdrType = ModPort;
+      } else {
+         if (AddrRel) HVal -= EProgCounter() + 3;
+         AdrVals[0] = Hi(HVal);
+         AdrVals[1] = Lo(HVal);
+         AdrCnt = 2;
+         AdrType = ModAbs;
+      }
       ChkAdr(Mask);
       return;
    } else {
@@ -699,13 +691,13 @@ static void MakeCode_370(void) {
          if (ArgCnt != 1) WrError(1110);
          else {
             AdrInt = EvalIntExpression(ArgStr[1], Int16, &OK) - (EProgCounter() + 2);
-            if (OK)
-               if ((!SymbolQuestionable) && ((AdrInt > 127) || (AdrInt < -128))) WrError(1370);
-               else {
-                  CodeLen = 2;
-                  BAsmCode[0] = Rel8Orders[z].Code;
-                  BAsmCode[1] = AdrInt & 0xff;
-               }
+            if (!OK) ;
+            else if ((!SymbolQuestionable) && ((AdrInt > 127) || (AdrInt < -128))) WrError(1370);
+            else {
+               CodeLen = 2;
+               BAsmCode[0] = Rel8Orders[z].Code;
+               BAsmCode[1] = AdrInt & 0xff;
+            }
          }
          return;
       }

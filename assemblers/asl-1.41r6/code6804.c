@@ -1,13 +1,5 @@
-/* code6804.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* AS-Codeenerator Motorola/ST 6804                                          */
-/*                                                                           */
-/* Historie: 17.10.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// AS-Codeenerator Motorola/ST 6804
 #include "stdinc.h"
 
 #include <string.h>
@@ -191,8 +183,7 @@ static void MakeCode_6804(void) {
 /* Anweisungen ohne Argument */
 
    for (z = 0; z < FixedOrderCnt; z++)
-      if Memo
-         (FixedOrders[z].Name) {
+      if (Memo(FixedOrders[z].Name)) {
          if (ArgCnt != 0) WrError(1110);
          else {
             if ((FixedOrders[z].Code >> 16) != 0) CodeLen = 3;
@@ -202,26 +193,25 @@ static void MakeCode_6804(void) {
             BAsmCode[CodeLen - 1] = Lo(FixedOrders[z].Code);
          }
          return;
-         }
+      }
 
 /* relative/absolute Spruenge */
 
    for (z = 0; z < RelOrderCnt; z++)
-      if Memo
-         (RelOrders[z].Name) {
+      if (Memo(RelOrders[z].Name)) {
          if (ArgCnt != 1) WrError(1110);
          else {
             AdrInt = EvalIntExpression(ArgStr[1], Int16, &OK) - (EProgCounter() + 1);
-            if (OK)
-               if ((!SymbolQuestionable) && ((AdrInt < -16) || (AdrInt > 15))) WrError(1370);
-               else {
-                  CodeLen = 1;
-                  BAsmCode[0] = RelOrders[z].Code + (AdrInt & 0x1f);
-                  ChkSpace(SegCode);
-               }
+            if (!OK) ;
+            else if ((!SymbolQuestionable) && ((AdrInt < -16) || (AdrInt > 15))) WrError(1370);
+            else {
+               CodeLen = 1;
+               BAsmCode[0] = RelOrders[z].Code + (AdrInt & 0x1f);
+               ChkSpace(SegCode);
+            }
          }
          return;
-         }
+      }
 
    if ((Memo("JSR")) || (Memo("JMP"))) {
       if (ArgCnt != 1) WrError(1110);
@@ -382,13 +372,13 @@ static void MakeCode_6804(void) {
             if (OK) {
                ChkSpace(SegData);
                AdrInt = EvalIntExpression(ArgStr[3], Int16, &OK) - (EProgCounter() + 3);
-               if (OK)
-                  if ((!SymbolQuestionable) && ((AdrInt < -128) || (AdrInt > 127))) WrError(1370);
-                  else {
-                     ChkSpace(SegCode);
-                     BAsmCode[2] = AdrInt & 0xff;
-                     CodeLen = 3;
-                  }
+               if (!OK) ;
+               else if ((!SymbolQuestionable) && ((AdrInt < -128) || (AdrInt > 127))) WrError(1370);
+               else {
+                  ChkSpace(SegCode);
+                  BAsmCode[2] = AdrInt & 0xff;
+                  CodeLen = 3;
+               }
             }
          }
       }

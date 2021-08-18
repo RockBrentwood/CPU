@@ -1,13 +1,5 @@
-/* code48.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegeneratormodul MCS-48-Familie                                         */
-/*                                                                           */
-/* Historie: 16. 5.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegeneratormodul MCS-48-Familie
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -332,19 +324,19 @@ void MakeCode_48(void) {
       else if ((EProgCounter() & 0x7fe) == 0x7fe) WrError(1900);
       else {
          AdrWord = EvalIntExpression(ArgStr[1], Int16, &OK);
-         if (OK)
-            if (AdrWord > 0xfff) WrError(1320);
-            else {
-               if ((EProgCounter() & 0x800) != (AdrWord & 0x800)) {
-                  BAsmCode[0] = 0xe5 + ((AdrWord & 0x800) >> 7);
-                  CodeLen = 1;
-               }
-               BAsmCode[CodeLen + 1] = AdrWord & 0xff;
-               BAsmCode[CodeLen] = 0x04 + ((AdrWord & 0x700) >> 3);
-               if (Memo("CALL")) BAsmCode[CodeLen] += 0x10;
-               CodeLen += 2;
-               ChkSpace(SegCode);
+         if (!OK) ;
+         else if (AdrWord > 0xfff) WrError(1320);
+         else {
+            if ((EProgCounter() & 0x800) != (AdrWord & 0x800)) {
+               BAsmCode[0] = 0xe5 + ((AdrWord & 0x800) >> 7);
+               CodeLen = 1;
             }
+            BAsmCode[CodeLen + 1] = AdrWord & 0xff;
+            BAsmCode[CodeLen] = 0x04 + ((AdrWord & 0x700) >> 3);
+            if (Memo("CALL")) BAsmCode[CodeLen] += 0x10;
+            CodeLen += 2;
+            ChkSpace(SegCode);
+         }
       }
       return;
    }

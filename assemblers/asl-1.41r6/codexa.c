@@ -1,13 +1,5 @@
-/* codexa.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* AS-Codegenerator Philips XA                                               */
-/*                                                                           */
-/* Historie: 25.10.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// AS-Codegenerator Philips XA
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -213,7 +205,7 @@ static bool DecodeReg(char *Asc, ShortInt * NSize, Byte * Erg) {
       *Erg = 7;
       *NSize = 1;
       return true;
-   } else if ((strlen(Asc) >= 2) && (toupper(*Asc) == 'R') && (Asc[1] >= '0') && (Asc[1] <= '7'))
+   } else if ((strlen(Asc) >= 2) && (toupper(*Asc) == 'R') && (Asc[1] >= '0') && (Asc[1] <= '7')) {
       if (strlen(Asc) == 2) {
          *Erg = Asc[1] - '0';
          if (OpSize == 2) {
@@ -236,6 +228,7 @@ static bool DecodeReg(char *Asc, ShortInt * NSize, Byte * Erg) {
          *NSize = 0;
          return true;
       } else return false;
+   }
    return false;
 }
 
@@ -610,23 +603,23 @@ static void MakeCode_XA(void) {
    if (Memo("MOV")) {
       if (ArgCnt != 2) WrError(1110);
       else if (strcasecmp(ArgStr[1], "C") == 0) {
-         if (DecodeBitAddr(ArgStr[2], &AdrLong))
-            if (*AttrPart != '\0') WrError(1100);
-            else {
-               ChkBitPage(AdrLong);
-               BAsmCode[CodeLen++] = 0x08;
-               BAsmCode[CodeLen++] = 0x20 + Hi(AdrLong);
-               BAsmCode[CodeLen++] = Lo(AdrLong);
-            }
+         if (!DecodeBitAddr(ArgStr[2], &AdrLong)) ;
+         else if (*AttrPart != '\0') WrError(1100);
+         else {
+            ChkBitPage(AdrLong);
+            BAsmCode[CodeLen++] = 0x08;
+            BAsmCode[CodeLen++] = 0x20 + Hi(AdrLong);
+            BAsmCode[CodeLen++] = Lo(AdrLong);
+         }
       } else if (strcasecmp(ArgStr[2], "C") == 0) {
-         if (DecodeBitAddr(ArgStr[1], &AdrLong))
-            if (*AttrPart != '\0') WrError(1100);
-            else {
-               ChkBitPage(AdrLong);
-               BAsmCode[CodeLen++] = 0x08;
-               BAsmCode[CodeLen++] = 0x30 + Hi(AdrLong);
-               BAsmCode[CodeLen++] = Lo(AdrLong);
-            }
+         if (!DecodeBitAddr(ArgStr[1], &AdrLong)) ;
+         else if (*AttrPart != '\0') WrError(1100);
+         else {
+            ChkBitPage(AdrLong);
+            BAsmCode[CodeLen++] = 0x08;
+            BAsmCode[CodeLen++] = 0x30 + Hi(AdrLong);
+            BAsmCode[CodeLen++] = Lo(AdrLong);
+         }
       } else if (strcasecmp(ArgStr[1], "USP") == 0) {
          SetOpSize(1);
          DecodeAdr(ArgStr[2], MModReg);
@@ -741,19 +734,19 @@ static void MakeCode_XA(void) {
                BAsmCode[CodeLen++] = 0x4c;
          } else {
             DecodeAdr(ArgStr[1], MModReg);
-            if (AdrMode != ModNone)
-               if ((OpSize != 0) && (OpSize != 1)) WrError(1130);
+            if (AdrMode == ModNone) ;
+            else if ((OpSize != 0) && (OpSize != 1)) WrError(1130);
+            else {
+               HReg = AdrPart;
+               DecodeAdr(ArgStr[2], MModMem);
+               if (AdrMode == ModNone) ;
+               else if (MemPart != 3) WrError(1350);
                else {
-                  HReg = AdrPart;
-                  DecodeAdr(ArgStr[2], MModMem);
-                  if (AdrMode != ModNone)
-                     if (MemPart != 3) WrError(1350);
-                     else {
-                        BAsmCode[CodeLen++] = 0x80 + (OpSize << 3);
-                        BAsmCode[CodeLen++] = (HReg << 4) + AdrPart;
-                        if ((MemPart == 3) && ((HReg >> (1 - OpSize)) == AdrPart)) WrError(140);
-                     }
+                  BAsmCode[CodeLen++] = 0x80 + (OpSize << 3);
+                  BAsmCode[CodeLen++] = (HReg << 4) + AdrPart;
+                  if ((MemPart == 3) && ((HReg >> (1 - OpSize)) == AdrPart)) WrError(140);
                }
+            }
          }
       }
       return;
@@ -770,12 +763,12 @@ static void MakeCode_XA(void) {
                   else {
                      HReg = AdrPart;
                      DecodeAdr(ArgStr[2], MModMem);
-                     if (AdrMode == ModMem)
-                        if (MemPart != 2) WrError(1350);
-                        else {
-                           BAsmCode[CodeLen++] = 0xa7 + (OpSize << 3);
-                           BAsmCode[CodeLen++] = (HReg << 4) + AdrPart;
-                        }
+                     if (AdrMode != ModMem) ;
+                     else if (MemPart != 2) WrError(1350);
+                     else {
+                        BAsmCode[CodeLen++] = 0xa7 + (OpSize << 3);
+                        BAsmCode[CodeLen++] = (HReg << 4) + AdrPart;
+                     }
                   }
                   break;
                case 2:
@@ -826,24 +819,24 @@ static void MakeCode_XA(void) {
                            OK = false;
                   }
                }
-            if (OK)
-               if (OpSize == -1) WrError(1132);
-               else if ((OpSize != 0) && (OpSize != 1)) WrError(1130);
-               else if (HReg == 0) {
-                  BAsmCode[CodeLen++] = 0x87 + (OpSize << 3);
-                  BAsmCode[CodeLen++] = Hi(StackOrders[z].Code) + AdrPart;
-                  BAsmCode[CodeLen++] = AdrVals[0];
-               } else if (z < 2) { /* POP: obere Register zuerst */
-                  if (Hi(Mask) != 0) {
-                     BAsmCode[CodeLen++] = Lo(StackOrders[z].Code) + (OpSize << 3) + 0x40;
-                     BAsmCode[CodeLen++] = Hi(Mask);
-                  }
-                  if (Lo(Mask) != 0) {
-                     BAsmCode[CodeLen++] = Lo(StackOrders[z].Code) + (OpSize << 3);
-                     BAsmCode[CodeLen++] = Lo(Mask);
-                  }
-                  if ((OpSize == 1) && (Memo("POP")) && ((Mask & 0x80) != 0)) WrError(140);
-               } else { /* PUSH: untere Register zuerst */
+            if (!OK) ;
+            else if (OpSize == -1) WrError(1132);
+            else if ((OpSize != 0) && (OpSize != 1)) WrError(1130);
+            else if (HReg == 0) {
+               BAsmCode[CodeLen++] = 0x87 + (OpSize << 3);
+               BAsmCode[CodeLen++] = Hi(StackOrders[z].Code) + AdrPart;
+               BAsmCode[CodeLen++] = AdrVals[0];
+            } else if (z < 2) { /* POP: obere Register zuerst */
+               if (Hi(Mask) != 0) {
+                  BAsmCode[CodeLen++] = Lo(StackOrders[z].Code) + (OpSize << 3) + 0x40;
+                  BAsmCode[CodeLen++] = Hi(Mask);
+               }
+               if (Lo(Mask) != 0) {
+                  BAsmCode[CodeLen++] = Lo(StackOrders[z].Code) + (OpSize << 3);
+                  BAsmCode[CodeLen++] = Lo(Mask);
+               }
+               if ((OpSize == 1) && (Memo("POP")) && ((Mask & 0x80) != 0)) WrError(140);
+            } else { /* PUSH: untere Register zuerst */
                if (Lo(Mask) != 0) {
                   BAsmCode[CodeLen++] = Lo(StackOrders[z].Code) + (OpSize << 3);
                   BAsmCode[CodeLen++] = Lo(Mask);
@@ -852,7 +845,7 @@ static void MakeCode_XA(void) {
                   BAsmCode[CodeLen++] = Lo(StackOrders[z].Code) + (OpSize << 3) + 0x40;
                   BAsmCode[CodeLen++] = Hi(Mask);
                }
-               }
+            }
          }
          return;
       }
@@ -866,48 +859,48 @@ static void MakeCode_XA(void) {
                case 1:
                   HReg = AdrPart;
                   DecodeAdr(ArgStr[2], MModMem);
-                  if (AdrMode == ModMem)
-                     if ((OpSize != 1) && (OpSize != 0)) WrError(1130);
-                     else switch (MemPart) {
-                           case 1:
-                              BAsmCode[CodeLen++] = 0x60 + (OpSize << 3);
-                              BAsmCode[CodeLen++] = (HReg << 4) + AdrPart;
-                              if (HReg == AdrPart) WrError(140);
-                              break;
-                           case 2:
-                              BAsmCode[CodeLen++] = 0x50 + (OpSize << 3);
-                              BAsmCode[CodeLen++] = (HReg << 4) + AdrPart;
-                              break;
-                           case 6:
-                              BAsmCode[CodeLen++] = 0xa0 + (OpSize << 3);
-                              BAsmCode[CodeLen++] = 0x08 + (HReg << 4) + AdrPart;
-                              BAsmCode[CodeLen++] = AdrVals[0];
-                              break;
-                           default:
-                              WrError(1350);
-                     }
+                  if (AdrMode != ModMem) ;
+                  else if ((OpSize != 1) && (OpSize != 0)) WrError(1130);
+                  else switch (MemPart) {
+                     case 1:
+                        BAsmCode[CodeLen++] = 0x60 + (OpSize << 3);
+                        BAsmCode[CodeLen++] = (HReg << 4) + AdrPart;
+                        if (HReg == AdrPart) WrError(140);
+                        break;
+                     case 2:
+                        BAsmCode[CodeLen++] = 0x50 + (OpSize << 3);
+                        BAsmCode[CodeLen++] = (HReg << 4) + AdrPart;
+                        break;
+                     case 6:
+                        BAsmCode[CodeLen++] = 0xa0 + (OpSize << 3);
+                        BAsmCode[CodeLen++] = 0x08 + (HReg << 4) + AdrPart;
+                        BAsmCode[CodeLen++] = AdrVals[0];
+                        break;
+                     default:
+                        WrError(1350);
+                  }
                   break;
                case 2:
                   HReg = AdrPart;
                   DecodeAdr(ArgStr[2], MModReg);
-                  if (AdrMode == ModReg)
-                     if ((OpSize != 0) && (OpSize != 1)) WrError(1130);
-                     else {
-                        BAsmCode[CodeLen++] = 0x50 + (OpSize << 3);
-                        BAsmCode[CodeLen++] = (AdrPart << 4) + HReg;
-                     }
+                  if (AdrMode != ModReg) ;
+                  else if ((OpSize != 0) && (OpSize != 1)) WrError(1130);
+                  else {
+                     BAsmCode[CodeLen++] = 0x50 + (OpSize << 3);
+                     BAsmCode[CodeLen++] = (AdrPart << 4) + HReg;
+                  }
                   break;
                case 6:
                   HPart = AdrPart;
                   HVals[0] = AdrVals[0];
                   DecodeAdr(ArgStr[2], MModReg);
-                  if (AdrMode == ModReg)
-                     if ((OpSize != 0) && (OpSize != 1)) WrError(1130);
-                     else {
-                        BAsmCode[CodeLen++] = 0xa0 + (OpSize << 3);
-                        BAsmCode[CodeLen++] = 0x08 + (AdrPart << 4) + HPart;
-                        BAsmCode[CodeLen++] = HVals[0];
-                     }
+                  if (AdrMode != ModReg) ;
+                  else if ((OpSize != 0) && (OpSize != 1)) WrError(1130);
+                  else {
+                     BAsmCode[CodeLen++] = 0xa0 + (OpSize << 3);
+                     BAsmCode[CodeLen++] = 0x08 + (AdrPart << 4) + HPart;
+                     BAsmCode[CodeLen++] = HVals[0];
+                  }
                   break;
                default:
                   WrError(1350);
@@ -1034,25 +1027,25 @@ static void MakeCode_XA(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          DecodeAdr(ArgStr[1], MModReg);
-         if (AdrMode == ModReg)
-            if ((OpSize != 1) && (OpSize != 2)) WrError(1130);
-            else {
-               HReg = AdrPart;
-               OpSize--;
-               DecodeAdr(ArgStr[2], MModReg + MModImm);
-               switch (AdrMode) {
-                  case ModReg:
-                     BAsmCode[CodeLen++] = 0xe7 + (OpSize << 3);
-                     BAsmCode[CodeLen++] = (HReg << 4) + AdrPart;
-                     break;
-                  case ModImm:
-                     BAsmCode[CodeLen++] = 0xe8 + OpSize;
-                     BAsmCode[CodeLen++] = (HReg << 4) + 0x0b - (OpSize << 1);
-                     memcpy(BAsmCode + CodeLen, AdrVals, AdrCnt);
-                     CodeLen += AdrCnt;
-                     break;
-               }
+         if (AdrMode != ModReg) ;
+         else if ((OpSize != 1) && (OpSize != 2)) WrError(1130);
+         else {
+            HReg = AdrPart;
+            OpSize--;
+            DecodeAdr(ArgStr[2], MModReg + MModImm);
+            switch (AdrMode) {
+               case ModReg:
+                  BAsmCode[CodeLen++] = 0xe7 + (OpSize << 3);
+                  BAsmCode[CodeLen++] = (HReg << 4) + AdrPart;
+                  break;
+               case ModImm:
+                  BAsmCode[CodeLen++] = 0xe8 + OpSize;
+                  BAsmCode[CodeLen++] = (HReg << 4) + 0x0b - (OpSize << 1);
+                  memcpy(BAsmCode + CodeLen, AdrVals, AdrCnt);
+                  CodeLen += AdrCnt;
+                  break;
             }
+         }
       }
       return;
    }
@@ -1061,27 +1054,27 @@ static void MakeCode_XA(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          DecodeAdr(ArgStr[1], MModReg);
-         if (AdrMode == ModReg)
-            if ((OpSize == 0) && ((AdrPart & 1) == 1)) WrError(1445);
-            else {
-               HReg = AdrPart;
-               z = OpSize;
-               if (OpSize != 0) OpSize--;
-               DecodeAdr(ArgStr[2], MModReg + MModImm);
-               switch (AdrMode) {
-                  case ModReg:
-                     BAsmCode[CodeLen++] = 0xe1 + (z << 2);
-                     if (z == 2) BAsmCode[CodeLen - 1] += 4;
-                     BAsmCode[CodeLen++] = (HReg << 4) + AdrPart;
-                     break;
-                  case ModImm:
-                     BAsmCode[CodeLen++] = 0xe8 + (z == 2);
-                     BAsmCode[CodeLen++] = (HReg << 4) + 0x01 + ((z == 1) << 1);
-                     memcpy(BAsmCode + CodeLen, AdrVals, AdrCnt);
-                     CodeLen += AdrCnt;
-                     break;
-               }
+         if (AdrMode != ModReg) ;
+         else if ((OpSize == 0) && ((AdrPart & 1) == 1)) WrError(1445);
+         else {
+            HReg = AdrPart;
+            z = OpSize;
+            if (OpSize != 0) OpSize--;
+            DecodeAdr(ArgStr[2], MModReg + MModImm);
+            switch (AdrMode) {
+               case ModReg:
+                  BAsmCode[CodeLen++] = 0xe1 + (z << 2);
+                  if (z == 2) BAsmCode[CodeLen - 1] += 4;
+                  BAsmCode[CodeLen++] = (HReg << 4) + AdrPart;
+                  break;
+               case ModImm:
+                  BAsmCode[CodeLen++] = 0xe8 + (z == 2);
+                  BAsmCode[CodeLen++] = (HReg << 4) + 0x01 + ((z == 1) << 1);
+                  memcpy(BAsmCode + CodeLen, AdrVals, AdrCnt);
+                  CodeLen += AdrCnt;
+                  break;
             }
+         }
       }
       return;
    }
@@ -1090,25 +1083,25 @@ static void MakeCode_XA(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          DecodeAdr(ArgStr[1], MModReg);
-         if (AdrMode == ModReg)
-            if (OpSize != 1) WrError(1130);
-            else if ((AdrPart & 1) == 1) WrError(1445);
-            else {
-               HReg = AdrPart;
-               DecodeAdr(ArgStr[2], MModReg + MModImm);
-               switch (AdrMode) {
-                  case ModReg:
-                     BAsmCode[CodeLen++] = 0xe6;
-                     BAsmCode[CodeLen++] = (HReg << 4) + AdrPart;
-                     break;
-                  case ModImm:
-                     BAsmCode[CodeLen++] = 0xe9;
-                     BAsmCode[CodeLen++] = (HReg << 4) + 0x08;
-                     memcpy(BAsmCode + CodeLen, AdrVals, AdrCnt);
-                     CodeLen += AdrCnt;
-                     break;
-               }
+         if (AdrMode != ModReg) ;
+         else if (OpSize != 1) WrError(1130);
+         else if ((AdrPart & 1) == 1) WrError(1445);
+         else {
+            HReg = AdrPart;
+            DecodeAdr(ArgStr[2], MModReg + MModImm);
+            switch (AdrMode) {
+               case ModReg:
+                  BAsmCode[CodeLen++] = 0xe6;
+                  BAsmCode[CodeLen++] = (HReg << 4) + AdrPart;
+                  break;
+               case ModImm:
+                  BAsmCode[CodeLen++] = 0xe9;
+                  BAsmCode[CodeLen++] = (HReg << 4) + 0x08;
+                  memcpy(BAsmCode + CodeLen, AdrVals, AdrCnt);
+                  CodeLen += AdrCnt;
+                  break;
             }
+         }
       }
       return;
    }
@@ -1117,24 +1110,24 @@ static void MakeCode_XA(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          DecodeAdr(ArgStr[1], MModReg);
-         if (AdrMode == ModReg)
-            if ((AdrPart & 1) == 1) WrError(1445);
-            else {
-               HReg = AdrPart;
-               DecodeAdr(ArgStr[2], MModReg + MModImm);
-               switch (AdrMode) {
-                  case ModReg:
-                     BAsmCode[CodeLen++] = 0xe0 + (OpSize << 2);
-                     BAsmCode[CodeLen++] = (HReg << 4) + AdrPart;
-                     break;
-                  case ModImm:
-                     BAsmCode[CodeLen++] = 0xe8 + OpSize;
-                     BAsmCode[CodeLen++] = (HReg << 4);
-                     memcpy(BAsmCode + CodeLen, AdrVals, AdrCnt);
-                     CodeLen += AdrCnt;
-                     break;
-               }
+         if (AdrMode != ModReg) ;
+         else if ((AdrPart & 1) == 1) WrError(1445);
+         else {
+            HReg = AdrPart;
+            DecodeAdr(ArgStr[2], MModReg + MModImm);
+            switch (AdrMode) {
+               case ModReg:
+                  BAsmCode[CodeLen++] = 0xe0 + (OpSize << 2);
+                  BAsmCode[CodeLen++] = (HReg << 4) + AdrPart;
+                  break;
+               case ModImm:
+                  BAsmCode[CodeLen++] = 0xe8 + OpSize;
+                  BAsmCode[CodeLen++] = (HReg << 4);
+                  memcpy(BAsmCode + CodeLen, AdrVals, AdrCnt);
+                  CodeLen += AdrCnt;
+                  break;
             }
+         }
       }
       return;
    }
@@ -1143,26 +1136,25 @@ static void MakeCode_XA(void) {
       if (ArgCnt != 2) WrError(1110);
       else {
          DecodeAdr(ArgStr[1], MModReg);
-         if (AdrMode == ModReg)
-            if (OpSize != 1) WrError(1130);
-            else {
-               HReg = AdrPart;
-               strmaxprep(ArgStr[2], "[", 255);
-               strmaxcat(ArgStr[2], "]", 255);
-               DecodeAdr(ArgStr[2], MModMem);
-               if (AdrMode == ModMem)
-                  switch (MemPart) {
-                     case 4:
-                     case 5:
-                        BAsmCode[CodeLen++] = 0x20 + (MemPart << 3);
-                        BAsmCode[CodeLen++] = (HReg << 4) + AdrPart;
-                        memcpy(BAsmCode + CodeLen, AdrVals, AdrCnt);
-                        CodeLen += AdrCnt;
-                        break;
-                     default:
-                        WrError(1350);
-                  }
+         if (AdrMode != ModReg) ;
+         else if (OpSize != 1) WrError(1130);
+         else {
+            HReg = AdrPart;
+            strmaxprep(ArgStr[2], "[", 255);
+            strmaxcat(ArgStr[2], "]", 255);
+            DecodeAdr(ArgStr[2], MModMem);
+            if (AdrMode == ModMem) switch (MemPart) {
+               case 4:
+               case 5:
+                  BAsmCode[CodeLen++] = 0x20 + (MemPart << 3);
+                  BAsmCode[CodeLen++] = (HReg << 4) + AdrPart;
+                  memcpy(BAsmCode + CodeLen, AdrVals, AdrCnt);
+                  CodeLen += AdrCnt;
+                  break;
+               default:
+                  WrError(1350);
             }
+         }
       }
       return;
    }
@@ -1201,8 +1193,7 @@ static void MakeCode_XA(void) {
    }
 
    for (z = 0; z < ShiftOrderCount; z++)
-      if Memo
-         (ShiftOrders[z]) {
+      if (Memo(ShiftOrders[z])) {
          if (ArgCnt != 2) WrError(1110);
          else if (OpSize > 2) WrError(1130);
          else {
@@ -1219,10 +1210,13 @@ static void MakeCode_XA(void) {
                         BAsmCode[CodeLen++] = 0xc0 + ((HMem & 1) << 3) + z;
                         if (HMem == 2) BAsmCode[CodeLen - 1] += 12;
                         BAsmCode[CodeLen++] = (HReg << 4) + AdrPart;
-                        if (Memo("NORM"))
+                        if (Memo("NORM")) {
                            if (HMem == 2) {
                               if ((AdrPart >> 2) == (HReg >> 1)) WrError(140);
-                           } else if ((AdrPart >> HMem) == HReg) WrError(140);
+                           } else {
+                              if ((AdrPart >> HMem) == HReg) WrError(140);
+                           }
+                        }
                         break;
                      case ModImm:
                         BAsmCode[CodeLen++] = 0xd0 + ((HMem & 1) << 3) + z;
@@ -1236,7 +1230,7 @@ static void MakeCode_XA(void) {
             }
          }
          return;
-         }
+      }
 
    for (z = 0; z < RotateOrderCount; z++)
       if (Memo(RotateOrders[z].Name)) {
@@ -1293,11 +1287,7 @@ static void MakeCode_XA(void) {
             AdrLong = EvalIntExpression(ArgStr[1], UInt24, &OK);
             if (OK) {
                ChkSpace(SegCode);
-#ifdef __STDC__
                if (FirstPassUnknown) AdrLong &= 0xfffffffeu;
-#else
-               if (FirstPassUnknown) AdrLong &= 0xfffffffe;
-#endif
                AdrLong -= (EProgCounter() + CodeLen + 2) & 0xfffffe;
                if ((!SymbolQuestionable) && ((AdrLong > 254) || (AdrLong < -256))) WrError(1370);
                else if ((AdrLong & 1) == 1) WrError(1325);
@@ -1315,22 +1305,18 @@ static void MakeCode_XA(void) {
       else if (*AttrPart != '\0') WrError(1100);
       else if (*ArgStr[1] == '[') {
          DecodeAdr(ArgStr[1], MModMem);
-         if (AdrMode != ModNone)
-            if (MemPart != 2) WrError(1350);
-            else {
-               BAsmCode[CodeLen++] = 0xc6;
-               BAsmCode[CodeLen++] = AdrPart;
-            }
+         if (AdrMode == ModNone) ;
+         else if (MemPart != 2) WrError(1350);
+         else {
+            BAsmCode[CodeLen++] = 0xc6;
+            BAsmCode[CodeLen++] = AdrPart;
+         }
       } else {
          FirstPassUnknown = false;
          AdrLong = EvalIntExpression(ArgStr[1], UInt24, &OK);
          if (OK) {
             ChkSpace(SegCode);
-#ifdef __STDC__
             if (FirstPassUnknown) AdrLong &= 0xfffffffeu;
-#else
-            if (FirstPassUnknown) AdrLong &= 0xfffffffe;
-#endif
             AdrLong -= (EProgCounter() + CodeLen + 3) & 0xfffffe;
             if ((!SymbolQuestionable) && ((AdrLong > 65534) || (AdrLong < -65536))) WrError(1370);
             else if ((AdrLong & 1) == 1) WrError(1325);
@@ -1379,11 +1365,7 @@ static void MakeCode_XA(void) {
          AdrLong = EvalIntExpression(ArgStr[1], UInt24, &OK);
          if (OK) {
             ChkSpace(SegCode);
-#ifdef __STDC__
             if (FirstPassUnknown) AdrLong &= 0xfffffffeu;
-#else
-            if (FirstPassUnknown) AdrLong &= 0xfffffffe;
-#endif
             AdrLong -= (EProgCounter() + CodeLen + 3) & 0xfffffe;
             if ((!SymbolQuestionable) && ((AdrLong > 65534) || (AdrLong < -65536))) WrError(1370);
             else if ((AdrLong & 1) == 1) WrError(1325);
@@ -1535,14 +1517,14 @@ static void MakeCode_XA(void) {
          FirstPassUnknown = false;
          AdrLong = EvalIntExpression(ArgStr[1], UInt24, &OK);
          if (FirstPassUnknown) AdrLong &= 0xfffffe;
-         if (OK)
-            if ((AdrLong & 1) == 1) WrError(1325);
-            else {
-               BAsmCode[CodeLen++] = 0xc4 + (Memo("FJMP") << 4);
-               BAsmCode[CodeLen++] = (AdrLong >> 8) & 0xff;
-               BAsmCode[CodeLen++] = AdrLong & 0xff;
-               BAsmCode[CodeLen++] = (AdrLong >> 16) & 0xff;
-            }
+         if (!OK) ;
+         else if ((AdrLong & 1) == 1) WrError(1325);
+         else {
+            BAsmCode[CodeLen++] = 0xc4 + (Memo("FJMP") << 4);
+            BAsmCode[CodeLen++] = (AdrLong >> 8) & 0xff;
+            BAsmCode[CodeLen++] = AdrLong & 0xff;
+            BAsmCode[CodeLen++] = (AdrLong >> 16) & 0xff;
+         }
       }
       return;
    }
@@ -1559,13 +1541,13 @@ static void MakeCode_XA(void) {
             AdrLong = EvalIntExpression(ArgStr[2], UInt24, &OK);
             if (FirstPassUnknown) AdrLong &= 0xfffffe;
             AdrLong -= (EProgCounter() + CodeLen + 4) & 0xfffffe;
-            if (OK)
-               if ((!SymbolQuestionable) && ((AdrLong > 254) || (AdrLong < -256))) WrError(1370);
-               else if ((AdrLong & 1) == 1) WrError(1325);
-               else {
-                  BAsmCode[CodeLen + 3] = (AdrLong >> 1) & 0xff;
-                  CodeLen += 4;
-               }
+            if (!OK) ;
+            else if ((!SymbolQuestionable) && ((AdrLong > 254) || (AdrLong < -256))) WrError(1370);
+            else if ((AdrLong & 1) == 1) WrError(1325);
+            else {
+               BAsmCode[CodeLen + 3] = (AdrLong >> 1) & 0xff;
+               CodeLen += 4;
+            }
          }
          return;
       }

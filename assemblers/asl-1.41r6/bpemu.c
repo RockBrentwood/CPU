@@ -1,13 +1,5 @@
-/* bpemu.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Emulation einiger Borland-Pascal-Funktionen                               */
-/*                                                                           */
-/* Historie: 20. 5.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Emulation einiger Borland-Pascal-Funktionen
 #include "stdinc.h"
 #include <string.h>
 #include <sys/types.h>

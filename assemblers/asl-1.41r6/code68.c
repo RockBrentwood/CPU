@@ -1,13 +1,5 @@
-/* code68.cc */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator fuer 68xx Prozessoren                                       */
-/*                                                                           */
-/* Historie:  13.8.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator fuer 68xx Prozessoren
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -704,14 +696,14 @@ static void MakeCode_68(void) {
       else {
          if (ArgStr[ArgCnt][0] == '#') strmove(ArgStr[ArgCnt], 1);
          Mask = EvalIntExpression(ArgStr[ArgCnt], Int8, &OK);
-         if ((OK) && (MomCPU == CPU6301))
-            if (Mask > 7) {
-               WrError(1320);
-               OK = false;
-            } else {
-               Mask = 1 << Mask;
-               if (Memo("BCLR")) Mask = 0xff - Mask;
-            }
+         if (!OK || MomCPU != CPU6301) ;
+         else if (Mask > 7) {
+            WrError(1320);
+            OK = false;
+         } else {
+            Mask = 1 << Mask;
+            if (Memo("BCLR")) Mask = 0xff - Mask;
+         }
          if (OK) {
             DecodeAdr(1, ArgCnt - 1, MModDir + MModInd);
             if (AdrMode != ModNone) {
@@ -740,19 +732,19 @@ static void MakeCode_68(void) {
       else if (MomCPU != CPU6301) WrError(1500);
       else {
          AdrByte = EvalIntExpression(ArgStr[1], Int8, &OK);
-         if (OK)
-            if (AdrByte > 7) WrError(1320);
-            else {
-               DecodeAdr(2, ArgCnt, MModDir + MModInd);
-               if (AdrMode != ModNone) {
-                  CodeLen = PrefCnt + 2 + AdrCnt;
-                  BAsmCode[1 + PrefCnt] = 1 << AdrByte;
-                  memcpy(BAsmCode + 2 + PrefCnt, AdrVals, AdrCnt);
-                  BAsmCode[PrefCnt] = 0x65;
-                  if (Memo("BTST")) BAsmCode[PrefCnt] += 6;
-                  if (AdrMode == ModDir) BAsmCode[PrefCnt] += 0x10;
-               }
+         if (!OK) ;
+         else if (AdrByte > 7) WrError(1320);
+         else {
+            DecodeAdr(2, ArgCnt, MModDir + MModInd);
+            if (AdrMode != ModNone) {
+               CodeLen = PrefCnt + 2 + AdrCnt;
+               BAsmCode[1 + PrefCnt] = 1 << AdrByte;
+               memcpy(BAsmCode + 2 + PrefCnt, AdrVals, AdrCnt);
+               BAsmCode[PrefCnt] = 0x65;
+               if (Memo("BTST")) BAsmCode[PrefCnt] += 6;
+               if (AdrMode == ModDir) BAsmCode[PrefCnt] += 0x10;
             }
+         }
       }
       return;
    }

@@ -1,13 +1,5 @@
-/* codest6.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator ST6-Familie                                                 */
-/*                                                                           */
-/* Historie: 14.11.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator ST6-Familie
 #include "stdinc.h"
 #include <string.h>
 
@@ -178,23 +170,23 @@ static void DecodeAdr(char *Asc, Byte Mask) {
    }
 
    AdrInt = EvalIntExpression(Asc, UInt16, &OK);
-   if (OK)
-      if ((TypeFlag & (1 << SegCode)) != 0) {
+   if (!OK) ;
+   else if ((TypeFlag & (1 << SegCode)) != 0) {
+      AdrType = ModDir;
+      AdrVal = (AdrInt & 0x3f) + 0x40;
+      AdrCnt = 1;
+      if (!FirstPassUnknown)
+         if (WinAssume != (AdrInt >> 6)) WrError(110);
+   } else {
+      if (FirstPassUnknown) AdrInt = Lo(AdrInt);
+      if (AdrInt > 0xff) WrError(1320);
+      else {
          AdrType = ModDir;
-         AdrVal = (AdrInt & 0x3f) + 0x40;
-         AdrCnt = 1;
-         if (!FirstPassUnknown)
-            if (WinAssume != (AdrInt >> 6)) WrError(110);
-      } else {
-         if (FirstPassUnknown) AdrInt = Lo(AdrInt);
-         if (AdrInt > 0xff) WrError(1320);
-         else {
-            AdrType = ModDir;
-            AdrVal = AdrInt;
-            ChkAdr(Mask);
-            return;
-         }
+         AdrVal = AdrInt;
+         ChkAdr(Mask);
+         return;
       }
+   }
 
    ChkAdr(Mask);
 }
@@ -327,15 +319,15 @@ static void MakeCode_ST62(void) {
                break;
             case ModDir:
                DecodeAdr(ArgStr[2], MModAcc);
-               if (AdrType != ModNone)
-                  if (IsReg(AdrVal)) {
-                     CodeLen = 1;
-                     BAsmCode[0] = 0x3d + ((AdrVal & 3) << 6);
-                  } else {
-                     CodeLen = 2;
-                     BAsmCode[0] = 0x9f;
-                     BAsmCode[1] = AdrVal;
-                  }
+               if (AdrType == ModNone) ;
+               else if (IsReg(AdrVal)) {
+                  CodeLen = 1;
+                  BAsmCode[0] = 0x3d + ((AdrVal & 3) << 6);
+               } else {
+                  CodeLen = 2;
+                  BAsmCode[0] = 0x9f;
+                  BAsmCode[1] = AdrVal;
+               }
                break;
             case ModInd:
                DecodeAdr(ArgStr[2], MModAcc);
@@ -380,12 +372,12 @@ static void MakeCode_ST62(void) {
          if (ArgCnt != 1) WrError(1110);
          else {
             AdrInt = EvalIntExpression(ArgStr[1], UInt16, &OK) - (EProgCounter() + 1);
-            if (OK)
-               if ((!SymbolQuestionable) && ((AdrInt < -16) || (AdrInt > 15))) WrError(1370);
-               else {
-                  CodeLen = 1;
-                  BAsmCode[0] = RelOrders[z].Code + ((AdrInt << 3) & 0xf8);
-               }
+            if (!OK) ;
+            else if ((!SymbolQuestionable) && ((AdrInt < -16) || (AdrInt > 15))) WrError(1370);
+            else {
+               CodeLen = 1;
+               BAsmCode[0] = RelOrders[z].Code + ((AdrInt << 3) & 0xf8);
+            }
          }
          return;
       }
@@ -394,13 +386,13 @@ static void MakeCode_ST62(void) {
       if (ArgCnt != 1) WrError(1110);
       else {
          AdrInt = EvalIntExpression(ArgStr[1], Int16, &OK);
-         if (OK)
-            if ((AdrInt < 0) || (AdrInt > 0xfff)) WrError(1925);
-            else {
-               CodeLen = 2;
-               BAsmCode[0] = 0x01 + (Memo("JP") << 3) + ((AdrInt & 0x00f) << 4);
-               BAsmCode[1] = AdrInt >> 4;
-            }
+         if (!OK) ;
+         else if ((AdrInt < 0) || (AdrInt > 0xfff)) WrError(1925);
+         else {
+            CodeLen = 2;
+            BAsmCode[0] = 0x01 + (Memo("JP") << 3) + ((AdrInt & 0x00f) << 4);
+            BAsmCode[1] = AdrInt >> 4;
+         }
       }
       return;
    }
@@ -534,12 +526,12 @@ static void MakeCode_ST62(void) {
             if (AdrType != ModNone) {
                BAsmCode[1] = AdrVal;
                AdrInt = EvalIntExpression(ArgStr[3], UInt16, &OK) - (EProgCounter() + 3);
-               if (OK)
-                  if ((!SymbolQuestionable) && ((AdrInt > 127) || (AdrInt < -128))) WrError(1370);
-                  else {
-                     CodeLen = 3;
-                     BAsmCode[2] = Lo(AdrInt);
-                  }
+               if (!OK) ;
+               else if ((!SymbolQuestionable) && ((AdrInt > 127) || (AdrInt < -128))) WrError(1370);
+               else {
+                  CodeLen = 3;
+                  BAsmCode[2] = Lo(AdrInt);
+               }
             }
          }
       }

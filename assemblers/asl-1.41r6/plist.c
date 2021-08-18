@@ -1,13 +1,5 @@
-/* plist.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Anzeige des Inhalts einer Code-Datei                                      */
-/*                                                                           */
-/* Historie: 31. 5.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Anzeige des Inhalts einer Code-Datei
 #include "stdinc.h"
 
 #include "endian.h"

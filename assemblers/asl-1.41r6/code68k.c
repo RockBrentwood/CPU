@@ -1,13 +1,5 @@
-/* code68k.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator 680x0-Familie                                               */
-/*                                                                           */
-/* Historie:  9. 9.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator 680x0-Familie
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -361,48 +353,48 @@ static bool ClassComp(AdrComp * C) {
    sh[0] = C->Name[0];
    sh[1] = C->Name[1];
    sh[2] = '\0';
-   if (CodeReg(sh, &C->ANummer))
-      if ((C->ANummer > 7) && (strlen(C->Name) == 2)) {
-         C->Art = AReg;
-         C->ANummer -= 8;
-         return true;
-      } else {
-         if ((strlen(C->Name) > 3) && (C->Name[2] == '.')) {
-            switch (toupper(C->Name[3])) {
-               case 'L':
-                  C->Long = true;
-                  break;
-               case 'W':
-                  C->Long = false;
-                  break;
-               default:
-                  return false;
-            }
-            strmove(C->Name + 2, 2);
-         } else C->Long = false;
-         if ((strlen(C->Name) > 3) && (C->Name[2] == '*')) {
-            switch (C->Name[3]) {
-               case '1':
-                  C->Scale = 0;
-                  break;
-               case '2':
-                  C->Scale = 1;
-                  break;
-               case '4':
-                  C->Scale = 2;
-                  break;
-               case '8':
-                  C->Scale = 3;
-                  break;
-               default:
-                  return false;
-            }
-            strmove(C->Name + 2, 2);
-         } else C->Scale = 0;
-         C->INummer = C->ANummer;
-         C->Art = Index;
-         return true;
-      }
+   if (!CodeReg(sh, &C->ANummer)) ;
+   else if ((C->ANummer > 7) && (strlen(C->Name) == 2)) {
+      C->Art = AReg;
+      C->ANummer -= 8;
+      return true;
+   } else {
+      if ((strlen(C->Name) > 3) && (C->Name[2] == '.')) {
+         switch (toupper(C->Name[3])) {
+            case 'L':
+               C->Long = true;
+               break;
+            case 'W':
+               C->Long = false;
+               break;
+            default:
+               return false;
+         }
+         strmove(C->Name + 2, 2);
+      } else C->Long = false;
+      if ((strlen(C->Name) > 3) && (C->Name[2] == '*')) {
+         switch (C->Name[3]) {
+            case '1':
+               C->Scale = 0;
+               break;
+            case '2':
+               C->Scale = 1;
+               break;
+            case '4':
+               C->Scale = 2;
+               break;
+            case '8':
+               C->Scale = 3;
+               break;
+            default:
+               return false;
+         }
+         strmove(C->Name + 2, 2);
+      } else C->Scale = 0;
+      C->INummer = C->ANummer;
+      C->Art = Index;
+      return true;
+   }
 
    C->Art = Disp;
    if (C->Name[strlen(C->Name) - 2] == '.') {
@@ -599,7 +591,7 @@ static void DecodeAdr(char *Asc_O, Word Erl) {
          AdrNum = 12;
          ChkAdr(Erl);
          return;
-      };
+      }
       if (strcasecmp(Asc, "FPCR") == 0) {
          AdrMode = 4;
          AdrNum = 13;
@@ -659,12 +651,12 @@ static void DecodeAdr(char *Asc_O, Word Erl) {
    for (p = Asc; *p != '\0'; p++) {
       if (*p == '[') doklamm = false;
       if (*p == ']') doklamm = true;
-      if (doklamm)
-         if (*p == '(') lklamm++;
-         else if (*p == ')') {
-            rklamm++;
-            lastrklamm = p - Asc;
-         }
+      if (!doklamm) ;
+      else if (*p == '(') lklamm++;
+      else if (*p == ')') {
+         rklamm++;
+         lastrklamm = p - Asc;
+      }
    }
 
    if ((lklamm == 1) && (rklamm == 1) && (lastrklamm == strlen(Asc) - 1)) {
@@ -883,7 +875,7 @@ static void DecodeAdr(char *Asc_O, Word Erl) {
             if (!ValOK) {
                WrError(1350);
                return;
-            };
+            }
             AdrMode = 0x3b;
             switch (OutDispLen) {
                case 0:
@@ -1207,10 +1199,11 @@ static void PutByte(Byte b) {
 
 static bool DecodePseudo(void) {
 #define ONOFF68KCount 4
-   static ONOFFRec ONOFF68Ks[ONOFF68KCount] = { { "PMMU", &PMMUAvail, PMMUAvailName },
-   { "FULLPMMU", &FullPMMU, FullPMMUName },
-   { "FPU", &FPUAvail, FPUAvailName },
-   { "SUPMODE", &SupAllowed, SupAllowedName }
+   static ONOFFRec ONOFF68Ks[ONOFF68KCount] = {
+      { "PMMU", &PMMUAvail, PMMUAvailName },
+      { "FULLPMMU", &FullPMMU, FullPMMUName },
+      { "FPU", &FPUAvail, FPUAvailName },
+      { "SUPMODE", &SupAllowed, SupAllowedName }
    };
    int z, l;
 
@@ -1389,7 +1382,7 @@ static void DecodeFRegList(char *Asc_o, Byte * Typ, Byte * Erg) {
       *Typ = 1;
       *Erg = (Asc[1] - '0') << 4;
       return;
-   };
+   }
 
    hw = 0;
    do {
@@ -1586,16 +1579,16 @@ static void DecodeFPUOrders(void) {
             if (AdrNum == 12) { /* FMOVE.x FPn,<ea> ? */
                if (*AttrPart == '\0') OpSize = 6;
                WAsmCode[1] = 0x6000 | (((Word) SizeCodes[OpSize]) << 10) | (AdrMode << 7);
-               if (OpSize == 7)
-                  if (strlen(sk) > 2) {
-                     OpSize = 0;
-                     strmove(sk, 1);
-                     sk[strlen(sk) - 1] = '\0';
-                     DecodeAdr(sk, Mdata + Mimm);
-                     if (AdrNum == 1) WAsmCode[1] |= (AdrMode << 4) | 0x1000;
-                     else if (AdrNum == 11) WAsmCode[1] |= (AdrVals[0] & 127);
-                     else CodeLen = 0;
-                  } else WAsmCode[1] |= 17;
+               if (OpSize != 7) ;
+               else if (strlen(sk) > 2) {
+                  OpSize = 0;
+                  strmove(sk, 1);
+                  sk[strlen(sk) - 1] = '\0';
+                  DecodeAdr(sk, Mdata + Mimm);
+                  if (AdrNum == 1) WAsmCode[1] |= (AdrMode << 4) | 0x1000;
+                  else if (AdrNum == 11) WAsmCode[1] |= (AdrVals[0] & 127);
+                  else CodeLen = 0;
+               } else WAsmCode[1] |= 17;
             } else if (AdrNum == 13) { /* FMOVE.L FPcr,<ea> ? */
                if ((*AttrPart != '\0') && (OpSize != 2)) {
                   WrError(1130);
@@ -1623,12 +1616,12 @@ static void DecodeFPUOrders(void) {
             WAsmCode[1] = 0x5c00 | (AdrMode << 7);
             OpSize = 0;
             DecodeAdr(ArgStr[1], Mimm);
-            if (AdrNum == 11)
-               if (AdrVals[0] > 63) WrError(1700);
-               else {
-                  CodeLen = 4;
-                  WAsmCode[1] |= AdrVals[0];
-               }
+            if (AdrNum != 11) ;
+            else if (AdrVals[0] > 63) WrError(1700);
+            else {
+               CodeLen = 4;
+               WAsmCode[1] |= AdrVals[0];
+            }
          }
       }
       return;
@@ -2146,7 +2139,7 @@ static void DecodePMMUOrders(void) {
          }
       }
       return;
-   };
+   }
 
    if (strncmp(OpPart, "DB", 2) == 0) {
       for (z = 0; z < PMMUCondCnt; z++)
@@ -3068,7 +3061,7 @@ static void MakeCode_68K(void) {
             CodeLen = 2;
             WAsmCode[0] = 0x4848 + (HVal8 & 7);
             CheckCPU(CPU68010);
-         };
+         }
       }
       return;
    }

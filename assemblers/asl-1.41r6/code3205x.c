@@ -1,13 +1,6 @@
-/*
- * AS-Portierung
- *
- * AS-Codegeneratormodul fuer die Texas Instruments TMS320C5x-Familie
- *
- * (C) 1996 Thomas Sailer <sailer@ife.ee.ethz.ch>
- *
- * 20.08.96: Erstellung
- */
-
+// AS-Portierung
+// AS-Codegeneratormodul fuer die Texas Instruments TMS320C5x-Familie
+// (C) 1996 Thomas Sailer <sailer@ife.ee.ethz.ch>
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -28,124 +21,127 @@
 static const struct cmd_fixed_order {
    char *name;
    Word code;
-} cmd_fixed_order[] = { { "ABS", 0xbe00 },
-{ "ADCB", 0xbe11 },
-{ "ADDB", 0xbe10 },
-{ "ANDB", 0xbe12 },
-{ "CMPL", 0xbe01 },
-{ "CRGT", 0xbe1b },
-{ "CRLT", 0xbe1c },
-{ "EXAR", 0xbe1d },
-{ "LACB", 0xbe1f },
-{ "NEG", 0xbe02 },
-{ "ORB", 0xbe13 },
-{ "ROL", 0xbe0c },
-{ "ROLB", 0xbe14 },
-{ "ROR", 0xbe0d },
-{ "RORB", 0xbe15 },
-{ "SACB", 0xbe1e },
-{ "SATH", 0xbe5a },
-{ "SATL", 0xbe5b },
-{ "SBB", 0xbe18 },
-{ "SBBB", 0xbe19 },
-{ "SFL", 0xbe09 },
-{ "SFLB", 0xbe16 },
-{ "SFR", 0xbe0a },
-{ "SFRB", 0xbe17 },
-{ "XORB", 0xbe1a },
-{ "ZAP", 0xbe59 },
-{ "APAC", 0xbe04 },
-{ "PAC", 0xbe03 },
-{ "SPAC", 0xbe05 },
-{ "ZPR", 0xbe58 },
-{ "BACC", 0xbe20 },
-{ "BACCD", 0xbe21 },
-{ "CALA", 0xbe30 },
-{ "CALAD", 0xbe3d },
-{ "NMI", 0xbe52 },
-{ "RET", 0xef00 },
-{ "RETD", 0xff00 },
-{ "RETE", 0xbe3a },
-{ "RETI", 0xbe38 },
-{ "TRAP", 0xbe51 },
-{ "IDLE", 0xbe22 },
-{ "NOP", 0x8b00 },
-{ "POP", 0xbe32 },
-{ "PUSH", 0xbe3c },
-{ "IDLE2", 0xbe23 },
-{ NULL, 0 }
+} cmd_fixed_order[] = {
+   { "ABS", 0xbe00 },
+   { "ADCB", 0xbe11 },
+   { "ADDB", 0xbe10 },
+   { "ANDB", 0xbe12 },
+   { "CMPL", 0xbe01 },
+   { "CRGT", 0xbe1b },
+   { "CRLT", 0xbe1c },
+   { "EXAR", 0xbe1d },
+   { "LACB", 0xbe1f },
+   { "NEG", 0xbe02 },
+   { "ORB", 0xbe13 },
+   { "ROL", 0xbe0c },
+   { "ROLB", 0xbe14 },
+   { "ROR", 0xbe0d },
+   { "RORB", 0xbe15 },
+   { "SACB", 0xbe1e },
+   { "SATH", 0xbe5a },
+   { "SATL", 0xbe5b },
+   { "SBB", 0xbe18 },
+   { "SBBB", 0xbe19 },
+   { "SFL", 0xbe09 },
+   { "SFLB", 0xbe16 },
+   { "SFR", 0xbe0a },
+   { "SFRB", 0xbe17 },
+   { "XORB", 0xbe1a },
+   { "ZAP", 0xbe59 },
+   { "APAC", 0xbe04 },
+   { "PAC", 0xbe03 },
+   { "SPAC", 0xbe05 },
+   { "ZPR", 0xbe58 },
+   { "BACC", 0xbe20 },
+   { "BACCD", 0xbe21 },
+   { "CALA", 0xbe30 },
+   { "CALAD", 0xbe3d },
+   { "NMI", 0xbe52 },
+   { "RET", 0xef00 },
+   { "RETD", 0xff00 },
+   { "RETE", 0xbe3a },
+   { "RETI", 0xbe38 },
+   { "TRAP", 0xbe51 },
+   { "IDLE", 0xbe22 },
+   { "NOP", 0x8b00 },
+   { "POP", 0xbe32 },
+   { "PUSH", 0xbe3c },
+   { "IDLE2", 0xbe23 },
+   { NULL, 0 }
 };
 
 static const struct cmd_fixed_order
- cmd_adr_order[] = { { "ADDC", 0x6000 },
-{ "ADDS", 0x6200 },
-{ "ADDT", 0x6300 },
-{ "AND", 0x6e00 },
-{ "LACL", 0x6900 },
-{ "LACT", 0x6b00 },
-{ "OR", 0x6d00 },
-{ "SUBB", 0x6400 },
-{ "SUBC", 0x0a00 },
-{ "SUBS", 0x6600 },
-{ "SUBT", 0x6700 },
-{ "XOR", 0x6c00 },
-{ "ZALR", 0x6800 },
-{ "LDP", 0x0d00 },
-{ "APL", 0x5a00 },
-{ "CPL", 0x5b00 },
-{ "OPL", 0x5900 },
-{ "XPL", 0x5800 },
-{ "MAR", 0x8b00 },
-{ "LPH", 0x7500 },
-{ "LT", 0x7300 },
-{ "LTA", 0x7000 },
-{ "LTD", 0x7200 },
-{ "LTP", 0x7100 },
-{ "LTS", 0x7400 },
-{ "MADD", 0xab00 },
-{ "MADS", 0xaa00 },
-{ "MPY", 0x5400 },
-{ "MPYA", 0x5000 },
-{ "MPYS", 0x5100 },
-{ "MPYU", 0x5500 },
-{ "SPH", 0x8d00 },
-{ "SPL", 0x8c00 },
-{ "SQRA", 0x5200 },
-{ "SQRS", 0x5300 },
-{ "BLDP", 0x5700 },
-{ "DMOV", 0x7700 },
-{ "TBLR", 0xa600 },
-{ "TBLW", 0xa700 },
-{ "BITT", 0x6f00 },
-{ "POPD", 0x8a00 },
-{ "PSHD", 0x7600 },
-{ "RPT", 0x0b00 },
-{ NULL, 0 }
+ cmd_adr_order[] = {
+   { "ADDC", 0x6000 },
+   { "ADDS", 0x6200 },
+   { "ADDT", 0x6300 },
+   { "AND", 0x6e00 },
+   { "LACL", 0x6900 },
+   { "LACT", 0x6b00 },
+   { "OR", 0x6d00 },
+   { "SUBB", 0x6400 },
+   { "SUBC", 0x0a00 },
+   { "SUBS", 0x6600 },
+   { "SUBT", 0x6700 },
+   { "XOR", 0x6c00 },
+   { "ZALR", 0x6800 },
+   { "LDP", 0x0d00 },
+   { "APL", 0x5a00 },
+   { "CPL", 0x5b00 },
+   { "OPL", 0x5900 },
+   { "XPL", 0x5800 },
+   { "MAR", 0x8b00 },
+   { "LPH", 0x7500 },
+   { "LT", 0x7300 },
+   { "LTA", 0x7000 },
+   { "LTD", 0x7200 },
+   { "LTP", 0x7100 },
+   { "LTS", 0x7400 },
+   { "MADD", 0xab00 },
+   { "MADS", 0xaa00 },
+   { "MPY", 0x5400 },
+   { "MPYA", 0x5000 },
+   { "MPYS", 0x5100 },
+   { "MPYU", 0x5500 },
+   { "SPH", 0x8d00 },
+   { "SPL", 0x8c00 },
+   { "SQRA", 0x5200 },
+   { "SQRS", 0x5300 },
+   { "BLDP", 0x5700 },
+   { "DMOV", 0x7700 },
+   { "TBLR", 0xa600 },
+   { "TBLW", 0xa700 },
+   { "BITT", 0x6f00 },
+   { "POPD", 0x8a00 },
+   { "PSHD", 0x7600 },
+   { "RPT", 0x0b00 },
+   { NULL, 0 }
 };
 
 static const struct cmd_jmp_order {
    char *name;
    Word code;
    bool cond;
-} cmd_jmp_order[] = { { "B", 0x7980, false },
-{ "BD", 0x7d80, false },
-{ "BANZ", 0x7b80, false },
-{ "BANZD", 0x7f80, false },
-{ "BCND", 0xe000, true },
-{ "BCNDD", 0xf000, true },
-{ "CALL", 0x7a80, false },
-{ "CALLD", 0x7e80, false },
-{ "CC", 0xe800, true },
-{ "CCD", 0xf800, true },
-{ NULL, 0, false }
+} cmd_jmp_order[] = {
+   { "B", 0x7980, false },
+   { "BD", 0x7d80, false },
+   { "BANZ", 0x7b80, false },
+   { "BANZD", 0x7f80, false },
+   { "BCND", 0xe000, true },
+   { "BCNDD", 0xf000, true },
+   { "CALL", 0x7a80, false },
+   { "CALLD", 0x7e80, false },
+   { "CC", 0xe800, true },
+   { "CCD", 0xf800, true },
+   { NULL, 0, false }
 };
 
-static const struct cmd_fixed_order
- cmd_plu_order[] = { { "APL", 0x5e00 },
-{ "CPL", 0x5f00 },
-{ "OPL", 0x5d00 },
-{ "SPLK", 0xae00 },
-{ "XPL", 0x5c00 }
+static const struct cmd_fixed_order cmd_plu_order[] = {
+   { "APL", 0x5e00 },
+   { "CPL", 0x5f00 },
+   { "OPL", 0x5d00 },
+   { "SPLK", 0xae00 },
+   { "XPL", 0x5c00 }
 };
 
 /* ---------------------------------------------------------------------- */
@@ -174,16 +170,17 @@ static void decode_adr(char *arg, Integer aux, bool must1) {
    static const struct adr_modes {
       char *name;
       Word mode;
-   } adr_modes[] = { { "*-", 0x90 },
-   { "*+", 0xa0 },
-   { "*BR0-", 0xc0 },
-   { "*0-", 0xd0 },
-   { "*AR0-", 0xd0 },
-   { "*0+", 0xe0 },
-   { "*AR0+", 0xe0 },
-   { "*BR0+", 0xf0 },
-   { "*", 0x80 },
-   { NULL, 0 }
+   } adr_modes[] = {
+      { "*-", 0x90 },
+      { "*+", 0xa0 },
+      { "*BR0-", 0xc0 },
+      { "*0-", 0xd0 },
+      { "*AR0-", 0xd0 },
+      { "*0+", 0xe0 },
+      { "*AR0+", 0xe0 },
+      { "*BR0+", 0xf0 },
+      { "*", 0x80 },
+      { NULL, 0 }
    };
    const struct adr_modes *am = adr_modes;
 
@@ -227,21 +224,22 @@ static Word decode_cond(Integer argp) {
       Byte isc;
       Byte isv;
       Byte istp;
-   } cond_tab[] = { { "EQ", 0xf33, 0x088, 1, 0, 0, 0 },
-   { "NEQ", 0xf33, 0x008, 1, 0, 0, 0 },
-   { "LT", 0xf33, 0x044, 1, 0, 0, 0 },
-   { "LEQ", 0xf33, 0x0cc, 1, 0, 0, 0 },
-   { "GT", 0xf33, 0x004, 1, 0, 0, 0 },
-   { "GEQ", 0xf33, 0x08c, 1, 0, 0, 0 },
-   { "NC", 0xfee, 0x001, 0, 1, 0, 0 },
-   { "C", 0xfee, 0x011, 0, 1, 0, 0 },
-   { "NOV", 0xfdd, 0x002, 0, 0, 1, 0 },
-   { "OV", 0xfdd, 0x022, 0, 0, 1, 0 },
-   { "BIO", 0x0ff, 0x000, 0, 0, 0, 1 },
-   { "NTC", 0x0ff, 0x200, 0, 0, 0, 1 },
-   { "TC", 0x0ff, 0x100, 0, 0, 0, 1 },
-   { "UNC", 0x0ff, 0x300, 0, 0, 0, 1 },
-   { NULL, 0xfff, 0x000, 0, 0, 0, 0 }
+   } cond_tab[] = {
+      { "EQ", 0xf33, 0x088, 1, 0, 0, 0 },
+      { "NEQ", 0xf33, 0x008, 1, 0, 0, 0 },
+      { "LT", 0xf33, 0x044, 1, 0, 0, 0 },
+      { "LEQ", 0xf33, 0x0cc, 1, 0, 0, 0 },
+      { "GT", 0xf33, 0x004, 1, 0, 0, 0 },
+      { "GEQ", 0xf33, 0x08c, 1, 0, 0, 0 },
+      { "NC", 0xfee, 0x001, 0, 1, 0, 0 },
+      { "C", 0xfee, 0x011, 0, 1, 0, 0 },
+      { "NOV", 0xfdd, 0x002, 0, 0, 1, 0 },
+      { "OV", 0xfdd, 0x022, 0, 0, 1, 0 },
+      { "BIO", 0x0ff, 0x000, 0, 0, 0, 1 },
+      { "NTC", 0x0ff, 0x200, 0, 0, 0, 1 },
+      { "TC", 0x0ff, 0x100, 0, 0, 0, 1 },
+      { "UNC", 0x0ff, 0x300, 0, 0, 0, 1 },
+      { NULL, 0xfff, 0x000, 0, 0, 0, 0 }
    };
    const struct condition *cndp;
    Byte cntzl = 0, cntc = 0, cntv = 0, cnttp = 0;
@@ -678,15 +676,16 @@ static void make_code_3205x(void) {
    static const struct bit_table {
       char *name;
       Word code;
-   } bit_table[] = { { "OVM", 0xbe42 },
-   { "SXM", 0xbe46 },
-   { "HM", 0xbe48 },
-   { "TC", 0xbe4a },
-   { "C", 0xbe4e },
-   { "XF", 0xbe4c },
-   { "CNF", 0xbe44 },
-   { "INTM", 0xbe40 },
-   { NULL, 0 }
+   } bit_table[] = {
+      { "OVM", 0xbe42 },
+      { "SXM", 0xbe46 },
+      { "HM", 0xbe48 },
+      { "TC", 0xbe4a },
+      { "C", 0xbe4e },
+      { "XF", 0xbe4c },
+      { "CNF", 0xbe44 },
+      { "INTM", 0xbe40 },
+      { NULL, 0 }
    };
    const struct bit_table *bitp;
 
@@ -1358,7 +1357,8 @@ static bool chk_pc_3205x(void) {
 /* ---------------------------------------------------------------------- */
 
 static bool is_def_3205x(void) {
-   static const char *defs[] = { "BSS", "PORT", "STRING", "RSTRING",
+   static const char *defs[] = {
+      "BSS", "PORT", "STRING", "RSTRING",
       "BYTE", "WORD", "LONG", "FLOAT",
       "DOUBLE", "EFLOAT", "BFLOAT",
       "TFLOAT", NULL

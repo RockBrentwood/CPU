@@ -1,13 +1,5 @@
-/* codescmp.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator National SC/MP                                              */
-/*                                                                           */
-/* Historie: 17.2.1996 Grundsteinlegung                                      */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator National SC/MP
 #include "stdinc.h"
 #include <ctype.h>
 #include <string.h>
@@ -195,13 +187,13 @@ static bool DecodeAdr(char *Asc, bool MayInc, Byte PCDisp, Byte * Arg) {
 
    PCVal = (EProgCounter() & 0xf000) + ((EProgCounter() + 1) & 0xfff);
    Disp = EvalIntExpression(Asc, UInt16, &OK) - PCDisp - PCVal;
-   if (OK)
-      if ((!SymbolQuestionable) && ((Disp < -128) || (Disp > 127))) WrError(1370);
-      else {
-         BAsmCode[1] = Disp & 0xff;
-         *Arg = 0;
-         return true;
-      }
+   if (!OK) ;
+   else if ((!SymbolQuestionable) && ((Disp < -128) || (Disp > 127))) WrError(1370);
+   else {
+      BAsmCode[1] = Disp & 0xff;
+      *Arg = 0;
+      return true;
+   }
    return false;
 }
 

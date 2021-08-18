@@ -1,13 +1,5 @@
-/* codetms7.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator TMS7000-Familie                                             */
-/*                                                                           */
-/* Historie: 26.2.1997 Grundsteinlegung                                      */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator TMS7000-Familie
 #include "stdinc.h"
 #include <ctype.h>
 #include <string.h>
@@ -309,21 +301,21 @@ static void DecodeAdr(char *Asc, Word Mask) {
 
    if (p == NULL) {
       HVal = EvalIntExpression(Asc, Int16, &OK);
-      if (OK)
-         if (((Mask & MModReg) != 0) && (Hi(HVal) == 0)) {
-            AdrVals[0] = Lo(HVal);
-            AdrCnt = 1;
-            AdrType = ModReg;
-         } else if (((Mask & MModPort) != 0) && (Hi(HVal) == 0x01)) {
-            AdrVals[0] = Lo(HVal);
-            AdrCnt = 1;
-            AdrType = ModPort;
-         } else {
-            AdrVals[0] = Hi(HVal);
-            AdrVals[1] = Lo(HVal);
-            AdrCnt = 2;
-            AdrType = ModAbs;
-         }
+      if (!OK) ;
+      else if (((Mask & MModReg) != 0) && (Hi(HVal) == 0)) {
+         AdrVals[0] = Lo(HVal);
+         AdrCnt = 1;
+         AdrType = ModReg;
+      } else if (((Mask & MModPort) != 0) && (Hi(HVal) == 0x01)) {
+         AdrVals[0] = Lo(HVal);
+         AdrCnt = 1;
+         AdrType = ModPort;
+      } else {
+         AdrVals[0] = Hi(HVal);
+         AdrVals[1] = Lo(HVal);
+         AdrCnt = 2;
+         AdrType = ModAbs;
+      }
       ChkAdr(Mask);
       return;
    } else {
@@ -613,13 +605,13 @@ static void MakeCode_TMS7(void) {
          if (ArgCnt != 1) WrError(1110);
          else {
             AdrInt = EvalIntExpression(ArgStr[1], UInt16, &OK) - (EProgCounter() + 2);
-            if (OK)
-               if ((AdrInt > 127) || (AdrInt < -128)) WrError(1370);
-               else {
-                  CodeLen = 2;
-                  BAsmCode[0] = Rel8Orders[z].Code;
-                  BAsmCode[1] = AdrInt & 0xff;
-               }
+            if (!OK) ;
+            else if ((AdrInt > 127) || (AdrInt < -128)) WrError(1370);
+            else {
+               CodeLen = 2;
+               BAsmCode[0] = Rel8Orders[z].Code;
+               BAsmCode[1] = AdrInt & 0xff;
+            }
          }
          return;
       }
@@ -921,12 +913,12 @@ static void MakeCode_TMS7(void) {
          FirstPassUnknown = false;
          BAsmCode[0] = EvalIntExpression(ArgStr[1], UInt5, &OK);
          if (FirstPassUnknown) BAsmCode[0] &= 15;
-         if (OK)
-            if (BAsmCode[0] > 23) WrError(1320);
-            else {
-               BAsmCode[0] = 0xff - BAsmCode[0];
-               CodeLen = 1;
-            }
+         if (!OK) ;
+         else if (BAsmCode[0] > 23) WrError(1320);
+         else {
+            BAsmCode[0] = 0xff - BAsmCode[0];
+            CodeLen = 1;
+         }
       }
       return;
    }

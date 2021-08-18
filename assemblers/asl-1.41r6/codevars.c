@@ -1,13 +1,5 @@
-/* codevars.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Gemeinsame Variablen aller Codegeneratoren                                */
-/*                                                                           */
-/* Historie: 26.5.1997 Grundsteinlegung                                      */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Gemeinsame Variablen aller Codegeneratoren
 #include "stdinc.h"
 
 int InstrZ;

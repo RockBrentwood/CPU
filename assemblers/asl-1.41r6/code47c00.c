@@ -1,13 +1,5 @@
-/* code47c00.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator Toshiba TLCS-47(0(A))                                       */
-/*                                                                           */
-/* Historie: 30.12.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator Toshiba TLCS-47(0(A))
 #include "stdinc.h"
 
 #include <string.h>
@@ -395,13 +387,13 @@ static void MakeCode_47C00(void) {
                   BAsmCode[0] = 0xf0 + HReg;
                } else {
                   DecodeAdr(ArgStr[2], MModSAbs);
-                  if (AdrType != ModNone)
-                     if (AdrVal > 0x0f) WrError(1320);
-                     else {
-                        CodeLen = 2;
-                        BAsmCode[0] = 0x2d;
-                        BAsmCode[1] = (HReg << 4) + AdrVal;
-                     }
+                  if (AdrType == ModNone) ;
+                  else if (AdrVal > 0x0f) WrError(1320);
+                  else {
+                     CodeLen = 2;
+                     BAsmCode[0] = 0x2d;
+                     BAsmCode[1] = (HReg << 4) + AdrVal;
+                  }
                }
                break;
          }
@@ -467,13 +459,13 @@ static void MakeCode_47C00(void) {
          if ((strcasecmp(ArgStr[1], "A") != 0) && (strcasecmp(ArgStr[1], "HL") != 0)) WrError(1350);
          else {
             DecodeAdr(ArgStr[2], MModAbs);
-            if (AdrType != ModNone)
-               if ((strcasecmp(ArgStr[1], "HL") == 0) && ((AdrVal & 3) != 0)) WrError(1325);
-               else {
-                  CodeLen = 2;
-                  BAsmCode[0] = 0x29 + (0x14 * (strcasecmp(ArgStr[1], "A") == 0));
-                  BAsmCode[1] = AdrVal;
-               }
+            if (AdrType == ModNone) ;
+            else if ((strcasecmp(ArgStr[1], "HL") == 0) && ((AdrVal & 3) != 0)) WrError(1325);
+            else {
+               CodeLen = 2;
+               BAsmCode[0] = 0x29 + (0x14 * (strcasecmp(ArgStr[1], "A") == 0));
+               BAsmCode[1] = AdrVal;
+            }
          }
       }
       return;
@@ -900,13 +892,13 @@ static void MakeCode_47C00(void) {
       if (ArgCnt != 1) WrError(1110);
       else {
          AdrWord = EvalIntExpression(ArgStr[1], Int16, &OK);
-         if (OK)
-            if ((!SymbolQuestionable) && ((AdrWord >> 6) != ((EProgCounter() + 1) >> 6))) WrError(1910);
-            else {
-               ChkSpace(SegCode);
-               CodeLen = 1;
-               BAsmCode[0] = 0x80 + (AdrWord & 0x3f);
-            }
+         if (!OK) ;
+         else if ((!SymbolQuestionable) && ((AdrWord >> 6) != ((EProgCounter() + 1) >> 6))) WrError(1910);
+         else {
+            ChkSpace(SegCode);
+            CodeLen = 1;
+            BAsmCode[0] = 0x80 + (AdrWord & 0x3f);
+         }
       }
       return;
    }
@@ -915,14 +907,14 @@ static void MakeCode_47C00(void) {
       if (ArgCnt != 1) WrError(1110);
       else {
          AdrWord = EvalIntExpression(ArgStr[1], Int16, &OK);
-         if (OK)
-            if (((!SymbolQuestionable) && (AdrWord >> 12) != ((EProgCounter() + 2) >> 12))) WrError(1910);
-            else {
-               ChkSpace(SegCode);
-               CodeLen = 2;
-               BAsmCode[0] = 0x60 + (Hi(AdrWord) & 15);
-               BAsmCode[1] = Lo(AdrWord);
-            }
+         if (!OK) ;
+         else if (((!SymbolQuestionable) && (AdrWord >> 12) != ((EProgCounter() + 2) >> 12))) WrError(1910);
+         else {
+            ChkSpace(SegCode);
+            CodeLen = 2;
+            BAsmCode[0] = 0x60 + (Hi(AdrWord) & 15);
+            BAsmCode[1] = Lo(AdrWord);
+         }
       }
       return;
    }
@@ -931,10 +923,48 @@ static void MakeCode_47C00(void) {
       if (ArgCnt != 1) WrError(1110);
       else {
          AdrWord = EvalIntExpression(ArgStr[1], Int16, &OK);
-         if (OK)
-            if (AdrWord > ROMEnd()) WrError(1320);
-            else {
-               ChkSpace(SegCode);
+         if (!OK) ;
+         else if (AdrWord > ROMEnd()) WrError(1320);
+         else {
+            ChkSpace(SegCode);
+            CodeLen = 3;
+            switch (AdrWord >> 12) {
+               case 0:
+                  BAsmCode[0] = 0x02;
+                  break;
+               case 1:
+                  BAsmCode[0] = 0x03;
+                  break;
+               case 2:
+                  BAsmCode[0] = 0x1c;
+                  break;
+               case 3:
+                  BAsmCode[0] = 0x01;
+                  break;
+            }
+            BAsmCode[1] = 0x60 + (Hi(AdrWord) & 0x0f);
+            BAsmCode[2] = Lo(AdrWord);
+         }
+      }
+      return;
+   }
+
+   if (Memo("B")) {
+      if (ArgCnt != 1) WrError(1110);
+      else {
+         AdrWord = EvalIntExpression(ArgStr[1], Int16, &OK);
+         if (!OK) ;
+         else if (AdrWord > ROMEnd()) WrError(1320);
+         else {
+            ChkSpace(SegCode);
+            if ((AdrWord >> 6) == ((EProgCounter() + 1) >> 6)) {
+               CodeLen = 1;
+               BAsmCode[0] = 0x80 + (AdrWord & 0x3f);
+            } else if ((AdrWord >> 12) == ((EProgCounter() + 2) >> 12)) {
+               CodeLen = 2;
+               BAsmCode[0] = 0x60 + (Hi(AdrWord) & 0x0f);
+               BAsmCode[1] = Lo(AdrWord);
+            } else {
                CodeLen = 3;
                switch (AdrWord >> 12) {
                   case 0:
@@ -953,45 +983,7 @@ static void MakeCode_47C00(void) {
                BAsmCode[1] = 0x60 + (Hi(AdrWord) & 0x0f);
                BAsmCode[2] = Lo(AdrWord);
             }
-      }
-      return;
-   }
-
-   if (Memo("B")) {
-      if (ArgCnt != 1) WrError(1110);
-      else {
-         AdrWord = EvalIntExpression(ArgStr[1], Int16, &OK);
-         if (OK)
-            if (AdrWord > ROMEnd()) WrError(1320);
-            else {
-               ChkSpace(SegCode);
-               if ((AdrWord >> 6) == ((EProgCounter() + 1) >> 6)) {
-                  CodeLen = 1;
-                  BAsmCode[0] = 0x80 + (AdrWord & 0x3f);
-               } else if ((AdrWord >> 12) == ((EProgCounter() + 2) >> 12)) {
-                  CodeLen = 2;
-                  BAsmCode[0] = 0x60 + (Hi(AdrWord) & 0x0f);
-                  BAsmCode[1] = Lo(AdrWord);
-               } else {
-                  CodeLen = 3;
-                  switch (AdrWord >> 12) {
-                     case 0:
-                        BAsmCode[0] = 0x02;
-                        break;
-                     case 1:
-                        BAsmCode[0] = 0x03;
-                        break;
-                     case 2:
-                        BAsmCode[0] = 0x1c;
-                        break;
-                     case 3:
-                        BAsmCode[0] = 0x01;
-                        break;
-                  }
-                  BAsmCode[1] = 0x60 + (Hi(AdrWord) & 0x0f);
-                  BAsmCode[2] = Lo(AdrWord);
-               }
-            }
+         }
       }
       return;
    }
@@ -1016,14 +1008,14 @@ static void MakeCode_47C00(void) {
       if (ArgCnt != 1) WrError(1110);
       else {
          AdrWord = EvalIntExpression(ArgStr[1], Int16, &OK);
-         if (OK)
-            if ((!SymbolQuestionable) && (((AdrWord ^ EProgCounter()) & 0x3800) != 0)) WrError(1910);
-            else {
-               ChkSpace(SegCode);
-               CodeLen = 2;
-               BAsmCode[0] = 0x20 + (Hi(AdrWord) & 7);
-               BAsmCode[1] = Lo(AdrWord);
-            }
+         if (!OK) ;
+         else if ((!SymbolQuestionable) && (((AdrWord ^ EProgCounter()) & 0x3800) != 0)) WrError(1910);
+         else {
+            ChkSpace(SegCode);
+            CodeLen = 2;
+            BAsmCode[0] = 0x20 + (Hi(AdrWord) & 7);
+            BAsmCode[1] = Lo(AdrWord);
+         }
       }
       return;
    }

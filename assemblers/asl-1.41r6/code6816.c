@@ -1,13 +1,5 @@
-/* code6816.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegeneratormodul CPU16                                                  */
-/*                                                                           */
-/* Historie: 15.10.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegeneratormodul CPU16
 #include "stdinc.h"
 
 #include <string.h>
@@ -498,17 +490,17 @@ static void DecodeAdr(Integer Start, Integer Stop, bool LongAdr, Byte Mask) {
             V16 = EvalIntExpression(s, (Size == ShortDisp) ? SInt8 : Int16, &OK);
             if ((Size == NoDisp) && (V16 >= -128) && (V16 <= 127) && ((Mask & MModImmExt) != 0))
                Size = ShortDisp;
-            if (OK)
-               if (Size == ShortDisp) {
-                  AdrVals[0] = Lo(V16);
-                  AdrCnt = 1;
-                  AdrMode = ModImmExt;
-               } else {
-                  AdrVals[0] = Hi(V16);
-                  AdrVals[1] = Lo(V16);
-                  AdrCnt = 2;
-                  AdrMode = ModImm;
-               }
+            if (!OK) ;
+            else if (Size == ShortDisp) {
+               AdrVals[0] = Lo(V16);
+               AdrCnt = 1;
+               AdrMode = ModImmExt;
+            } else {
+               AdrVals[0] = Hi(V16);
+               AdrVals[1] = Lo(V16);
+               AdrCnt = 2;
+               AdrMode = ModImm;
+            }
             break;
          case 2:
             V32 = EvalIntExpression(s, Int32, &OK);
@@ -534,37 +526,37 @@ static void DecodeAdr(Integer Start, Integer Stop, bool LongAdr, Byte Mask) {
       else if (strcasecmp(ArgStr[Start + 1], "Y") == 0) AdrPart = 0x10;
       else if (strcasecmp(ArgStr[Start + 1], "Z") == 0) AdrPart = 0x20;
       else WrXError(1445, ArgStr[Start + 1]);
-      if (AdrPart != 0xff)
-         if (strcasecmp(ArgStr[Start], "E") == 0) AdrMode = ModDispE;
-         else {
-            SplitSize(ArgStr[Start], &Size);
-            if (Size == ShortDisp)
-               V32 = EvalIntExpression(ArgStr[Start], UInt8, &OK);
-            else if (LongAdr)
-               V32 = EvalIntExpression(ArgStr[Start], SInt20, &OK);
-            else
-               V32 = EvalIntExpression(ArgStr[Start], SInt16, &OK);
-            if (OK) {
-               if (Size == NoDisp)
-                  if ((V32 >= 0) && (V32 <= 255) && ((Mask & MModDisp8) != 0)) Size = ShortDisp;
-               if (Size == ShortDisp) {
-                  AdrVals[0] = V32 & 0xff;
-                  AdrCnt = 1;
-                  AdrMode = ModDisp8;
-               } else if (LongAdr) {
-                  AdrVals[0] = (V32 >> 16) & 0x0f;
-                  AdrVals[1] = (V32 >> 8) & 0xff;
-                  AdrVals[2] = V32 & 0xff;
-                  AdrCnt = 3;
-                  AdrMode = ModDisp16;
-               } else {
-                  AdrVals[0] = (V32 >> 8) & 0xff;
-                  AdrVals[1] = V32 & 0xff;
-                  AdrCnt = 2;
-                  AdrMode = ModDisp16;
-               }
+      if (AdrPart == 0xff) ;
+      else if (strcasecmp(ArgStr[Start], "E") == 0) AdrMode = ModDispE;
+      else {
+         SplitSize(ArgStr[Start], &Size);
+         if (Size == ShortDisp)
+            V32 = EvalIntExpression(ArgStr[Start], UInt8, &OK);
+         else if (LongAdr)
+            V32 = EvalIntExpression(ArgStr[Start], SInt20, &OK);
+         else
+            V32 = EvalIntExpression(ArgStr[Start], SInt16, &OK);
+         if (OK) {
+            if (Size == NoDisp)
+               if ((V32 >= 0) && (V32 <= 255) && ((Mask & MModDisp8) != 0)) Size = ShortDisp;
+            if (Size == ShortDisp) {
+               AdrVals[0] = V32 & 0xff;
+               AdrCnt = 1;
+               AdrMode = ModDisp8;
+            } else if (LongAdr) {
+               AdrVals[0] = (V32 >> 16) & 0x0f;
+               AdrVals[1] = (V32 >> 8) & 0xff;
+               AdrVals[2] = V32 & 0xff;
+               AdrCnt = 3;
+               AdrMode = ModDisp16;
+            } else {
+               AdrVals[0] = (V32 >> 8) & 0xff;
+               AdrVals[1] = V32 & 0xff;
+               AdrCnt = 2;
+               AdrMode = ModDisp16;
             }
          }
+      }
       ChkAdr(Mask);
       return;
    }
@@ -574,20 +566,20 @@ static void DecodeAdr(Integer Start, Integer Stop, bool LongAdr, Byte Mask) {
    else {
       SplitSize(ArgStr[Start], &Size);
       V32 = EvalIntExpression(ArgStr[Start], UInt20, &OK);
-      if (OK)
-         if (LongAdr) {
-            AdrVals[0] = (V32 >> 16) & 0xff;
-            AdrVals[1] = (V32 >> 8) & 0xff;
-            AdrVals[2] = V32 & 0xff;
-            AdrMode = ModAbs;
-            AdrCnt = 3;
-         } else {
-            if ((V32 >> 16) != Reg_EK) WrError(110);
-            AdrVals[0] = (V32 >> 8) & 0xff;
-            AdrVals[1] = V32 & 0xff;
-            AdrMode = ModAbs;
-            AdrCnt = 2;
-         }
+      if (!OK) ;
+      else if (LongAdr) {
+         AdrVals[0] = (V32 >> 16) & 0xff;
+         AdrVals[1] = (V32 >> 8) & 0xff;
+         AdrVals[2] = V32 & 0xff;
+         AdrMode = ModAbs;
+         AdrCnt = 3;
+      } else {
+         if ((V32 >> 16) != Reg_EK) WrError(110);
+         AdrVals[0] = (V32 >> 8) & 0xff;
+         AdrVals[1] = V32 & 0xff;
+         AdrMode = ModAbs;
+         AdrCnt = 2;
+      }
       ChkAdr(Mask);
       return;
    }
@@ -631,8 +623,7 @@ static void MakeCode_6816(void) {
 /* Anweisungen ohne Argument */
 
    for (z = 0; z < FixedOrderCnt; z++)
-      if Memo
-         (FixedOrders[z].Name) {
+      if (Memo(FixedOrders[z].Name)) {
          if (ArgCnt != 0) WrError(1110);
          else {
             BAsmCode[0] = Hi(FixedOrders[z].Code);
@@ -640,11 +631,10 @@ static void MakeCode_6816(void) {
             CodeLen = 2;
          }
          return;
-         }
+      }
 
    for (z = 0; z < EmuOrderCnt; z++)
-      if Memo
-         (EmuOrders[z].Name) {
+      if (Memo(EmuOrders[z].Name)) {
          if (ArgCnt != 0) WrError(1110);
          else {
             BAsmCode[0] = Hi(EmuOrders[z].Code1);
@@ -654,7 +644,7 @@ static void MakeCode_6816(void) {
             CodeLen = 4;
          }
          return;
-         }
+      }
 
 /* Datentransfer */
 

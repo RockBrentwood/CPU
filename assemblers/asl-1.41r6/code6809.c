@@ -1,13 +1,5 @@
-/* code6809.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator 6809/6309                                                   */
-/*                                                                           */
-/* Historie: 10.10.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator 6809/6309
 #include "stdinc.h"
 #include <ctype.h>
 #include <string.h>
@@ -687,7 +679,7 @@ static void DecodeAdr(void) {
             AdrCnt = 2;
             AdrVals[0] += 0x88;
             AdrVals[1] = Lo(AdrInt);
-         };
+         }
          return;
       }
 
@@ -825,12 +817,12 @@ static bool CodeCPUReg(char *Asc, Byte * Erg) {
    Asc = Asc_N;
 
    for (z = 0; z < RegCnt; z++)
-      if (strcmp(Asc, RegNames[z]) == 0)
-         if (((RegVals[z] & 6) == 6) && (MomCPU < CPU6309)) WrError(1505);
-         else {
-            *Erg = RegVals[z];
-            return true;
-         }
+      if (strcmp(Asc, RegNames[z]) != 0) ;
+      else if (((RegVals[z] & 6) == 6) && (MomCPU < CPU6309)) WrError(1505);
+      else {
+         *Erg = RegVals[z];
+         return true;
+      }
    return false;
 }
 
@@ -897,8 +889,7 @@ static void MakeCode_6809(void) {
 /* Anweisungen ohne Argument */
 
    for (z = 0; z < FixedOrderCnt; z++)
-      if Memo
-         (FixedOrders[z].Name) {
+      if (Memo(FixedOrders[z].Name)) {
          if (ArgCnt != 0) WrError(1110);
          else if (MomCPU < FixedOrders[z].MinCPU) WrError(1500);
          else if (Hi(FixedOrders[z].Code) == 0) {
@@ -910,7 +901,7 @@ static void MakeCode_6809(void) {
             CodeLen = 2;
          }
          return;
-         };
+      }
 
 /* Specials... */
 
@@ -968,25 +959,24 @@ static void MakeCode_6809(void) {
 /* ALU-Operationen */
 
    for (z = 0; z < ALUOrderCnt; z++)
-      if Memo
-         (ALUOrders[z].Name) {
+      if (Memo(ALUOrders[z].Name)) {
          if ((ArgCnt < 1) || (ArgCnt > 2)) WrError(1110);
          else if (MomCPU < ALUOrders[z].MinCPU) WrError(1500);
          else {
             OpSize = ALUOrders[z].Op16;
             ExtFlag = (Hi(ALUOrders[z].Code) != 0);
             DecodeAdr();
-            if (AdrMode != ModNone)
-               if ((!ALUOrders[z].MayImm) && (AdrMode == ModImm)) WrError(1350);
-               else {
-                  CodeLen = ExtFlag + 1 + AdrCnt;
-                  if (ExtFlag) BAsmCode[0] = Hi(ALUOrders[z].Code);
-                  BAsmCode[ExtFlag] = Lo(ALUOrders[z].Code) + ((AdrMode - 1) << 4);
-                  memcpy(BAsmCode + 1 + ExtFlag, AdrVals, AdrCnt);
-               }
+            if (AdrMode == ModNone) ;
+            else if ((!ALUOrders[z].MayImm) && (AdrMode == ModImm)) WrError(1350);
+            else {
+               CodeLen = ExtFlag + 1 + AdrCnt;
+               if (ExtFlag) BAsmCode[0] = Hi(ALUOrders[z].Code);
+               BAsmCode[ExtFlag] = Lo(ALUOrders[z].Code) + ((AdrMode - 1) << 4);
+               memcpy(BAsmCode + 1 + ExtFlag, AdrVals, AdrCnt);
+            }
          }
          return;
-         }
+      }
 
    if (Memo("LDQ")) {
       if ((ArgCnt < 1) || (ArgCnt > 2)) WrError(1110);
@@ -1011,32 +1001,31 @@ static void MakeCode_6809(void) {
 /* Read-Modify-Write-Operationen */
 
    for (z = 0; z < RMWOrderCnt; z++)
-      if Memo
-         (RMWOrders[z].Name) {
+      if (Memo(RMWOrders[z].Name)) {
          if ((ArgCnt < 1) || (ArgCnt > 2)) WrError(1110);
          else if (MomCPU < RMWOrders[z].MinCPU) WrError(1500);
          else {
             DecodeAdr();
-            if (AdrMode != ModNone)
-               if (AdrMode == ModImm) WrError(1350);
-               else {
-                  CodeLen = 1 + AdrCnt;
-                  switch (AdrMode) {
-                     case ModDir:
-                        BAsmCode[0] = RMWOrders[z].Code;
-                        break;
-                     case ModInd:
-                        BAsmCode[0] = RMWOrders[z].Code + 0x60;
-                        break;
-                     case ModExt:
-                        BAsmCode[0] = RMWOrders[z].Code + 0x70;
-                        break;
-                  }
-                  memcpy(BAsmCode + 1, AdrVals, AdrCnt);
+            if (AdrMode == ModNone) ;
+            else if (AdrMode == ModImm) WrError(1350);
+            else {
+               CodeLen = 1 + AdrCnt;
+               switch (AdrMode) {
+                  case ModDir:
+                     BAsmCode[0] = RMWOrders[z].Code;
+                     break;
+                  case ModInd:
+                     BAsmCode[0] = RMWOrders[z].Code + 0x60;
+                     break;
+                  case ModExt:
+                     BAsmCode[0] = RMWOrders[z].Code + 0x70;
+                     break;
                }
+               memcpy(BAsmCode + 1, AdrVals, AdrCnt);
+            }
          }
          return;
-         }
+      }
 
 /* Anweisungen mit Flag-Operand */
 
@@ -1059,9 +1048,9 @@ static void MakeCode_6809(void) {
                      OK = false;
                   } else {
                      BAsmCode[2] = EvalIntExpression(ArgStr[z2] + 1, Int8, &OK);
-                     if (OK)
-                        if (FlagOrders[z].Inv) BAsmCode[1] &= BAsmCode[2];
-                        else BAsmCode[1] |= BAsmCode[2];
+                     if (!OK) ;
+                     else if (FlagOrders[z].Inv) BAsmCode[1] &= BAsmCode[2];
+                     else BAsmCode[1] |= BAsmCode[2];
                   }
                }
             if (OK) {
@@ -1110,25 +1099,25 @@ static void MakeCode_6809(void) {
       if (Memo(BitOrders[z])) {
          if (ArgCnt != 2) WrError(1110);
          else if (MomCPU < CPU6309) WrError(1500);
-         else if (SplitBit(ArgStr[1], &z2))
-            if (SplitBit(ArgStr[2], &z3))
-               if (!CodeCPUReg(ArgStr[1], BAsmCode + 2)) WrError(1980);
-               else if ((BAsmCode[2] < 8) || (BAsmCode[2] > 11)) WrError(1980);
-               else {
-                  strcopy(ArgStr[1], ArgStr[2]);
-                  ArgCnt = 1;
-                  DecodeAdr();
-                  if (AdrMode != ModDir) WrError(1350);
-                  else {
-                     BAsmCode[2] -= 7;
-                     if (BAsmCode[2] == 3) BAsmCode[2] = 0;
-                     BAsmCode[0] = 0x11;
-                     BAsmCode[1] = 0x30 + z;
-                     BAsmCode[2] = (BAsmCode[2] << 6) + (z3 << 3) + z2;
-                     BAsmCode[3] = AdrVals[0];
-                     CodeLen = 4;
-                  }
-               }
+         else if (!SplitBit(ArgStr[1], &z2)) ;
+         else if (!SplitBit(ArgStr[2], &z3)) ;
+         else if (!CodeCPUReg(ArgStr[1], BAsmCode + 2)) WrError(1980);
+         else if ((BAsmCode[2] < 8) || (BAsmCode[2] > 11)) WrError(1980);
+         else {
+            strcopy(ArgStr[1], ArgStr[2]);
+            ArgCnt = 1;
+            DecodeAdr();
+            if (AdrMode != ModDir) WrError(1350);
+            else {
+               BAsmCode[2] -= 7;
+               if (BAsmCode[2] == 3) BAsmCode[2] = 0;
+               BAsmCode[0] = 0x11;
+               BAsmCode[1] = 0x30 + z;
+               BAsmCode[2] = (BAsmCode[2] << 6) + (z3 << 3) + z2;
+               BAsmCode[3] = AdrVals[0];
+               CodeLen = 4;
+            }
+         }
          return;
       }
 
@@ -1189,27 +1178,25 @@ static void MakeCode_6809(void) {
 /* Berechnung effektiver Adressen */
 
    for (z = 0; z < LEAOrderCnt; z++)
-      if Memo
-         (LEAOrders[z].Name) {
+      if (Memo(LEAOrders[z].Name)) {
          if ((ArgCnt < 1) || (ArgCnt > 2)) WrError(1110);
          else {
             DecodeAdr();
-            if (AdrMode != ModNone)
-               if (AdrMode != ModInd) WrError(1350);
-               else {
-                  CodeLen = 1 + AdrCnt;
-                  BAsmCode[0] = LEAOrders[z].Code;
-                  memcpy(BAsmCode + 1, AdrVals, AdrCnt);
-               };
-         };
-         return;
+            if (AdrMode == ModNone) ;
+            else if (AdrMode != ModInd) WrError(1350);
+            else {
+               CodeLen = 1 + AdrCnt;
+               BAsmCode[0] = LEAOrders[z].Code;
+               memcpy(BAsmCode + 1, AdrVals, AdrCnt);
+            }
          }
+         return;
+      }
 
 /* Push/Pull */
 
    for (z = 0; z < StackOrderCnt; z++)
-      if Memo
-         (StackOrders[z].Name) {
+      if (Memo(StackOrders[z].Name)) {
          BAsmCode[1] = 0;
          OK = true;
          Extent = false;
@@ -1231,26 +1218,26 @@ static void MakeCode_6809(void) {
                         BAsmCode[1] |= (1 << StackRegCodes[z3]);
                         break;
                      }
-                  if (z3 >= StackRegCnt)
-                     if (strcasecmp(ArgStr[z2], "ALL") == 0) BAsmCode[1] = 0xff;
-                     else if (*ArgStr[z2] != '#') OK = false;
-                     else {
-                        BAsmCode[2] = EvalIntExpression(ArgStr[z2] + 1, Int8, &OK);
-                        if (OK) BAsmCode[1] |= BAsmCode[2];
-                     }
+                  if (z3 < StackRegCnt) ;
+                  else if (strcasecmp(ArgStr[z2], "ALL") == 0) BAsmCode[1] = 0xff;
+                  else if (*ArgStr[z2] != '#') OK = false;
+                  else {
+                     BAsmCode[2] = EvalIntExpression(ArgStr[z2] + 1, Int8, &OK);
+                     if (OK) BAsmCode[1] |= BAsmCode[2];
+                  }
                }
             }
-         if (OK)
-            if (Extent) {
-               CodeLen = 2;
-               BAsmCode[0] = 0x10;
-               BAsmCode[1] = StackOrders[z].Code + 4;
-            } else {
-               CodeLen = 2;
-               BAsmCode[0] = StackOrders[z].Code;
-         } else WrError(1980);
-         return;
+         if (!OK) WrError(1980);
+         else if (Extent) {
+            CodeLen = 2;
+            BAsmCode[0] = 0x10;
+            BAsmCode[1] = StackOrders[z].Code + 4;
+         } else {
+            CodeLen = 2;
+            BAsmCode[0] = StackOrders[z].Code;
          }
+         return;
+      }
 
    if ((Memo("BITMD")) || (Memo("LDMD"))) {
       if (ArgCnt != 1) WrError(1110);

@@ -1,13 +1,5 @@
-/* stringlists.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Implementation von String-Listen                                          */
-/*                                                                           */
-/* Historie:  5. 4.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Implementation von String-Listen
 #include "stdinc.h"
 #include <string.h>
 #include "stringutil.h"

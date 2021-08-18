@@ -1,13 +1,5 @@
-/* toolutils.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Unterroutinen fuer die AS-Tools                                           */
-/*                                                                           */
-/* Historie: 31. 5.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Unterroutinen fuer die AS-Tools
 #include "stdinc.h"
 #include <string.h>
 
@@ -101,15 +93,15 @@ Word Granularity(Byte Header) {
 
 void ReadRecordHeader(Byte * Header, Byte * Segment, Byte * Gran, char *Name, FILE * f) {
    if (fread(Header, 1, 1, f) != 1) ChkIO(Name);
-   if ((*Header != FileHeaderEnd) && (*Header != FileHeaderStartAdr))
-      if (*Header == FileHeaderDataRec) {
-         if (fread(Header, 1, 1, f) != 1) ChkIO(Name);
-         if (fread(Segment, 1, 1, f) != 1) ChkIO(Name);
-         if (fread(Gran, 1, 1, f) != 1) ChkIO(Name);
-      } else {
-         *Segment = SegCode;
-         *Gran = Granularity(*Header);
-      }
+   if (*Header == FileHeaderEnd || *Header == FileHeaderStartAdr) ;
+   else if (*Header == FileHeaderDataRec) {
+      if (fread(Header, 1, 1, f) != 1) ChkIO(Name);
+      if (fread(Segment, 1, 1, f) != 1) ChkIO(Name);
+      if (fread(Gran, 1, 1, f) != 1) ChkIO(Name);
+   } else {
+      *Segment = SegCode;
+      *Gran = Granularity(*Header);
+   }
 }
 
 void WriteRecordHeader(Byte * Header, Byte * Segment, Byte * Gran, char *Name, FILE * f) {

@@ -1,13 +1,5 @@
-/* p2hex.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Konvertierung von AS-P-Dateien nach Hex                                   */
-/*                                                                           */
-/* Historie:  1. 6.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Konvertierung von AS-P-Dateien nach Hex
 #include "stdinc.h"
 #include <ctype.h>
 #include <string.h>
@@ -80,13 +72,7 @@ static void ProcessFile(char *FileName, LongWord Offset) {
    bool doit, FirstBank = 0;
    Byte Buffer[MaxLineLen];
    Word *WBuffer = (Word *) Buffer;
-   LongWord ErgStart,
-#ifdef __STDC__
-    ErgStop = 0xffffffffu,
-#else
-    ErgStop = 0xffffffff,
-#endif
-      NextPos, IntOffset = 0, MaxAdr;
+   LongWord ErgStart, ErgStop = 0xffffffffu, NextPos, IntOffset = 0, MaxAdr;
    Word ErgLen = 0, ChkSum = 0, RecCnt, Gran, SwapBase, HSeg;
 
    LongInt z;
@@ -185,13 +171,8 @@ static void ProcessFile(char *FileName, LongWord Offset) {
          switch (ActFormat) {
             case MotoS:
             case IntHex32:
-#ifdef __STDC__
                MaxAdr = 0xffffffffu;
                break;
-#else
-               MaxAdr = 0xffffffff;
-               break;
-#endif
             case IntHex16:
                MaxAdr = 0xffff0 + 0xffff;
                break;
@@ -273,11 +254,7 @@ static void ProcessFile(char *FileName, LongWord Offset) {
                   break;
                case IntHex16:
                   IntelOccured = true;
-#ifdef __STDC__
                   IntOffset = ErgStart & 0xfffffff0u;
-#else
-                  IntOffset = ErgStart & 0xfffffff0;
-#endif
                   HSeg = IntOffset >> 4;
                   ChkSum = 4 + Lo(HSeg) + Hi(HSeg);
                   errno = 0;
@@ -287,11 +264,7 @@ static void ProcessFile(char *FileName, LongWord Offset) {
                   break;
                case IntHex32:
                   IntelOccured = true;
-#ifdef __STDC__
                   IntOffset = ErgStart & 0xffff0000u;
-#else
-                  IntOffset = ErgStart & 0xffff0000;
-#endif
                   HSeg = IntOffset >> 16;
                   ChkSum = 6 + Lo(HSeg) + Hi(HSeg);
                   fprintf(TargFile, ":02000004%s%s\n", HexWord(HSeg), HexByte(0x100 - ChkSum));
@@ -518,7 +491,7 @@ static void ProcessFile(char *FileName, LongWord Offset) {
                   break;
                default:
                   break;
-            };
+            }
          }
          if (fseek(SrcFile, NextPos, SEEK_SET) == -1) ChkIO(FileName);
       }
@@ -535,8 +508,10 @@ static void ProcessFile(char *FileName, LongWord Offset) {
 }
 
 static void ProcessGroup(char *GroupName_O, ProcessProc Processor) {
-/**   s:SearchRec;**/
-   String /**Path,Name,**/ Ext, GroupName;
+#if 0
+   SearchRec s;
+#endif
+   String/* Path, Name,*/ Ext, GroupName;
    LongWord Offset;
 
    strmaxcpy(GroupName, GroupName_O, 255);
@@ -545,17 +520,15 @@ static void ProcessGroup(char *GroupName_O, ProcessProc Processor) {
    AddSuffix(GroupName, Suffix);
 
    Processor(GroupName, Offset);
-/**   FSplit(GroupName,Path,Name,Ext);
-
-   FindFirst(GroupName,Archive,s);
-   IF DosError<>0 THEN
-    WriteLn(ErrMsgNullMaskA,GroupName,ErrMsgNullMaskB)
-   ELSE
-    WHILE DosError=0 DO
-     {
+#if 0
+// FSplit(GroupName, Path, Name, Ext);
+   FindFirst(GroupName, Archive, s);
+   if (DosError) WriteLn(ErrMsgNullMaskA, GroupName, ErrMsgNullMaskB);
+   else while (!DosError) {
       Processor(Path+s.Name,Offset);
       FindNext(s);
-     };**/
+   }
+#endif
 }
 
 static void MeasureFile(char *FileName, LongWord Offset) {
@@ -758,17 +731,18 @@ static CMDResult CMD_LineLen(bool Negate, char *Arg) {
 }
 
 #define P2HEXParamCnt 11
-static CMDRec P2HEXParams[P2HEXParamCnt] = { { "f", CMD_FilterList },
-{ "r", CMD_AdrRange },
-{ "a", CMD_RelAdr },
-{ "i", CMD_IntelMode },
-{ "m", CMD_MultiMode },
-{ "F", CMD_DestFormat },
-{ "5", CMD_Rec5 },
-{ "s", CMD_SepMoto },
-{ "d", CMD_DataAdrRange },
-{ "e", CMD_EntryAdr },
-{ "l", CMD_LineLen }
+static CMDRec P2HEXParams[P2HEXParamCnt] = {
+   { "f", CMD_FilterList },
+   { "r", CMD_AdrRange },
+   { "a", CMD_RelAdr },
+   { "i", CMD_IntelMode },
+   { "m", CMD_MultiMode },
+   { "F", CMD_DestFormat },
+   { "5", CMD_Rec5 },
+   { "s", CMD_SepMoto },
+   { "d", CMD_DataAdrRange },
+   { "e", CMD_EntryAdr },
+   { "l", CMD_LineLen }
 };
 
 static Word ChkSum;
@@ -838,11 +812,7 @@ int main(int argc, char **argv) {
    AddSuffix(TargName, HexSuffix);
 
    if ((StartAuto) || (StopAuto)) {
-#ifdef __STDC__
       if (StartAuto) StartAdr = 0xffffffffu;
-#else
-      if (StartAuto) StartAdr = 0xffffffff;
-#endif
       if (StopAuto) StopAdr = 0;
       if (ProcessedEmpty(ParProcessed)) ProcessGroup(SrcName, MeasureFile);
          else for (z = 1; z <= ParamCount; z++)

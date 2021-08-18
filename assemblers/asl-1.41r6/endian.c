@@ -1,14 +1,5 @@
-/* endian.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Little/Big-Endian-Routinen                                                */
-/*                                                                           */
-/* Historie: 30. 5.1996 Grundsteinlegung                                     */
-/*            6. 7.1997 Dec32BlankString dazu                                */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Little/Big-Endian-Routinen
 #include "stdinc.h"
 
 #include <string.h>

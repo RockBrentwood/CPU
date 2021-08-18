@@ -1,13 +1,5 @@
-/* code7000.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator SH7x00                                                      */
-/*                                                                           */
-/* Historie: 25.12.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator SH7x00
 #include "stdinc.h"
 
 #include <ctype.h>
@@ -484,14 +476,13 @@ static void DecodeAdr(char *Asc, Word Mask, bool Signed) {
             Found = false;
             while ((Lauf != NULL) && (!Found)) {
                Last = Lauf;
-               if ((!Critical) && (!Lauf->IsForward)
-                  && (Lauf->DefSection == MomSectionHandle))
-                  if (((Lauf->Is32 == NIs32) && (DispAcc == Lauf->Value))
-                     || ((Lauf->Is32) && (!NIs32) && (DispAcc == (Lauf->Value >> 16)))) Found = true;
-                  else if ((Lauf->Is32) && (!NIs32) && (DispAcc == (Lauf->Value & 0xffff))) {
-                     Found = true;
-                     p = 2;
-                  }
+               if (Critical || Lauf->IsForward || Lauf->DefSection != MomSectionHandle) ;
+               else if (((Lauf->Is32 == NIs32) && (DispAcc == Lauf->Value))
+                  || ((Lauf->Is32) && (!NIs32) && (DispAcc == (Lauf->Value >> 16)))) Found = true;
+               else if ((Lauf->Is32) && (!NIs32) && (DispAcc == (Lauf->Value & 0xffff))) {
+                  Found = true;
+                  p = 2;
+               }
                if (!Found) Lauf = Lauf->Next;
             }
          /* nein - erzeugen */
@@ -613,8 +604,9 @@ static void LTORG_32(void) {
 
 static bool DecodePseudo(void) {
 #define ONOFF7000Count 2
-   static ONOFFRec ONOFF7000s[ONOFF7000Count] = { { "SUPMODE", &SupAllowed, SupAllowedName },
-   { "COMPLITERALS", &CompLiterals, CompLiteralsName }
+   static ONOFFRec ONOFF7000s[ONOFF7000Count] = {
+      { "SUPMODE", &SupAllowed, SupAllowedName },
+      { "COMPLITERALS", &CompLiterals, CompLiteralsName }
    };
    PLiteral Lauf, Tmp, Last;
    if (CodeONOFF(ONOFF7000s, ONOFF7000Count)) return true;
@@ -1086,19 +1078,19 @@ static void MakeCode_7000(void) {
       else {
          DelayedAdr = EvalIntExpression(ArgStr[1], Int32, &OK);
          AdrLong = DelayedAdr - (EProgCounter() + 4);
-         if (OK)
-            if (Odd(AdrLong)) WrError(1375);
-            else if (((AdrLong < -256) || (AdrLong > 254)) && (!SymbolQuestionable)) WrError(1370);
-            else {
-               WAsmCode[0] = 0x8900 + ((AdrLong >> 1) & 0xff);
-               if (OpPart[1] == 'F') WAsmCode[0] += 0x200;
-               if (strlen(OpPart) == 4) {
-                  WAsmCode[0] += 0x400;
-                  CurrDelayed = true;
-               }
-               CodeLen = 2;
-               ChkDelayed();
+         if (!OK) ;
+         else if (Odd(AdrLong)) WrError(1375);
+         else if (((AdrLong < -256) || (AdrLong > 254)) && (!SymbolQuestionable)) WrError(1370);
+         else {
+            WAsmCode[0] = 0x8900 + ((AdrLong >> 1) & 0xff);
+            if (OpPart[1] == 'F') WAsmCode[0] += 0x200;
+            if (strlen(OpPart) == 4) {
+               WAsmCode[0] += 0x400;
+               CurrDelayed = true;
             }
+            CodeLen = 2;
+            ChkDelayed();
+         }
       }
       return;
    }
@@ -1109,16 +1101,16 @@ static void MakeCode_7000(void) {
       else {
          DelayedAdr = EvalIntExpression(ArgStr[1], Int32, &OK);
          AdrLong = DelayedAdr - (EProgCounter() + 4);
-         if (OK)
-            if (Odd(AdrLong)) WrError(1375);
-            else if (((AdrLong < -4096) || (AdrLong > 4094)) && (!SymbolQuestionable)) WrError(1370);
-            else {
-               WAsmCode[0] = 0xa000 + ((AdrLong >> 1) & 0xfff);
-               if (Memo("BSR")) WAsmCode[0] += 0x1000;
-               CodeLen = 2;
-               CurrDelayed = true;
-               ChkDelayed();
-            }
+         if (!OK) ;
+         else if (Odd(AdrLong)) WrError(1375);
+         else if (((AdrLong < -4096) || (AdrLong > 4094)) && (!SymbolQuestionable)) WrError(1370);
+         else {
+            WAsmCode[0] = 0xa000 + ((AdrLong >> 1) & 0xfff);
+            if (Memo("BSR")) WAsmCode[0] += 0x1000;
+            CodeLen = 2;
+            CurrDelayed = true;
+            ChkDelayed();
+         }
       }
       return;
    }

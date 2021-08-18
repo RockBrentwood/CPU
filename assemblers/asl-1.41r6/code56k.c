@@ -1,13 +1,5 @@
-/* code56k.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* AS-Codegeneratormodul fuer die DSP56K-Familie                             */
-/*                                                                           */
-/* Historie: 10. 6.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// AS-Codegeneratormodul fuer die DSP56K-Familie
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -488,12 +480,7 @@ static bool DecodeMOVE_1(Integer Start) {
          DecodeAdr(Left, MModAll, MSegXData + MSegYData);
          IsY = AdrSeg == SegYData;
          MixErg = ((RegErg & 0x18) << 17) + (IsY << 19) + ((RegErg & 7) << 16);
-#ifdef __STDC__
-         if ((AdrType == ModImm) && ((AdrVal & 0xffffff00u) == 0))
-#else
-         if ((AdrType == ModImm) && ((AdrVal & 0xffffff00) == 0))
-#endif
-         {
+         if ((AdrType == ModImm) && ((AdrVal & 0xffffff00u) == 0)) {
             Result = true;
             DAsmCode[0] = 0x200000 + (RegErg << 16) + ((AdrVal & 0xff) << 8);
             CodeLen = 1;
@@ -665,7 +652,8 @@ static bool DecodeMOVE(Integer Start) {
 
 static bool DecodeCondition(char *Asc, Word * Erg) {
 #define CondCount 18
-   static char *CondNames[CondCount] = { "CC", "GE", "NE", "PL", "NN", "EC", "LC", "GT", "CS", "LT", "EQ", "MI",
+   static char *CondNames[CondCount] = {
+      "CC", "GE", "NE", "PL", "NN", "EC", "LC", "GT", "CS", "LT", "EQ", "MI",
       "NR", "ES", "LS", "LE", "HS", "LO"
    };
    bool Result;
@@ -696,25 +684,24 @@ static bool DecodePseudo(void) {
       return true;
    }
 
-/*  IF (Memo('XSFR')) || (Memo('YSFR')) THEN
-    {
-     FirstPassUnknown:=false;
-     IF ArgCnt<>1 THEN WrError(1110)
-     ELSE
-      {
-       AdrWord:=EvalIntExpression(ArgStr[1],Int16,OK);
-       IF (OK) && (! FirstPassUnknown) THEN
-	{
-	 IF Memo('YSFR') THEN Segment:=SegYData ELSE Segment:=SegXData;
-         PushLocHandle(-1);
-	 EnterIntSymbol(LabPart,AdrWord,Segment,false);
-         PopLocHandle;
-	 IF MakeUseList THEN AddChunk(SegChunks[Segment],AdrWord,1,false);
-	 ListLine:='='+'$'+HexString(AdrWord,4);
-	};
-      };
-     Exit;
-    };*/
+#if 0
+   if (Memo('XSFR') || Memo('YSFR')) {
+      FirstPassUnknown = false;
+      if (ArgCnt != 1) WrError(1110);
+      else {
+         AdrWord = EvalIntExpression(ArgStr[1], Int16, OK);
+         if (OK && !FirstPassUnknown) {
+            Segment = Memo('YSFR')? SegYData: SegXData;
+            PushLocHandle(-1);
+            EnterIntSymbol(LabPart, AdrWord, Segment, false);
+            PopLocHandle();
+            if (MakeUseList()) AddChunk(SegChunks[Segment], AdrWord, 1, false);
+            ListLine = '=' + '$' + HexString(AdrWord, 4);
+         }
+      }
+      Exit();
+   }
+#endif
 
    if (Memo("DS")) {
       if (ArgCnt != 1) WrError(1110);
@@ -805,7 +792,7 @@ static void MakeCode_56K(void) {
          else {
             CodeLen = 1;
             DAsmCode[0] = FixedOrders[z].Code;
-         };
+         }
          return;
       }
 
@@ -936,26 +923,26 @@ static void MakeCode_56K(void) {
             else {
                h = EvalIntExpression(Left + 1, Int8, &OK);
                if (FirstPassUnknown) h &= 15;
-               if (OK)
-                  if ((h < 0) || (h > 23)) WrError(1320);
-                  else if (DecodeGeneralReg(Right, &Reg1)) {
+               if (!OK) ;
+               else if ((h < 0) || (h > 23)) WrError(1320);
+               else if (DecodeGeneralReg(Right, &Reg1)) {
+                  CodeLen = 1;
+                  DAsmCode[0] = 0x0ac040 + h + (Reg1 << 8) + Reg2;
+               } else {
+                  DecodeAdr(Right, MModNoImm, MSegXData + MSegYData);
+                  Reg3 = (AdrSeg == SegYData) << 6;
+                  if ((AdrType == ModAbs) && (AdrVal <= 63) && (AdrVal >= 0)) {
                      CodeLen = 1;
-                     DAsmCode[0] = 0x0ac040 + h + (Reg1 << 8) + Reg2;
-                  } else {
-                     DecodeAdr(Right, MModNoImm, MSegXData + MSegYData);
-                     Reg3 = (AdrSeg == SegYData) << 6;
-                     if ((AdrType == ModAbs) && (AdrVal <= 63) && (AdrVal >= 0)) {
-                        CodeLen = 1;
-                        DAsmCode[0] = 0x0a0000 + h + (AdrVal << 8) + Reg3 + Reg2;
-                     } else if ((AdrType == ModAbs) && (AdrVal >= 0xffc0) && (AdrVal <= 0xffff)) {
-                        CodeLen = 1;
-                        DAsmCode[0] = 0x0a8000 + h + ((AdrVal & 0x3f) << 8) + Reg3 + Reg2;
-                     } else if (AdrType != ModNone) {
-                        CodeLen = 1 + AdrCnt;
-                        DAsmCode[0] = 0x0a4000 + h + (AdrMode << 8) + Reg3 + Reg2;
-                        DAsmCode[1] = AdrVal;
-                     }
+                     DAsmCode[0] = 0x0a0000 + h + (AdrVal << 8) + Reg3 + Reg2;
+                  } else if ((AdrType == ModAbs) && (AdrVal >= 0xffc0) && (AdrVal <= 0xffff)) {
+                     CodeLen = 1;
+                     DAsmCode[0] = 0x0a8000 + h + ((AdrVal & 0x3f) << 8) + Reg3 + Reg2;
+                  } else if (AdrType != ModNone) {
+                     CodeLen = 1 + AdrCnt;
+                     DAsmCode[0] = 0x0a4000 + h + (AdrMode << 8) + Reg3 + Reg2;
+                     DAsmCode[1] = AdrVal;
                   }
+               }
             }
          }
          return;
@@ -1051,53 +1038,53 @@ static void MakeCode_56K(void) {
          if ((*Left == '\0') || (*Right == '\0')) WrError(1110);
          else if (DecodeGeneralReg(Left, &Reg1)) {
             DecodeAdr(Right, MModAbs, MSegXData + MSegYData);
-            if (AdrType != ModNone)
-               if ((AdrVal > 0xffff) || (AdrVal < 0xffc0)) WrError(1315);
-               else {
-                  CodeLen = 1;
-                  DAsmCode[0] = 0x08c000 + ((AdrSeg == SegYData) << 16) + (AdrVal & 0x3f) + (Reg1 << 8);
-               }
+            if (AdrType == ModNone) ;
+            else if ((AdrVal > 0xffff) || (AdrVal < 0xffc0)) WrError(1315);
+            else {
+               CodeLen = 1;
+               DAsmCode[0] = 0x08c000 + ((AdrSeg == SegYData) << 16) + (AdrVal & 0x3f) + (Reg1 << 8);
+            }
          } else if (DecodeGeneralReg(Right, &Reg2)) {
             DecodeAdr(Left, MModAbs, MSegXData + MSegYData);
-            if (AdrType != ModNone)
-               if ((AdrVal > 0xffff) || (AdrVal < 0xffc0)) WrError(1315);
-               else {
-                  CodeLen = 1;
-                  DAsmCode[0] = 0x084000 + ((AdrSeg == SegYData) << 16) + (AdrVal & 0x3f) + (Reg2 << 8);
-               }
+            if (AdrType == ModNone) ;
+            else if ((AdrVal > 0xffff) || (AdrVal < 0xffc0)) WrError(1315);
+            else {
+               CodeLen = 1;
+               DAsmCode[0] = 0x084000 + ((AdrSeg == SegYData) << 16) + (AdrVal & 0x3f) + (Reg2 << 8);
+            }
          } else {
             DecodeAdr(Left, MModAll, MSegXData + MSegYData + MSegCode);
             if ((AdrType == ModAbs) && (AdrSeg != SegCode) && (AdrVal >= 0xffc0) && (AdrVal <= 0xffff)) {
                HVal = AdrVal & 0x3f;
                HSeg = AdrSeg;
                DecodeAdr(Right, MModNoImm, MSegXData + MSegYData + MSegCode);
-               if (AdrType != ModNone)
-                  if (AdrSeg == SegCode) {
-                     CodeLen = 1 + AdrCnt;
-                     DAsmCode[1] = AdrVal;
-                     DAsmCode[0] = 0x084040 + HVal + (AdrMode << 8) + ((HSeg == SegYData) << 16);
-                  } else {
-                     CodeLen = 1 + AdrCnt;
-                     DAsmCode[1] = AdrVal;
-                     DAsmCode[0] = 0x084080 + HVal + (AdrMode << 8) + ((HSeg == SegYData) << 16) + ((AdrSeg == SegYData) << 6);
-                  }
+               if (AdrType == ModNone) ;
+               else if (AdrSeg == SegCode) {
+                  CodeLen = 1 + AdrCnt;
+                  DAsmCode[1] = AdrVal;
+                  DAsmCode[0] = 0x084040 + HVal + (AdrMode << 8) + ((HSeg == SegYData) << 16);
+               } else {
+                  CodeLen = 1 + AdrCnt;
+                  DAsmCode[1] = AdrVal;
+                  DAsmCode[0] = 0x084080 + HVal + (AdrMode << 8) + ((HSeg == SegYData) << 16) + ((AdrSeg == SegYData) << 6);
+               }
             } else if (AdrType != ModNone) {
                HVal = AdrVal;
                HCnt = AdrCnt;
                HMode = AdrMode;
                HSeg = AdrSeg;
                DecodeAdr(Right, MModAbs, MSegXData + MSegYData);
-               if (AdrType != ModNone)
-                  if ((AdrVal < 0xffc0) || (AdrVal > 0xffff)) WrError(1315);
-                  else if (HSeg == SegCode) {
-                     CodeLen = 1 + HCnt;
-                     DAsmCode[1] = HVal;
-                     DAsmCode[0] = 0x08c040 + (AdrVal & 0x3f) + (HMode << 8) + ((AdrSeg == SegYData) << 16);
-                  } else {
-                     CodeLen = 1 + HCnt;
-                     DAsmCode[1] = HVal;
-                     DAsmCode[0] = 0x08c080 + (((Word) AdrVal) & 0x3f) + (HMode << 8) + ((AdrSeg == SegYData) << 16) + ((HSeg == SegYData) << 6);
-                  }
+               if (AdrType == ModNone) ;
+               else if ((AdrVal < 0xffc0) || (AdrVal > 0xffff)) WrError(1315);
+               else if (HSeg == SegCode) {
+                  CodeLen = 1 + HCnt;
+                  DAsmCode[1] = HVal;
+                  DAsmCode[0] = 0x08c040 + (AdrVal & 0x3f) + (HMode << 8) + ((AdrSeg == SegYData) << 16);
+               } else {
+                  CodeLen = 1 + HCnt;
+                  DAsmCode[1] = HVal;
+                  DAsmCode[0] = 0x08c080 + (((Word) AdrVal) & 0x3f) + (HMode << 8) + ((AdrSeg == SegYData) << 16) + ((HSeg == SegYData) << 6);
+               }
             }
          }
       }
@@ -1106,13 +1093,13 @@ static void MakeCode_56K(void) {
 
    if (Memo("TFR")) {
       if (ArgCnt < 1) WrError(1110);
-      else if (DecodeMOVE(2))
-         if (DecodeTFR(ArgStr[1], &Reg1)) {
-            DAsmCode[0] += 0x01 + (Reg1 << 3);
-         } else {
-            WrError(1350);
-            CodeLen = 0;
-         }
+      else if (!DecodeMOVE(2)) ;
+      else if (DecodeTFR(ArgStr[1], &Reg1)) {
+         DAsmCode[0] += 0x01 + (Reg1 << 3);
+      } else {
+         WrError(1350);
+         CodeLen = 0;
+      }
       return;
    }
 
@@ -1146,13 +1133,13 @@ static void MakeCode_56K(void) {
          if ((*Left == '\0') || (*Right == '\0')) WrError(1110);
          else {
             DecodeAdr(Left, MModModInc + MModModDec + MModPostInc + MModPostDec, MSegXData);
-            if (AdrType != ModNone)
-               if (!DecodeReg(Right, &Reg1)) WrError(1350);
-               else if ((Reg1 < 16) || (Reg1 > 31)) WrError(1350);
-               else {
-                  CodeLen = 1;
-                  DAsmCode[0] = 0x044000 + (AdrMode << 8) + Reg1;
-               }
+            if (AdrType == ModNone) ;
+            else if (!DecodeReg(Right, &Reg1)) WrError(1350);
+            else if ((Reg1 < 16) || (Reg1 > 31)) WrError(1350);
+            else {
+               CodeLen = 1;
+               DAsmCode[0] = 0x044000 + (AdrMode << 8) + Reg1;
+            }
          }
       }
       return;
@@ -1234,30 +1221,28 @@ static void MakeCode_56K(void) {
                if (OK) {
                   h = EvalIntExpression(Left + 1, Int8, &OK);
                   if (FirstPassUnknown) h &= 15;
-                  if (OK)
-                     if ((h < 0) || (h > 23)) WrError(1320);
-                     else {
-                        Reg2 = ((z & 1) << 5) + (((LongInt) (z >> 1)) << 16);
-                        if (DecodeGeneralReg(Mid, &Reg1)) {
+                  if (!OK) ;
+                  else if ((h < 0) || (h > 23)) WrError(1320);
+                  else {
+                     Reg2 = ((z & 1) << 5) + (((LongInt) (z >> 1)) << 16);
+                     if (DecodeGeneralReg(Mid, &Reg1)) {
+                        CodeLen = 2;
+                        DAsmCode[0] = 0x0ac080 + h + Reg2 + (Reg1 << 8);
+                     } else {
+                        DecodeAdr(Mid, MModNoImm, MSegXData + MSegYData);
+                        Reg3 = (AdrSeg == SegYData) << 6;
+                        if (AdrType != ModAbs) {
                            CodeLen = 2;
-                           DAsmCode[0] = 0x0ac080 + h + Reg2 + (Reg1 << 8);
-                        } else {
-                           DecodeAdr(Mid, MModNoImm, MSegXData + MSegYData);
-                           Reg3 = (AdrSeg == SegYData) << 6;
-                           if (AdrType == ModAbs)
-                              if ((AdrVal >= 0) && (AdrVal <= 63)) {
-                                 CodeLen = 2;
-                                 DAsmCode[0] = 0x0a0080 + h + Reg2 + Reg3 + (AdrVal << 8);
-                              } else if ((AdrVal >= 0xffc0) && (AdrVal <= 0xffff)) {
-                                 CodeLen = 2;
-                                 DAsmCode[0] = 0x0a8080 + h + Reg2 + Reg3 + ((AdrVal & 0x3f) << 8);
-                              } else WrError(1320);
-                           else {
-                              CodeLen = 2;
-                              DAsmCode[0] = 0x0a4080 + h + Reg2 + Reg3 + (AdrMode << 8);
-                           }
-                        }
+                           DAsmCode[0] = 0x0a4080 + h + Reg2 + Reg3 + (AdrMode << 8);
+                        } else if ((AdrVal >= 0) && (AdrVal <= 63)) {
+                           CodeLen = 2;
+                           DAsmCode[0] = 0x0a0080 + h + Reg2 + Reg3 + (AdrVal << 8);
+                        } else if ((AdrVal >= 0xffc0) && (AdrVal <= 0xffff)) {
+                           CodeLen = 2;
+                           DAsmCode[0] = 0x0a8080 + h + Reg2 + Reg3 + ((AdrVal & 0x3f) << 8);
+                        } else WrError(1320);
                      }
+                  }
                }
             }
          }

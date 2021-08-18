@@ -1,13 +1,5 @@
-/* asmitree.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Opcode-Abfrage als Binaerbaum                                             */
-/*                                                                           */
-/* Historie: 30.10.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Opcode-Abfrage als Binaerbaum
 #include "stdinc.h"
 #include <string.h>
 

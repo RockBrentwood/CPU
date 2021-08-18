@@ -1,13 +1,5 @@
-/* code90c141.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator Toshiba TLCS-90                                             */
-/*                                                                           */
-/* Historie: 30.10.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator Toshiba TLCS-90
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -639,12 +631,12 @@ static void MakeCode_90C141(void) {
             BAsmCode[0] = 0x56 + HReg;
          } else {
             DecodeAdr(ArgStr[1], MModReg16);
-            if (AdrType == ModReg16)
-               if (AdrMode == 6) WrError(1350);
-               else {
-                  CodeLen = 1;
-                  BAsmCode[0] = 0x50 + HReg + AdrMode;
-               }
+            if (AdrType != ModReg16) ;
+            else if (AdrMode == 6) WrError(1350);
+            else {
+               CodeLen = 1;
+               BAsmCode[0] = 0x50 + HReg + AdrMode;
+            }
          }
       }
       return;
@@ -1024,13 +1016,13 @@ static void MakeCode_90C141(void) {
          if (z >= ConditionCnt) WrError(1360);
          else {
             AdrInt = EvalIntExpression(ArgStr[ArgCnt], Int16, &OK) - (EProgCounter() + 2);
-            if (OK)
-               if ((!SymbolQuestionable) && ((AdrInt > 127) || (AdrInt < -128))) WrError(1370);
-               else {
-                  CodeLen = 2;
-                  BAsmCode[0] = 0xc0 + Conditions[z].Code;
-                  BAsmCode[1] = AdrInt & 0xff;
-               }
+            if (!OK) ;
+            else if ((!SymbolQuestionable) && ((AdrInt > 127) || (AdrInt < -128))) WrError(1370);
+            else {
+               CodeLen = 2;
+               BAsmCode[0] = 0xc0 + Conditions[z].Code;
+               BAsmCode[1] = AdrInt & 0xff;
+            }
          }
       }
       return;
@@ -1111,18 +1103,18 @@ static void MakeCode_90C141(void) {
             AdrMode = 0;
             OpSize = 0;
          } else DecodeAdr(ArgStr[1], MModReg8 + MModReg16);
-         if (AdrType != ModNone)
-            if (AdrMode != 0) WrError(1350);
+         if (AdrType == ModNone) ;
+         else if (AdrMode != 0) WrError(1350);
+         else {
+            AdrInt = EvalIntExpression(ArgStr[ArgCnt], Int16, &OK) - (EProgCounter() + 2);
+            if (!OK) ;
+            else if ((!SymbolQuestionable) && ((AdrInt > 127) || (AdrInt < -128))) WrError(1370);
             else {
-               AdrInt = EvalIntExpression(ArgStr[ArgCnt], Int16, &OK) - (EProgCounter() + 2);
-               if (OK)
-                  if ((!SymbolQuestionable) && ((AdrInt > 127) || (AdrInt < -128))) WrError(1370);
-                  else {
-                     CodeLen = 2;
-                     BAsmCode[0] = 0x18 + OpSize;
-                     BAsmCode[1] = AdrInt & 0xff;
-                  }
+               CodeLen = 2;
+               BAsmCode[0] = 0x18 + OpSize;
+               BAsmCode[1] = AdrInt & 0xff;
             }
+         }
       }
       return;
    }

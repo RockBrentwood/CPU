@@ -1,13 +1,5 @@
-/* code3201x.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator TMS3201x-Familie                                            */
-/*                                                                           */
-/* Historie: 28.11.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Codegenerator TMS3201x-Familie
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -214,14 +206,14 @@ static void DecodeAdr(char *Arg, Integer Aux, bool Must1) {
          if (AdrOK) h = EvalIntExpression(Arg + 3, UInt8, &AdrOK);
       }
       if (!AdrOK) h = EvalIntExpression(Arg, Int8, &AdrOK);
-      if (AdrOK)
-         if ((Must1) && (h < 0x80) && (!FirstPassUnknown)) {
-            WrError(1315);
-            AdrOK = false;
-         } else {
-            AdrMode = h & 0x7f;
-            ChkSpace(SegData);
-         }
+      if (!AdrOK) ;
+      else if ((Must1) && (h < 0x80) && (!FirstPassUnknown)) {
+         WrError(1315);
+         AdrOK = false;
+      } else {
+         AdrMode = h & 0x7f;
+         ChkSpace(SegData);
+      }
    }
 }
 
@@ -381,12 +373,12 @@ static void MakeCode_3201X(void) {
                   AdrWord = EvalIntExpression(ArgStr[2], Int4, &OK);
                   if ((OK) && (FirstPassUnknown)) AdrWord = 0;
                }
-               if (OK)
-                  if ((AdrShiftOrders[z].AllowShifts & (1 << AdrWord)) == 0) WrError(1380);
-                  else {
-                     CodeLen = 1;
-                     WAsmCode[0] = AdrShiftOrders[z].Code + AdrMode + (AdrWord << 8);
-                  }
+               if (!OK) ;
+               else if ((AdrShiftOrders[z].AllowShifts & (1 << AdrWord)) == 0) WrError(1380);
+               else {
+                  CodeLen = 1;
+                  WAsmCode[0] = AdrShiftOrders[z].Code + AdrMode + (AdrWord << 8);
+               }
             }
          }
          return;

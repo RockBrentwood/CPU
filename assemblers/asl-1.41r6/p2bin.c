@@ -1,13 +1,5 @@
-/* p2bin.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Umwandlung von AS-Codefiles in Binaerfiles                                */
-/*                                                                           */
-/* Historie:  3. 6.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Umwandlung von AS-Codefiles in Binaerfiles
 #include "stdinc.h"
 #include <string.h>
 #include <ctype.h>
@@ -214,17 +206,17 @@ static void ProcessGroup(char *GroupName_O, ProcessProc Processor) {
    AddSuffix(GroupName, Suffix);
 
    Processor(GroupName, Offset);
-/**   FSplit(GroupName,Path,Name,Ext);
+#if 0
+   FSplit(GroupName, Path, Name, Ext);
 
-   FindFirst(GroupName,Archive,s);
-   IF DosError<>0 THEN
-    WriteLn(ErrMsgNullMaskA,GroupName,ErrMsgNullMaskB)
-   ELSE
-    WHILE DosError=0 DO
-     {
-      Processor(Path+s.Name,Offset);
+   FindFirst(GroupName, Archive, s);
+   if (DosError)
+      WriteLn(ErrMsgNullMaskA, GroupName, ErrMsgNullMaskB);
+   else while (!DosError) {
+      Processor(Path + s.Name, Offset);
       FindNext(s);
-     };**/
+   }
+#endif
 }
 
 static void MeasureFile(char *FileName, LongWord Offset) {
@@ -346,11 +338,12 @@ static CMDResult CMD_CheckSum(bool Negate, char *Arg) {
 }
 
 #define P2BINParamCnt 5
-static CMDRec P2BINParams[P2BINParamCnt] = { { "f", CMD_FilterList },
-{ "r", CMD_AdrRange },
-{ "s", CMD_CheckSum },
-{ "m", CMD_ByteMode },
-{ "l", CMD_FillVal }
+static CMDRec P2BINParams[P2BINParamCnt] = {
+   { "f", CMD_FilterList },
+   { "r", CMD_AdrRange },
+   { "s", CMD_CheckSum },
+   { "m", CMD_ByteMode },
+   { "l", CMD_FillVal }
 };
 
 int main(int argc, char **argv) {
@@ -412,11 +405,7 @@ int main(int argc, char **argv) {
 
    MaxGran = 1;
    if ((StartAuto) || (StopAuto)) {
-#ifdef __STDC__
       if (StartAuto) StartAdr = 0xffffffffu;
-#else
-      if (StartAuto) StartAdr = 0xffffffff;
-#endif
       if (StopAuto) StopAdr = 0;
       if (ProcessedEmpty(ParProcessed)) ProcessGroup(SrcName, MeasureFile);
          else for (z = 1; z <= ParamCount; z++)

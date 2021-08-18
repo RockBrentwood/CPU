@@ -1,13 +1,5 @@
-/* asminclist.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Verwaltung der Include-Verschachtelungsliste                              */
-/*                                                                           */
-/* Historie: 16. 5.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Verwaltung der Include-Verschachtelungsliste
 #include "stdinc.h"
 #include <string.h>
 

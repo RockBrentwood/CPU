@@ -1,13 +1,5 @@
-/* stdhandl.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* reitstellung von fuer AS benoetigten Handle-Funktionen                    */
-/*                                                                           */
-/* Historie:  5. 4.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// reitstellung von fuer AS benoetigten Handle-Funktionen
 #include "stdinc.h"
 #include <string.h>
 #include <sys/stat.h>
