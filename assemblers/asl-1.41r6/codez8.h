@@ -1,11 +1,3 @@
-/* codez8.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator Zilog Z8                                                    */
-/*                                                                           */
-/* Historie: 8.11.1996 Grundsteinlegung                                      */
-/*                                                                           */
-/*****************************************************************************/
-
-extern void codez8_init(void);
+// AS-Portierung
+// Codegenerator Zilog Z8
+void codez8_init(void);

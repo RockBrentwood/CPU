@@ -1,15 +1,6 @@
-/* asmdef.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* global benutzte Variablen und Definitionen                                */
-/*                                                                           */
-/* Historie:  4. 5.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// global benutzte Variablen und Definitionen
 #include "chunks.h"
-
 #include "fileformat.h"
 
 typedef Byte CPUVar;
@@ -274,10 +265,7 @@ extern PSaveState FirstSaveState;
 extern bool MakeDebug;
 extern FILE *Debug;
 
-extern void AsmDefInit(void);
-
-extern void NullProc(void);
-
-extern void Default_InternSymbol(char *Asc, TempResult * Erg);
-
-extern void asmdef_init(void);
+void AsmDefInit(void);
+void NullProc(void);
+void Default_InternSymbol(char *Asc, TempResult * Erg);
+void asmdef_init(void);

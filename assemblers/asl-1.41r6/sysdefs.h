@@ -147,9 +147,7 @@ typedef unsigned long long Card64;
 #         define NOLONGLONG
 #      endif
 #      define fpos_t long
-#      if defined __STDC__
 extern void bcopy();
-#      endif
 #      define memmove(s1,s2,len) bcopy(s2,s1,len)
 #      define NO_NLS
 #   endif

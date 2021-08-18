@@ -1,11 +1,3 @@
-/* code7700.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* AS-Codegeneratormodul MELPS-7700                                          */
-/*                                                                           */
-/* Historie: 5.11.1996 Grundsteinlegung                                      */
-/*                                                                           */
-/*****************************************************************************/
-
-extern void code7700_init(void);
+// AS-Portierung
+// AS-Codegeneratormodul MELPS-7700
+void code7700_init(void);

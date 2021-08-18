@@ -3,7 +3,8 @@
 
 #define MaxLongInt 0x7fffffff
 
-typedef Card8 Byte; /* Integertypen */
+// Integer types.
+typedef Card8 Byte;
 typedef Integ8 ShortInt;
 
 #ifdef HAS16
@@ -17,9 +18,6 @@ typedef Integ32 LongInt;
 #ifdef HAS64
 typedef Card64 QuadWord;
 typedef Integ64 QuadInt;
-#endif
-
-#ifdef HAS64
 typedef QuadInt LargeInt;
 typedef QuadWord LargeWord;
 #else
@@ -28,8 +26,6 @@ typedef LongWord LargeWord;
 #endif
 
 typedef char Char;
-
 typedef double Double;
 typedef float Single;
-
 typedef char String[256];

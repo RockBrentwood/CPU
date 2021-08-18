@@ -1,11 +1,3 @@
-/* code96c141.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator TLCS-900(L)                                                 */
-/*                                                                           */
-/* Historie: 27. 6.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
-extern void code96c141_init(void);
+// AS-Portierung
+// Codegenerator TLCS-900(L)
+void code96c141_init(void);

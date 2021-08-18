@@ -1,11 +1,3 @@
-/* code16c5x.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* AS - Codegenerator fuer PIC16C5x                                          */
-/*                                                                           */
-/* Historie: 19.8.1996 Grundsteinlegung                                      */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// AS - Codegenerator fuer PIC16C5x
 extern void code16c5x_init(void);

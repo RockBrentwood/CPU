@@ -1,16 +1,8 @@
 #ifndef _CHUNKS_H
 #define _CHUNKS_H
 
-/* chunks.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Verwaltung von Adressbereichslisten                                       */
-/*                                                                           */
-/* Historie: 16. 5.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Verwaltung von Adressbereichslisten
 typedef struct {
    LargeWord Start, Length;
 } OneChunk;
@@ -20,14 +12,10 @@ typedef struct {
    OneChunk *Chunks;
 } ChunkList;
 
-extern bool AddChunk(ChunkList * NChunk, LargeWord NewStart, LargeWord NewLen, bool Warn);
-
-extern void DeleteChunk(ChunkList * NChunk, LargeWord DelStart, LargeWord DelLen);
-
-extern void InitChunk(ChunkList * NChunk);
-
-extern void ClearChunk(ChunkList * NChunk);
-
-extern void chunks_init(void);
+bool AddChunk(ChunkList * NChunk, LargeWord NewStart, LargeWord NewLen, bool Warn);
+void DeleteChunk(ChunkList * NChunk, LargeWord DelStart, LargeWord DelLen);
+void InitChunk(ChunkList * NChunk);
+void ClearChunk(ChunkList * NChunk);
+void chunks_init(void);
 
 #endif /* _CHUNKS_H */

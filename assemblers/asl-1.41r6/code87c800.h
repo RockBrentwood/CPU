@@ -1,11 +1,3 @@
-/* code87c800.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator TLCS-870                                                    */
-/*                                                                           */
-/* Historie: 29.12.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
-extern void code87c800_init(void);
+// AS-Portierung
+// Codegenerator TLCS-870
+void code87c800_init(void);

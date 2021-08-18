@@ -1,14 +1,4 @@
-/* stdinc.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* globaler Einzug immer benoetigter includes                                */
-/*                                                                           */
-/* Historie: 21. 5.1996 min/max                                              */
-/*           11. 5.1997 DOS-Anpassungen                                      */
-/*                                                                           */
-/*****************************************************************************/
-
+// globaler Einzug immer benoetigter includes
 #include <stdio.h>
 #ifndef __MUNIX__
 #   include <stdlib.h>

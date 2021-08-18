@@ -1,11 +1,3 @@
-/* codem16c.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator M16C                                                        */
-/*                                                                           */
-/* Historie: 17.12.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
-extern void codem16c_init(void);
+// AS-Portierung
+// Codegenerator M16C
+void codem16c_init(void);

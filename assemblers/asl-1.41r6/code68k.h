@@ -1,11 +1,3 @@
-/* code68k.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator 680x0-Familie                                               */
-/*                                                                           */
-/* Historie:  9. 9.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
-extern void code68k_init(void);
+// AS-Portierung
+// Codegenerator 680x0-Familie
+void code68k_init(void);

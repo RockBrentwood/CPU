@@ -1,13 +1,5 @@
-/* asmitree.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Opcode-Abfrage als Binaerbaum                                             */
-/*                                                                           */
-/* Historie: 30.10.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Opcode-Abfrage als Binaerbaum
 typedef void (*InstProc)(Word Index);
 typedef struct _TInstTreeNode {
    struct _TInstTreeNode *Left, *Right;
@@ -17,12 +9,8 @@ typedef struct _TInstTreeNode {
    ShortInt Balance;
 } TInstTreeNode, *PInstTreeNode;
 
-extern void AddInstTree(PInstTreeNode * Root, char *NName, InstProc NProc, Word NIndex);
-
-extern void ClearInstTree(PInstTreeNode * Root);
-
-extern bool SearchInstTree(PInstTreeNode Root);
-
-extern void PrintInstTree(PInstTreeNode Root);
-
-extern void asmitree_init(void);
+void AddInstTree(PInstTreeNode * Root, char *NName, InstProc NProc, Word NIndex);
+void ClearInstTree(PInstTreeNode * Root);
+bool SearchInstTree(PInstTreeNode Root);
+void PrintInstTree(PInstTreeNode Root);
+void asmitree_init(void);

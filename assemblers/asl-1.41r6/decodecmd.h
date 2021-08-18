@@ -1,13 +1,5 @@
-/* decodecmd.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Verarbeitung Kommandozeilenparameter                                      */
-/*                                                                           */
-/* Historie:  4. 5.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Verarbeitung Kommandozeilenparameter
 typedef enum { CMDErr, CMDFile, CMDOK, CMDArg } CMDResult;
 
 typedef CMDResult(*CMDCallback)(bool NegFlag, char *Arg);
@@ -25,10 +17,7 @@ typedef bool CMDProcessed[MAXPARAM + 1];
 extern LongInt ParamCount;
 extern char **ParamStr;
 
-extern bool ProcessedEmpty(CMDProcessed Processed);
-
-extern void ProcessCMD(CMDRec * Def, Integer Cnt, CMDProcessed Unprocessed, char *EnvName, CMDErrCallback ErrProc);
-
-extern char *GetEXEName(void);
-
-extern void decodecmd_init(void);
+bool ProcessedEmpty(CMDProcessed Processed);
+void ProcessCMD(CMDRec * Def, Integer Cnt, CMDProcessed Unprocessed, char *EnvName, CMDErrCallback ErrProc);
+char *GetEXEName(void);
+void decodecmd_init(void);

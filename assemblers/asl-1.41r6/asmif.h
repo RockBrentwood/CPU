@@ -1,13 +1,5 @@
-/* asmif.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Befehle zur bedingten Assemblierung                                       */
-/*                                                                           */
-/* Historie: 15. 5.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Befehle zur bedingten Assemblierung
 typedef struct _TIfSave {
    struct _TIfSave *Next;
    Integer NestLevel;
@@ -22,14 +14,9 @@ typedef struct _TIfSave {
 extern bool IfAsm;
 extern PIfSave FirstIfSave;
 
-extern bool CodeIFs(void);
-
-extern void AsmIFInit(void);
-
-extern Integer SaveIFs(void);
-
-extern void RestoreIFs(Integer Level);
-
-extern bool IFListMask(void);
-
-extern void asmif_init(void);
+bool CodeIFs(void);
+void AsmIFInit(void);
+Integer SaveIFs(void);
+void RestoreIFs(Integer Level);
+bool IFListMask(void);
+void asmif_init(void);

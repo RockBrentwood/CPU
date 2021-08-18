@@ -1,11 +1,3 @@
-/* codem16.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator Mitsubishi M16                                              */
-/*                                                                           */
-/* Historie: 27.12.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
-extern void codem16_init(void);
+// AS-Portierung
+// Codegenerator Mitsubishi M16
+void codem16_init(void);

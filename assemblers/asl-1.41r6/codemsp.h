@@ -1,11 +1,3 @@
-/* codemsp.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator MSP430                                                      */
-/*                                                                           */
-/* Historie:                                                                 */
-/*                                                                           */
-/*****************************************************************************/
-
-extern void codemsp_init(void);
+// AS-Portierung
+// Codegenerator MSP430
+void codemsp_init(void);

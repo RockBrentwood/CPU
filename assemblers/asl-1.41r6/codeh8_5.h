@@ -1,11 +1,3 @@
-/* codeh8_5.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator H8/500-Familie                                              */
-/*                                                                           */
-/* Historie: 24.12.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
-extern void codeh8_5_init(void);
+// AS-Portierung
+// Codegenerator H8/500-Familie
+void codeh8_5_init(void);

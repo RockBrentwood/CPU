@@ -1,129 +1,64 @@
-/* asmsub.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Unterfunktionen, vermischtes                                              */
-/*                                                                           */
-/* Historie:  4. 5. 1996  Grundsteinlegung                                   */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Unterfunktionen, vermischtes
 typedef void (*TSwitchProc)(void);
 
 extern Word ErrorCount, WarnCount;
 
-extern void AsmSubInit(void);
-
-extern long GTime(void);
-
-extern CPUVar AddCPU(char *NewName, TSwitchProc Switcher);
-
-extern bool AddCPUAlias(char *OrigName, char *AliasName);
-
-extern void PrintCPUList(TSwitchProc NxtProc);
-
-extern void ClearCPUList(void);
-
-extern void UpString(char *s);
-
-extern char *QuotPos(char *s, char Zeichen);
-
-extern char *RQuotPos(char *s, char Zeichen);
-
-extern char *FirstBlank(char *s);
-
-extern void SplitString(char *Source, char *Left, char *Right, char *Trenner);
-
-extern void KillBlanks(char *s);
-
-extern void KillPrefBlanks(char *s);
-
-extern void KillPostBlanks(char *s);
-
-extern void TranslateString(char *s);
-
-extern ShortInt StrCmp(char *s1, char *s2, LongInt Hand1, LongInt Hand2);
-
+void AsmSubInit(void);
+long GTime(void);
+CPUVar AddCPU(char *NewName, TSwitchProc Switcher);
+bool AddCPUAlias(char *OrigName, char *AliasName);
+void PrintCPUList(TSwitchProc NxtProc);
+void ClearCPUList(void);
+void UpString(char *s);
+char *QuotPos(char *s, char Zeichen);
+char *RQuotPos(char *s, char Zeichen);
+char *FirstBlank(char *s);
+void SplitString(char *Source, char *Left, char *Right, char *Trenner);
+void KillBlanks(char *s);
+void KillPrefBlanks(char *s);
+void KillPostBlanks(char *s);
+void TranslateString(char *s);
+ShortInt StrCmp(char *s1, char *s2, LongInt Hand1, LongInt Hand2);
 #define Memo(s) (strcmp(OpPart,(s))==0)
-
-extern void AddSuffix(char *s, char *Suff);
-
-extern void KillSuffix(char *s);
-
-extern char *NamePart(char *Name);
-
-extern char *PathPart(char *Name);
-
-extern char *FloatString(Double f);
-
-extern void StrSym(TempResult * t, bool WithSystem, char *Dest);
-
-extern void ResetPageCounter(void);
-
-extern void NewPage(ShortInt Level, bool WithFF);
-
-extern void WrLstLine(char *Line);
-
-extern void SetListLineVal(TempResult * t);
-
-extern LargeWord ProgCounter(void);
-
-extern LargeWord EProgCounter(void);
-
-extern Word Granularity(void);
-
-extern Word ListGran(void);
-
-extern void ChkSpace(Byte Space);
-
-extern void PrintChunk(ChunkList * NChunk);
-
-extern void PrintUseList(void);
-
-extern void ClearUseList(void);
-
-extern void CompressLine(char *TokNam, Byte Num, char *Line);
-
-extern void ExpandLine(char *TokNam, Byte Num, char *Line);
-
-extern void KillCtrl(char *Line);
-
-extern void ChkStack(void);
-
-extern void ResetStack(void);
-
-extern LongWord StackRes(void);
-
-extern void AddCopyright(char *NewLine);
-
-extern void WriteCopyrights(TSwitchProc NxtProc);
-
-extern bool ChkSymbName(char *sym);
-
-extern bool ChkMacSymbName(char *sym);
-
-extern void WrErrorString(char *Message, char *Add, bool Warning, bool Fatal);
-
-extern void WrError(Word Num);
-
-extern void WrXError(Word Num, char *Message);
-
-extern bool ChkRange(LargeInt Value, LargeInt Min, LargeInt Max);
-
-extern void ChkIO(Word ErrNo);
-
-extern void AddIncludeList(char *NewPath);
-
-extern void RemoveIncludeList(char *RemPath);
-
-extern void ClearOutList(void);
-
-extern void AddToOutList(char *NewName);
-
-extern void RemoveFromOutList(char *OldName);
-
-extern char *GetFromOutList(void);
-
-extern long DTime(long t1, long t2);
-
-extern void asmsub_init(void);
+void AddSuffix(char *s, char *Suff);
+void KillSuffix(char *s);
+char *NamePart(char *Name);
+char *PathPart(char *Name);
+char *FloatString(Double f);
+void StrSym(TempResult * t, bool WithSystem, char *Dest);
+void ResetPageCounter(void);
+void NewPage(ShortInt Level, bool WithFF);
+void WrLstLine(char *Line);
+void SetListLineVal(TempResult * t);
+LargeWord ProgCounter(void);
+LargeWord EProgCounter(void);
+Word Granularity(void);
+Word ListGran(void);
+void ChkSpace(Byte Space);
+void PrintChunk(ChunkList * NChunk);
+void PrintUseList(void);
+void ClearUseList(void);
+void CompressLine(char *TokNam, Byte Num, char *Line);
+void ExpandLine(char *TokNam, Byte Num, char *Line);
+void KillCtrl(char *Line);
+void ChkStack(void);
+void ResetStack(void);
+LongWord StackRes(void);
+void AddCopyright(char *NewLine);
+void WriteCopyrights(TSwitchProc NxtProc);
+bool ChkSymbName(char *sym);
+bool ChkMacSymbName(char *sym);
+void WrErrorString(char *Message, char *Add, bool Warning, bool Fatal);
+void WrError(Word Num);
+void WrXError(Word Num, char *Message);
+bool ChkRange(LargeInt Value, LargeInt Min, LargeInt Max);
+void ChkIO(Word ErrNo);
+void AddIncludeList(char *NewPath);
+void RemoveIncludeList(char *RemPath);
+void ClearOutList(void);
+void AddToOutList(char *NewName);
+void RemoveFromOutList(char *OldName);
+char *GetFromOutList(void);
+long DTime(long t1, long t2);
+void asmsub_init(void);

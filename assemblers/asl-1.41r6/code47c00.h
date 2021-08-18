@@ -1,11 +1,3 @@
-/* code47c00.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator Toshiba TLCS-47(0(A))                                       */
-/*                                                                           */
-/* Historie: 30.12.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
-extern void code47c00_init(void);
+// AS-Portierung
+// Codegenerator Toshiba TLCS-47(0(A))
+void code47c00_init(void);

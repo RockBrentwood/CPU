@@ -1,13 +1,5 @@
-/* codepseudo.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Haeufiger benutzte Pseudo-Befehle                                         */
-/*                                                                           */
-/* Historie: 23. 5.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Haeufiger benutzte Pseudo-Befehle
 typedef struct {
    char *Name;
    LongInt *Dest;
@@ -21,22 +13,13 @@ typedef struct {
    char *FlagName;
 } ONOFFRec;
 
-extern int FindInst(void *Field, int Size, int Count);
-
-extern bool IsIndirect(char *Asc);
-
-extern void ConvertDec(Double F, Word * w);
-
-extern bool DecodeIntelPseudo(bool Turn);
-
-extern bool DecodeMotoPseudo(bool Turn);
-
-extern bool DecodeMoto16Pseudo(ShortInt OpSize, bool Turn);
-
-extern void CodeEquate(ShortInt DestSeg, LargeInt Min, LargeInt Max);
-
-extern void CodeASSUME(ASSUMERec * Def, Integer Cnt);
-
-extern bool CodeONOFF(ONOFFRec * Def, Integer Cnt);
-
-extern void codepseudo_init(void);
+int FindInst(void *Field, int Size, int Count);
+bool IsIndirect(char *Asc);
+void ConvertDec(Double F, Word * w);
+bool DecodeIntelPseudo(bool Turn);
+bool DecodeMotoPseudo(bool Turn);
+bool DecodeMoto16Pseudo(ShortInt OpSize, bool Turn);
+void CodeEquate(ShortInt DestSeg, LargeInt Min, LargeInt Max);
+void CodeASSUME(ASSUMERec * Def, Integer Cnt);
+bool CodeONOFF(ONOFFRec * Def, Integer Cnt);
+void codepseudo_init(void);

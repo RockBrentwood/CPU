@@ -1,13 +1,5 @@
-/* fileformat.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Definition von Konstanten fuer das P-Format                               */
-/*                                                                           */
-/* Historie: 3.12.1996 Grundsteinlegung                                      */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Definition von Konstanten fuer das P-Format
 #ifndef _FILEFORMATS_H
 #define _FILEFORMATS_H
 

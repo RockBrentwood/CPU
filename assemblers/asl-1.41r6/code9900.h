@@ -1,11 +1,3 @@
-/* code9900.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator TMS99xx                                                     */
-/*                                                                           */
-/* Historie:  9. 3.1997 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
-extern void code9900_init(void);
+// AS-Portierung
+// Codegenerator TMS99xx
+void code9900_init(void);

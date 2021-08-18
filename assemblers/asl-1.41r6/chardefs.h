@@ -1,6 +1,7 @@
 #ifndef _chardefs_h
 #define _chardefs_h
 
+//(@) Should be changed to UTF-8, with: { CH_ae, CH_oe, CH_ue, CH_Ae, CH_Oe, CH_Ue, CH_sz } = { ä, ö, ü, Ä, Ö, Ü, ß }.
 #ifdef CHARSET_ISO8859_1
 #   define CH_ae "\344"
 #   define CH_oe "\366"

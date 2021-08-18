@@ -1,11 +1,3 @@
-/* code166.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* AS-Codegenerator Siemens 80C16x                                           */
-/*                                                                           */
-/* Historie: 11.11.1996 (alaaf) Grundsteinlegung                             */
-/*                                                                           */
-/*****************************************************************************/
-
-extern void code166_init(void);
+// AS-Portierung
+// AS-Codegenerator Siemens 80C16x
+void code166_init(void);

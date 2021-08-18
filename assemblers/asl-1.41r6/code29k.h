@@ -1,11 +1,3 @@
-/* code29k.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator AM29xxx-Familie                                             */
-/*                                                                           */
-/* Historie: 18.11.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
-extern void code29k_init(void);
+// AS-Portierung
+// Codegenerator AM29xxx-Familie
+void code29k_init(void);

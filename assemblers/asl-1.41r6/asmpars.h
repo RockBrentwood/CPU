@@ -1,13 +1,5 @@
-/* asmpars.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Verwaltung von Symbolen und das ganze Drumherum...                        */
-/*                                                                           */
-/* Historie:  5. 5.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Verwaltung von Symbolen und das ganze Drumherum...
 typedef enum { UInt1, UInt2, UInt3, SInt4, UInt4, Int4,
    SInt5, UInt5, Int5, UInt6, UInt7, SInt8, UInt8,
    Int8, UInt9, UInt10, Int10, UInt11, UInt12, Int12,
@@ -34,114 +26,59 @@ extern LongInt LocHandleCnt;
 extern bool BalanceTree;
 extern LongInt MomLocHandle;
 
-extern void AsmParsInit(void);
-
-extern LargeInt ConstIntVal(char *Asc_O, IntType Typ, bool *Ok);
-
-extern Double ConstFloatVal(char *Asc_O, FloatType Typ, bool *Ok);
-
-extern void ConstStringVal(char *Asc, char *Erg, bool *OK);
-
-extern bool RangeCheck(LargeInt Wert, IntType Typ);
-
-extern bool FloatRangeCheck(Double Wert, FloatType Typ);
-
-extern bool IdentifySection(char *Name, LongInt * Erg);
-
-extern bool ExpandSymbol(char *Name);
-
-extern void EnterIntSymbol(char *Name_O, LargeInt Wert, Byte Typ, bool MayChange);
-
-extern void EnterFloatSymbol(char *Name_O, Double Wert, bool MayChange);
-
-extern void EnterStringSymbol(char *Name_O, char *Wert, bool MayChange);
-
-extern bool GetIntSymbol(char *Name, LargeInt * Wert);
-
-extern bool GetFloatSymbol(char *Name, Double * Wert);
-
-extern bool GetStringSymbol(char *Name, char *Wert);
-
-extern void PrintSymbolList(void);
-
-extern void PrintDebSymbols(FILE * f);
-
-extern void PrintSymbolTree(void);
-
-extern void ClearSymbolList(void);
-
-extern void ResetSymbolDefines(void);
-
-extern void PrintSymbolDepth(void);
-
-extern void SetSymbolSize(char *Name, ShortInt Size);
-
-extern ShortInt GetSymbolSize(char *Name);
-
-extern bool IsSymbolFloat(char *Name);
-
-extern bool IsSymbolString(char *Name);
-
-extern bool IsSymbolDefined(char *Name);
-
-extern bool IsSymbolUsed(char *Name);
-
-extern bool IsSymbolChangeable(char *Name);
-
-extern void EvalExpression(char *Asc_O, TempResult * Erg);
-
-extern LargeInt EvalIntExpression(char *Asc, IntType Typ, bool *OK);
-
-extern Double EvalFloatExpression(char *Asc, FloatType Typ, bool *OK);
-
-extern void EvalStringExpression(char *Asc, bool *OK, char *Result);
-
-extern bool PushSymbol(char *SymName_O, char *StackName_O);
-
-extern bool PopSymbol(char *SymName_O, char *StackName_O);
-
-extern void ClearStacks(void);
-
-extern void EnterFunction(char *FName, char *FDefinition, Byte NewCnt);
-
-extern PFunction FindFunction(char *Name);
-
-extern void PrintFunctionList(void);
-
-extern void ClearFunctionList(void);
-
-extern void AddDefSymbol(char *Name, TempResult * Value);
-
-extern void RemoveDefSymbol(char *Name);
-
-extern void CopyDefSymbols(void);
-
-extern void PrintCrossList(void);
-
-extern void ClearCrossList(void);
-
-extern LongInt GetSectionHandle(char *SName_O, bool AddEmpt, LongInt Parent);
-
-extern char *GetSectionName(LongInt Handle);
-
-extern void SetMomSection(LongInt Handle);
-
-extern void AddSectionUsage(LongInt Start, LongInt Length);
-
-extern void PrintSectionList(void);
-
-extern void PrintDebSections(FILE * f);
-
-extern void ClearSectionList(void);
-
-extern void SetFlag(bool *Flag, char *Name, bool Wert);
-
-extern LongInt GetLocHandle(void);
-
-extern void PushLocHandle(LongInt NewLoc);
-
-extern void PopLocHandle(void);
-
-extern void ClearLocStack(void);
-
-extern void asmpars_init(void);
+void AsmParsInit(void);
+LargeInt ConstIntVal(char *Asc_O, IntType Typ, bool *Ok);
+Double ConstFloatVal(char *Asc_O, FloatType Typ, bool *Ok);
+void ConstStringVal(char *Asc, char *Erg, bool *OK);
+bool RangeCheck(LargeInt Wert, IntType Typ);
+bool FloatRangeCheck(Double Wert, FloatType Typ);
+bool IdentifySection(char *Name, LongInt * Erg);
+bool ExpandSymbol(char *Name);
+void EnterIntSymbol(char *Name_O, LargeInt Wert, Byte Typ, bool MayChange);
+void EnterFloatSymbol(char *Name_O, Double Wert, bool MayChange);
+void EnterStringSymbol(char *Name_O, char *Wert, bool MayChange);
+bool GetIntSymbol(char *Name, LargeInt * Wert);
+bool GetFloatSymbol(char *Name, Double * Wert);
+bool GetStringSymbol(char *Name, char *Wert);
+void PrintSymbolList(void);
+void PrintDebSymbols(FILE * f);
+void PrintSymbolTree(void);
+void ClearSymbolList(void);
+void ResetSymbolDefines(void);
+void PrintSymbolDepth(void);
+void SetSymbolSize(char *Name, ShortInt Size);
+ShortInt GetSymbolSize(char *Name);
+bool IsSymbolFloat(char *Name);
+bool IsSymbolString(char *Name);
+bool IsSymbolDefined(char *Name);
+bool IsSymbolUsed(char *Name);
+bool IsSymbolChangeable(char *Name);
+void EvalExpression(char *Asc_O, TempResult * Erg);
+LargeInt EvalIntExpression(char *Asc, IntType Typ, bool *OK);
+Double EvalFloatExpression(char *Asc, FloatType Typ, bool *OK);
+void EvalStringExpression(char *Asc, bool *OK, char *Result);
+bool PushSymbol(char *SymName_O, char *StackName_O);
+bool PopSymbol(char *SymName_O, char *StackName_O);
+void ClearStacks(void);
+void EnterFunction(char *FName, char *FDefinition, Byte NewCnt);
+PFunction FindFunction(char *Name);
+void PrintFunctionList(void);
+void ClearFunctionList(void);
+void AddDefSymbol(char *Name, TempResult * Value);
+void RemoveDefSymbol(char *Name);
+void CopyDefSymbols(void);
+void PrintCrossList(void);
+void ClearCrossList(void);
+LongInt GetSectionHandle(char *SName_O, bool AddEmpt, LongInt Parent);
+char *GetSectionName(LongInt Handle);
+void SetMomSection(LongInt Handle);
+void AddSectionUsage(LongInt Start, LongInt Length);
+void PrintSectionList(void);
+void PrintDebSections(FILE * f);
+void ClearSectionList(void);
+void SetFlag(bool *Flag, char *Name, bool Wert);
+LongInt GetLocHandle(void);
+void PushLocHandle(LongInt NewLoc);
+void PopLocHandle(void);
+void ClearLocStack(void);
+void asmpars_init(void);

@@ -1,13 +1,5 @@
-/* toolutils.c */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Unterroutinen fuer die AS-Tools                                           */
-/*                                                                           */
-/* Historie: 31. 5.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Unterroutinen fuer die AS-Tools
 #include "fileformat.h"
 
 extern LongWord Magic;
@@ -16,26 +8,15 @@ extern Word FileID;
 
 extern char *OutName;
 
-extern void WrCopyRight(char *Msg);
-
-extern void DelSuffix(char *Name);
-
-extern void AddSuffix(char *Name, char *Suff);
-
-extern void FormatError(char *Name, char *Detail);
-
-extern void ChkIO(char *Name);
-
-extern Word Granularity(Byte Header);
-
-extern void ReadRecordHeader(Byte * Header, Byte * Segment, Byte * Gran, char *Name, FILE * f);
-
-extern void WriteRecordHeader(Byte * Header, Byte * Segment, Byte * Gran, char *Name, FILE * f);
-
-extern CMDResult CMD_FilterList(bool Negate, char *Arg);
-
-extern bool FilterOK(Byte Header);
-
-extern bool RemoveOffset(char *Name, LongWord * Offset);
-
-extern void toolutils_init(void);
+void WrCopyRight(char *Msg);
+void DelSuffix(char *Name);
+void AddSuffix(char *Name, char *Suff);
+void FormatError(char *Name, char *Detail);
+void ChkIO(char *Name);
+Word Granularity(Byte Header);
+void ReadRecordHeader(Byte * Header, Byte * Segment, Byte * Gran, char *Name, FILE * f);
+void WriteRecordHeader(Byte * Header, Byte * Segment, Byte * Gran, char *Name, FILE * f);
+CMDResult CMD_FilterList(bool Negate, char *Arg);
+bool FilterOK(Byte Header);
+bool RemoveOffset(char *Name, LongWord * Offset);
+void toolutils_init(void);

@@ -1,13 +1,5 @@
-/* asmmac.h  */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Unterroutinen des Makroprozessors                                         */
-/*                                                                           */
-/* Historie: 16. 5.1996 Grundsteinlegung                                     */
-/*                                                                           */
-/*****************************************************************************/
-
+// AS-Portierung
+// Unterroutinen des Makroprozessors
 typedef struct _MacroRec {
    char *Name; /* Name des Makros */
    Byte ParamCount; /* Anzahl Parameter */
@@ -54,24 +46,14 @@ typedef struct _TOutputTag {
 extern PInputTag FirstInputTag;
 extern POutputTag FirstOutputTag;
 
-extern void Preprocess(void);
-
-extern void AddMacro(PMacroRec Neu, LongInt DefSect, bool Protest);
-
-extern bool FoundMacro(PMacroRec * Erg);
-
-extern void ClearMacroList(void);
-
-extern void ResetMacroDefines(void);
-
-extern void ClearMacroRec(PMacroRec * Alt);
-
-extern void PrintMacroList(void);
-
-extern void PrintDefineList(void);
-
-extern void ClearDefineList(void);
-
-extern void ExpandDefines(char *Line);
-
-extern void asmmac_init(void);
+void Preprocess(void);
+void AddMacro(PMacroRec Neu, LongInt DefSect, bool Protest);
+bool FoundMacro(PMacroRec * Erg);
+void ClearMacroList(void);
+void ResetMacroDefines(void);
+void ClearMacroRec(PMacroRec * Alt);
+void PrintMacroList(void);
+void PrintDefineList(void);
+void ClearDefineList(void);
+void ExpandDefines(char *Line);
+void asmmac_init(void);

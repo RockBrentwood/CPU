@@ -1,11 +1,3 @@
-/* code86.h */
-/*****************************************************************************/
-/* AS-Portierung                                                             */
-/*                                                                           */
-/* Codegenerator 8086/V-Serie                                                */
-/*                                                                           */
-/* Historie:                                                                 */
-/*                                                                           */
-/*****************************************************************************/
-
-extern void code86_init(void);
+// AS-Portierung
+// Codegenerator 8086/V-Serie
+void code86_init(void);
