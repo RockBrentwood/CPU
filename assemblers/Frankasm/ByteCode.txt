@@ -1,49 +1,53 @@
-// Frankenstein Cross-Assemblers, version 2.0.
-// Original author: Mark Zenier.
-// The constants used in intermediate file code generation
-// as the expression node operation value and the polish expression operation
-#define IG_START	'['
-#define IG_END		']'
-#define IG_CPCON	'#'
-#define IG_CPEXPR	'='
-#define IG_ERROR	'X'
+Frankenstein Cross-Assemblers, version 2.0.
+Original author: Mark Zenier.
+The constants used in intermediate file code generation
+as the expression node operation value and the postfix expression operation
 
-#define IGP_DEFINED	'U'
-#define IGP_CONSTANT	'V'
+extag: Expression/Operator Types:
+∙	PCCASE_CONS:	'U': constant number
+∙	PCCASE_PROGC:	'P': program counter
+∙	PCCASE_DEF:	'V': "defined" operator
+∙	PCCASE_SYMB:	'S': symbol
+∙	PCCASE_UN:	'_', 'N', 'H', 'Z': unary operators
+∙	PCCASE_BIN:	'+', '-', '*', '/', '%', '{', '}', '|', '^', '&', '>', 'G', '<', 'L', '?', '=': binary operators
+∙	―:	'Q', '~', '.', '$', 'X', '!', 'T', 'W', 'R', 'I', ';', 'r', 'x', 'y': stack operators
 
-#define IFC_NEG		'_'
-#define IFC_NOT		'N'
-#define IFC_HIGH	'H'
-#define IFC_LOW		'Z'
-#define IFC_MUL		'*'
-#define IFC_DIV		'/'
-#define IFC_ADD		'+'
-#define IFC_SUB		'-'
-#define IFC_MOD		'%'
-#define IFC_SHL		'{'
-#define IFC_SHR		'}'
-#define IFC_AND		'&'
-#define IFC_OR		'|'
-#define IFC_XOR		'^'
-#define IFC_GT		'>'
-#define IFC_GE		'G'
-#define IFC_LT		'<'
-#define IFC_LE		'L'
-#define IFC_NE		'?'
-#define IFC_EQ		'='
-#define IFC_SYMB	'S'
-#define IFC_PROGCTR	'P'
-#define IFC_CURRLOC	'Q'
-#define IFC_LOAD	'.'
-#define IFC_CLR		'$'
-#define IFC_CLRALL	'X'
-#define IFC_POP		'!'
-#define IFC_DUP		'~'
-#define IFC_EMU8	';'
-#define IFC_EMS7	'r'
-#define IFC_EM16	'x'
-#define IFC_EMBR16	'y'
-#define IFC_WIDTH	'W'
-#define IFC_SWIDTH	'R'
-#define IFC_IWIDTH	'I'
-#define IFC_TESTERR	'T'
+Byte Codes:
+Constant Num:		Num 'U'		ExpNode(PCCASE_CONS, ―, 'V', ―, Num, ―)
+Program Counter Lab:	Lab 'P'		ExpNode(PCCASE_PROGC, ―, 'P', ―, Lab, ―)
+Defined Name:		Name 'V'	ExpNode(PCCASE_DEF, ―, 'U', ―, ―, Name)
+Symbol Name:		Name 'S'	ExpNode(PCCASE_SYMB, ―, 'S', ―, ―, Name)
+- A:			A '_'		ExpNode(PCCASE_UN, A, '_', ―, ―, ―)
+~ A:			A 'N'		ExpNode(PCCASE_UN, A, 'N', ―, ―, ―)
+high A:			A 'H'		ExpNode(PCCASE_UN, A, 'H', ―, ―, ―)
+low A:			A 'Z'		ExpNode(PCCASE_UN, A, 'Z', ―, ―, ―)
+A + B:			A B '+'		ExpNode(PCCASE_BIN, A, '+', B, ―, ―)
+A - B:			A B '-'		ExpNode(PCCASE_BIN, A, '-', B, ―, ―)
+A * B:			A B '*'		ExpNode(PCCASE_BIN, A, '*', B, ―, ―)
+A / B:			A B '/'		ExpNode(PCCASE_BIN, A, '/', B, ―, ―)
+A % B:			A B '%'		ExpNode(PCCASE_BIN, A, '%', B, ―, ―)
+A << B:			A B '{'		ExpNode(PCCASE_BIN, A, '{', B, ―, ―)
+A >> B:			A B '}'		ExpNode(PCCASE_BIN, A, '}', B, ―, ―)
+A | B:			A B '|'		ExpNode(PCCASE_BIN, A, '|', B, ―, ―)
+A ^ B:			A B '^'		ExpNode(PCCASE_BIN, A, '^', B, ―, ―)
+A & B:			A B '&'		ExpNode(PCCASE_BIN, A, '&', B, ―, ―)
+A > B:			A B '>'		ExpNode(PCCASE_BIN, A, '>', B, ―, ―)
+A >= B:			A B 'G'		ExpNode(PCCASE_BIN, A, 'G', B, ―, ―)
+A < B:			A B '<		ExpNode(PCCASE_BIN, A, '<', B, ―, ―)
+A <= B:			A B 'L'		ExpNode(PCCASE_BIN, A, 'L', B, ―, ―)
+A != B:			A B '?'		ExpNode(PCCASE_BIN, A, '?', B, ―, ―)
+A = B:			A B '='		ExpNode(PCCASE_BIN, A, '=', B, ―, ―)
+Current Location Addr:	Addr 'Q'
+Duplicate A:		A '~'
+Load A:			A '.'		Duplicate + Clear: like the C comma operator, but resets the value to 0.
+Clear:			'$'
+Clear all:		'X'
+Pop A:			A '!'
+Test error:		'T'
+Width A:		A 'W'
+SWidth A:		A 'R'
+IWidth A:		A 'I'
+Put unsigned8:		';'
+Put signed7:		'r'
+Put high unsigned16:	'x'
+Put low unsigned16:	'y'
