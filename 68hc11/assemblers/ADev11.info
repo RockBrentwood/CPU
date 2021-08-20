@@ -1,3 +1,12 @@
+All ADev11-related material has been removed from this archive, because:
+∙       no source code was distributed for ADev11, only binaries only,
+∙       pre-compiled binaries are not being retained in this archive.
+The archive package for ADev11 can be found at the original FTP site under:
+        http://ftp.funet.fi/pub/microprocs/68hc11/assemblers/
+The following is the description contained originally in ADev11.info:
+
+────────────────────────────────────────────────────────────────
+
 One-Line-Description-Of-The-Packet:
 	A complete Amiga development system for 68HC11, with disassembler
 
