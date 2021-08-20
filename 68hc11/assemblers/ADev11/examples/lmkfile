@@ -1,5 +1,0 @@
-test.sr: test.o
-  slink with test.sln
-
-test.o: test.a
-  SAsm test.a
