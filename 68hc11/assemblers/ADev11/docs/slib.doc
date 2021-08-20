@@ -1,0 +1,38 @@
+NAME
+
+    slib
+
+SYNOPSIS
+
+    slib [-a<1>] [-r<1>] [-l] [-c<1>] <library name>
+
+            <1>  - one file
+
+DESCRIPTION
+
+Slib is the librarian for the DEV11 system. The following options are
+recognized by slib:
+
+-a              Specifies an object file that will be added to the
+                library.  The -a option may be used more than once.
+
+-c              Specifies a file that contains option commands to be
+                processed by slib.  The file may be broken into lines,
+                but each line must start with an option.  A command
+                file can specify another command file and more than one
+                command file can be used.  An example file might look as
+                shown below.
+                    -adownload.o
+                    -rcowtown.o
+                    -l
+
+-l              Causes a listing of the library to be sent to the console
+                (unless redirected). The listing includes the name of the
+                module, its size (not the code size), and the symbols that
+                are available from that module.  The -l option can be used
+                more than once.
+
+-r              Specifies an object module to be removed from the library.
+                The -r option may be used more than once.
+
+One and only one library must be specified for each invocation of slib.

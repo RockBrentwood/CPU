@@ -1,0 +1,60 @@
+/*
+ * Copyright 1992 Stan Burton
+ *
+ * Permission to use, copy, modify, distribute, and sell this software
+ * and its documentation for any purpose is hereby granted without fee,
+ * provided that the above copyright notice appear in all copies and
+ * that both that copyright notice and this permission notice appear in
+ * supporting documentation, and that the name of Stan Burton not be used
+ * in advertising or publicity pertaining to distribution of the software
+ * without specific, written prior permission.  I make no representations
+ * about the suitability of  this software for any purpose.  It is
+ * provided "as is" without express or implied warranty.
+ *
+ * THE ABOVE-NAMED DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS.  IN NO EVENT
+ * SHALL STAN BURTON BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
+ * DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+ * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
+ * OF THIS SOFTWARE.
+ *
+ * Author:
+ *		Stan Burton
+ *
+ *		1978 26 St. SE
+ *		Medicine Hat, AB, CANADA
+ *              T1A 2G8
+ */
+
+Installation is simple. If you are reading this, and logically you must
+be, then step 1 is done.
+ 2.  The directory containing this file and the other files unpacked from
+       the archive should be added to your path.
+ 3.  If you like, make an assignment to this directory.  I use ADev11: as
+       the logical name.  This is not required, but will work better in
+       make files and source files if you ever decide to move this
+       directory (ADev11:lib11.lib or ADev11:std_macros.inc).
+ 4.  Read the docs! I know you won't until you run into trouble, but make
+       sure you have read them before you come to me for help.
+ 5.  You must copy either utils/HCBOOT or utils/HCBOOT_F1 to each project
+       directory as HCBOOT so that when you issue HCload from there it will
+       use the correct boot code for the processor used in that project.
+       HCBOOT_F1_CONFIG is the same as HCBOOT_F1 except that it also allows
+       programming of the CONFIG register.
+
+SAsm, slink and slib now handle 68HC16 mnemonics and addressing modes as
+far as I have been able to test.  I do not have a 68HC16 processor and
+have relied on Motorola printed documents.
+
+The docs files other than the .ps file are probably out of date.  They are
+included only for those who don't have access to a postscript printer or
+converter.
+
+I can be reached at:
+internet stan@agcg.dres.dnd.ca
+BIX      sburton
+mail     Stan Burton
+         1978 26 St. SE
+         Medicine Hat, AB CANADA
+         T1A 2G8

@@ -1,0 +1,24 @@
+NAME
+
+    SDis
+
+SYNOPSIS
+
+    SDis <file name>
+
+
+DESCRIPTION
+
+SDis is the dis-assembler for the DEV11 system.  It accepts a Motorola
+S-record format file and produces outputs a symbolic dis-assembled file
+to stdout, by default the console.  This file is assembler (SAsm) ready
+and would assemble to be exactly the same as the file that was
+dis-assembled.
+
+SDis is a tracking dis-assembler which means that it must have the
+address of an executable instruction to start from.  Normally it gets
+this from the S9 record if your file has one.  Otherwise or if other
+addresses must be known, as might be the case with a monitor ROM with
+many entry points, the dis-assembler asks for an address(es) to start
+from.  A tracking dis-assembler will not attempt to dis-assemble data;
+it knows the difference (but it can be intentionally fooled).

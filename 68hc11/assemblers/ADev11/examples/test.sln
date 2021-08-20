@@ -1,0 +1,4 @@
+FROM test.o
+TO test.sr
+MEM 100-1ff CODE1
+MEM 200-2ff CODE2

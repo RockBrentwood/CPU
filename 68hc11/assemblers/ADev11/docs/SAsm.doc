@@ -1,0 +1,492 @@
+now accepts character constants of
+       'c
+  and  'c'
+
+NAME
+
+    DAsm
+
+SYNOPSIS
+
+        SAsm [options] <srcfile> [options]
+
+DESCRIPTION
+
+SAsm is the assembler for the DEV11 system. It is a high level macro cross
+assembler for the Motorola 6803, 6805 and 68HC11 families and for the
+Hitachi 6303 family. It is a highly modified version of the publicly
+distributable DASM V2.12.
+
+    (C)Copyright 1987,1988 Matthew Dillon, All Rights Reserved
+    (C)Copyright 1992      Stan Burton, All Rights Reserved
+
+    Publicly distributable for non-profit only.  Must be distributed
+    as is, with NO CHANGES to the documentation or code.
+
+
+    -fast assembly
+    -supports several common 8 bit processor models (NOT 8086, thank god!)
+    -optionally takes as many passes as needed
+    -generates relocatable object module output for use with SLink and SLib.
+    -XREF and XDEF pseudo ops for external module references.
+    -multiple segments, BSS segments (no generation).
+    -expressions, as in C. (all expressions are computed with 32 bit
+        integers)
+    -no real limitation on label size, label values are 32 bits.
+    -complex pseudo ops, repeat loops, macros, etc....
+
+
+COMMAND LINE:
+
+        asm [options] srcfile [options]
+
+        srcfile:    if no extension is specified in the name, .a is added
+
+        options:    -l[name]  generate list file, if no name is specified
+                        extension-less srcfile with .lst extension is used
+                    -s[name]  generate symbol file, if no name is specified
+                        extension-less srcfile with .sym extension is used
+                    -v#       select verboseness 0-4 (default 0, see below)
+                    -p#       select number of passes 2-9 (default 2)
+                    -d              debug mode
+                    -DSYMBOL                    predefine a symbol, set to 0
+                    -DSYMBOL=EXPRESSION     predefine a symbol, set to exp
+
+        outfile:    the file generated is the extension-less srcfile with
+                        a .o extension
+
+        Example:    asm master.asm -lram:list -v3 -DVER=4
+
+The options list can contain any of the following, separated by spaces:
+
+-v  0        (default)
+        Only warnings and errors are generated
+
+    1
+        -Segment list information generated after each pass
+        -Include file names are displayed
+        -statistics on why the assembler is going to make another pass
+            R1,R2 reason code: R3
+            where R1 is the number of times the assembler encountered
+            something requiring another pass to resolve.  R2 is the
+            number of references to unknown symbols which occured in the
+            pass (but only R1 determines the need for another pass).  R3
+            is a BITMASK of the reasons why another pass is required.
+            See the end of this document for bit designations.
+
+    2
+        mismatches between program labels and equates are displayed
+        on every pass (usually none occur in the first pass unless you
+        have re-declared a symbol name).
+
+        displayed information for symbols:
+            ???? = unknown value
+            str  = symbol is a string
+            eqm  = symbol is an eqm macro
+            (r)  = symbol has been referenced
+            (s)  = symbol created with SET or EQM pseudo-op
+
+    3
+            Unresolved and unreferenced symbols are displayed every pass
+            (unsorted, sorry)
+
+    4
+            An entire symbol list is displayed every pass to STDOUT.
+            (unsorted, sorry)
+
+PROCESSOR MODEL:
+
+    The processor model is chosen with the PROCESSOR pseudo-op and should
+    be the first thing you do in your assembly file.
+
+    Only one PROCESSOR pseudo-op may be declared in the entire assembly,
+    and should be the first thing encountered.
+
+        -68HC11
+        -68705
+        -6803
+        -HD6303
+	-68HC16
+
+SEGMENTS:
+    The SEG pseudo-op creates/sets the current segment.  Segments are used
+    to separate the various parts of a program, for example CODE and
+    BSS_DATA; later the linker could place the CODE at the EPROM address
+    range and the data at the ram address range. The use of DS or RMB
+    statements in a segment planned for ROM is not logical.
+
+    As a result of the use of relocatable segments the ORG statement found
+    in simpler assemblers is not used; its functionality is passed to the
+    linker.
+
+    'Uninitialized' (.U) segments do not produce output.  Therefore, output
+    generating statements are not allowed in these segments.
+
+GENERAL:
+    Most everything is recursive.  You cannot have a macro DEFINITION
+    within a macro definition, but can nest macro calls, repeat loops,
+    and include files.
+
+?    The other major feature in this assembler is the SUBROUTINE pseudo-op,
+    which logically separates local labels (starting with a dot).  This
+    allows you to reuse label names (for example, .1 .fail) rather than
+    think up crazy combinations of the current subroutine to keep it all
+    unique.
+
+    By default the assembler will make 2 passes, if your file requires
+    more passes you can set the number via an option.
+
+
+PSEUDOPS:
+
+        INCLUDE     "name"
+
+            Include another assembly file.
+
+[label] SEG[.U]     name
+[label] RSEG[.U]    name
+
+            This sets the current segment, creating it if neccessary.  If
+            a .U extension is specified on segment creation, the segment
+            is an UNINITIALIZED segment.  The .U is not needed when going
+            back to an already created uninitialized segment, though it
+            makes the code more readable.
+
+[label] DC[.BWL]    exp,exp,exp ...
+[label] FDB         exp,exp,exp ...
+[label] FCB         exp,exp,exp ...
+
+            Declare data in the current segment.
+
+            The default size extension for DC is a byte.
+
+[label] DS[.BWL]    exp[,filler]
+[label] RMB         exp[,filler]
+
+            Declare space (default filler is 0). Data is not generated if
+            within an uninitialized segment.  Note that the number of bytes
+            generated is exp * entrysize (1,2, or 4)
+
+            The default size extension for DS is a byte.
+
+            Note that the default filler is always 0.
+
+[label] DV[.BWL]    eqmlabel exp,exp,exp....
+
+            This is equivalent to DC, but each exp in the list is passed
+            through the symbolic expression specified by the EQM label.
+            The expression is held in a special symbol dotdot '..' on each
+            call to the EQM label.
+
+            See EQM below
+
+[label] HEX            hh hh hh..
+
+            This sets down raw HEX data.  Spaces are optional between bytes.
+            NO EXPRESSIONS are allowed.  Note that you do NOT place a $
+            in front of the digits.  This is a short form for creating
+            tables compactly.  Data is always layed down on a byte-by-byte
+            basis.
+
+            Example:            HEX 1A45 45 13254F 3E12
+
+        ERR
+
+            Abort assembly.
+
+[label] XDEF symbol,symbol,symbol
+
+            Defines which symbols/labels are available outside of this
+            module.
+
+[label] XREF symbol,symbol,symbol
+
+            Declares which symbols/labels from outside modules are used
+            in this module.
+
+        PROCESSOR model
+
+            Do not quote.  Model is one of: 6803,HD6303,68705,68HC11
+            Can only be executed once, and should be the first thing
+            encountered by the assembler.
+
+        ECHO exp,exp,exp
+
+            The expressions (which may also be strings), are echod on the
+            screen and into the list file
+
+[label] ALIGN            N[,fill]
+
+            Align the current PC to an N byte boundry.        The default
+            fill character is always 0, and has nothing to do with
+            the default fill character specifiable in an ORG.
+
+[label] SUBROUTINE  name
+
+            This isn't really a subroutine, but a boundry between sets of
+            temporary labels (which begin with a dot).  Temporary label
+            names are unique within segments of code bounded by SUBROUTINE:
+
+                CHARLIE subroutine
+                        ldx #10
+                .1        dex
+                        bne .1
+                BEN        subroutine
+                        ldx #20
+                .qq        dex
+                        bne .qq
+
+            Automatic temporary label boundries occur for each macro level.
+            Usually temporary labels are used in macros and within actual
+            subroutines (so you don't have to think up a thousand different
+            names)
+
+
+symbol        EQU            exp
+
+            The expression is evaluated and the result assigned to the
+            symbol.
+
+symbol        EQM            exp
+
+            The STRING representing the expression is assigned to the
+            symbol.  Occurances of the symbol in later expressions causes
+            the string to be evaluated for each occurance.  Also used in
+            conjuction with the DV psuedo-op.
+
+symbol        SET            exp
+
+            Same as EQU, but the symbol may be reassigned later.
+
+        END            [symbol]
+
+            Optional. If used with a symbol name the value of that
+            symbol will be entered into the output file as the
+            starting address of the program.  May only be used once
+            and only at the end of the file.  Be careful - if a
+            symbol is not given and a comment without a preceding ';'
+            is used the first word of the comment will be interpreted
+            as the symbol.
+
+        MAC            name
+        MACRO          name
+
+            Declare a macro.  lines between MAC and ENDM are the macro.
+            You cannot recursively declare a macro.  You CAN recursively
+            use a macro (reference a macro in a macro).  No label is
+            allowed to the left of MAC or ENDM.
+
+            Arguments passed to macros are referenced with: {#}.  The first
+            argument passed to a macro would thus be {1}.  You should
+            always use LOCAL labels (.name) inside macros which you use
+            more than once. {0} represents an EXACT substitution of the
+            ENTIRE argument line.
+
+        ENDM
+
+            end of macro def.  NO LABEL ALLOWED ON THE LEFT!
+
+        MEXIT
+
+            Used in conjuction with conditionals.  Exits the current macro
+            level.
+
+[label] IFCONST     exp
+[label] IFD    exp
+
+            Is TRUE if the expression result is defined,  FALSE otherwise
+            and NO error is generated if the expression is undefined.
+
+[label] IFNCONST    exp
+[label] IFND        exp
+
+            Is TRUE if the expression result is undefined, FALSE otherwise
+            and NO error is generated if the expression is undefined.
+
+[label] IF            exp
+
+            Is TRUE if the expression result is defined AND non-zero.
+            Is FALSE if the expression result is defined AND zero.
+            Neither IF or ELSE will be executed if the expression result
+            is undefined.  If the expression is undefined, another assembly
+            pass is automatically taken.
+
+[label] ELSE
+
+            ELSE the current IF.
+
+[label] ENDIF
+[label] ENDC
+[label] EIF
+
+            Terminate an IF. ENDIF and EIF are equivalent.
+
+[label] REPEAT            exp
+[label] REPEND
+
+            Repeat code between REPEAT/REPEND 'exp' times.  if exp == 0,
+            the code repeats forever.  exp is evaluated once.
+
+                Y   SET     0
+                    REPEAT  10
+                X   SET     0
+                    REPEAT  10
+                    DC            X,Y
+                X   SET     X + 1
+                    REPEND
+                Y   SET     Y + 1
+                    REPEND
+
+            generates an output table:        0,0 1,0 2,0 ... 9,0  0,1 1,1 2,1
+            ... 9,1, etc...
+
+            Labels within a REPEAT/REPEND should be temporary labels with a
+            SUBROUTINE pseudoop to keep them unique.
+
+            The Label to the left of REPEND is assigned AFTER the loop
+            FINISHES.
+
+
+[label] XXX[.force] operand
+
+            XXX is some mnemonic, not necessarily three characters long.
+            The .FORCE optional extension is used to force specific
+            addressing modes (see below).
+
+GENERAL:
+
+    The label will be set to the current segment counter either before or
+    after a pseudo-op is executed.  Most of the time, the label is set
+    before the pseudo-op is executed. The following pseudo-op's
+    labels are created AFTER execution of the pseudo-op:
+
+        SEG, ALIGN
+
+EXTENSIONS:
+
+    FORCE extensions are used to force an addressing mode.  Force
+    extensions are also used with DS,DC, and DV to determine the element
+    size.  NOT ALL EXTENSIONS APPLY TO ALL PROCESSORS!
+
+        example:    lda.z   charlie
+
+        i   -implied
+        ind -indirect word
+        0   -implied
+        0x  -implied indexing (0,x)
+        0y  -implied indexing (0,y)
+        b   -byte address
+        bx  -byte address indexed x
+        by  -byte address indexed y
+        w   -word address
+        wx  -word address indexed x
+        wy  -word address indexed y
+        l   -longword (4 bytes) (DS/DC/DV)
+        r   -relative
+        u   -uninitialized (SEG)
+
+        First character equivalent substitutions:
+
+        b z d            (byte, zeropage, direct)
+        w e a            (word, extended, absolute)
+
+
+EXPRESSIONS:
+        Some operators, such as ||, can return a resolved value even if
+        one of the expressions is not resolved.   Operators are as follows:
+
+        NOTE WELL!  Some operations will result in non-byte values when a
+        byte value was wanted.        For example:        ~1  is NOT $FF, but
+        $FFFFFFFF.  Preceding it with a < (take LSB of) will solve the
+        problem.  ALL ARITHMETIC IS CARRIED OUT IN 32 BITS.  The final
+        Result will be automatically truncated to the maximum handleable
+        by the particular machine language (usually a word) when applied
+        to standard mnemonics.
+
+        prec            UNARY
+
+        20  ~exp    one's complement.
+        20  -exp    negation
+        20  !exp    not expression (returns 0 if exp non-zero, 1 if exp zero)
+        20  <exp    take LSB byte of a 16 bit expression
+        20  >exp    take MSB byte of an expression
+
+                    BINARY
+
+        19  *            multiplication
+        19  /            division
+        19  %            mod
+        18  +            addition
+        18  -            subtraction
+        17  >>,<<   shift right, shift left
+        16  >,>=    greater, greater equal
+        16  <,<=    smaller, smaller equal
+        15  ==            equal to.  Try to use this instead of =
+        15  =            exactly the same as == (exists compatibility)
+        15  !=            not equal to
+        14  &            logical and
+        13  ^            logical xor
+        12  |            logical or
+        11  &&            left expression is true AND right expression is true
+        10  ||            left expression is true OR right expression is true
+         9  ?            if left expression is true, result is right expression,
+                    else result is 0.        [10 ? 20] returns 20
+         8  []            group expressions
+         7  ,            separate expressions in list (also used in
+                    addressing mode resolution, BE CAREFUL!
+
+    Constants:
+
+        nnn        decimal
+        0nnn        octal
+        %nnn        binary
+        $nnn        hex
+        'c      character
+        'c'      character
+        "cc.."  string (NOT zero terminated if in DC/DS/DV)
+        [exp]d        the constant expressions is evaluated and it's decimal
+                result turned into an ascii string.
+
+    Symbols:
+
+        ..        -holds evaluated value in DV pseudo op
+        .name        -represents a temporary symbol name.  Temporary symbols
+                 may be reused inside MACROS and between SUBROUTINES, but
+                 may not be referenced across macros or across SUBROUTINEs.
+        .        -current program counter (as of the beginning of the
+                 instruction).
+        name        -beginning with an alpha character and containing letters,
+                 numbers, or '_'.  Represents some global symbol name.
+
+
+WHY codes:
+    Each bit in the WHY word (verbose option 1) is a reason (why
+    the assembler needs to do another pass), as follows:
+
+    bit 0   expression in mnemonic not resolved
+        1   -
+        2   expression in a DC not resolved
+        3   expression in a DV not resolved (probably in DV's EQM symbol)
+        4   expression in a DV not resolved (could be in DV's EQM symbol)
+        5   expression in a DS not resolved
+        6   expression in an ALIGN not resolved
+        7   ALIGN: Relocatable origin not known (impossible -Stan)
+        8   ALIGN: Normal origin not known        (if in ORG at the time)
+        9   EQU:   expression not resolved
+        10  EQU:   value mismatch from previous pass (phase error)
+        11  IF:     expression not resolved
+        12  REPEAT: expression not resolved
+
+        13  a program label has been defined after it has been
+            referenced (forward reference) and thus we need another
+            pass
+        14  a program label's value is different from that of the
+            previous pass (phase error)
+
+    Certain errors will cause the assembly to abort immediately, others
+    will wait until the current pass is over.        The remaining allow another
+    pass to occur in the hopes the error will fix itself.
+
+
+VERSIONS:
+

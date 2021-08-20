@@ -1,0 +1,14 @@
+	processor 68HC11
+	RSEG CODE1
+label_001       LDX     #0
+        JSR     label_003
+        LDAA    #$0
+        JSR     label_004
+        CLI
+        RTS
+
+	RSEG	CODE2
+label_004	rts
+label_003	rts
+
+	END	label_001
