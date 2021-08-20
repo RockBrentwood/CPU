@@ -357,22 +357,22 @@ void SetRelocs(FileBuf F) {
 }
 
 /* HEX OUTPUT ROUTINES */
-FILE *OutF = 0;
+static FILE *HexF = 0;
 byte HexBuf[0x10]; int HexX;
 long HexAddr;
 void OpenHex(char *Hex) {
-   OutF = fopen(Hex, "w");
-   if (OutF == 0) FATAL("Cannot open output file.");
+   HexF = fopen(Hex, "w");
+   if (HexF == 0) FATAL("Cannot open output file.");
    HexX = 0;
 }
 void EndHex(void) {
    if (HexX > 0) {
       int H, Sum;
       Sum = (HexAddr&0xff) + ((HexAddr >> 8)&0xff) + HexX;
-      fprintf(OutF, ":%02X%04X00", HexX, HexAddr);
+      fprintf(HexF, ":%02X%04X00", HexX, HexAddr);
       for (H = 0; H < HexX; H++)
-         fprintf(OutF, "%02X", HexBuf[H]), Sum += HexBuf[H];
-      fprintf(OutF, "%02X\n", (-Sum)&0xff);
+         fprintf(HexF, "%02X", HexBuf[H]), Sum += HexBuf[H];
+      fprintf(HexF, "%02X\n", (-Sum)&0xff);
       HexX = 0;
    }
 }
@@ -382,17 +382,17 @@ void PutHex(long Addr, byte Hex) {
    if (HexX == 0x10) {
       int H, Sum;
       Sum = (HexAddr&0xff) + ((HexAddr >> 8)&0xff) + HexX;
-      fprintf(OutF, ":10%04X00", HexAddr);
+      fprintf(HexF, ":10%04X00", HexAddr);
       for (H = 0; H < HexX; H++)
-         fprintf(OutF, "%02X", HexBuf[H]), Sum += HexBuf[H];
-      fprintf(OutF, "%02X\n", (-Sum)&0xff);
+         fprintf(HexF, "%02X", HexBuf[H]), Sum += HexBuf[H];
+      fprintf(HexF, "%02X\n", (-Sum)&0xff);
       HexX = 0;
    }
 }
 void CloseHex(void) {
    EndHex();
-   fprintf(OutF, ":00000001FF\n");
-   fclose(OutF);
+   fprintf(HexF, ":00000001FF\n");
+   fclose(HexF);
 }
 
 void GenImage(char *Hex) {
