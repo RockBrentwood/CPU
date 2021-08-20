@@ -4,6 +4,8 @@ and is being slated for future expansion.
 It contains the Frankenstein cross-assembler, as well as the CAS 8051 assember,
 and other tools and utilities for microcontroller CPUs.
 
+The FTP archive may be accessed over the web at
+        http://ftp.funet.fi/pub/microprocs/
 The changes made relative to the original, at the FTP site, along with the listings of the original contents of the GitHub version, are under Manifest.txt.
 
 The following is the README contained in the original, minus the original contact e-mail reference, and is subject to future change, after this archive is populated.
