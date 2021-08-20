@@ -1,0 +1,87 @@
+START-UP NOTES
+(1) If you use semi-colons for comments, make sure you precede the comments
+    by at least 2 consecutive semi-colons.  Usually, this should amount to
+    nothing more than performing a substitution ; -> ;; with your editor.
+
+    A short program (semi.c) has been provided that will do the same.
+
+(2) If you are using an 8051 extension (like the 8052 or 8051fa), you will
+    have to make an include file to define the special function registers and
+    bits and values for that processor.  Example include files have been
+    provided: 8052.h and 8051fa.h.
+
+(3) The software in the data directory has been provided as an illustration
+    of modular programming using this assembler.
+
+(4) About the 8051 source in the rest of the archive:
+   Most of the 8051 assembly software and documentation preceded the assembler
+provided with this package, therefore the files are not completely modular.
+The one exception is the source contained in assem/data, which is a modularized
+version of the source in the data directory.  There is a corresponding makefile
+for assem/data in that directory.
+
+   To assemble all the other sources:
+
+        crc.asm   in the crc directory
+        data.asm  in the data directory
+        debug.asm in the debug directory
+        drive.asm in the drive directory
+        lcd.asm   in the kernel directory
+        int.asm   in the kernel directory
+
+just run the assembler on the file indicated, for instance:
+
+                       cas crc.asm
+
+to assemble crc.asm.  All the other assembly language modules have names ending
+in .lib, and are combined with the source module (crc.asm in the example above)
+using the assembler's file inclusion feature.
+
+(5) If your source file was written for another non-minimal assembler, make
+    sure your directives are converted to conform to this assembler.  For
+    reference, the directives accepted by this assembler are:
+
+include "FILE"             --- File inclusion
+
+seg Type                   --- Setting current segment and/or location
+seg Type at Loc                Type = code, xdata, or data.
+seg Type org Loc
+at Loc
+org Loc
+
+LABEL equ Val              --- Defining new labels
+LABEL Type Val                 Type = code, xdata, data, sfr, or bit.
+LABEL:
+LABEL set Val
+LABEL = Val
+
+<digit>:                   --- Defining and using numeric labels
+<digit>f
+<digit>b
+
+global LABEL equ Val        --- Declaring global labels.
+global LABEL Type Val
+global LABEL
+public LABEL equ Val
+public LABEL Type Val
+public LABEL
+
+extern equ LABEL, ..., LABEL  --- Declaring external labels
+extern Type LABEL,..., LABEL      Type = code, xfata, data, sfr, or bit
+
+ds Val                       --- Memory allocation
+rb Val
+rw Val
+
+db Val, ..., Val              --- Memory formatting. db/byte can accept strings
+byte Val, ..., Val
+dw Val, ..., Val
+word Val, ..., Val
+
+if (Val) <Statement>                    --- Conditional assembly
+if (Val) <Statement> else <Statement>
+
+{ <Statement> ... <Statement> }         --- Statement grouping
+
+<Statement>; <Statement>                --- Multiple statements on a line.
+
