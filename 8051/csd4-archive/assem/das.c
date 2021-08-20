@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef unsigned char byte;
 typedef unsigned int word;
@@ -31,7 +32,7 @@ void PUSH(word Address) {
    Ref[Address] |= ENTRY;
    if (Ref[Address]&OP) return;
    if (EP - Entries == 0x100) {
-      fprintf(stderr, "Too many entries, PC = %04x.\n", PC); exit(1);
+      fprintf(stderr, "Too many entries, PC = %04x.\n", PC); exit(EXIT_FAILURE);
    }
    *EP++ = Address;
 };
@@ -194,14 +195,14 @@ byte Nib(int X) {
    if (X >= 'a' && X <= 'f') return X - 'a' + 10;
    if (X >= 'A' && X <= 'F') return X - 'A' + 10;
    fprintf(stderr, "Bad hexadecimal digit in input.\n");
-   exit(1);
+   exit(EXIT_FAILURE);
 }
 
 byte GetHex(void) {
    int A, B; byte Bt;
    A = getchar(); B = getchar();
    if (A == EOF || B == EOF) {
-      fprintf(stderr, "Unexpected EOF.\n"); exit(1);
+      fprintf(stderr, "Unexpected EOF.\n"); exit(EXIT_FAILURE);
    }
    Bt = Nib(A) << 4 | Nib(B);
    CheckSum = (CheckSum + Bt)&0xff; return Bt;
@@ -221,18 +222,18 @@ void HexLoad(void) {
    while (1) {
       do {
          Ch = getchar();
-         if (Ch == EOF) { fprintf(stderr, "Unexpected EOF.\n"); exit(1); }
+         if (Ch == EOF) { fprintf(stderr, "Unexpected EOF.\n"); exit(EXIT_FAILURE); }
       } while (Ch != ':');
       CheckSum = 0;
       Size = GetHex(); Addr = GetWord(); Mark = GetHex();
       for (I = 0; I < Size; I++) Buffer[I] = GetHex();
       (void)GetHex();
       if (CheckSum != 0) {
-         fprintf(stderr, "Bad checksum.\n"); exit(1);
+         fprintf(stderr, "Bad checksum.\n"); exit(EXIT_FAILURE);
       }
       if (Mark) break;
       if (Addr >= 0x4000 - Size) {
-         printf("Address out of range 0 - 4000h in input.\n"); exit(0);
+         printf("Address out of range 0 - 4000h in input.\n"); exit(EXIT_FAILURE);
       }
       for (I = 0; I < Size; I++, Addr++) Hex[Addr] = Buffer[I], Ref[Addr] = 0;
       if (Addr > HighAddr) HighAddr = Addr;
@@ -274,7 +275,7 @@ void MakeOp(char *S) {
          case 'n': if (Generating) printf("R%1x", Arg[0]&7); break;
          default:
             fprintf(stderr, "Bad format string, PC = %04x.\n", PC);
-         exit(1);
+         exit(EXIT_FAILURE);
       }
    }
    if (Generating) putchar('\n');
@@ -339,14 +340,14 @@ word fGetWord(void) {
    return (A << 8) | B;
 }
 
-void main(void) {
+int main(void) {
    word *E, W;
    HexLoad();
 fprintf(stderr, "First pass\n");
    Generating = 0;
    EntryF = fopen("entries", "r");
    if (EntryF == NULL) {
-      fprintf(stderr, "No entry points listed.\n"); exit(1);
+      fprintf(stderr, "No entry points listed.\n"); return EXIT_FAILURE;
    }
    for (Ended = 0, EP = Entries; !Ended; ) {
       W = fGetWord(); if (!Ended) PUSH(W);
@@ -389,4 +390,5 @@ fprintf(stderr, "Second pass\n");
       }
       while (!Disassemble());
    }
+   return EXIT_SUCCESS;
 }

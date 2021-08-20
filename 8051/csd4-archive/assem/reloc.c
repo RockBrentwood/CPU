@@ -1,16 +1,16 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdlib.h>
 
 typedef unsigned char byte;
 typedef unsigned int word;
 
 byte Nib(int X) {
    if (X >= '0' && X <= '9') return X - '0';
-   if (X >= 'a' && X <= 'f') return X - 'a' + 10;
-   if (X >= 'A' && X <= 'F') return X - 'A' + 10;
-   fprintf(stderr, "Bad hexadecimal digit in input\n");
-   exit(1);
+   else if (X >= 'a' && X <= 'f') return X - 'a' + 10;
+   else if (X >= 'A' && X <= 'F') return X - 'A' + 10;
+   else fprintf(stderr, "Bad hexadecimal digit in input\n"), exit(EXIT_FAILURE);
 }
 
 byte CheckSum;
@@ -18,7 +18,7 @@ byte GetHex(FILE *InF) {
    int A, B; byte Bt;
    A = fgetc(InF); B = fgetc(InF);
    if (A == EOF || B == EOF) {
-      fprintf(stderr, "Unexpected EOF.\n"); exit(1);
+      fprintf(stderr, "Unexpected EOF.\n"); exit(EXIT_FAILURE);
    }
    Bt = Nib(A) << 4 | Nib(B);
    CheckSum = (CheckSum + Bt)&0xff; return Bt;
@@ -86,17 +86,26 @@ char *Convert(char *Path) {
    return S;
 }
 
-main(int ArgC, char **ArgV) {
+int main(int AC, char *AV[]) {
+   char *App = AC > 0? AV[0]: NULL; if (App == NULL || *App == '\0') App = "reloc";
+   int Status = EXIT_FAILURE;
    word Offset; FILE *InF, *OutF; char *OutName;
-   if (ArgC != 3) { printf("Usage: relocate Offset Input.\n"); exit(0); }
-   Offset = atoh(ArgV[1]);
+   if (AC != 3) { printf("Usage: %s Offset Input.\n", App); goto Exit0; }
+   Offset = atoh(AV[1]);
    if (Offset == 0) printf("Zero offset/bad offset specified.\n");
-   OutName = Convert(ArgV[2]);
-   if (OutName == 0) { printf("%s not of form *.hex.\n", ArgV[2]); exit(0); }
-   InF = fopen(ArgV[2], "r");
-   if (InF == 0) { printf("Cannot open %s.\n", ArgV[2]); exit(0); }
+   OutName = Convert(AV[2]);
+   if (OutName == 0) { printf("%s not of form *.hex.\n", AV[2]); goto Exit0; }
+   InF = fopen(AV[2], "r");
+   if (InF == 0) { printf("Cannot open %s.\n", AV[2]); goto Exit1; }
    OutF = fopen(OutName, "w");
-   if (OutF == 0) { printf("Cannot open %s.\n", OutName); exit(0); }
+   if (OutF == 0) { printf("Cannot open %s.\n", OutName); goto Exit2; }
    Relocate(Offset, InF, OutF);
-   fclose(InF), fclose(OutF);
+   Status = EXIT_SUCCESS;
+   fclose(OutF);
+Exit2:
+   fclose(InF);
+Exit1:
+   free(OutName);
+Exit0:
+   return Status;
 }

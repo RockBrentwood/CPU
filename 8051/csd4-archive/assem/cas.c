@@ -1,32 +1,38 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "io.h"
 #include "op.h"
 #include "st.h"
 #include "link.h"
 
-main(int AC, char **AV) {
+int main(int AC, char *AV[]) {
+   char *App = AC > 0? AV[0]: NULL; if (App == NULL || *App == '\0') App = "cas";
+   int Status = EXIT_FAILURE;
    int A; char **AP, *Hex; byte DoHex = 0, DoLink = 1;
    if (AC < 2) {
-      fprintf(stderr, "Use: %s -c File... to assemble\n", AV[0]);
-      fprintf(stderr, "Use: %s [-o Output] File... to link\n", AV[0]);
-      exit(1);
+      fprintf(stderr, "Usage: %s -c File... to assemble\n", App);
+      fprintf(stderr, "Usage: %s [-o Output] File... to link\n", App);
+      goto Exit;
    }
    if (AV[1][0] == '-') {
       if (strcmp(AV[1], "-c") == 0) {
-         if (AC < 3)
-            fprintf(stderr, "Use: %s -c File ... to assemble\n", AV[0]),
-            exit(1);
+         if (AC < 3) {
+            fprintf(stderr, "Usage: %s -c File ... to assemble\n", App);
+            goto Exit;
+         }
          DoLink = 0, Fs = AC - 2, AP = AV + 2;
       } else if (strcmp(AV[1], "-o") == 0) {
-         if (AC < 4)
-            fprintf(stderr, "Use: %s -o Output File... to link\n", AV[0]),
-            exit(1);
+         if (AC < 4) {
+            fprintf(stderr, "Usage: %s -o Output File... to link\n", App);
+            goto Exit;
+         }
          DoHex = 1, Hex = CopyS(AV[2]), Fs = AC - 3, AP = AV + 3;
-      } else
-         fprintf(stderr, "Invalid option: %s\n", AV[1]), exit(1);
+      } else {
+         fprintf(stderr, "Invalid option: %s\n", AV[1]); goto Exit;
+      }
    } else Fs = AC - 1, AP = AV + 1;
    if (DoLink) FTab = (FileBuf)Allocate(Fs * sizeof *FTab); else FTab = 0;
    OpInit();
@@ -46,8 +52,9 @@ main(int AC, char **AV) {
       if (Src != 0) {
          fprintf(stderr, "assembling %s -> %s\n", Src, Obj);
          OutF = OpenObj(Obj);
-         if (OutF == 0)
-            fprintf(stderr, "Cannot open object file for %s.\n", Src), exit(1);
+         if (OutF == 0) {
+            fprintf(stderr, "Cannot open object file for %s.\n", Src); goto Exit;
+         }
          Assemble(Src), Generate();
       }
    }
@@ -69,4 +76,7 @@ main(int AC, char **AV) {
       fprintf(stderr, " -> %s\n", Hex);
       Link(Hex);
    }
+   Status = EXIT_SUCCESS;
+Exit:
+   return Status;
 }

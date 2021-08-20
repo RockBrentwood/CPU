@@ -53,12 +53,11 @@ static Symbol Form(int B, char *Name) {
    return N;
 }
  
-#include <sys/types.h>
-#include <sys/timeb.h>
+#include <time.h>
  
 void SymInit(void) {
-   struct timeb T; int K;
-   ftime(&T); srand((unsigned int)(T.time ^ T.millitm)&0xffff);
+   int K;
+   srand((unsigned)time(NULL));
    NIL = Form(MAX_BREADTH - 1, 0);
    for (K = 0; K < MAX_BREADTH; K++) NIL->Next[K] = NIL;
    Breadth = 0;

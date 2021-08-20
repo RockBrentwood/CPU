@@ -1,8 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
+
 typedef unsigned char byte;
 typedef unsigned short word;
 
-void FATAL(char *Msg) { printf(Msg), putchar('\n'); exit(1); }
+void FATAL(char *Msg) { printf(Msg), putchar('\n'); exit(EXIT_FAILURE); }
 
 byte GetB(FILE *FP) {
    int A;
@@ -26,28 +28,32 @@ unsigned long GetL(FILE *FP) {
    return (A&0xff) << 24 | (B&0xff) << 16 | (C&0xff) << 8 | D&0xff;
 }
 
-main(int AC, char **AV) {
+int main(int AC, char *AV[]) {
+   char *App = AC > 0? AV[0]: NULL; if (App == NULL || *App == '\0') App = "ds";
+   int Status = EXIT_FAILURE;
    FILE *FP; int Field; word MAGIC;
    long SegLoc, Files, Segs, Gaps, Syms, Exps, Relocs, Sum;
-   if (AC != 2) fprintf(stderr, "Use; display Input.\n"), exit(1);
+   if (AC != 2) { fprintf(stderr, "Usage: %s Input.\n", App); goto Exit0; }
    FP = fopen(AV[1], "rb+");
-   if (FP == 0) fprintf(stderr, "Cannot open %s.\n", AV[1]), exit(1);
+   if (FP == 0) { fprintf(stderr, "Cannot open %s.\n", AV[1]); goto Exit0; }
    MAGIC = GetW(FP);
-   if (MAGIC != 0x55aa)
-      fprintf(stderr, "Invalid object file (%4x).\n", MAGIC), exit(1);
+   if (MAGIC != 0x55aa) {
+      fprintf(stderr, "Invalid object file (%4x).\n", MAGIC); goto Exit1;
+   }
    SegLoc = GetL(FP), Files = GetL(FP), Segs = GetL(FP), Gaps = GetL(FP),
    Syms = GetL(FP), Exps = GetL(FP), Relocs = GetL(FP), Sum = GetL(FP);
-   if (Sum != (SegLoc + Files + Segs + Gaps + Syms + Exps + Relocs)&0xffffffff)
-      fprintf(stderr, "Corrupt object file."), exit(0);
-printf("IMAGE:\n");
+   if (Sum != (SegLoc + Files + Segs + Gaps + Syms + Exps + Relocs)&0xffffffff) {
+      fprintf(stderr, "Corrupt object file."); goto Exit1;
+   }
+printf("Image:\n");
    for (Field = 0; ftell(FP) < SegLoc; Field++) {
       if (Field%0x10 == 0) printf("%4x:", Field);
       printf(" %2x", fgetc(FP));
       if (Field%0x10 == 0x0f) putchar('\n');
    }
    if (Field%0x10 > 0) putchar('\n');
-if (ftell(FP) != SegLoc) fprintf(stderr, "INTERNAL ERROR (0).\n"), exit(0);
-   printf("FILE(S): %ld\n", Files);
+if (ftell(FP) != SegLoc) { fprintf(stderr, "INTERNAL ERROR (0).\n"); goto Exit1; }
+   printf("File(s): %ld\n", Files);
    if (Files > 0) {
       long S; char Buf[0x100];
       printf("## Name,\n");
@@ -57,7 +63,7 @@ if (ftell(FP) != SegLoc) fprintf(stderr, "INTERNAL ERROR (0).\n"), exit(0);
          printf("%2ld %15s\n", S, Buf);
       }
    }
-   printf("SEGMENT(S): %ld\n", Segs);
+   printf("Segment(s): %ld\n", Segs);
    if (Segs > 5) { /* The number of types */
       long S;
       printf("## Line File Rel Type Base Size  Loc\n");
@@ -71,7 +77,7 @@ if (ftell(FP) != SegLoc) fprintf(stderr, "INTERNAL ERROR (0).\n"), exit(0);
          );
       }
    }
-   printf("GAP(S): %ld\n", Gaps);
+   printf("Gap(s): %ld\n", Gaps);
    if (Gaps > 0) {
       long S;
       printf("##  Seg  Off Size\n");
@@ -81,7 +87,7 @@ if (ftell(FP) != SegLoc) fprintf(stderr, "INTERNAL ERROR (0).\n"), exit(0);
          printf("%2ld %4x %4x %4x\n", S, Seg, Off, Size);
       }
    }
-   printf("SYMBOL(S): %ld\n", Syms);
+   printf("Symbol(s): %ld\n", Syms);
    if (Syms > 0) {
       long S; char Buf[0x80];
       printf("##     Scope Var Type   Value  Name\n");
@@ -106,7 +112,7 @@ if (ftell(FP) != SegLoc) fprintf(stderr, "INTERNAL ERROR (0).\n"), exit(0);
          printf(" %s\n", Buf);
       }
    }
-   printf("EXPRESSION(S): %ld\n", Exps);
+   printf("Expression(s): %ld\n", Exps);
    if (Exps > 0) {
       long S;
       printf("## Line File  Tag Args...\n");
@@ -137,7 +143,7 @@ if (ftell(FP) != SegLoc) fprintf(stderr, "INTERNAL ERROR (0).\n"), exit(0);
          putchar('\n');
       }
    }
-   printf("RELOCATION(S): %ld\n", Relocs);
+   printf("Relocation(s): %ld\n", Relocs);
    if (Relocs > 0) {
       long S;
       printf("Line File Tag  Exp  Seg: Off\n");
@@ -148,5 +154,9 @@ if (ftell(FP) != SegLoc) fprintf(stderr, "INTERNAL ERROR (0).\n"), exit(0);
          printf("%4d %4d  %c %4x  @ %2d:%4x\n", Line, File, Tag, Index, U, Offset);
       }
    }
+   Status = EXIT_SUCCESS;
+Exit0:
    fclose(FP);
+Exit1:
+   return Status;
 }

@@ -68,6 +68,7 @@ extern char InExp, InSemi;
 
 extern int Line, StartLine;
 extern Lexical Scan(void);
+extern void FileInit(void);
 extern void ERROR(const char *Msg, ...);
 extern void FATAL(const char *Msg, ...);
 extern void CHECK(void);
