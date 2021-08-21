@@ -16,7 +16,7 @@ extern struct Segment {
    word Line, File, Base, Size;
    long Loc;
 } SegTab[], *SegP;
-extern unsigned long LOC;
+extern unsigned long CurLoc;
 
 typedef struct Gap *Gap;
 extern struct Gap {
@@ -69,9 +69,9 @@ extern char InExp, InSemi;
 extern int Line, StartLine;
 extern Lexical Scan(void);
 extern void FileInit(void);
-extern void ERROR(const char *Msg, ...);
-extern void FATAL(const char *Msg, ...);
-extern void CHECK(void);
+extern void Error(const char *Msg, ...);
+extern void Fatal(const char *Msg, ...);
+extern void Check(void);
 extern void *Allocate(unsigned Size);
 
 extern byte GetB(FILE *FP);
@@ -83,6 +83,6 @@ extern void PutL(unsigned long L, FILE *FP);
 
 extern void OpenF(char *Name);
 
-extern struct AddrCard {
+extern struct AddrItem {
    long Lo, Hi; byte ReadOnly;
 } AddrTab[];

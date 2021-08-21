@@ -7,7 +7,7 @@
 #include "res.h"
 #include "op.h"
 
-#define ELEMENTS(Arr) (sizeof(Arr)/sizeof(Arr[0]))
+#define ELEMENTS(Arr) (sizeof (Arr)/sizeof (Arr)[0])
 
 /* Translate controls:
    X: . = x     # = #x      / = /x      n = Rn
@@ -109,8 +109,8 @@ Code CodeTab[] = {
 char XBuf[A_MAX + 1]; Exp XExp[A_MAX];
 
 void OpInit(void) {
-   Code *OC; Mode *M; int I, J;
-   for (OC = CodeTab, M = ModeTab; OC < CodeTab + ELEMENTS(CodeTab); OC++) {
+   Mode *M = ModeTab;
+   for (Code *OC = CodeTab; OC < CodeTab + ELEMENTS(CodeTab); OC++) {
       OC->Start = M; M += OC->Modes;
       if (M > ModeTab + ELEMENTS(ModeTab))
          fprintf(stderr, "Bad opcode initialization.\n"), exit(1);
@@ -118,55 +118,51 @@ void OpInit(void) {
 }
 
 void ParseArgs(byte Mnem) {
-   Lexical L = OldL; Code *CP; Mode *MP; int XReg;
-   char *XP, *S; Exp *EP, E; byte Op; word W;
-   XP = XBuf, EP = XExp;
+   char *XP = XBuf; Exp *EP = XExp;
+   Lexical L = OldL; int XReg;
    do {
-      L = Scan();
-      if (L == SEMI) {
-         if (XP > XBuf) ERROR("Extra ','."); break;
+      if ((L = Scan()) == SEMI) {
+         if (XP > XBuf) Error("Extra ','."); break;
       }
       switch (L) {
          case POUND: *XP = '#', Scan(), *EP++ = Parse(2); break;
          case DIV: *XP = '/', Scan(), *EP++ = Parse(2); break;
-         case AT:
-            L = Scan();
-            switch (L) {
-               case REGISTER: switch ((Register)Value) {
-                  case ACC:
-                     if (Scan() != PLUS)
-                        ERROR("Cannot use @A."), *XP = ' ';
-                     else if (Scan() != REGISTER)
-                        ERROR("Missing DPTR or PC after @A+"), *XP = ' ';
-                     else {
-                        switch (Value) {
-                           case ACC:ERROR("Cannot use @A+A"), *XP = ' '; break;
-                           case AB:ERROR("Cannot use @A+AB."); *XP = ' '; break;
-                           case CY:ERROR("Cannot use @A+C."); *XP = ' '; break;
-                           case DPTR: *XP = '>'; break;
-                           case PC: *XP = '$'; break;
-                           default:ERROR("Cannot use @A+Rn"); *XP = ' '; break;
-                        }
-                        Scan();
+         case AT: switch (L = Scan()) {
+            case REGISTER: switch ((Register)Value) {
+               case ACC:
+                  if (Scan() != PLUS)
+                     Error("Cannot use @A."), *XP = ' ';
+                  else if (Scan() != REGISTER)
+                     Error("Missing DPTR or PC after @A+"), *XP = ' ';
+                  else {
+                     switch (Value) {
+                        case ACC: Error("Cannot use @A+A"), *XP = ' '; break;
+                        case AB: Error("Cannot use @A+AB."); *XP = ' '; break;
+                        case CY: Error("Cannot use @A+C."); *XP = ' '; break;
+                        case DPTR: *XP = '>'; break;
+                        case PC: *XP = '$'; break;
+                        default: Error("Cannot use @A+Rn"); *XP = ' '; break;
                      }
-                  break;
-                  case AB: ERROR("Cannot use @AB."); *XP = ' '; break;
-                  case CY: ERROR("Cannot use @C."); *XP = ' '; break;
-                  case DPTR: *XP = '@'; Scan(); break;
-                  case PC: ERROR("Cannot use @PC."); *XP = ' '; break;
-                  default:
-                     Value -= (short)R0;
-                     if (Value != 0 && Value != 1) {
-                        ERROR("Register in @Rn out of range."); *XP = ' ';
-                     } else *XP = 'i', XReg = Value;
                      Scan();
-                  break;
-               }
+                  }
                break;
+               case AB: Error("Cannot use @AB."); *XP = ' '; break;
+               case CY: Error("Cannot use @C."); *XP = ' '; break;
+               case DPTR: *XP = '@'; Scan(); break;
+               case PC: Error("Cannot use @PC."); *XP = ' '; break;
                default:
-                  ERROR("Register must appear after @."); *XP = ' ';
+                  Value -= (short)R0;
+                  if (Value != 0 && Value != 1) {
+                     Error("Register in @Rn out of range."); *XP = ' ';
+                  } else *XP = 'i', XReg = Value;
+                  Scan();
                break;
             }
+            break;
+            default:
+               Error("Register must appear after @."); *XP = ' ';
+            break;
+         }
          break;
          case REGISTER: switch ((Register)Value) {
             case ACC: *XP = 'A'; break;
@@ -174,8 +170,8 @@ void ParseArgs(byte Mnem) {
             case CY: *XP = 'C'; break;
             case DPTR: *XP = 'D'; break;
             case PC:
-               ERROR("Cannot use PC as a register.");
-               *XP = '.', *EP++ = MakeExp(AddrX, SegP, (word)LOC);
+               Error("Cannot use PC as a register.");
+               *XP = '.', *EP++ = MakeExp(AddrX, SegP, (word)CurLoc);
             break;
             default: *XP = 'n', XReg = Value - (short)R0; break;
          }
@@ -185,27 +181,29 @@ void ParseArgs(byte Mnem) {
       }
       L = OldL;
       if (XP++ >= XBuf + A_MAX) {
-         ERROR("Too many arguments specified."); return;
+         Error("Too many arguments specified.");
          while (L != SEMI && L != 0) L = Scan();
          break;
       }
    } while (L == COMMA);
    if (!Active) return;
-   *XP = 0, *EP = 0;
-   CP = CodeTab + Mnem;
-   for (MP = CP->Start; MP < CP->Start + CP->Modes; MP++)
+   *XP = 0, *EP = NULL;
+   Code *CP = CodeTab + Mnem;
+   Mode *MP = CP->Start;
+   for (; MP < CP->Start + CP->Modes; MP++)
       if (strcmp(XBuf, MP->X) == 0) break;
    if (MP >= CP->Start + CP->Modes) {
-      ERROR("Invalid addressing mode: %s.", CP->Name); return;
+      Error("Invalid addressing mode: %s.", CP->Name); return;
    }
-   Op = MP->OpCode;
-   S = MP->Y, EP = XExp;
+   EP = XExp;
+   byte Op = MP->OpCode;
+   char *S = MP->Y;
    switch (*S) {
       case 'n': S++; Op |= XReg&7; break;/* Register R0/R1/R2/R3/R4/R5/R6/R7 */
       case 'i': S++; Op |= XReg&1; break;/* Register Pointer @R0/@R1 */
-      case 'x': E = EP[0], EP[0] = EP[1], EP[1] = E; S++; break;
+      case 'x': { Exp E = EP[0]; EP[0] = EP[1], EP[1] = E; S++; } break;
       case 'P': Reloc(Op, 'P', *EP++); return; /* P Paged Address */
    }
    PByte(Op);
-   for (; *S != 0; S++) Reloc(0, *S, *EP++);
+   for (; *S != '\0'; S++) Reloc(0, *S, *EP++);
 }

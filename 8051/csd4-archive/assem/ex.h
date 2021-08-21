@@ -12,14 +12,14 @@ struct Exp {
 };
 extern Exp ExpHead;
 
-#define VALUE(E)  ((E)->Body.Value)
-#define SEG(E)    ((E)->Body.Addr.Seg)
-#define OFFSET(E) ((E)->Body.Addr.Offset)
-#define SYM(E)    ((E)->Body.Sym)
-#define OP(E)     ((E)->Body.Funct.Op)
-#define ARG1(E)   ((E)->Body.Funct.A)
-#define ARG2(E)   ((E)->Body.Funct.B)
-#define ARG3(E)   ((E)->Body.Funct.C)
+#define ValOf(E)	((E)->Body.Value)
+#define SegOf(E)	((E)->Body.Addr.Seg)
+#define OffOf(E)	((E)->Body.Addr.Offset)
+#define SymOf(E)	((E)->Body.Sym)
+#define OpOf(E)		((E)->Body.Funct.Op)
+#define ArgA(E)		((E)->Body.Funct.A)
+#define ArgB(E)		((E)->Body.Funct.B)
+#define ArgC(E)		((E)->Body.Funct.C)
 
 extern Exp Parse(int Dir);
 extern Exp MakeExp(ExpTag Tag, ...);

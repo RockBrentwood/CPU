@@ -13,7 +13,7 @@ The contents of an object file are as follows:
 
    (a) HEADER
       Bytes   Item
-        2     55aa ... the MAGIC number
+        2     55aa ... the file type signature.
         4     Location of first item past the end of the memory IMAGE.
         4     Number of FILES listed.
         4     Number of SEGMENTS listed.
