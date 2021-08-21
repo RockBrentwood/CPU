@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include "io.h"
 #include "ex.h"
 #include "res.h"
@@ -104,12 +105,12 @@ void SetFree(void) {
       FHead[T] = Allocate((BSize[T] + 1)*sizeof *FHead[T]);
       Block P = NULL; Free F = FHead[T];
       for (Block B = BHead[T]; B != NULL; P = B, B = B->Next) {
-         long Base = P == NULL? AddrTab[T].Lo: (long) P->Seg->Base + P->Seg->Size;
+         long Base = P == NULL? AddrTab[T].Lo: (long)P->Seg->Base + P->Seg->Size;
          if (Base < B->Seg->Base)
             F->Base = Base, F->Size = (long)B->Seg->Base - Base,
             F->BP = P, F++;
       }
-      long Base = P == NULL? AddrTab[T].Lo: (long) P->Seg->Base + P->Seg->Size;
+      long Base = P == NULL? AddrTab[T].Lo: (long)P->Seg->Base + P->Seg->Size;
       if (Base <= AddrTab[T].Hi)
          F->Base = Base, F->Size = (long)AddrTab[T].Hi + 1 - Base,
          F->BP = P, F++;
@@ -123,8 +124,8 @@ void PurgeFree(void) {
 }
 
 void BestFit(char *Obj, Segment Seg) {
-   byte T = Seg->Type;
    if (!Seg->Rel) return;
+   byte T = Seg->Type;
    StartLine = Seg->Line, StartF = Seg->File;
    Free Best = NULL;
    for (Free FP = FHead[T]; FP < FHead[T] + FSize[T]; FP++) {
@@ -139,7 +140,7 @@ void BestFit(char *Obj, Segment Seg) {
       B->Next = BHead[T], BHead[T] = B;
    else
       B->Next = Best->BP->Next, Best->BP->Next = B;
-   Seg->Rel = 0, Seg->Base = Best->Base,
+   Seg->Rel = false, Seg->Base = Best->Base,
    Best->BP = B, Best->Base += Seg->Size, Best->Size -= Seg->Size;
 }
 
@@ -151,7 +152,7 @@ void FitSegs(FileBuf F) {
 void SetSeg(void) {
    USeg = Allocate(TYPES*sizeof *USeg);
    for (Segment S = USeg; S < USeg + TYPES; S++)
-      S->Line = 0, S->File = 0, S->Rel = 0, S->Type = S - USeg,
+      S->Line = 0, S->File = 0, S->Rel = false, S->Type = S - USeg,
       S->Base = 0, S->Size = 0, S->Loc = 0L;
    BHead = Allocate(SEG_TYPES*sizeof *BHead);
    BSize = Allocate(SEG_TYPES*sizeof *BSize);
@@ -166,8 +167,8 @@ void FreeBlocks(void) {
 }
 
 void Fit(char *Obj, Segment Seg) {
-   byte T = Seg->Type;
    if (Seg->Rel) return;
+   byte T = Seg->Type;
    Block Prev = NULL, Cur = BHead[T];
    for (; Cur != NULL; Prev = Cur, Cur = Cur->Next)
       if (Cur->Seg->Base >= Seg->Base) break;
@@ -186,49 +187,49 @@ void Fit(char *Obj, Segment Seg) {
 }
 
 void GetHead(FileBuf F) {
-   FILE *FP = fopen(F->Name, "rb+");
-   if (FP == NULL) Fatal("Cannot open %s.", F->Name);
-   if (GetW(FP) != 0x55aa) Fatal("Invalid object file %s.", F->Name);
-   F->Loc = GetL(FP),
-   F->Files = GetL(FP), F->Segs = GetL(FP),
-   F->Gaps = GetL(FP), F->Syms = GetL(FP),
-   F->Exps = GetL(FP), F->Relocs = GetL(FP);
+   FILE *InF = fopen(F->Name, "rb+");
+   if (InF == NULL) Fatal("Cannot open %s.", F->Name);
+   if (GetW(InF) != 0x55aa) Fatal("Invalid object file %s.", F->Name);
+   F->Loc = GetL(InF),
+   F->Files = GetL(InF), F->Segs = GetL(InF),
+   F->Gaps = GetL(InF), F->Syms = GetL(InF),
+   F->Exps = GetL(InF), F->Relocs = GetL(InF);
    long S = F->Loc + F->Files + F->Segs + F->Gaps + F->Syms + F->Exps + F->Relocs;
-   if (GetL(FP) != S&0xffffffff) Fatal("Corrupt object file %s.", F->Name);
+   if (GetL(InF) != S&0xffffffff) Fatal("Corrupt object file %s.", F->Name);
    F->File = Allocate((word)F->Files*sizeof *F->File);
    F->Seg = F->Segs < TYPES? NULL: Allocate((word)(F->Segs - TYPES)*sizeof *F->Seg);
    F->G = Allocate((word)F->Gaps*sizeof *F->G);
    F->Sym = Allocate((word)F->Syms*sizeof *F->Sym);
    FileTab = F->File;
-   fseek(FP, F->Loc, SEEK_SET);
+   fseek(InF, F->Loc, SEEK_SET);
    for (long S = 0; S < F->Files; S++) {
-      word L = GetW(FP);
-      char Buf[0x100]; fread(Buf, 1, L, FP), Buf[L] = '\0';
+      word L = GetW(InF);
+      char Buf[0x100]; fread(Buf, 1, L, InF), Buf[L] = '\0';
       F->File[S] = CopyS(Buf);
    }
    for (long S = TYPES; S < F->Segs; S++) {
       Segment Seg = F->Seg + S - TYPES;
-      Seg->Line = GetW(FP), Seg->File = GetW(FP);
-      word U = GetW(FP); Seg->Size = GetW(FP);
-      Seg->Base = GetW(FP), Seg->Loc = GetL(FP);
+      Seg->Line = GetW(InF), Seg->File = GetW(InF);
+      word U = GetW(InF); Seg->Size = GetW(InF);
+      Seg->Base = GetW(InF), Seg->Loc = GetL(InF);
       Seg->Rel = (U >> 8)&1, Seg->Type = U&0xff;
       Fit(F->Name, Seg);
    }
    for (long S = 0; S < F->Gaps; S++) {
-      Gap G = F->G + S; word Sg = GetW(FP);
-      G->Offset = GetW(FP), G->Size = GetW(FP);
+      Gap G = F->G + S; word Sg = GetW(InF);
+      G->Offset = GetW(InF), G->Size = GetW(InF);
       G->Seg = Sg < TYPES? &USeg[Sg]: &F->Seg[Sg - TYPES];
    }
    for (long S = 0; S < F->Syms; S++) {
-      byte B = GetB(FP); word U = GetW(FP), Offset = GetW(FP);
+      byte B = GetB(InF); word U = GetW(InF), Offset = GetW(InF);
       char Buf[0x100];
-      word L = GetW(FP);
-      if (L > 0) fread(Buf, 1, L, FP);
+      word L = GetW(InF);
+      if (L > 0) fread(Buf, 1, L, InF);
       Buf[L] = '\0';
-      byte Global = (B&8)? 1: 0, Defined = (B&4)? 1: 0, Address = (B&2)? 1: 0;
+      bool Global = (B&8) != 0, Defined = (B&4) != 0, Address = (B&2) != 0;
       Symbol Sym = Global? LookUp(Buf): Allocate(sizeof *Sym);
       if (!Global) {
-         Sym->Variable = 0, Sym->Address = Address;
+         Sym->Variable = false, Sym->Address = Address;
          Sym->Global = Global, Sym->Defined = Defined;
          Sym->Seg = !Address? NULL: U < TYPES? &USeg[U]: &F->Seg[U - TYPES];
          Sym->Offset = Offset;
@@ -254,7 +255,7 @@ void GetHead(FileBuf F) {
                Sym->Name, FTab[Sym->Index].Name, F->Name
             );
          if (Defined || !Sym->Global) {
-            Sym->Variable = 0, Sym->Address = Address;
+            Sym->Variable = false, Sym->Address = Address;
             Sym->Global = Global, Sym->Defined = Defined;
             Sym->Seg = !Address? NULL: U < TYPES? &USeg[U]: &F->Seg[U - TYPES],
             Sym->Offset = Offset;
@@ -263,8 +264,8 @@ void GetHead(FileBuf F) {
       }
       F->Sym[S] = Sym;
    }
-   F->Loc = ftell(FP);
-   fclose(FP);
+   F->Loc = ftell(InF);
+   fclose(InF);
 }
 
 typedef struct RList *RList;
@@ -285,39 +286,39 @@ void AddReloc(byte Size, long PC, long Val) {
 }
 
 void SetRelocs(FileBuf F) {
-   FILE *FP = fopen(F->Name, "rb+");
-   if (FP == NULL) Fatal("Cannot open %s.", F->Name);
-   FileTab = F->File; fseek(FP, F->Loc, SEEK_SET);
+   FILE *InF = fopen(F->Name, "rb+");
+   if (InF == NULL) Fatal("Cannot open %s.", F->Name);
+   FileTab = F->File; fseek(InF, F->Loc, SEEK_SET);
    ExpBuf = Allocate((unsigned)F->Exps*sizeof *ExpBuf);
    ExpInit();
    for (long S = 0; S < F->Exps; S++) {
       Exp *EP = ExpBuf + S;
-      StartLine = GetW(FP), StartF = GetW(FP);
-      byte Tag = GetB(FP);
+      StartLine = GetW(InF), StartF = GetW(InF);
+      byte Tag = GetB(InF);
       switch (Tag) {
          case NumX:
-            Value = GetW(FP); *EP = MakeExp(NumX, Value);
+            Value = GetW(InF); *EP = MakeExp(NumX, Value);
          break;
          case AddrX: {
-            word U = GetW(FP), Offset = GetW(FP);
+            word U = GetW(InF), Offset = GetW(InF);
             *EP = MakeExp(AddrX, U < TYPES? &USeg[U]: &F->Seg[U - TYPES], Offset);
          }
          break;
-         case SymX: *EP = MakeExp(SymX, F->Sym[GetW(FP)]); break;
+         case SymX: *EP = MakeExp(SymX, F->Sym[GetW(InF)]); break;
          case UnX: {
-            byte Op = GetB(FP);
-            Exp A = ExpBuf[GetW(FP)];
+            byte Op = GetB(InF);
+            Exp A = ExpBuf[GetW(InF)];
             *EP = MakeExp(UnX, Op, A);
          }
          break;
          case BinX: {
-            byte Op = GetB(FP);
-            Exp A = ExpBuf[GetW(FP)], B = ExpBuf[GetW(FP)];
+            byte Op = GetB(InF);
+            Exp A = ExpBuf[GetW(InF)], B = ExpBuf[GetW(InF)];
             *EP = MakeExp(BinX, Op, A, B);
          }
          break;
          case CondX: {
-            Exp A = ExpBuf[GetW(FP)], B = ExpBuf[GetW(FP)], C = ExpBuf[GetW(FP)];
+            Exp A = ExpBuf[GetW(InF)], B = ExpBuf[GetW(InF)], C = ExpBuf[GetW(InF)];
             *EP = MakeExp(CondX, A, B, C);
          }
          break;
@@ -325,11 +326,11 @@ void SetRelocs(FileBuf F) {
    }
    for (long S = 0; S < F->Relocs; S++) {
       struct Item IBuf;
-      IBuf.Line = GetW(FP), IBuf.File = GetW(FP),
-      IBuf.Tag = GetB(FP), IBuf.E = ExpBuf[GetW(FP)];
-      word U = GetW(FP);
+      IBuf.Line = GetW(InF), IBuf.File = GetW(InF),
+      IBuf.Tag = GetB(InF), IBuf.E = ExpBuf[GetW(InF)];
+      word U = GetW(InF);
       IBuf.Seg = U < TYPES? &USeg[U]: &F->Seg[U - TYPES];
-      IBuf.Offset = GetW(FP);
+      IBuf.Offset = GetW(InF);
       Resolve(&IBuf);
       word PC = (long)IBuf.Seg->Base + (long)IBuf.Offset;
       switch (IBuf.Tag) {
@@ -338,7 +339,7 @@ void SetRelocs(FileBuf F) {
          default: Fatal("Internal error (5).");
       }
    }
-   fclose(FP);
+   fclose(InF);
    for (Exp E = ExpHead; E != NULL; ) {
       Exp NextE = E->Next; free(E), E = NextE;
    }
@@ -383,23 +384,23 @@ void CloseHex(void) {
 }
 
 void GenImage(char *Hex) {
-   FILE *FP = NULL; char *File = NULL;
+   FILE *InF = NULL; char *File = NULL;
    OpenHex(Hex);
    RList R = RHead;
    for (Image IP = IHead; IP != NULL; IP = IP->Next) {
       if (IP->Obj != File) {
-         if (FP != NULL) fclose(FP), FP = NULL;
-         FP = fopen(IP->Obj, "rb+");
-         if (FP == NULL) Fatal("Cannot open %s.", IP->Obj);
+         if (InF != NULL) fclose(InF), InF = NULL;
+         InF = fopen(IP->Obj, "rb+");
+         if (InF == NULL) Fatal("Cannot open %s.", IP->Obj);
       }
-      fseek(FP, IP->Loc, SEEK_SET);
+      fseek(InF, IP->Loc, SEEK_SET);
       for (long Addr = IP->Base; Addr < IP->Base + IP->Size; ) {
          if (R != NULL && R->PC < Addr) Fatal("Internal error (6).");
          if (R != NULL && R->PC == Addr) {
             switch (R->Size) {
-               case 1: fgetc(FP); PutHex(Addr++, (byte)(R->Val&0xff)); break;
+               case 1: fgetc(InF); PutHex(Addr++, (byte)(R->Val&0xff)); break;
                case 2:
-                  fgetc(FP), fgetc(FP);
+                  fgetc(InF), fgetc(InF);
                   PutHex(Addr++, (byte)((R->Val >> 8)&0xff)),
                   PutHex(Addr++, (byte)(R->Val&0xff));
                break;
@@ -407,7 +408,7 @@ void GenImage(char *Hex) {
             }
             R = R->Next;
          } else {
-            int Ch = fgetc(FP);
+            int Ch = fgetc(InF);
             if (Ch == EOF) Fatal("Internal error (8).");
             PutHex(Addr++, (byte)(Ch&0xff));
          }
@@ -418,7 +419,7 @@ void GenImage(char *Hex) {
 }
 
 void Link(char *Hex) {
-   Active = 1, Phase = 2;
+   Active = true, Phase = 2;
    SymInit(); SetSeg();
    for (int A = 0; A < Fs; A++) GetHead(FTab + A);
    for (Sym = NIL->Next[0]; Sym != NIL; Sym = Sym->Next[0])

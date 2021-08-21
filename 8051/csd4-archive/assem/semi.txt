@@ -1,9 +1,9 @@
-                       SEMI.C, notes on use.
+semi.c, notes on use.
+━━━━━━━━━━━━━━━━━━━━━
+0. Command Line, Input Format
+─────────────────────────────
+This utility will convert standard 8051 comments into a form that can be accepted by this assembler
+by substituting every semicolon by a double semicolon.
 
-(0) COMMAND LINE, INPUT FORMAT
-   This utility will convert standard 8051 comments into a form that can be
-accepted by this assembler by substituting every semicolon by a double
-semicolon.
-   The typical conmmand line for this utility is as follows:
-
-                     semi <Input >Output
+The typical conmmand line for this utility is as follows:
+	semi <Input >Output

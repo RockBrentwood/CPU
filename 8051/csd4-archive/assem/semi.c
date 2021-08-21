@@ -2,8 +2,7 @@
 #include <stdlib.h>
 
 int main(void) {
-   int Ch;
-   while ((Ch = getchar()) != EOF) {
+   for (int Ch; (Ch = getchar()) != EOF; ) {
       if (Ch == ';') putchar(';');
       putchar(Ch);
    }

@@ -28,15 +28,15 @@ word GetWord(FILE *InF) {
    return (A << 8) | B;
 }
 
-void PutHex(FILE *OutF, byte Ch) {
-   fprintf(OutF, "%02x", Ch); CheckSum = (CheckSum + Ch)&0xff;
+void PutHex(FILE *ExF, byte Ch) {
+   fprintf(ExF, "%02x", Ch); CheckSum = (CheckSum + Ch)&0xff;
 }
 
-void PutWord(FILE *OutF, word W) {
-   PutHex(OutF, (byte)(W >> 8)); PutHex(OutF, (byte)(W&0xff));
+void PutWord(FILE *ExF, word W) {
+   PutHex(ExF, (byte)(W >> 8)); PutHex(ExF, (byte)(W&0xff));
 }
 
-int Relocate(word Offset, FILE *InF, FILE *OutF) {
+int Relocate(word Offset, FILE *InF, FILE *ExF) {
    byte Mark;
    do {
       int Ch;
@@ -51,12 +51,12 @@ int Relocate(word Offset, FILE *InF, FILE *OutF) {
       if (CheckSum != 0) {
          fprintf(stderr, "Bad checksum.\n"); return 0;
       }
-      fputc(':', OutF);
+      fputc(':', ExF);
       CheckSum = 0;
-      PutHex(OutF, Size); PutWord(OutF, Addr); PutHex(OutF, Mark);
-      for (int I = 0; I < Size; I++) PutHex(OutF, Buffer[I]);
-      PutHex(OutF, (byte)-CheckSum);
-      fputc('\n', OutF);
+      PutHex(ExF, Size); PutWord(ExF, Addr); PutHex(ExF, Mark);
+      for (int I = 0; I < Size; I++) PutHex(ExF, Buffer[I]);
+      PutHex(ExF, (byte)-CheckSum);
+      fputc('\n', ExF);
    } while (!Mark);
    return 1;
 }
@@ -88,20 +88,20 @@ int main(int AC, char *AV[]) {
    if (AC != 3) { printf("Usage: %s Offset Input.\n", App); goto Exit0; }
    word Offset = atoh(AV[1]);
    if (Offset == 0) printf("Zero offset/bad offset specified.\n");
-   char *OutName = Convert(AV[2]);
-   if (OutName == NULL) { printf("%s not of form *.hex.\n", AV[2]); goto Exit0; }
+   char *ExName = Convert(AV[2]);
+   if (ExName == NULL) { printf("%s not of form *.hex.\n", AV[2]); goto Exit0; }
    FILE *InF = fopen(AV[2], "r");
    if (InF == NULL) { printf("Cannot open %s.\n", AV[2]); goto Exit1; }
-   FILE *OutF = fopen(OutName, "w");
-   if (OutF == NULL) { printf("Cannot open %s.\n", OutName); goto Exit2; }
-   if (!Relocate(Offset, InF, OutF)) goto Exit3;
+   FILE *ExF = fopen(ExName, "w");
+   if (ExF == NULL) { printf("Cannot open %s.\n", ExName); goto Exit2; }
+   if (!Relocate(Offset, InF, ExF)) goto Exit3;
    Status = EXIT_SUCCESS;
 Exit3:
-   fclose(OutF);
+   fclose(ExF);
 Exit2:
    fclose(InF);
 Exit1:
-   free(OutName);
+   free(ExName);
 Exit0:
    return Status;
 }

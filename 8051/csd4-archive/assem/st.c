@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdbool.h>
 #include "io.h"
 #include "ex.h"
 #include "op.h"
@@ -9,7 +10,7 @@
 
 #define MAX_ST 20
 typedef enum { BotS, IfS, ElseS, GroupS } StTag;
-byte Active;
+bool Active;
 int Phase;
 
 StTag SStack[MAX_ST], *SP;
@@ -20,18 +21,18 @@ static void Push(StTag Tag) {
    *SP++ = Tag;
 }
 
-static void SetColon(byte Glo, Symbol Sym) {
+static void SetColon(bool Global, Symbol Sym) {
    if (!Active) return;
    if (Sym->Defined) {
       if (*Sym->Name != '#') {
          Error("Attempting to redefine %s.", Sym->Name); return;
-      } else if (Glo) {
+      } else if (Global) {
          Error("Attempting to make local label global."); return;
       } else {
-         Sym->Address = 1, Sym->Global = 0, Sym->Variable = 1;
+         Sym->Address = true, Sym->Global = false, Sym->Variable = true;
       }
    } else if (Sym->Global) {
-      if (!Glo) {
+      if (!Global) {
          Error("Symbol %s already declared as external.", Sym->Name); return;
       } else if (!Sym->Address) {
          Error("Symbol %s already declared as number.", Sym->Name); return;
@@ -39,24 +40,24 @@ static void SetColon(byte Glo, Symbol Sym) {
          Error("Type mismatch: %s.", Sym->Name); return;
       }
    } else
-      Sym->Address = 1, Sym->Global = Glo, Sym->Variable = 0;
-   Sym->Defined = 1, Sym->Seg = SegP, Sym->Offset = CurLoc;
+      Sym->Address = true, Sym->Global = Global, Sym->Variable = false;
+   Sym->Defined = true, Sym->Seg = SegP, Sym->Offset = CurLoc;
 }
 
-static void SetVar(byte Glo, Symbol Sym, Exp E) {
+static void SetVar(byte Global, Symbol Sym, Exp E) {
    if (!Active) return;
    if (Sym->Defined && !Sym->Variable)
       Error("Symbol %s already defined as constant.", Sym->Name);
-   else if (Glo)
+   else if (Global)
       Error("Variables cannot be made global.");
    else if (Sym->Global)
       Error("Symbol %s already declared as external.", Sym->Name);
    else if (!Sym->Defined) {
       if (E->Tag == AddrX)
-         Sym->Address = 1, Sym->Seg = SegOf(E), Sym->Offset = OffOf(E);
+         Sym->Address = true, Sym->Seg = SegOf(E), Sym->Offset = OffOf(E);
       else
-         Sym->Address = 0, Sym->Offset = ValOf(E);
-      Sym->Variable = 1, Sym->Defined = 1;
+         Sym->Address = false, Sym->Offset = ValOf(E);
+      Sym->Variable = true, Sym->Defined = true;
    } else if (Sym->Address) {
       if (E->Tag != AddrX)
          Sym->Seg = SegTab + Sym->Seg->Type, Sym->Offset = ValOf(E);
@@ -73,21 +74,21 @@ static void SetVar(byte Glo, Symbol Sym, Exp E) {
       Sym->Offset = ValOf(E);
 }
 
-void SetConst(byte Glo, byte Addr, byte Type, Symbol Sym, Exp E) {
+static void SetConst(byte Global, byte Addr, byte Type, Symbol Sym, Exp E) {
    if (!Active) return;
    if (Addr && E->Tag == AddrX && SegOf(E)->Type != Type) {
       Error("Expression type does not match."); return;
    } else if (Sym->Defined) {
       Error("Symbol %s already defined.", Sym->Name); return;
    } else if (!Sym->Global)
-      Sym->Global = Glo, Sym->Variable = 0, Sym->Address = (E->Tag == AddrX);
-   else if (!Glo) {
+      Sym->Global = Global, Sym->Variable = false, Sym->Address = E->Tag == AddrX;
+   else if (!Global) {
       Error("Symbol %s already declared as external.", Sym->Name); return;
    } else if (Sym->Address) {
       if (Addr && Sym->Seg->Type != Type) {
          Error("Symbol %s's type does not match.", Sym->Name); return;
       } else if (E->Tag != AddrX) {
-         Sym->Defined = 1, Sym->Offset = ValOf(E); return;
+         Sym->Defined = true, Sym->Offset = ValOf(E); return;
       } else if (SegOf(E)->Type != Sym->Seg->Type) {
          Error("Type mismatch: %s.", Sym->Name); return;
       }
@@ -99,10 +100,10 @@ void SetConst(byte Glo, byte Addr, byte Type, Symbol Sym, Exp E) {
          Error("Symbol %s cannot be equated to relative address.", Sym->Name);
          return;
       } else {
-         Sym->Defined = 1, Sym->Offset = SegOf(E)->Base + OffOf(E); return;
+         Sym->Defined = true, Sym->Offset = SegOf(E)->Base + OffOf(E); return;
       }
    }
-   Sym->Defined = 1;
+   Sym->Defined = true;
    if (E->Tag == AddrX)
       Sym->Seg = SegOf(E), Sym->Offset = OffOf(E);
    else
@@ -111,24 +112,24 @@ void SetConst(byte Glo, byte Addr, byte Type, Symbol Sym, Exp E) {
 
 FILE *OpenObj(char *Obj) {
    unsigned long L = 0L;
-   FILE *FP = fopen(Obj, "wb");
-   if (FP == NULL) return NULL;
-   PutW(0x55aa, FP);
-   for (int I = 0; I < 8; I++) PutL(L, FP); /* Empty the header */
-   fclose(FP);
-   FP = fopen(Obj, "rb+");
-   if (FP == NULL) return NULL;
-   fseek(FP, 34L, SEEK_SET); /* Skip the header */
-   return FP;
+   FILE *ExF = fopen(Obj, "wb");
+   if (ExF == NULL) return NULL;
+   PutW(0x55aa, ExF);
+   for (int I = 0; I < 8; I++) PutL(L, ExF); // Empty the header.
+   fclose(ExF), ExF = fopen(Obj, "rb+"); // Reopen.
+   if (ExF == NULL) return NULL;
+   fseek(ExF, 34L, SEEK_SET); // Skip the header.
+   return ExF;
 }
 
 void Assemble(char *Path) {
    Phase = 0;
    SymInit(), FileInit(), SegInit(), ExpInit(), ResInit();
    IP = IStack, SP = SStack;
-   Active = 1; RegInit(); OpenF(Path);
+   Active = true; RegInit(); OpenF(Path);
    Lexical L = Scan();
-   byte Glo, Addr, Type; Symbol Label; Exp E;
+   bool Global;
+   byte Addr, Type; Symbol Label; Exp E;
 Start:
    if (L == 0) { EndSeg(); return; }
    Push(BotS);
@@ -139,7 +140,7 @@ BegSt:
          if ((L = Scan()) != LPAR) Error("Missing '(' in 'if (...)'"); else Scan();
          E = Parse(0);
          Push(IfS), *IP++ = Active;
-         if (Active) Active = ValOf(E);
+         if (Active) Active = ValOf(E) != 0;
          L = OldL;
          if (L != RPAR) Error("Missing ')' in 'if (...)'."); else L = Scan();
       goto BegSt;
@@ -149,11 +150,11 @@ BegSt:
       goto BegSt;
       case SEMI: L = Scan(); goto EndSt;
       case RB:
-         Scan(), InSemi = 1, E = Parse(0);
+         Scan(), InSemi = true, E = Parse(0);
          Space(ValOf(E));
       goto AtSemi;
       case RW:
-         Scan(), InSemi = 1, E = Parse(0);
+         Scan(), InSemi = true, E = Parse(0);
          Space(2*ValOf(E));
       goto AtSemi;
       case SEG:
@@ -162,48 +163,48 @@ BegSt:
             Error("Only code, xdata, or data segments allowed."); goto FlushSt;
          }
          Type = Value;
-         InSemi = 1, L = Scan();
-         if (L == ORG) { InSemi = 0; goto DoOrg; }
+         InSemi = true, L = Scan();
+         if (L == ORG) { InSemi = false; goto DoOrg; }
          if (Active) EndSeg(), StartSeg(Type, 1, 0);
       goto AtSemi;
       case ORG:
          Type = SegP->Type;
       DoOrg:
-         Scan(), InSemi = 1, E = Parse(0);
+         Scan(), InSemi = true, E = Parse(0);
          if (Active) EndSeg(), StartSeg(Type, 0, ValOf(E));
       goto AtSemi;
       case INCLUDE: {
          if ((L = Scan()) != STRING) Fatal("Missing filename in 'include'.");
          char *S = CopyS(Text);
-         InSemi = 1;
+         InSemi = true;
          if ((L = Scan()) != SEMI) Fatal("Missing ';' after include statement.");
          OpenF(S), free(S);
-         InSemi = 0, L = Scan();
+         InSemi = false, L = Scan();
       }
       goto EndSt;
       case GLOBAL:
-         Glo = 1;
+         Global = true;
          if ((L = Scan()) != SYMBOL) {
             Error("Expected symbol after 'global'"); goto FlushSt;
          }
       goto Define;
       case SYMBOL:
-         Glo = 0;
+         Global = false;
       Define:
          Label = Sym;
          switch (L = Scan()) {
             case COLON:
-               SetColon(Glo, Label);
-               InSemi = 1, L = Scan(), InSemi = 0;
+               SetColon(Global, Label);
+               InSemi = true, L = Scan(), InSemi = false;
             goto BegSt;
             case SET:
-               Scan(), InSemi = 1, E = Parse(1), SetVar(Glo, Label, E);
+               Scan(), InSemi = true, E = Parse(1), SetVar(Global, Label, E);
             goto AtSemi;
             case TYPE: Type = Value, Addr = 1; goto DoEqu;
             case EQU: Type = 0, Addr = 0;
             DoEqu:
-               Scan(), InSemi = 1, E = Parse(1);
-               SetConst(Glo, Addr, Type, Label, E);
+               Scan(), InSemi = true, E = Parse(1);
+               SetConst(Global, Addr, Type, Label, E);
             goto AtSemi;
             default: Error("Undefined symbol: %s.", Label->Name); break;
          }
@@ -214,7 +215,7 @@ BegSt:
          else {
             Error("Expected type or 'equ' after 'extern'."); goto FlushSt;
          }
-         InSemi = 1;
+         InSemi = true;
          do {
             if ((L = Scan()) != SYMBOL) {
                Error("Expected symbol in 'extern'"); goto FlushSt;
@@ -232,40 +233,40 @@ BegSt:
                   Error("Redeclaring local symbol %s as external.", Sym->Name);
                else {
                   Sym->Global = 1;
-                  if (Addr) Sym->Address = 1, Sym->Seg = SegTab + Type;
+                  if (Addr) Sym->Address = true, Sym->Seg = SegTab + Type;
                }
             }
             Scan();
          } while (OldL == COMMA);
       goto AtSemi;
       case DB:
-         InSemi = 1;
+         InSemi = true;
          do
             if ((L = Scan()) == STRING) PString(Text), Scan();
             else Reloc(0, 'b', Parse(2));
          while (OldL == COMMA);
       goto AtSemi;
       case DW:
-         InSemi = 1;
+         InSemi = true;
          do
             Scan(), Reloc(0, 'w', Parse(2));
          while (OldL == COMMA);
       goto AtSemi;
       case END:
          if (Active) { EndSeg(); return; }
-         InSemi = 1, Scan();
+         InSemi = true, Scan();
       goto AtSemi;
-      case MNEMONIC: InSemi = 1, ParseArgs((byte)Value); goto AtSemi;
+      case MNEMONIC: InSemi = true, ParseArgs((byte)Value); goto AtSemi;
       default: Error("Syntax error"); goto FlushSt;
    }
 FlushSt:
-   InSemi = 1;
+   InSemi = true;
    while (L != SEMI) {
-      if (L == 0) { InSemi = 0; goto EndSt; }
+      if (L == 0) { InSemi = false; goto EndSt; }
       L = Scan();
    }
 AtSemi:
-   InSemi = 0; L = OldL;
+   InSemi = false; L = OldL;
    if (L != SEMI) Error("Missing ';'"); else L = Scan();
 EndSt:
    switch (*--SP) {
@@ -275,15 +276,15 @@ EndSt:
             if (IP == IStack || IP[-1]) Active = !Active;
             *SP++ = ElseS, L = Scan(); goto BegSt;
          }
-      case ElseS: EndIf:
+      case ElseS:
          if (*--IP && !Active) {
-            Active = 1;
+            Active = true;
             if (L == SYMBOL) Sym = LookUp(Text);
          }
       goto EndSt;
       case GroupS:
          if (L == RCURL) { L = Scan(); goto EndSt; }
-         if (L == 0) { Error("Missing '}'."); goto EndSt; }
+         else if (L == 0) { Error("Missing '}'."); goto EndSt; }
          *SP++ = GroupS;
       goto BegSt;
    }
@@ -305,69 +306,67 @@ static void Purge(void) {
 
 void Generate(void) {
    Phase = 1;
-   unsigned long SegLoc = ftell(OutF), Segs = SegP - SegTab, Gaps = GapP - GapTab;
+   unsigned long SegLoc = ftell(ExF), Segs = SegP - SegTab, Gaps = GapP - GapTab;
    for (Item IP = RTab; IP < RTab + RCur; IP++) Resolve(IP);
-   fseek(OutF, SegLoc, SEEK_SET); /* Skip the code image */
+   fseek(ExF, SegLoc, SEEK_SET); /* Skip the code image */
    for (word File = 0; File < Files; File++) {
       word L = strlen(FileTab[File]);
-      PutW(L, OutF), fwrite(FileTab[File], 1, L, OutF);
+      PutW(L, ExF), fwrite(FileTab[File], 1, L, ExF);
    }
    for (Segment Seg = SegTab + TYPES; Seg < SegP; Seg++) {
       word U = (Seg->Rel&1) << 8 | Seg->Type&0xff;
-      PutW(Seg->Line, OutF), PutW(Seg->File, OutF),
-      PutW(U, OutF), PutW(Seg->Size, OutF),
-      PutW(Seg->Base, OutF), PutL(Seg->Loc, OutF);
+      PutW(Seg->Line, ExF), PutW(Seg->File, ExF),
+      PutW(U, ExF), PutW(Seg->Size, ExF),
+      PutW(Seg->Base, ExF), PutL(Seg->Loc, ExF);
    }
    for (Gap G = GapTab; G < GapP; G++)
-      PutW(G->Seg - SegTab, OutF), PutW(G->Offset, OutF), PutW(G->Size, OutF);
+      PutW(G->Seg - SegTab, ExF), PutW(G->Offset, ExF), PutW(G->Size, ExF);
    unsigned long Syms = 0UL;
    for (Symbol S = NIL->Next[0]; S != NIL; S = S->Next[0]) if (S->Map || S->Global && S->Defined) {
-      byte B = (S->Global&1) << 3  | (S->Defined&1) << 2 |
-               (S->Address&1) << 1 | (S->Variable&1);
+      byte B = S->Global << 3  | S->Defined << 2 | S->Address << 1 | S->Variable;
       word U = S->Seg - SegTab, L = strlen(S->Name);
       if (!S->Global && !S->Defined)
          Error("Undefined symbol: %s.", S->Name);
       S->Index = Syms++;
-      PutB(B, OutF), PutW(U, OutF), PutW(S->Offset, OutF), PutW(L, OutF);
-      if (L > 0) fwrite(S->Name, 1, L, OutF);
+      PutB(B, ExF), PutW(U, ExF), PutW(S->Offset, ExF), PutW(L, ExF);
+      if (L > 0) fwrite(S->Name, 1, L, ExF);
    }
    unsigned long Exps = 0UL;
    for (Exp E = ExpHead; E != NULL; E = E->Next) if (E->Map) {
       byte Tag = E->Tag;
       E->Hash = Exps++;
-      PutW(E->Line, OutF), PutW(E->File, OutF), PutB(Tag, OutF);
+      PutW(E->Line, ExF), PutW(E->File, ExF), PutB(Tag, ExF);
       switch (Tag) {
-         case NumX: PutW(ValOf(E), OutF); break;
+         case NumX: PutW(ValOf(E), ExF); break;
          case AddrX:
-            PutW(SegOf(E) - SegTab, OutF), PutW(OffOf(E), OutF);
+            PutW(SegOf(E) - SegTab, ExF), PutW(OffOf(E), ExF);
          break;
-         case SymX: PutW(SymOf(E)->Index, OutF); break;
+         case SymX: PutW(SymOf(E)->Index, ExF); break;
          case UnX:
-            PutB(OpOf(E), OutF), PutW(ArgA(E)->Hash, OutF);
+            PutB(OpOf(E), ExF), PutW(ArgA(E)->Hash, ExF);
          break;
          case BinX:
-            PutB(OpOf(E), OutF), PutW(ArgA(E)->Hash, OutF),
-            PutW(ArgB(E)->Hash, OutF);
+            PutB(OpOf(E), ExF), PutW(ArgA(E)->Hash, ExF),
+            PutW(ArgB(E)->Hash, ExF);
          break;
          case CondX:
-            PutW(ArgA(E)->Hash, OutF), PutW(ArgB(E)->Hash, OutF),
-            PutW(ArgC(E)->Hash, OutF);
+            PutW(ArgA(E)->Hash, ExF), PutW(ArgB(E)->Hash, ExF),
+            PutW(ArgC(E)->Hash, ExF);
          break;
       }
    }
    unsigned long Relocs = 0UL;
    for (Item IP = RTab; IP < RTab + RCur; IP++) if (IP->Map) {
-      word U = IP->Seg - SegTab;
       Relocs++;
-      PutW(IP->Line, OutF), PutW(IP->File, OutF),
-      PutB(IP->Tag, OutF), PutW(IP->E->Hash, OutF),
-      PutW(U, OutF),
-      PutW(IP->Offset, OutF);
+      PutW(IP->Line, ExF), PutW(IP->File, ExF),
+      PutB(IP->Tag, ExF), PutW(IP->E->Hash, ExF),
+      PutW((word)(IP->Seg - SegTab), ExF),
+      PutW(IP->Offset, ExF);
    }
-   fseek(OutF, 2L, SEEK_SET); /* Do the header */
-   PutL(SegLoc, OutF), PutL(Files, OutF), PutL(Segs, OutF),
-   PutL(Gaps, OutF), PutL(Syms, OutF), PutL(Exps, OutF), PutL(Relocs, OutF);
-   PutL(SegLoc + Files + Segs + Gaps + Syms + Exps + Relocs, OutF);
-   fclose(OutF);
+   fseek(ExF, 2L, SEEK_SET); /* Do the header */
+   PutL(SegLoc, ExF), PutL(Files, ExF), PutL(Segs, ExF),
+   PutL(Gaps, ExF), PutL(Syms, ExF), PutL(Exps, ExF), PutL(Relocs, ExF);
+   PutL(SegLoc + Files + Segs + Gaps + Syms + Exps + Relocs, ExF);
+   fclose(ExF);
    Purge();
 }

@@ -1,619 +1,551 @@
-                    CAS -- The 8051 C-Assembler
-
-(0) Introduction
-   (a) Features
-   This is a free full-featured one-pass 8051 assembler, it could very well be
-the first one-pass assembler for the popular MCS-51 family of microprocessors.
+CAS ― The 8051 C-Assembler
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+0. Introduction
+───────────────
+a. Features
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+This is a free full-featured one-pass 8051 assembler, it could very well be the first one-pass assembler
+for the popular MCS-51 family of microprocessors.
 What you get are the following features:
+∙	Seperately assembleable files. There are two stages of assembly:
+	―	Pass 1: Creation of object files
+	―	Pass 1 1/3: Linking of object files
+∙	Segmentation
+	―	«Relative Addressing» supported for all segment types
+∙	Conditional assembly, with a C-like syntax.
+	Example:
+		if (Condition) {
+			Assembly instructions...
+		} else {
+			Assembly instructions...
+		}
+∙	Multiple statements per line with C-like syntax.
+∙	C-like expression syntax.
+∙	Command-line options similar to those of *NIX C compilers.
+∙	An extensive archive of real-life assembly language programs,
+	including a multi-tasking library and an 8051 disassembler.
 
-         * Seperately assembleable files. There are two stages of assembly:
-             - Pass 1: Creation of object files
-             - Pass 1 1/3: Linking of object files
-         * Segmentation
-             - RELATIVE ADDRESSING supported for all segment types
-         * Conditional assembly, with a C-like syntax.  Example:
-                if (Condition) {
-                   Assembly instructions...
-                } else {
-                   Assembly instructions...
-                }
-         * Multiple statements per line with C-like syntax.
-         * C-like expression syntax.
-         * Command-line options similar to those of *NIX C compilers.
-         * An extensive archive of real-life assembly language programs,
-           including a multi-tasking library and an 8051 disassembler.
+Plus, if you don't want to learn all the elaborate ins and outs of this tool right away,
+it is just as easy to use the first time out as any minimal assembler.
 
-   Plus, if you don't want to learn all the elaborate ins and outs of this
-tool right away, it is just as easy to use the first time out as any minimal
-assembler.
+You simply will not find anything this extensive anywhere in the public domain.
+But it's yours, here, for free.
 
-   You simply will not find anything this extensive anywhere in the public
-domain.  But it's yours, here, for free.
+Also under works: a compatible 8051 simulator kit for software developers.
+What makes this kit unique is that you can (and usually must) link in your own C code
+to define any arbitrary 8051 environment at all.
+This gives you the flexibility to simulate the 8051 in your favorite embedded application
+and to even simulate the I/O on a desktop.
+A Standard Environment file is included with the package.
 
-   Also under works: a compatible 8051 simulator kit for software developers.
-What makes this kit unique is that you can (and usually must) link in your own
-C code to define any arbitrary 8051 environment at all.  This gives you the
-flexibility to simulate the 8051 in your favorite embedded application and to
-even simulate the I/O on a desktop.  A Standard Environment file is included
-with the package.
+b. Design Philosophy ... everything is done in one pass.
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+A clean distinction is made between the two phases of assembly:
+∙	creating segments and formatting image files,
+∙	mapping segments and resolving references to variable addresses.
 
-   (b) Design Philosophy ... everything is done in one pass.
-   A clean distinction is made between the two phases of assembly: (a) creating
-segments and formatting image files, (b) mapping segments and resolving
-references to variable addresses.
-   An assembly language program will normally consist of a set of assembly
-language modules (or source files).  Each will typically be named with the
-suffix ".s". In addition, there will also be a set of files, with names ending
-in ".h" whose purpose is to provide common points of reference for declarations
-of objects in or related to modules.  They are incorporated in *.s files using
-the "include" directive.
-   The first stage of assembly will create OBJECT files, whose names end in
-".o": one for each assembly language module.  For instance, a module named
-Kernel.s will be assembled to the object file Kernel.o.
-   The second stage will take all the object files that have been created
-and LINK them together.  This process will consist mainly of completing the
-definitions of variables defined in one module and used in another, and in
-mapping the memory segments defined in each module onto a memory image.
+An assembly language program will normally consist of a set of assembly language modules (or source files).
+Each will typically be named with the suffix ‟.s” or ‟.asm”.
+In addition, there will also be a set of files, with names ending in ‟.h”
+whose purpose is to provide common points of reference for declarations of objects in or related to modules.
+They are incorporated in *.s or *.asm files using the ‟include” directive.
 
-   These two stages correspond roughly to the first and second pass of a
-traditional two-pass assembler.  But there are now two major differences:
-   (a) the second stage can now be deferred.  It is possible to assemble object
-       files only, and defer the linking phase.  Furthermore, it is possible
-       to use the SAME object file in more than one project.
-   (b) the second stage is now considerably shortened compared to the second
-       pass of a traditional two-pass assembler because object files tend to
-       be much smaller than source files and because the assembler no longer
-       has to process the assembly language itself by the second stage.
+The first stage of assembly will create «Object» files, whose names end in ‟.o”: one for each assembly language module.
+For instance, a module named Kernel.s will be assembled to the object file Kernel.o.
 
-(1) Command line arguments
-   The cas assembler's command line basically follows that of a typical C
-compiler.   In the examples:
+The second stage will take all the object files that have been created and «link» them together.
+This process will consist mainly of completing the definitions of variables defined in one module and used in another,
+and in mapping the memory segments defined in each module onto a memory image.
 
-               (a) cas -c kernel.s
-               (b) cas -c math.s data.s stdio.s kernel.s
-               (c) cas math.s data.s stdio.s kernel.s
-               (d) cas -o data.hex math.o data.s stdio.o kernel.s
+These two stages correspond roughly to the first and second pass of a traditional two-pass assembler.
+But there are now two major differences:
+(a)	the second stage can now be deferred.
+	It is possible to assemble object files only, and defer the linking phase.
+	Furthermore, it is possible to use the «same» object file in more than one project.
+(b)	the second stage is now considerably shortened compared to the second pass of a traditional two-pass assembler
+	because object files tend to be much smaller than source files
+	and because the assembler no longer has to process the assembly language itself by the second stage.
 
-(a) will assemble the file kernel.s, creating kernel.o.
-(b) will assemble all the files listed, creating .o files in the process.
-    If a .o file is listed with the -c option, it is ignored.
-(c) will assemble all the files listed, as in (b), and then link all the
-    corresponding .o files.  The output file will take the same base name
-    as the first file listed, and will have the suffix .hex.  Therefore, the
-    output in this example will be math.hex.
-(d) will do the same as (c), but will name the output file data.hex.
-    If a .o file is listed in either of these two command lines  it will be
-    ignored during assembly, but will be used during linking.
+1. Command line arguments
+――――――――――――――――――――――――――
+The cas assembler's command line basically follows that of a typical C compiler.
+In the examples:
+	(a)	cas -c kernel.s
+	(b)	cas -c math.s data.s stdio.s kernel.s
+	(c)	cas math.s data.s stdio.s kernel.s
+	(d)	cas -o data.hex math.o data.s stdio.o kernel.s
 
-(2) Directives
+(a)	will assemble the file kernel.s, creating kernel.o.
+(b)	will assemble all the files listed, creating .o files in the process.
+	If a .o file is listed with the -c option, it is ignored.
+(c)	will assemble all the files listed, as in (b), and then link all the corresponding .o files.
+	The output file will take the same base name as the first file listed, and will have the suffix .hex.
+	Therefore, the output in this example will be math.hex.
+(d)	will do the same as (c), but will name the output file data.hex.
+	If a .o file is listed in either of these two command lines it will be ignored during assembly,
+	but will be used during linking.
+
+2. Directives
+―――――――――――――
    The following is a summary of the directives available in this language.
 
-   (a) FILE INCLUSION -- include "FILE"
-   This command will read the contents of the file named (FILE) into the
-current location of the current file.  By convention, include files should
-have names ending in ".h" or ".i" and should only consist of declarations.
-   Include files generally serve two purposes: to provide a place to store
-related constant definitions and declarations, to declare the globally visible
-objects of an assembly language module.
+a. «File Inclusion» ― include "FILE"
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+This command will read the contents of the file named (FILE) into the current location of the current file.
+By convention, include files should have names ending in ‟.h” or ‟.i” and should only consist of declarations.
 
-   (b) Setting current SEGMENT and LOCATION -- seg, at, org
-   At any point in scanning a *.s assembly language file, the assembler will
-recognize a current segment and current location.  The latter can be referred
-to by the user as $.
+Include files generally serve two purposes:
+∙	to provide a place to store related constant definitions and declarations,
+∙	to declare the globally visible objects of an assembly language module.
 
-   To see how these items can be set, look at the following examples:
+b. Setting current «Segment» and «Location» ― seg, at, org
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+At any point in scanning a *.s or *.asm assembly language file, the assembler will recognize a current segment and current location.
+The latter can be referred to by the user as $.
 
-                  seg code
-                  seg xdata at 0x8000
-                  seg xdata org 0x8000
-                  org 50
-                  at 50
+To see how these items can be set, look at the following examples:
+	seg code
+	seg xdata at 0x8000
+	seg xdata org 0x8000
+	org 50
+	at 50
 
-The first example sets the current segment to the type "code".  The current
-location is left unspecified.  THIS IS HOW RELATIVE ADDRESSING IS INITIATED.
-The actual address of the segment's start will not be determined when the
-object file is created, but is deferrred until the object file is linked.
+The first example sets the current segment to the type ‟code”.
+The current location is left unspecified.
+«This is how relative addressing is initiated».
+The actual address of the segment's start will not be determined when the object file is created,
+but is deferrred until the object file is linked.
 
-   Why do things this way?  One simple reason: MODULARITY.  You can now
-define your own assembly language module, and convert it into an object
-file ready to be linked in with the rest of whatever program might be
-using it.  You don't have to worry about the exact address where you
-memory segments will be located each time you include this module in a new
-program.  This makes it possible to create reuseable libraries of common
-assembly language functions.
+Why do things this way?
+One simple reason: «Modularity».
+You can now define your own assembly language module,
+and convert it into an object file ready to be linked in with the rest of whatever program might be using it.
+You don't have to worry about the exact address where you memory segments will be located
+each time you include this module in a new program.
+This makes it possible to create reuseable libraries of common assembly language functions.
 
-   The second and third example do exactly the same things because "at" and
-"org" are synonymous.  The latter is included only for compatibility with
-other assembly language programs and for familiarity's sake, but I strongly
-recommend you using the former.  It simply reads nicer.
-   The effect of this operation is to set the current segment to "xdata" and
-the current location to 0x8000.
-   The last two examples are equivalent to one another and set the current
-location to 50 without changing the current segment.
+The second and third example do exactly the same things because ‟at” and ‟org” are synonymous.
+The latter is included only for compatibility with other assembly language programs and for familiarity's sake,
+but I strongly recommend you using the former.
+It simply reads nicer.
 
-   At the very start of assembly, the current segment is set to the first
-segment ("code"), and the address is left indefinite.  When different modules
-are linked together, the linker will attempt to take all the segments of each
-type and place them in non-overlapping areas of memory, shifting the relative
-segments around as needed to accomplish this goal.
+The effect of this operation is to set the current segment to ‟xdata” and the current location to 0x8000.
 
-   What if you want to control the placement of objects, say to exclude
-addresses 0 to 4000 hex?  An easy way is to simply write up a module to the
-effect:
+The last two examples are equivalent to one another and set the current location to 50 without changing the current segment.
 
-seg code at 0
-ds 4000h
+At the very start of assembly, the current segment is set to the first segment (‟code”), and the address is left indefinite.
+When different modules are linked together,
+the linker will attempt to take all the segments of each type and place them in non-overlapping areas of memory,
+shifting the relative segments around as needed to accomplish this goal.
 
-assemble it seperately and link it in with any program where you want to
-reserve this address space.
+What if you want to control the placement of objects, say to exclude addresses 0 to 4000 hex?
+An easy way is to simply write up a module to the effect:
+	seg code at 0
+	ds 4000h
+assemble it seperately and link it in with any program where you want to reserve this address space.
 
-   The linker tries to place your segments in exclusive areas in as tight a
-fit as possible.  So this module will result in the address space 0 to 4000
-being excluded from the rest of your program.
+The linker tries to place your segments in exclusive areas in as tight a fit as possible.
+So this module will result in the address space 0 to 4000h being excluded from the rest of your program.
 
-   The segments types supported by this 8051 assembler are the following:
+The segments types supported by this 8051 assembler are the following:
+∙	code:	the 8051 code address space, ranges from 0 to ffff hex.
+∙	xdata:	the external data address space, same range.
+∙	data:	the internal data/register space.
+		Ranges from 0 hex to ff hex.
+		Only addresses under 80 hex can be used in mnemonics involving direct addressing.
 
-        * code --- the 8051 code address space, ranges from 0 to ffff hex.
-        * xdata -- the external data address space, same range.
-        * data --- the internal data/register space.  Ranges from 0 to ff.
-                   Only addresses under 80 hex can be used in mnemonics
-                   involving direct addressing.
-
-Other segment types are internally used by the assembler.  They are:
-
-        * sfr ---- the Special Function Register space -- ranges from 80 to ff.
-        * bit ---- the bit addressible address space.  These comprise the
-                   individual bits in registers 20(hex) to 2f(hex), and the
-                   sfr addresses (hexadecimal) 80, 88, 90, 98, ..., f0, f8.
+Other segment types are internally used by the assembler.
+They are:
+∙	sfr:	the Special Function Register space ― ranges from 80(hex) to ff(hex).
+∙	bit:	the bit addressible address space.
+		These comprise the individual bits in registers 20(hex) to 2f(hex),
+		and the sfr addresses (hexadecimal) 80, 88, 90, 98, ..., f0, f8.
 
 Defining a new segment with one of these types will result in an error.
 
-   (c) Defining new LABELS -- LABEL equ Exp, LABEL Type Exp, LABEL:
-                              LABEL set Exp, LABEL = Exp
-   These operations are defined as follows:
+c. Defining new «Labels» ― LABEL equ Exp, LABEL Type Exp, LABEL:, LABEL set Exp, LABEL = Exp
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+These operations are defined as follows:
+∙	LABEL equ Exp
+		defines a constant value LABEL and sets it to the value Exp.
+∙	LABEL Type Exp
+		defines a constant address ‟LABEL” of the indicated type and sets it to the address given by ‟Exp”.
+		The types recognized by this assembler are: code, xdata, data, sfr, and bit.
+∙	LABEL:
+		sets a constant address ‟LABEL” to the current address in the current segment.
+∙	LABEL set Exp
+		defines a variable, LABEL, and sets it to the value Exp.
+∙	LABEL = Exp
+		the same thing as ‟set”.
 
-              LABEL equ Exp 
-                 defines a constant value LABEL and sets it to the value Exp.
-              LABEL Type Exp
-                 defines a constant address "LABEL" of the indicated type and
-                 sets it to the address given by "Exp".  The types recognized
-                 by this assembler are: code, xdata, data, sfr, and bit.
-              LABEL:
-                 sets a constant address "LABEL" to the current address in the
-                 current segment.
-              LABEL set Exp 
-                 defines a variable, LABEL, and sets it to the value Exp.
-              LABEL = Exp 
-                 the same thing as "set".
+The following assembly language fragment is an illustration of these operations:
+	seg code at 0
+	Start: ds 0x4000
+	Size equ $ - Start
+	End code Start + Size
 
-   The following assembly language fragment is an illustration of these
-operations:
+The first statement sets the current segment and location to ‟code” and 0.
+The next statement is preceded by the label, ‟Start:”.
+This is equivalent to the statement:
+	Start code $.
+What it does is define ‟Start” as a code address, and sets it to the current location (which is 0).
+Following this is an instruction to reserve 4000(hex) units (bytes) of storage.
+After this operation, the current location is now 0x4000.
 
-seg code at 0
-Start: ds 0x4000
-Size equ $ - Start
-End code Start + Size
+The third instruction sets the numerical constant ‟Size” to 0x4000 - 0, or just 0x4000.
+The final directive defines a code address with the name ‟End” and sets it to the address Start + Size (or just 0x4000).
 
-   The first statement sets the current segment and location to "code" and 0.
-The next statement is preceded by the label, "Start:".  This is equivalent
-to the statement:
+Variable differ from constants in that they can be redefined.
+Constants cannot be redefined.
 
-                             Start code $.
+d. Numeric labels
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+One can also define anonymous numeric labels, as in the following example:
+	1:	cjne A, #0, 1f
+		inc A
+		movx @DPTR, A
+		inc DPTR
+		mov A, @R1
+		inc R1
+		jz 2f
+		sjmp 1b
+	1:	setb C
+		ret
+	2:	clr C
+		ret
 
-What it does is define "Start" as a code address, and sets it to the current
-location (which is 0).  Following this is an instruction to reserve 4000(hex)
-units (bytes) of storage.  After this operation, the current location is now
-0x4000.
+Each occurrence of ‟1:” stands for a unique anonymous label, likewise for ‟2:”.
+Any number may be used in this way to denote an anonymous label.
 
-   The third instruction sets the numerical constant "Size" to 0x4000 - 0, or
-just 0x4000.  The final directive defines a code address with the name "End"
-and sets it to the address Start + Size (or just 0x4000).
+When a label is referenced by the number followed by an ‟f”,
+then the first matching numeric label «in the current segment» forward of the current location is being referred to.
+In the example above, 1f and 2f refer respectively to the occurrences of 1: and 2: toward the end of the example.
 
-   Variable differ from constants in that they can be redefined.  Constants
-cannot be redefined.
+When a label is referenced by the number followed by a ‟b”,
+then the first matching numeric label «in the current segmment» behind the current location is being referred to.
+In the example above, 1b refers to the 1: at the top of the example.
 
-   (d) Numeric labels
-   One can also define anonymous numeric labels, as in the following example:
+Thus, this segment is equivalent to the following:
+	X1:	cjne A, #0, Y1
+		inc A
+		movx @DPTR, A
+		inc DPTR
+		mov A, @R1
+		inc R1
+		jz Y2
+		sjmp X1
+	Y1:	setb C
+		ret
+	Y2:	clr C
+		ret
 
-1: cjne A, #0, 1f
-   inc A
-   movx @DPTR, A
-   inc DPTR
-   mov A, @R1
-   inc R1
-   jz 2f
-   sjmp 1b
-1: setb C
-   ret
-2: clr C
-   ret
+This feature saves you from the burden of defining needless names for labels that really serve as nothing more than place-holders.
 
-Each occurrence of "1:" stands for a unique anonymous label, likewise for
-"2:".  Any number may be used in this way to denote an anonymous label.
-
-   When a label is referenced by the number followed by an "f", then the
-first matching numeric label IN THE CURRENT SEGMENT forward of the current
-location is being referred to.  In the example above, 1f and 2f refer
-respectively to the occurrences of 1: and 2: toward the end of the example.
-   When a label is referenced by the number followed by a "b", then the
-first matching numeric label IN THE CURRENT SEGMMENT behind the current
-location is being referred to.  In the example above, 1b refers to the
-1: at the top of the example.
-   Thus, this segment is equivalent to the following:
-
-X1: cjne A, #0, Y1
-    inc A
-    movx @DPTR, A
-    inc DPTR
-    mov A, @R1
-    inc R1
-    jz Y2
-    sjmp X1
-Y1: setb C
-    ret
-Y2: clr C
-    ret
-
-   This feature saves you from the burden of defining needless names for
-labels that really serve as nothing more than place-holders.
-
-   (e) Declaring GLOBAL labels -- global, public
-   Any constant directive:
-
-              LABEL equ Exp
-              LABEL Type Exp
-              LABEL:
-
-can be prefixed by "global" or "public" to result in:
-
-              global LABEL equ Exp
-              global LABEL Type Exp
-              global LABEL:
+e. Declaring «Global» labels ― global, public
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+Any constant directive:
+	LABEL equ Exp
+	LABEL Type Exp
+	LABEL:
+can be prefixed by ‟global” or ‟public” to result in:
+	global LABEL equ Exp
+	global LABEL Type Exp
+	global LABEL:
 or
-              public LABEL equ Exp
-              public LABEL Type Exp
-              public LABEL:
+	public LABEL equ Exp
+	public LABEL Type Exp
+	public LABEL:
 
-What this does is to make these labels visible to modules other than the one
-where these labels are defined.  By default, all labels are visible only in
-the file where they are used.
+What this does is to make these labels visible to modules other than the one where these labels are defined.
+By default, all labels are visible only in the file where they are used.
 
-   (f) Declaring EXTERNAL labels -- extern Type LABEL, ..., LABEL
-                                    extern equ LABEL, ..., LABEL
-   For each global label defined in a *.s module file, a corresponding
-external declaration should be made be made in whatever other module this
-label is to be used.  Typically, one will make these and other related
-declarations in a *.h file and then INCLUDE this file in whatever module needs
-the declarations.  The type must match the type of the label being referenced,
-if it is an address, or it must be "equ" if the label referenced was a numeric
-constant.
+f. Declaring «External» labels ― extern {Type,equ} LABEL, ..., LABEL
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+For each global label defined in a *.s or *.asm module file,
+a corresponding external declaration should be made be made in whatever other module this label is to be used.
+Typically, one will make these and other related declarations in a *.h file
+and then «include» this file in whatever module needs the declarations.
+The type must match the type of the label being referenced, if it is an address,
+or it must be ‟equ” if the label referenced was a numeric constant.
 
-   For example if one declared global labels in a module Kernel.s as follows:
-
-public STACK_BASE data 0x80
-   ...
-seg code
-public Spawn:
-   ....
-public Resume:
-   ...
+For example if one declared global labels in a module Kernel.s as follows:
+	public STACK_BASE data 0x80
+		...
+	seg code
+	public Spawn:
+		...
+	public Resume:
+		...
 one would generally make the corresponding declarations:
+	extern data STACK_BASE
+	extern code Spawn, Resume
+in a header file (say, Kernel.h),
+and then include this file in any source module where the addresses STACK_BASE and Spawn might be needed.
 
-extern data STACK_BASE
-extern code Spawn, Resume
+g. Memory «Allocation» ― ds, rb, rw
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+The following operations can be used in any segment.
+They are generally used to allocate space for objects and so are generally used in conjunction with ‟LABEL:” type definitions.
+These are examples:
+	seg code at 0
+	BASIC_SEG: ds 0x4000
 
-in a header file (say, Kernel.h), and then include this file in any source
-module where the addresses STACK_BASE and Spawn might be needed.
+	seg xdata
+	Byte: ds 1
+	ByteArray: rb 5
+	WordArray: rw 5
 
-   (g) Memory ALLOCATION -- ds, rb, rw
-   The following operations can be used in any segment.  They are generally
-used to allocate space for objects and so are generally used in conjunction
-with "LABEL:" type definitions.  These are examples:
+The first example reserves 0x4000 units (bytes) in the current segment for the variable BASIC_SEG
+and then increments the current location by 0x4000.
+Basically, this operation behaves as if the assignment ‟$ = $ + 0x4000” had just been carried out.
 
-seg code at 0
-BASIC_SEG: ds 0x4000
+Both ‟ds” and ‟rb” are exactly equivalent, but the latter more descriptively states: reserve single-byte units.
+So the second example reserves 1 byte for the variable ‟Byte”, and 5 bytes for ‟ByteArray”.
 
-seg xdata
-Byte: ds 1
-ByteArray: rb 5
-WordArray: rw 5
+«No memory image is generated for any space skipped by ds/rb/rw.»
 
-The first example reserves 0x4000 units (bytes) in the current segment for
-the variable BASIC_SEG and then increments the current location by 0x4000.
-Basically, this operation behaves as if the assignment "$ = $ + 0x4000" had
-just been carried out.
+The third example is equivalent to:
+	WordArray: rb 10
+Each unit following a ‟rw” is a word, which consists of two bytes.
 
-   Both "ds" and "rb" are exactly equivalent, but the latter more descriptively
-states: reserve single-byte units.  So the second example reserves 1 byte for
-the variable "Byte", and 5 bytes for "ByteArray".
+h. Memory «Formatting» ― db, dw
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+These operations can be used in the code segment only.
+They are the only directives that can generate memory images.
+The only other operations that generate memory image output are the 8051 mnemonics,
+which likewise are restricted to the code segment only.
 
-   NO MEMORY IMAGE IS GENERATED FOR ANY SPACE SKIPPED BY ds/rb/rw.
+Two purpose served by these operations is mainly to initialize data, examples:
+	ByteArray:	db 'a', 'b', 'c', 'd', 'e'
+	String:		db "This is a string", 0
 
-   The third example is equivalent to:
-
-WordArray: rb 10
-
-Each unit following a "rw" is a word, which consists of two bytes.
-
-   (h) Memory FORMATTING - db, dw
-   These operations can be used in the code segment only.  They are the only
-directives that can generate memory images.  The only other operations that
-generate memory image output are the 8051 mnemonics, which likewise are
-restricted to the code segment only.
-
-   Two purpose served by these operations is mainly to initialize data,
-examples:
-            ByteArray: db 'a', 'b', 'c', 'd', 'e'
-            String:    db "This is a string", 0
-
-   In the following examples:
-
-db 0x20, "String", 'c'
-dw 0x1234, 0x5678
-
-the first operation lays out the byte 0x20 and equivalent character codes
-for 'S', 't', 'r', 'i', 'n', 'g', and 'c' in that order.  The current
-location is then increment by 8 to the location following the last item.
+In the following examples:
+	db 0x20, "String", 'c'
+	dw 0x1234, 0x5678
+the first operation lays out the byte 0x20 and equivalent character codes for 'S', 't', 'r', 'i', 'n', 'g', and 'c' in that order.
+The current location is then increment by 8 to the location following the last item.
 
 The second operation is equivalent to the following:
-
-db 0x12, 0x34, 0x56, 0x78
-
+	db 0x12, 0x34, 0x56, 0x78
 It formats 2-byte word units into memory.
 
-Both of the operations: db, and dw can be followed by a comma-seperated series
-of numeric values or addresses.  In addition, db can accept strings, as shown
-in the examplex above.
+Both of the operations: db, and dw can be followed by a comma-seperated series of numeric values or addresses.
+In addition, db can accept strings, as shown in the examplex above.
 
-   (i) CONDITIONAL assembly -- if (Ex) ST, if (Ex) ST else ST
-   These statements are used to selectively assemble different sets of
-statements. For example
+i. «Conditional» assembly ― if (Ex) ST, if (Ex) ST else ST
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+These statements are used to selectively assemble different sets of statements.
+For example
+	if (STAND_ALONE) {
+		at 0x03
+			mov R0, #SP_IE0
+			acall Pause
+		reti
+	} else {
+		at 0x4003
+			pop PSW
+			mov R0, #SP_IE0
+			acall Pause
+		reti
+	}
+will assemble the first set of statements (at 0x03 ... reti) if the label STAND_ALONE is anything other than 0,
+and the second set (at 0x4003...reti) if the label is 0.
 
-if (STAND_ALONE) {
-   at 0x03
-      mov R0, #SP_IE0
-      acall Pause
-   reti
-} else {
-   at 0x4003
-      pop PSW
-      mov R0, #SP_IE0
-      acall Pause
-   reti
-}
-
-will assemble the first set of statements (at 0x03 ... reti) if the label
-STAND_ALONE is anything other than 0, and the second set (at 0x4003...reti) if
-the label is 0.
-
-   An example with the exact same effect could be written as:
-
-if (STAND_ALONE) SEG equ 0; else SEG equ 0x4000
-at SEG + 3
-   if (!STAND_ALONE) pop PSW
-   mov R0, #SP_IE0
-   acall Pause
-reti
-
+An example with the exact same effect could be written as:
+	if (STAND_ALONE) SEG equ 0; else SEG equ 0x4000
+	at SEG + 3
+		if (!STAND_ALONE) pop PSW
+		mov R0, #SP_IE0
+		acall Pause
+	reti
 Both the if and else part of the conditional will accept only one statement.
-If more than one statement needs to be included, as in the first example, then
-they can be grouped within curly braces.
+If more than one statement needs to be included, as in the first example, then they can be grouped within curly braces.
 
-   (j) Statement GROUPING -- { ... }, multiple statements on a line.
-   Any sequence of statement included within a matching set of curly brackets
-is treated as a single statement.  It can then be used in the body of any
-conditional just like any single statement can.
+j. Statement «Grouping» ― { ... }, multiple statements on a line.
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+Any sequence of statement included within a matching set of curly brackets is treated as a single statement.
+It can then be used in the body of any conditional just like any single statement can.
 
-SPECIAL NOTES ON STATEMENT FORMATTING:
-   (A) ALL STATEMENTS (a) THROUGH (h) MUST END IN SEMICOLONS.
-However, this semicolon can be elided if it is the last item on a line.  This
-allows compatibility with more traditional one-statement-on-a-line type
-assemblers.  So normally, you don't have to even concern yourself with this
-if you adhere to one-statement per line style.
+k. Special notes on statement formatting:
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+▪	«All statements (a) through (h) must end in semicolons.»
+	However, this semicolon can be elided if it is the last item on a line.
+	This allows compatibility with more traditional one-statement-on-a-line type assemblers.
+	So normally, you don't have to even concern yourself with this if you adhere to one-statement per line style.
+▪	«A Basic statement ((a) through (h)) must be written all on one line.»
+	It cannot be split up into two or more lines.
+▪	«All comments are in C++ style.»
+	Many assemblers use the semicolon to initiate comments.
+	I have decided against this feature in favor of making this assembler more compatible with C++ syntax.
+	Comments occur in the following two forms:
+	(a)	Anything included between a matching pair /* ... */
+	(b)	Anything included between a // and end of line.
+	However, for increased compatibility, I also allow the following format:
+	(c)	Anything included between a ;; and end of line.
+	My personal style is to precede comments with a ;;;,
+	so none of this impinges on the software included in the archive with the assembler.
 
-   (B) A BASIC STATEMENT ((a) THROUGH (h)) MUST BE WRITTEN ALL ON ONE LINE
-It cannot be split up into two or more lines.
+There is a short C-program included that will blindly convert all single semicolons to double semicolons.
+Since I've observed that semicolons rarely occur inside string or character constants in actual 8051 programs,
+this should «almost» always be sufficient to resolve any incompatibilities with your older assembly language programs.
 
-   (C) ALL COMMENTS ARE IN C++ STYLE.
-Many assemblers use the semicolon to initiate comments.  I have decided
-against this feature in favor of making this assembler more compatible with C++
-syntax.  Comments occur in the following two forms:
+l. What goes in a *.s/*.asm file, what goes in a *.h file?
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+Generally speaking, declarations should be placed in a *.h header file.
+The design of this assembler (especially with it being a one-pass assembler) is intended to support this usage.
+Any of the following is a declaration:
+	c. Defining new «Labels» ― LABEL equ Exp, LABEL Type Exp, LABEL set Exp, LABEL = Exp
+	f. Declaring «External» labels ― extern {Type,equ} LABEL, ..., LABEL
+Declarations only meant to be accessed within one module should be made inside that module, instead of out in a header file.
 
-           (a) Anything included between a matching pair /* ... */
-           (b) Anything included between a // and end of line.
+The following should be used only in *.s/*.asm files:
+	a. «File Inclusion» ― include "FILE"
+	b. Setting current «Segment» and «Location» ― seg, at, org
+	c. Defining new «Labels» ― LABEL:
+	d. Numeric labels
+	e. Declaring «Global» labels ― global, public
+	g. Memory «Allocation» ― ds, rb, rw
+	h. Memory «Formatting» ― db, dw
+as they are generally used to:
+∙	create memory images,
+∙	define non-global objects, or
+∙	define address values:
+The last two items are generally used in many different contexts, and so can be used anywhere:
+	i. «Conditional» assembly ― if (Ex) ST, if (Ex) ST else ST
+	j. Statement «Grouping» ― { ... }, multiple statements on a line.
 
-However, for increased compatibility, I also allow the following format:
+3. Expressions
+――――――――――――――
+a. Operators
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+The syntax is the same as in C.
+The following operations are defined:
+∙	«bit-wise»:		~, &, ^, |, <<, >>
+∙	«boolean»:		!, &&, ||, <, <=, >, >=, ==, !=
+∙	«conditional»:		? :
+∙	«arithmetic»:		prefix + and -; +, -, *, /, %
+∙	«conversions»:		high, low, by
+∙	«bit conversion»:	.
 
-           (c) Anything included between a ;; and end of line.
+The operator precedences are all the same as in C.
 
-My personal style is to precede comments with a ;;;, so none of this impinges
-on the software included in the archive with the assembler.
-
-   There is a short C-program included that will blindly convert all single
-semicolons to double semicolons.  Since I've observed that semicolons rarely
-occur inside string or character constants in actual 8051 programs, this should
-ALMOST always be sufficient to resolve any incompatibilities with your older
-assembly language programs.
-
-   (n) What goes in a *.s file, what goes in a *.h file?
-   Generally speaking, declarations should be placed in a *.h header file.
-The design of this assembler (especially with it being a one-pass assembler) is
-intended to support this usage.  Any of the following is a declaration:
-
-      (c) Defining new LABELS -- LABEL equ Exp, LABEL Type Exp
-      (f) Declaring EXTERNAL labels -- extern Type LABEL, ..., LABEL
-                                       extern equ LABEL, ..., LABEL
-
-Declarations only meant to be accessed within one module should be made inside
-that module, instead of out in a header file.
-
-The following should be used only in *.s files, as they are generally
-(a) used to create memory images, (b) used to define non-global objects, or
-(c) used to define address values:
-
-      (a) FILE INCLUSION -- include FILE
-      (b) Setting current SEGMENT and LOCATION -- seg, at, org
-      (c) Defining new LABELS -- LABEL:
-      (d) Numeric labels
-      (e) Declaring GLOBAL labels -- global
-      (g) Memory ALLOCATION -- ds, rb, rw
-      (h) Memory FORMATTING - db, dw
-
-The last two items are generally used in many different contexts, and so can be
-used anywhere:
-
-      (i) CONDITIONAL assembly -- if (Ex) ST, if (Ex) ST else ST
-      (j) Statement GROUPING -- { ... }
-
-(3) Expressions
-  (a) Operators
-   The syntax is the same as in C.  The following operations are defined:
-
-BIT-WISE:       ~, &, ^, |, <<, >>
-BOOLEAN:        !, &&, ||, <, <=, >, >=, ==, !=
-CONDITIONAL:    ? :
-ARITHMETIC:     prefix + and -, +, -, *, /, %
-CONVERSIONS:    high, low, by
-BIT CONVERSION: .
-
-   The operator precedences are all the same as in C.
-
-   The latter two groups, not defined in C, are described in more detail
-below.  The operator high, and low have the same precedence as all the other
-prefix operators (+, -, !, and ~).  The operators "by" and "." have the lowest
-precedence of all infix operators, so for example
-
-                            A * B by C
+The latter two groups, not defined in C, are described in more detail below.
+The operator high, and low have the same precedence as all the other prefix operators (+, -, !, and ~).
+The operators ‟by” and ‟.” have the lowest precedence of all infix operators, so for example
+	A * B by C
 is resolved as:
-                            A * (B by C)
-
+	A * (B by C)
 and
-                             A.B + C
+	A.B + C
 as:
-                            (A.B) + C
+	(A.B) + C
 
-  Parentheses may be used to enclose expressions as in C, for example:
+Parentheses may be used to enclose expressions as in C, for example:
+	A + ((B << 2)&(C >> 3))
 
-                    A + ((B << 2)&(C >> 3))
+b. «Conversions» ― high X, low X, H by L
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+The following examples illustrate these operations:
+	high 1234h	(result: 12h .. the upper byte of the word 1234h)
+	low 1234h	(result: 34h .. the lower byte of the word 1234h)
+	12h by 34h	(result: 1234h)
 
-   (b) CONVERSIONS ... high X, low X, H by L
-   The following examples illustrate these operations:
+c. «Bit-conversion» ― Dir.Pos
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+This is an 8051-specific operation related to the bit-addressing structure of the processor.
+The first argument represents a direct data register (of type ‟data” and value < 80h, or type ‟sfr” and value ≥ 80h).
+The second represents a bit position (0, through 7).
 
-        high 1234h         (result: 12h .. the upper byte of the word 1234h)
-        low  1223h         (result: 34h .. the lower byte of the word 1234h)
-        12h by 34h         (result: 1234h)
+The register, Dir, must be bit addressible.
+These include only:
+	data:	20h - 2fh
+	sfr:	80h, 88h, 90h, 98h, 0a0h, 0a8h, 0b0h, 0b8h, 0c0h, 0c8h, 0d0h, 0d8h, 0e0h, 0e8h, 0f0h, 0f8h
+The sfr registers and bit positions generally have meanings defined by the manufacturer of the 8051 processor
+and vary between different versions of the 8051.
+They are not generally free to be defined by the programmer for arbitrary use.
+Most of them control or monitor the internal 8051 peripherals.
 
-   (c) BIT-CONVERSION ... Dir.Pos
-   This is an 8051-specific operation related to the bit-addressing structure of
-the processor.   The first argument represents a direct data register (of type
-"data" and value < 80h, or type "sfr" and value >= 80h).  The second represents
-a bit position (0, through 7).
-   The register, Dir, must be bit addressible.  These include only:
- 
-          data; 20h - 2fh
-          sfr:   80h,  88h,  90h,  98h, 0a0h, 0a8h, 0b0h, 0b8h,
-                0c0h, 0c8h, 0d0h, 0d8h, 0e0h, 0e8h, 0f0h, 0f8h
-
-The sfr registers and bit positions generally have meanings defined by the
-manufacturer of the 8051 processor and vary between different versions of the
-8051.  They are not generally free to be defined by the programmer for
-arbitrary use.  Most of them control or monitor the internal 8051 peripherals.
-
-   (d) LOCATION COUNTER -- $
-   A variable address that denotes the current location within the current
-segment.  NOTE:
-
-                     dw $, $ - 2, $ - 4
-IS EQUIVALENT TO:
-                     dw $; dw $ - 2; dw $ - 4
+d. «Location counter» ― $
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+A variable address that denotes the current location within the current segment.
+«Note»:
+	dw $, $ - 2, $ - 4
+«is equivalent to»:
+	dw $; dw $ - 2; dw $ - 4
 which is equivalent to:
-                  1: dw 1b; dw 1b; dw 1b
+	1: dw 1b; dw 1b; dw 1b
 
 The location counter advances in the middle of a dw or db.
 
-   (e) NUMERIC CONSTANT
-   This assembler accepts both C numeric syntax, as well as the Intel
-numeric syntax.  The relation between the (extended) C notation and
-Intel notation is illustrated below:
+e. «Numeric constant»
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+This assembler accepts both C numeric syntax, as well as the Intel numeric syntax.
+The relation between the (extended) C notation and Intel notation is illustrated below:
+∙	«hexadecimal»:	0xa44f	= 0a44fh
+			0x23	= 23h
+∙	«decimal»:	23	= 23
+			23	= 23d
+∙	«octal»:	034	= 34q
+			056	= 56o
+∙	«binary»:	0b1001 = 1001b
+Upper case may be used anywhere lower case is used, so the above can be written as:
+∙	«hexadecimal»:	0XA44F	= 0A44FH
+			0X23	= 23H
+∙	«decimal»:	23	= 23
+			23	= 23D
+∙	«octal»:	034	= 34Q
+			056	= 56O
+∙	«binary»:	0B1001	= 1001B
 
-          HEXADECIMAL: 0xa44f = 0a44fh
-                       0x23   = 23h
-          DECIMAL:     23     = 23
-                       23     = 23d
-          OCTAL:       034    = 34q
-                       056    = 56o
-          BINARY:      0b1001 = 1001b
+f. «Labels»
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+Labels may consist of any sequence of letters, the _, and digits, not starting in a digit.
+As with numerals, labels are «case insensitive».
+So all of the following are equivalent:
+	PPC, PPc, Ppc, pPC
 
-Upper case may be used anywhere lower case is used, so the above can be written
-as:
-          HEXADECIMAL: 0XA44F = 0A44FH
-                       0X23   = 23H
-          DECIMAL:     23     = 23
-                       23     = 23D
-          OCTAL:       034    = 34Q
-                       056    = 56O
-          BINARY:      0B1001 = 1001B
+4. Referencing Expressions
+――――――――――――――――――――――――――
+At any time during assembly, a label may be in one of 3 states:
+∙	«defined» and «absolute»:
+	This is either a numeric label, or a label denoting an address whose actual value is known.
+∙	«defined» and «relative»:
+	This is a label denoting an address whose location within its segment is known, but with the segment being relative.
+∙	«undefined»:
+	This is a label that is either defined elsewhere in another file,
+	or defined later on in the file currently undergoing processing.
 
-   (f) LABELS
-   Labels may consist of any sequence of letters, the _, and digits, not
-starting in a digit.  As with numbers, labels are CASE INSENSITIVE.  So
-all of the following are equivalent:
+The following restrictions hold when using expressions:
+∙	Only «absolute» labels can be used in any of the directives:
+		at/org,
+		ds/rb, rw
+		if (...)
+∙	Only «defined» labels can be used on the right-hand side of any of the follwing directives:
+		LABEL equ Exp,
+		LABEL Type Exp
+		LABEL set Exp, LABEL = Exp
+∙	Any expression can be used with any image generating statement:
+		Mnemonics
+		db, dw
+If the expression's value is not known at the time of assembly, then the corresponding location in the image is zeroed out.
+If the expression's value becomes known by the time the file is processed,
+the assembler will go back and fill in the zero with the appropriate value(s).
 
-                  PPC, PPc, Ppc, pPC
+5. Bugs (or ‟features”)
+―――――――――――――――――――――――
+∙	There is no way to tell the assembler to locate relatively addressed data registers in the directly addressible space.
+	Consequently you may receive numerous errors during the linking phase
+	telling you that such and such registers cannot be directly addressed.
 
-(4) Referencing Expressions
-   At any time during assembly, a label may be in one of 3 states:
-        (a) DEFINED and ABSOLUTE:
-            This is either a numeric label, or a label denoting an address
-            whose actual value is known.
-        (b) DEFINED and RELATIVE:
-            This is a label denoting an address whose location within its
-            segment is known, bot with the segment being relative.
-        (c) UNDEFINED:
-            This is a label that is either defined elsewhere in another file,
-            or defined later on in the file currently undergoing processing.
+	There are basically 2 ways to resolve this:
+	(1)	give the registers absolute addresses,
+	(2)	try listing the files in which these registers are defined first.
+	The linker maps relative segments from the files in the order you list those files.
 
-   The following restrictions hold when using expressions:
-      * Only ABSOLUTE labels can be used in any of the directives:
-              at/org,
-              ds/rb, rw
-              if (...)
-
-      * Only DEFINED labels can be used on the right-hand side of any of the
-        follwing directives:
-             Label equ Exp,
-             LABEL Type Exp
-             LABEL set Exp, LABEL = Exp
-
-      * Any expression can be used with any image generating statement:
-             Mnemonics
-             db, dw
-
-If the expression's value is not known at the time of assembly, then the
-corresponding location in the image is zeroed out.  If the expression's value
-becomes known by the time the file is processed, the assembler will go back
-and fill in the zero with the appropriate value(s).
-
-(5) Bugs (or "features")
-   (a) There is no way to tell the assembler to locate relatively addressed
-       data registers in the directly addressible space.  Consequently you
-       may receive numerous errors during the linking phase telling you that
-       such and such registers cannot be directly addressed.
-
-       There are basically 2 ways to resolve this: (1) give the registers
-       absolute addresses, (2) try listing the files in which these registers
-       are defined first.  The linker maps relative segments from the files
-       in the order you list those files.
-
-       In the makefile of the sample program provided (in 8051/assem/data), 
-       the linking phase is done with the command line:
-
-                    cas -o math.o data.o stdio.o kernel.o
-
-       This ordering resolves the problem.
-
-   (b) The assembler won't recognize UNIX-style newlines on a DOS.  Therefore,
-       a conversion utility (nl.c) has been provided.
-
-   (c) No run-time checks are made against the object files processed.  A
-       corrupt object file will crash the assembler during the linking phase.
+	In the makefile of the sample program provided (in 8051/assem/data), the linking phase is done with the command line:
+		cas -o math.o data.o stdio.o kernel.o
+	This ordering resolves the problem.
+∙	The assembler won't recognize UNIX-style newlines on a DOS.
+	Therefore, a conversion utility (nl.c) has been provided.
+∙	No run-time checks are made against the object files processed.
+	A corrupt object file will crash the assembler during the linking phase.

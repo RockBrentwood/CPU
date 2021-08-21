@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdbool.h>
 #include "io.h"
 #include "ex.h"
 #include "st.h"
@@ -41,11 +42,10 @@ static void PutE(Exp E) { if (Direct < 2) EP++; else *AP++ = E; }
 static Exp GetE(void) { return (Direct < 2)? --EP: *--AP; }
 
 void MarkExp(Exp E) {
-   if (E->Map) return;
-   E->Map = 1;
+   if (E->Map) return; else E->Map = true;
    switch (E->Tag) {
       case NumX: case AddrX: break;
-      case SymX: SymOf(E)->Map = 1; break;
+      case SymX: SymOf(E)->Map = true; break;
       case CondX:
          MarkExp(ArgC(E));
       case BinX:
@@ -57,13 +57,13 @@ void MarkExp(Exp E) {
 }
 
 Exp EvalExp(Exp E) {
-   Segment Seg; word Offset, Value;
-   Symbol Sym; Lexical Op; Exp A, B, C;
-   ExpTag Tag = E->Tag;
    if (Phase == 1) {
       if (E->Mark) return E;
       StartLine = E->Line, StartF = E->File;
    }
+   Segment Seg; word Offset, Value;
+   Symbol Sym; Lexical Op; Exp A, B, C;
+   ExpTag Tag = E->Tag;
    switch (Tag) {
       case NumX: Value = ValOf(E); break;
       case AddrX: Seg = SegOf(E), Offset = OffOf(E); break;
@@ -117,10 +117,10 @@ Exp EvalExp(Exp E) {
             } else if (A->Tag == AddrX && B->Tag == NumX) {
                Tag = AddrX, Seg = SegOf(A), Offset = OffOf(A) - ValOf(B);
             } else if (A->Tag == AddrX && B->Tag == AddrX) {
-               if (SegOf(A)->Type != SegOf(B)->Type) {
-                  Error("Addresses of different types cannot be subtracted.");
+               if (SegOf(A)->Type != SegOf(B)->Type)
+                  Error("Addresses of different types cannot be subtracted."),
                   Tag = AddrX, Seg = SegOf(A), Offset = OffOf(A) - OffOf(B);
-               } else if (SegOf(A) == SegOf(B))
+               else if (SegOf(A) == SegOf(B))
                   Tag = NumX, Value = OffOf(A) - OffOf(B);
             }
          } else if (Op == DOT) {
@@ -231,35 +231,35 @@ Exp EvalExp(Exp E) {
    switch (Tag) {
       case NumX:
          H = (Value^(Value>>6)^(Value>>12))&0x3f;
-         for (E = ExpHash[H]; E != 0; E = E->Tail)
+         for (E = ExpHash[H]; E != NULL; E = E->Tail)
             if (Value == ValOf(E)) return E;
       break;
       case AddrX:
          H = (Bs^(Bs>>6)^Offset^(Offset>>6)^(Offset>>12))&0x3f|0x40;
-         for (E = ExpHash[H]; E != 0; E = E->Tail)
+         for (E = ExpHash[H]; E != NULL; E = E->Tail)
             if (Seg == SegOf(E) && Offset == OffOf(E)) return E;
       break;
       case SymX: {
          char *S;
          for (H = 0, S = Sym->Name; *S != '\0'; S++) H ^= *S;
          H = H&0x3f|0x80;
-         for (E = ExpHash[H]; E != 0; E = E->Tail)
+         for (E = ExpHash[H]; E != NULL; E = E->Tail)
             if (Sym == SymOf(E)) return E;
       }
       break;
       case UnX:
          H = (Op^(Op>>6)^A->Hash)&0xf|0xe0;
-         for (E = ExpHash[H]; E != 0; E = E->Tail)
+         for (E = ExpHash[H]; E != NULL; E = E->Tail)
             if (Op == OpOf(E) && A == ArgA(E)) return E;
       break;
       case BinX:
          H = (Op^(Op>>6)^A->Hash^B->Hash)&0x1f|0xc0;
-         for (E = ExpHash[H]; E != 0; E = E->Tail)
+         for (E = ExpHash[H]; E != NULL; E = E->Tail)
             if (Op == OpOf(E) && A == ArgA(E) && B == ArgB(E)) return E;
       break;
       case CondX:
          H = (A->Hash^B->Hash^C->Hash)&0xf|0xf0;
-         for (E = ExpHash[H]; E != 0; E = E->Tail)
+         for (E = ExpHash[H]; E != NULL; E = E->Tail)
             if (A == ArgA(E) && B == ArgB(E) && C == ArgC(E)) return E;
       break;
    }
@@ -267,9 +267,9 @@ Exp EvalExp(Exp E) {
    else {
       E = Allocate(sizeof *E);
       E->Hash = H, E->Tail = ExpHash[H], ExpHash[H] = E;
-      E->Next = 0, E->Map = 0,
+      E->Next = NULL, E->Map = false,
       E->Line = StartLine, E->File = StartF,
-      E->Mark = (Phase == 0)? 0: 1;
+      E->Mark = Phase != 0;
       if (ExpHead == 0) ExpHead = E; else ExpTail->Next = E;
       ExpTail = E;
    }
@@ -287,7 +287,7 @@ Exp EvalExp(Exp E) {
 static struct Exp EBuf;
 Exp MakeExp(ExpTag Tag, ...) {
    Exp E = &EBuf;
-   if (!Active) return 0;
+   if (!Active) return NULL;
    va_list AP; va_start(AP, Tag);
    switch (E->Tag = Tag) {
       case NumX: ValOf(E) = (word)va_arg(AP, unsigned); break;
@@ -336,7 +336,7 @@ char *Action[6] = {
 
 Exp Parse(int Dir) {
    Lexical L = OldL;
-   InExp = 1; Direct = Dir;
+   InExp = true; Direct = Dir;
    EP = EStack, OP = OStack, AP = AStack, TP = TStack;
    Push(BOT);
    Exp A, B; int Act;
@@ -368,7 +368,8 @@ EndEx:
       case 'u': A = MakeExp(UnX, *--OP, A); goto EndEx;
       case 'b': A = MakeExp(BinX, *--OP, GetE(), A); goto EndEx;
       case 'c': B = GetE(); A = MakeExp(CondX, GetE(), B, A); goto EndEx;
-      case '.': InExp = 0, Direct = 2; break;
+      default:
+      case '.': InExp = false, Direct = 2; break;
    }
    return A;
 }

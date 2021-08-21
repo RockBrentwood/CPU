@@ -1,160 +1,121 @@
-                 8051 DISASSEMBLER, notes on use.
+8051 Disassembler, notes on use.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+0. Command Line, Input Format
+―――――――――――――――――――――――――――――
+This is a disassembler for the Intel 8051-family of processors.
+It is currently set to read up to and including the 8052.
 
-(0) COMMAND LINE, INPUT FORMAT
-   This is a disassembler for the Intel 8051-family of processors.  It is
-currently set to read up to and including the 8052.
-
-   The typical conmmand line for this disassembler is:
-
-                     das <asm.hex >asm.s
-
-The input file (read from standard input) is assumed to be in Intel Hex
-Format.  The output is placed in standard output (or in a file when
-redirection is used).  A third file:
-
-                          entries
-
+The typical conmmand line for this disassembler is:
+	das <asm.hex >asm.s
+The input file (read from standard input) is assumed to be in Intel Hex Format.
+The output is placed in standard output (or in a file when redirection is used).
+A third file:
+	entries
 is used to specify a list of entry points for das to use.
 
-   Currently, it will only accept input in Intel Hex format located between
-the addresses 0000 and 4000 (hex).  It will read entry points from a file:
-"entries" and recursively disassemble all the addresses "reachible" from
-those listed as entry points.  A sample entries file, input file and output file
-are provided with the software.  The format of each address in the file is
-(starting at column 1):
-
-HHHH<cr>
-
+Currently, it will only accept input in Intel Hex format located between the addresses 0000 and 4000 (hex).
+It will read entry points from a file: ‟entries”
+and recursively disassemble all the addresses ‟reachible” from those listed as entry points.
+A sample entries file, input file and output file are provided with the software.
+The format of each address in the file is (starting at column 1):
+	HHHH<cr>
 with the H's representing the digits of the address in hexadecimal.
 
-   Typically entry points are assigned to 0000, the starting address, and
-the address of each interrupt-handler that is used.
+Typically entry points are assigned to 0000, the starting address, and the address of each interrupt-handler that is used.
 
-(1) OUTPUT FORMAT
-   The output of the disassembler is not exactly re-assembleable.  When the
-disassembler searches for reachible segments of code, it will fail to resolve
-indirect jumps (jmp @A + DPTR, jmp @A + PC), and will fail to recognize
-virtual jumps created by manipulating the stack pointer, e.g.
+1. Output Format
+――――――――――――――――
+The output of the disassembler is not exactly re-assembleable.
+When the disassembler searches for reachible segments of code,
+it will fail to resolve indirect jumps (jmp @A + DPTR, jmp @A + PC),
+and will fail to recognize virtual jumps created by manipulating the stack pointer, e.g.
+	push DPL
+	push DPH
+	ret        ;;; An indirect jump to the address pointed to by DPTR.
+In addition, if the original program contained data tables, these would normally be passed by untouched.
 
-push DPL
-push DPH
-ret        ;;; An indirect jump to the address pointed to by DPTR.
+The disassembler will regard anything in the allocated code space that was not accessible as being data.
+If necessary, you will have to visually inspect the disassembled code for indirect jumps and stack pointer manipulations
+to determine what addresses are being indirectly referenced.
+Then you could add these addresses to the entry point list in the file ‟entries” and disassemble again.
+This, in turn, may reveal additional indirect addresses,
+so that there is an iterative process implied here to completely disassemble code.
 
-In addition, if the original program contained data tables, these would
-normally be passed by untouched.
+For assistance, a list of locations where indirect jumps occur will be listed in the following format:
+	Indirect jump at <Address>
 
-   The disassembler will regard anything in the allocated code space that
-was not accessible as being data.  If necessary, you will have to visually
-inspect the disassembled code for indirect jumps and stack pointer
-manipulations to determine what addresses are being indirectly referenced.
-Then you could add these addresses to the entry point list in the file
-"entries" and disassemble again.  This, in turn, may reveal additional
-indirect addresses, so that there is an iterative process implied here to
-completely disassemble code.
+In the sample program provided, there were no indirect jumps.
+However, since the assembly-language software implements a multitasking kernel, it heavily manipulates the stack pointer.
+Consquently, the addresses listed in the entries file are not just the starting address (0000), and interrupt handler(s) (0023),
+but also derived addresses: 0067 (found on the first iteration). and 0131 (found on the second).
 
-   For assistance, a list of locations where indirect jumps occur will be
-listed in the following format:
+Also, any addresses referenced that lie outside the range of the Intel Hex Format file will be listed as external references.
+These are listed in the following form:
+	REF: <Address>
 
-Indirect jump at <Address>
+Data segments will be clearly marked as such, beginning with the header:
+	DATA at <Address>
+following which will be a hexadecimal listing of the ‟data” in the format illustrated below:
+	34 aa ef 00 00 00 00 00 34 ee ff 00 00 00 00 00 |4       4      |
+A list of up to 16 bytes in hexadecimal notation is generated,
+and then between vertical bars is the list of corresponding ASCII characters.
+Control characters and meta characters (those ranging from 128 to 255) are ‟blanked” out.
+The character listing allows you to easily recognize embedded string constants wherever they occur.
 
-   In the sample program provided, there were no indirect jumps.  However,
-since the assembly-language software implements a multitasking kernel, it
-heavily manipulates the stack pointer.  Consquently, the addresses listed in
-the entries file are not just the starting address (0000), and interrupt
-handler(s) (0023), but also derived addresses: 0067 (found on the first
-iteration). and 0131 (found on the second).
-
-   Also, any addresses referenced that lie outside the range of the Intel Hex
-Format file will be listed as external references.  These are listed in the
-following form:
-
-REF: <Address>
-
-   Data segments will be clearly marked as such, beginning with the header:
-
-DATA at <Address>
-
-following which will be a hexadecimal listing of the "data" in the format
-illustrated below:
-
-34 aa ef 00 00 00 00 00 34 ee ff 00 00 00 00 00 |4       4      |
-
-A list of up to 16 bytes in hexadecimal notation is generated, and then between
-vertical bars is the list of corresponding ASCII characters. Control characters
-and meta characters (those ranging from 128 to 255) are "blanked" out.  The
-character listing allows you to easily recognize embedded string constants
-wherever they occur.
-
-Labels are generated for SFR's corresponding to the 8052 processor, and Bit
-labels are likewise generated.  These are listed in the tables SFRs, and Bits
-contained in the disassembler source, and can be modified to suit whatever
-version of the 8051 you are using.
+Labels are generated for SFR's corresponding to the 8052 processor, and Bit labels are likewise generated.
+These are listed in the tables SFRs, and Bits contained in the disassembler source,
+and can be modified to suit whatever version of the 8051 you are using.
 
 In the output, addresses are labeled in the format illustrated below:
-
-                             C3458
-
-The initial letter indicates the number of times this address is referenced
-with the following key:
-
-             B = 1 reference, C = 2 references, D = 3, E = 4, etc.
-
+	C3458
+The initial letter indicates the number of times this address is referenced with the following key:
+	B = 1 reference, C = 2 references, D = 3, E = 4, etc.
 the next 4 items represent that actual address of the label in hexadecimal.
 
-(2) ERRORS
-   The disassembler will duly note where disassembled instructions overlap,
-or where it cannot further process input.
+2. Errors
+―――――――――
+The disassembler will duly note where disassembled instructions overlap, or where it cannot further process input.
 
-No entry points listed.
-Bad hexadecimal digit in input.
-   The input file "entries" was not found, or contained corrupt data.
+∙	No entry points listed.
+∙	Bad hexadecimal digit in input.
+		The input file ‟entries” was not found, or contained corrupt data.
+∙	Address out of range 0 - 4000h in input.
+		The input file contains a portion of a program lying outside the address range 0 to 4000 (hex).
+		The disassembler cannot go beyond 4000h.
+		This is a fatal error, disassembly stops.
+∙	Bad format string, PC = HHHH.
+		Something's wrong with your compiler or operating system, or the source file has been corrupted.
+		Report this promptly to me, if you should see this. :)
+∙	Bad hexadecimal digit in input.
+∙	Bad checksum.
+∙	Unexpected EOF
+		The input file contained a portion not strictly in Intel Hex Format.
+∙	Entry into ARG at <Address>.
+		An entry point is accessing a point that has already been disassembled as the interior of an instruction.
+∙	OP into ARG at <Address>.
+		An attempt was made to disassemble an instruction starting at an address
+		already contained in the interior of another instriction.
+		The disassembler is generating overlapping instructions.
+∙	ARG into OP at <Address>.
+		An attempt was made to disassemble an argument to an instruction at an address
+		already disassembled as the first byte of another instruction.
+∙	ARG into ARG at <Address>.
+		An attempt was made to disassemble an argument to an instruction at an address
+		already disassembled as an argument of another instruction.
 
-Address out of range 0 - 4000h in input.
-   The input file contains a portion of a program lying outside the address
-   range 0 to 4000 (hex).  The disassembler cannot go beyond 4000h.  This is
-   a fatal error, disassembly stops.
+		The presence of this error indicates that something is wrong with your compiler or operating system,
+		or the source file has been corrupted.
+		Report this promptly to me, as well, if you should see this error.
+∙	Too many entries, PC = <Address>.
+		The number of pending points for the disassembler to process exceeded its capacity.
 
-Bad format string, PC = HHHH.
-   Something's wrong with your compiler or operating system, or the source file
-   has been corrupted.  Report this promptly to me, if you should see this. :)
+3. User Support and Guarantee
+―――――――――――――――――――――――――――――
+This software has been rigorously verified with respect to the description given above.
+It will also conform to the description of the binary coding of the 8051 processor supplied by Intel.
 
-Bad hexadecimal digit in input.
-Bad checksum.
-Unexpected EOF
-   The input file contained a portion not strictly in Intel Hex Format.
-
-Entry into ARG at <Address>.
-   An entry point is accessing a point that has already been disassembled as
-   the interior of an instruction.
-
-OP into ARG at <Address>.
-   An attempt was made to disassemble an instruction starting at an address
-   already contained in the interior of another instriction.  The disassembler
-   is generating overlapping instructions.
-
-ARG into OP at <Address>.
-   An attempt was made to disassemble an argument to an instruction at an
-   address already disassembled as the first byte of another instruction.
-
-ARG into ARG at <Address>.
-   An attempt was made to disassemble an argument to an instruction at an
-   address already disassembled as an argument of another instruction.
-
-   The presence of this error indicates that something is wrong with your
-   compiler or operating system, or the source file has been corrupted.
-   Report this promptly to me, as well, if you should see this error.
-
-Too many entries, PC = <Address>.
-   The number of pending points for the disassembler to process exceeded its
-   capacity.
-
-(3) USER SUPPORT and GUARANTEE
-   This software has been rigorously verified with respect to the description
-given above.  It will also conform to the description of the binary coding
-of the 8051 processor supplied by Intel.
-   Since this was a hobby project mainly intended for myself and not for a
-wider audience, you will be on your own in using this software.  However, I am
-interested in hearing any feedback you have.  Send comments to my e-mail
-address, markh@csd4.csd.uwm.edu.  If you want to make upgrades, I encourage
-you to try your hand at it.  That's exactly why I'm distributing this package
-free.
+Since this was a hobby project mainly intended for myself and not for a wider audience,
+you will be on your own in using this software.
+Feedback may be provided here, through the archive site, currently on GitHub.
+If you want to make upgrades, I encourage you to try your hand at it.
+That's exactly why I'm distributing this package free.

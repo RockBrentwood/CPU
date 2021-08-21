@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include "io.h"
 #include "ex.h"
 #include "st.h"
@@ -23,7 +24,7 @@ void Resolve(Item IP) {
    Segment Seg; long L;
 // TypeCheck
    switch (E->Tag) {
-      case AddrX: {
+      case AddrX:
          Seg = SegOf(E);
          if (IP->Tag != 'R'? Seg->Rel: (Seg->Rel || IP->Seg->Rel) && IP->Seg != Seg) goto DoMap;
          L = (long)(short)Seg->Base + (long)(short)OffOf(E);
@@ -39,7 +40,6 @@ void Resolve(Item IP) {
                if (Seg->Type != CODE) Error("Address type mismatch.");
             break;
          }
-      }
       break;
       case NumX: L = (long)(short)ValOf(E); break;
       default: goto DoMap;
@@ -80,7 +80,7 @@ void Resolve(Item IP) {
       default: Fatal("Internal error (0)");
    }
    if (Phase == 1) {
-      fseek(OutF, IP->Seg->Loc + IP->Offset, SEEK_SET); IP->Map = 0;
+      fseek(ExF, IP->Seg->Loc + IP->Offset, SEEK_SET); IP->Map = false;
    }
 Generate:
    switch (IP->Tag) {
@@ -88,7 +88,7 @@ Generate:
          byte B = L&0xff;
          switch (Phase) {
             case 0: PByte(B); break;
-            case 1: PutB(B, OutF); break;
+            case 1: PutB(B, ExF); break;
             case 2: IP->Tag = 'b', LVal = B; break;
          }
       }
@@ -97,7 +97,7 @@ Generate:
          byte Lo = (L >> 8)&0xff, Hi = L&0xff;
          switch (Phase) {
             case 0: PByte(Lo), PByte(Hi); break;
-            case 1: PutB(Lo, OutF), PutB(Hi, OutF); break;
+            case 1: PutB(Lo, ExF), PutB(Hi, ExF); break;
             case 2: IP->Tag = 'w', LVal = L&0xffff; break;
          }
       }
@@ -107,7 +107,7 @@ return;
 DoMap:
    switch (Phase) {
       case 0: RCur++; L = 0; goto Generate;
-      case 1: IP->Map = 1; MarkExp(IP->E = E); break;
+      case 1: IP->Map = true; MarkExp(IP->E = E); break;
       case 2: Fatal("Internal error (1).");
    }
 }
@@ -119,7 +119,7 @@ void Reloc(byte Code, byte Tag, Exp E) {
    }
    Item IP = &RTab[RCur];
    IP->Tag = Tag, IP->E = E, IP->Seg = SegP, IP->Offset = CurLoc;
-   IP->Map = 0, IP->Line = StartLine, IP->File = StartF;
+   IP->Map = false, IP->Line = StartLine, IP->File = StartF;
 /* ajmp: Tag = 'P', acall: Tag = 'Q' */
    if (IP->Tag == 'P' && (Code&0x10)) IP->Tag = 'Q';
    Resolve(IP);

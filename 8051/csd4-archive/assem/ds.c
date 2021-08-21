@@ -6,22 +6,22 @@ typedef unsigned short word;
 
 void Fatal(char *Msg) { printf(Msg), putchar('\n'); exit(EXIT_FAILURE); }
 
-byte GetB(FILE *FP) {
-   int A= fgetc(FP); if (A == EOF) Fatal("Unexpected EOF.");
+byte GetB(FILE *InF) {
+   int A= fgetc(InF); if (A == EOF) Fatal("Unexpected EOF.");
    return A&0xff;
 }
 
-word GetW(FILE *FP) {
-   int A = fgetc(FP); if (A == EOF) Fatal("Unexpected EOF.");
-   int B = fgetc(FP); if (B == EOF) Fatal("Unexpected EOF.");
+word GetW(FILE *InF) {
+   int A = fgetc(InF); if (A == EOF) Fatal("Unexpected EOF.");
+   int B = fgetc(InF); if (B == EOF) Fatal("Unexpected EOF.");
    return (A&0xff) << 8 | B&0xff;
 }
 
-unsigned long GetL(FILE *FP) {
-   int A = fgetc(FP); if (A == EOF) Fatal("Unexpected EOF.");
-   int B = fgetc(FP); if (B == EOF) Fatal("Unexpected EOF.");
-   int C = fgetc(FP); if (C == EOF) Fatal("Unexpected EOF.");
-   int D = fgetc(FP); if (D == EOF) Fatal("Unexpected EOF.");
+unsigned long GetL(FILE *InF) {
+   int A = fgetc(InF); if (A == EOF) Fatal("Unexpected EOF.");
+   int B = fgetc(InF); if (B == EOF) Fatal("Unexpected EOF.");
+   int C = fgetc(InF); if (C == EOF) Fatal("Unexpected EOF.");
+   int D = fgetc(InF); if (D == EOF) Fatal("Unexpected EOF.");
    return (A&0xff) << 24 | (B&0xff) << 16 | (C&0xff) << 8 | D&0xff;
 }
 
@@ -29,32 +29,32 @@ int main(int AC, char *AV[]) {
    char *App = AC > 0? AV[0]: NULL; if (App == NULL || *App == '\0') App = "ds";
    int Status = EXIT_FAILURE;
    if (AC != 2) { fprintf(stderr, "Usage: %s Input.\n", App); goto Exit0; }
-   FILE *FP = fopen(AV[1], "rb+");
-   if (FP == NULL) { fprintf(stderr, "Cannot open %s.\n", AV[1]); goto Exit0; }
-   word Signature = GetW(FP);
+   FILE *InF = fopen(AV[1], "rb+");
+   if (InF == NULL) { fprintf(stderr, "Cannot open %s.\n", AV[1]); goto Exit0; }
+   word Signature = GetW(InF);
    if (Signature != 0x55aa) {
       fprintf(stderr, "Invalid object file (%4x).\n", Signature); goto Exit1;
    }
-   long SegLoc = GetL(FP), Files = GetL(FP), Segs = GetL(FP), Gaps = GetL(FP);
-   long Syms = GetL(FP), Exps = GetL(FP), Relocs = GetL(FP), Sum = GetL(FP);
+   long SegLoc = GetL(InF), Files = GetL(InF), Segs = GetL(InF), Gaps = GetL(InF);
+   long Syms = GetL(InF), Exps = GetL(InF), Relocs = GetL(InF), Sum = GetL(InF);
    if (Sum != (SegLoc + Files + Segs + Gaps + Syms + Exps + Relocs)&0xffffffff) {
       fprintf(stderr, "Corrupt object file."); goto Exit1;
    }
    printf("Image:\n");
    unsigned Field = 0;
-   for (; ftell(FP) < SegLoc; Field++) {
+   for (; ftell(InF) < SegLoc; Field++) {
       if (Field%0x10 == 0) printf("%4x:", Field);
-      printf(" %2x", (unsigned)fgetc(FP));
+      printf(" %2x", (unsigned)fgetc(InF));
       if (Field%0x10 == 0x0f) putchar('\n');
    }
    if (Field%0x10 > 0) putchar('\n');
-   if (ftell(FP) != SegLoc) { fprintf(stderr, "Internal Error (0).\n"); goto Exit1; }
+   if (ftell(InF) != SegLoc) { fprintf(stderr, "Internal Error (0).\n"); goto Exit1; }
    printf("File(s): %ld\n", Files);
    if (Files > 0) {
       printf("## Name,\n");
       for (long S = 0; S < Files; S++) {
-         char Buf[0x100]; word L = GetW(FP);
-         fread(Buf, 1, L, FP), Buf[L] = '\0';
+         char Buf[0x100]; word L = GetW(InF);
+         fread(Buf, 1, L, InF), Buf[L] = '\0';
          printf("%2ld %15s\n", S, Buf);
       }
    }
@@ -62,8 +62,8 @@ int main(int AC, char *AV[]) {
    if (Segs > 5) { /* The number of types */
       printf("## Line File Rel Type Base Size  Loc\n");
       for (long S = 5; S < Segs; S++) {
-         word Line = GetW(FP), File = GetW(FP);
-         word U = GetW(FP), Size = GetW(FP), Base = GetW(FP); long Loc = GetL(FP);
+         word Line = GetW(InF), File = GetW(InF);
+         word U = GetW(InF), Size = GetW(InF), Base = GetW(InF); long Loc = GetL(InF);
          word Rel = (U >> 8)&1, Type = U&0xff;
          printf("%2ld %4d %4d  %c %4x %4x %4x %8lx\n",
             S, Line, File, Rel? 'r': ' ', Type, Base, Size, Loc
@@ -74,7 +74,7 @@ int main(int AC, char *AV[]) {
    if (Gaps > 0) {
       printf("##  Seg  Off Size\n");
       for (long S = 0; S < Gaps; S++) {
-         word Seg = GetW(FP), Off = GetW(FP), Size = GetW(FP);
+         word Seg = GetW(InF), Off = GetW(InF), Size = GetW(InF);
          printf("%2ld %4x %4x %4x\n", S, Seg, Off, Size);
       }
    }
@@ -82,9 +82,9 @@ int main(int AC, char *AV[]) {
    if (Syms > 0) {
       printf("##     Scope Var Type   Value  Name\n");
       for (unsigned long S = 0; S < Syms; S++) {
-         byte B = GetB(FP); word U = GetW(FP), Offset = GetW(FP), L = GetW(FP);
+         byte B = GetB(InF); word U = GetW(InF), Offset = GetW(InF), L = GetW(InF);
          char Buf[0x80];
-         if (L > 0) fread(&Buf, 1, L, FP);
+         if (L > 0) fread(&Buf, 1, L, InF);
          Buf[L] = '\0';
          printf("%2lx ", S);
          switch (B&0xc) {
@@ -106,28 +106,28 @@ int main(int AC, char *AV[]) {
    if (Exps > 0) {
       printf("## Line File  Tag Args...\n");
       for (unsigned long S = 0; S < Exps; S++) {
-         word Line = GetW(FP), File = GetW(FP); char Tag = GetB(FP);
+         word Line = GetW(InF), File = GetW(InF); char Tag = GetB(InF);
          printf("%2lx %4d %4d ", S, Line, File);
          switch (Tag) {
-            case 0: printf(" NUM %4x", GetW(FP)); break;
+            case 0: printf(" NUM %4x", GetW(InF)); break;
             case 1: {
-               word Seg = GetW(FP), Offset = GetW(FP);
+               word Seg = GetW(InF), Offset = GetW(InF);
                printf("ADDR %2d %4x", Seg, Offset);
             }
             break;
-            case 2: printf(" SYM %2x", GetW(FP)); break;
+            case 2: printf(" SYM %2x", GetW(InF)); break;
             case 3: {
-               char Op = GetB(FP); word A = GetW(FP);
+               char Op = GetB(InF); word A = GetW(InF);
                printf("  UN %2d %4x", Op, A);
             }
             break;
             case 4: {
-               char Op = GetB(FP); word A = GetW(FP), B = GetW(FP);
+               char Op = GetB(InF); word A = GetW(InF), B = GetW(InF);
                printf(" BIN %2d %4x %4x", Op, A, B);
             }
             break;
             case 5: {
-               word A = GetW(FP), B = GetW(FP), C = GetW(FP);
+               word A = GetW(InF), B = GetW(InF), C = GetW(InF);
                printf("COND %4x %4x %4x", A, B, C);
             }
             break;
@@ -139,14 +139,14 @@ int main(int AC, char *AV[]) {
    if (Relocs > 0) {
       printf("Line File Tag  Exp  Seg: Off\n");
       for (long S = 0; S < Relocs; S++) {
-         word Line = GetW(FP), File = GetW(FP); char Tag = GetB(FP);
-         word Index = GetW(FP), U = GetW(FP), Offset = GetW(FP);
+         word Line = GetW(InF), File = GetW(InF); char Tag = GetB(InF);
+         word Index = GetW(InF), U = GetW(InF), Offset = GetW(InF);
          printf("%4d %4d  %c %4x  @ %2d:%4x\n", Line, File, Tag, Index, U, Offset);
       }
    }
    Status = EXIT_SUCCESS;
 Exit1:
-   fclose(FP);
+   fclose(InF);
 Exit0:
    return Status;
 }

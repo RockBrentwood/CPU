@@ -3,10 +3,11 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
+#include <stdbool.h>
 #include "io.h"
 #include "op.h"
 
-extern int Active;
+extern bool Active;
 
 /* SKIP LISTS are used to implement the symbol table */
 
@@ -49,7 +50,7 @@ static Symbol Form(int B, char *Name) {
    Symbol N = (Symbol)malloc(sizeof *N + B*sizeof(Symbol));
    if (N == NULL) fprintf(stderr, "Out of memory.\n"), exit(EXIT_FAILURE);
    N->Name = CopyS(Name),
-   N->Defined = N->Global = N->Variable = N->Address = N->Map = 0;
+   N->Defined = N->Global = N->Variable = N->Address = N->Map = false;
    return N;
 }
 
@@ -88,7 +89,8 @@ char Text[LINE_MAX]; static char *TextP;
 struct {
    word Path; long Loc; int Next, Line;
 } IS[INCLUDE_MAX], *ISP;
-static FILE *InF; FILE *OutF;
+static FILE *InF;
+FILE *ExF;
 char **FileTab; long Files;
 int StartF, CurF;
 static int FileMax;
@@ -119,35 +121,35 @@ void Check(void) {
    if (Errors > 0) printf("Errors present. Assembly stopped.\n"), exit(1);
 }
 
-byte GetB(FILE *FP) {
-   int A = fgetc(FP); if (A == EOF) Fatal("Unexpected EOF.");
+byte GetB(FILE *InF) {
+   int A = fgetc(InF); if (A == EOF) Fatal("Unexpected EOF.");
    return A&0xff;
 }
 
-word GetW(FILE *FP) {
-   int A = fgetc(FP); if (A == EOF) Fatal("Unexpected EOF.");
-   int B = fgetc(FP); if (B == EOF) Fatal("Unexpected EOF.");
+word GetW(FILE *InF) {
+   int A = fgetc(InF); if (A == EOF) Fatal("Unexpected EOF.");
+   int B = fgetc(InF); if (B == EOF) Fatal("Unexpected EOF.");
    return (A&0xff) << 8 | B&0xff;
 }
 
-unsigned long GetL(FILE *FP) {
-   int A = fgetc(FP); if (A == EOF) Fatal("Unexpected EOF.");
-   int B = fgetc(FP); if (B == EOF) Fatal("Unexpected EOF.");
-   int C = fgetc(FP); if (C == EOF) Fatal("Unexpected EOF.");
-   int D = fgetc(FP); if (D == EOF) Fatal("Unexpected EOF.");
+unsigned long GetL(FILE *InF) {
+   int A = fgetc(InF); if (A == EOF) Fatal("Unexpected EOF.");
+   int B = fgetc(InF); if (B == EOF) Fatal("Unexpected EOF.");
+   int C = fgetc(InF); if (C == EOF) Fatal("Unexpected EOF.");
+   int D = fgetc(InF); if (D == EOF) Fatal("Unexpected EOF.");
    return (A&0xff) << 24 | (B&0xff) << 16 | (C&0xff) << 8 | D&0xff;
 }
 
-void PutB(byte B, FILE *FP) { fputc(B, FP); }
+void PutB(byte B, FILE *ExF) { fputc(B, ExF); }
 
-void PutW(word W, FILE *FP) {
+void PutW(word W, FILE *ExF) {
    char A = (W >> 8)&0xff, B = W&0xff;
-   fputc(A, FP), fputc(B, FP);
+   fputc(A, ExF), fputc(B, ExF);
 }
 
-void PutL(unsigned long L, FILE *FP) {
+void PutL(unsigned long L, FILE *ExF) {
    char A = (L >> 24)&0xff, B = (L >> 16)&0xff, C = (L >> 8)&0xff, D = L&0xff;
-   fputc(A, FP), fputc(B, FP), fputc(C, FP), fputc(D, FP);
+   fputc(A, ExF), fputc(B, ExF), fputc(C, ExF), fputc(D, ExF);
 }
 
 void *Allocate(unsigned Size) {
@@ -168,7 +170,7 @@ void OpenF(char *Name) {
    }
    if (Files >= FileMax) {
       FileMax += 4;
-      FileTab = (char **)realloc(FileTab, FileMax * sizeof *FileTab);
+      FileTab = realloc(FileTab, FileMax*sizeof *FileTab);
       if (FileTab == NULL) Fatal("Out of memory.");
    }
    ISP++, CurF = Files, FileTab[Files++] = CopyS(Name);
@@ -186,11 +188,11 @@ unsigned long CurLoc;
 struct Gap GapTab[GAP_MAX], *GapP;
 
 struct AddrItem AddrTab[TYPES] = {
-   { 0, 0xffff, 1 },  /* CODE */
-   { 0, 0xffff, 0 },  /* XDATA */
-   { 0, 0xff, 0 },    /* DATA */
-   { 0x80, 0xff, 0 }, /* SFR */
-   { 0, 0xff, 0 }     /* BIT */
+   { 0, 0xffff, true },		// code (read only)
+   { 0, 0xffff, false },	// xdata
+   { 0, 0xff, false },		// data
+   { 0x80, 0xff, false },	// sfr
+   { 0, 0xff, false }		// bit
 };
 static struct AddrItem *AdP;
 
@@ -207,19 +209,19 @@ void SegInit(void) {
    SegP = SegTab, AdP = AddrTab;
    for (int I = 0; I < TYPES; SegP++, AdP++, I++) {
       if (SegP >= SegTab + SEG_MAX) Fatal("Too many segments.");
-      SegP->Type = I, SegP->Rel = 0;
-      SegP->Base = 0, SegP->Size = 0, SegP->Loc = ftell(OutF);
+      SegP->Type = I, SegP->Rel = false;
+      SegP->Base = 0, SegP->Size = 0, SegP->Loc = ftell(ExF);
    }
    AdP = AddrTab; InSeg = 1;
-   SegP->Type = 0, SegP->Rel = 1,
+   SegP->Type = 0, SegP->Rel = true,
    SegP->Line = StartLine, SegP->File = StartF,
-   SegP->Base = 0, SegP->Size = 0, SegP->Loc = ftell(OutF);
+   SegP->Base = 0, SegP->Size = 0, SegP->Loc = ftell(ExF);
    CurLoc = 0;
    for (int D = 0; D < 10; D++) BTab[0] = FTab[0] = 0;
    GapP = GapTab;
 }
 
-void StartSeg(byte Type, byte Rel, word Base) {
+void StartSeg(byte Type, bool Rel, word Base) {
    if (!Active) return;
    if (SegP >= SegTab + SEG_MAX) Fatal("Too many segments.");
    if (Type > sizeof AddrTab/sizeof *AddrTab)
@@ -230,7 +232,7 @@ void StartSeg(byte Type, byte Rel, word Base) {
    InSeg = 1;
    SegP->Type = Type, SegP->Rel = Rel,
    SegP->Line = StartLine, SegP->File = StartF,
-   SegP->Base = Base, SegP->Size = 0, SegP->Loc = ftell(OutF);
+   SegP->Base = Base, SegP->Size = 0, SegP->Loc = ftell(ExF);
    CurLoc = 0;
    for (int D = 0; D < 10; D++) BTab[0] = FTab[0] = 0;
 }
@@ -244,14 +246,14 @@ void EndSeg(void) {
    InSeg = 0;
 }
 
-void Space(word Rel) {
+void Space(word Size) {
    if (!Active) return;
    if (AdP->ReadOnly) {
       if (GapP >= GapTab + GAP_MAX) Fatal("Too many gaps.");
-      GapP->Seg = SegP, GapP->Offset = CurLoc, GapP->Size = Rel;
+      GapP->Seg = SegP, GapP->Offset = CurLoc, GapP->Size = Size;
       GapP++;
    }
-   CurLoc += Rel;
+   CurLoc += Size;
    unsigned long Addr = SegP->Base + CurLoc;
    if (!SegP->Rel && Addr > AdP->Hi + 1) Fatal("Address %u out of range", Addr);
 }
@@ -262,7 +264,7 @@ void PByte(byte B) {
    CurLoc++;
    unsigned long Addr = SegP->Base + CurLoc;
    if (!SegP->Rel && Addr > AdP->Hi + 1) Fatal("Address %u out of range", Addr);
-   fputc(B, OutF);
+   fputc(B, ExF);
 }
 
 void PString(char *S) {
@@ -368,7 +370,7 @@ void RegInit(void) {
    static ValItem EndV = ValTab + ELEMENTS(ValTab);
    for (ValItem V = ValTab; V < EndV; V++) {
       Symbol Sym = LookUp(V->Name);
-      Sym->Defined = Sym->Address = 1;
+      Sym->Defined = Sym->Address = true;
       Sym->Seg = &SegTab[V->Type], Sym->Offset = V->Val;
    }
 }
@@ -377,7 +379,7 @@ void RegInit(void) {
 #define isx(Ch) (tolower(Ch) == 'x' || tolower(Ch) == 'h')
 #define isq(Ch) (tolower(Ch) == 'q' || tolower(Ch) == 'o')
 
-char InExp = 0, InSemi = 0;
+bool InExp = false, InSemi = false;
 Lexical OldL;
 #define Ret(Token) return (*TextP = '\0', OldL = (Token))
 
@@ -399,7 +401,7 @@ Start:
          if (Active) {
             Sym = BTab[D] = FTab[D] == NULL? MakeLabel(): FTab[D];
             FTab[D] = NULL;
-            Sym->Global = 0, Sym->Defined = Sym->Address = Sym->Variable = 1,
+            Sym->Global = false, Sym->Defined = Sym->Address = Sym->Variable = true,
             Sym->Seg = SegP, Sym->Offset = (word)CurLoc;
          } else Sym = NULL;
          Ret(SYMBOL);
@@ -415,8 +417,8 @@ Start:
                if (Sym == NULL) {
                   BTab[D] = Sym = MakeLabel();
                   Error("Undefined local symbol %db", D);
-                  Sym->Global = Sym->Defined = 0,
-                  Sym->Address = Sym->Variable = 1,
+                  Sym->Global = Sym->Defined = false,
+                  Sym->Address = Sym->Variable = true,
                   Sym->Seg = SegP, Sym->Offset = 0;
                }
             } else Sym = NULL;
@@ -565,14 +567,13 @@ Start:
                   }
                   *TextP++ = Value;
                } else if (tolower(Next) == 'x') {
-                  char Value;
                   Next = fgetc(InF);
                   if (!isxdigit(Next)) *TextP++ = 'x';
                   else {
-                     while (isxdigit(Next)) {
+                     char Value = 0;
+                     for (; isxdigit(Next); Next = fgetc(InF)) {
                         Value <<= 4;
                         Value += isdigit(Next)? Next - '0': tolower(Next) - 'a' + 10;
-                        Next = fgetc(InF);
                      }
                      *TextP++ = Value;
                   }

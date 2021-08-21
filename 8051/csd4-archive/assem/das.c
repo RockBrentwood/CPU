@@ -22,7 +22,7 @@ word Relative(byte R) {
 
 word Entries[0x100], *EP = Entries;
 
-void PUSH(word Address) {
+void Push(word Address) {
    byte B = Ref[Address]&LINKS;
    if (Ref[Address]&ARG) {
       fprintf(stderr, "Entry into ARG at %04x.\n", PC); return;
@@ -280,7 +280,7 @@ void MakeOp(char *S) {
    }
    if (Generating) putchar('\n');
    else if (!IN_RANGE(Address)) printf("REF: %04x\n", Address);
-   else PUSH(Address);
+   else Push(Address);
 }
 
 int Disassemble(void) {
@@ -350,7 +350,7 @@ fprintf(stderr, "First pass\n");
       fprintf(stderr, "No entry points listed.\n"); return EXIT_FAILURE;
    }
    for (Ended = 0, EP = Entries; !Ended; ) {
-      W = fGetWord(); if (!Ended) PUSH(W);
+      W = fGetWord(); if (!Ended) Push(W);
    }
    while (EP > Entries) {
       PC = *--EP;

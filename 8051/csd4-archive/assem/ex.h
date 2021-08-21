@@ -1,7 +1,7 @@
 typedef struct Exp *Exp;
 typedef enum { NumX, AddrX, SymX, UnX, BinX, CondX } ExpTag;
 struct Exp {
-   word Hash, Line, File; int Mark:1, Map:1;
+   word Hash, Line, File; bool Mark, Map;
    ExpTag Tag; Exp Tail, Next;
    union {
       word Value;

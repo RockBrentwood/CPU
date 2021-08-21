@@ -1,7 +1,7 @@
 typedef unsigned char byte;
 typedef unsigned short word;
 
-extern FILE *OutF;
+extern FILE *ExF;
 
 extern char InSeg;
 extern char **FileTab;
@@ -12,7 +12,7 @@ extern long Files;
 #define SEG_TYPES 3
 typedef struct Segment *Segment;
 extern struct Segment {
-   int Type:8, Rel:1;
+   int Type; bool Rel;
    word Line, File, Base, Size;
    long Loc;
 } SegTab[], *SegP;
@@ -26,16 +26,16 @@ extern struct Gap {
 typedef struct Symbol *Symbol;
 struct Symbol {
    char *Name; word Index;
-   int Global:1, Defined:1, Address:1, Variable:1, Map:1;
+   bool Global, Defined, Address, Variable, Map;
    Segment Seg; word Offset;
    Symbol Next[1];
 };
 
 extern Symbol NIL;
 extern void SegInit(void);
-extern void StartSeg(byte Type, byte Rel, word Base);
+extern void StartSeg(byte Type, bool Rel, word Base);
 extern void EndSeg(void);
-extern void Space(word Rel);
+extern void Space(word Size);
 
 extern void PByte(byte B);
 extern void PString(char *S);
@@ -64,7 +64,7 @@ typedef enum { CODE, XDATA, DATA, SFR, BIT } Type;
 
 extern char Text[]; extern int Value;
 extern Symbol Sym;
-extern char InExp, InSemi;
+extern bool InExp, InSemi;
 
 extern int Line, StartLine;
 extern Lexical Scan(void);
@@ -74,15 +74,15 @@ extern void Fatal(const char *Msg, ...);
 extern void Check(void);
 extern void *Allocate(unsigned Size);
 
-extern byte GetB(FILE *FP);
-extern word GetW(FILE *FP);
-extern unsigned long GetL(FILE *FP);
-extern void PutB(byte B, FILE *FP);
-extern void PutW(word W, FILE *FP);
-extern void PutL(unsigned long L, FILE *FP);
+extern byte GetB(FILE *InF);
+extern word GetW(FILE *InF);
+extern unsigned long GetL(FILE *InF);
+extern void PutB(byte B, FILE *ExF);
+extern void PutW(word W, FILE *ExF);
+extern void PutL(unsigned long L, FILE *ExF);
 
 extern void OpenF(char *Name);
 
 extern struct AddrItem {
-   long Lo, Hi; byte ReadOnly;
+   long Lo, Hi; bool ReadOnly;
 } AddrTab[];

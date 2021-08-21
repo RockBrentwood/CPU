@@ -1,6 +1,6 @@
 typedef struct Item *Item;
 extern struct Item {
-   char Tag; Exp E; byte Map; word Line, File;
+   char Tag; Exp E; bool Map; word Line, File;
    Segment Seg; word Offset;
 } *RTab;
 extern int RCur;
