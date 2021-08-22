@@ -1,0 +1,26 @@
+In this archive, the following items have been packaged:
+∙	C source for an 8051 assembler and disassembler.
+	The assembler generates Intel Hex Format output, and the disassembler reads files in Intel Hex Format.
+∙	Arbitrary precision arithmetic routines for unsigned integers including Multiplication, Division, Square Root
+∙	A rudimentary debugger, needs client software at the host in order to be useable.
+∙	A small multi-threading run-time kernel, with 8051 demo software for:
+        ―	Serial Communications
+		client software for a PC host at 57600,N,9,1 available.
+        ―	Intel Hex download
+        ―	CRC Check Summing Demo
+		also needs client software running at the host.
+        ―	Interrupt Input Processing, for the 8051FA.
+        ―	Open-loop Stepper Motor Driver
+        ―	LCD Display/Keypad Input library
+        ―	Pulse Counting/Data Collection
+		elaborate multi-tasking control used to concurrently process the 6 timer-capture interrupts of the 8051FA
+
+Consider this software your development kit.
+You can use it in your projects any way you like with no licensing or copyright restrictions.
+If you'd like to try your hand at hacking it I encourage you to do so
+and to distribute any substantial improvements you may come up in the same spirit that this is being distributed:
+free of any restrictions.
+
+Everything here is new and original and was generated over a one year period 4/91 to 4/92
+(except for the assembler) to be used to support work on projects and turn-key systems developed during and after that time.
+The assembler was developed in 7/92.
