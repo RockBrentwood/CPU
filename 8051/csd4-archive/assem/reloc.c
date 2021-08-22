@@ -8,8 +8,8 @@ typedef unsigned int word;
 
 byte Nib(int X) {
    if (X >= '0' && X <= '9') return X - '0';
-   else if (X >= 'a' && X <= 'f') return X - 'a' + 10;
-   else if (X >= 'A' && X <= 'F') return X - 'A' + 10;
+   else if (X >= 'a' && X <= 'f') return X - 'a' + 0xa;
+   else if (X >= 'A' && X <= 'F') return X - 'A' + 0xA;
    else fprintf(stderr, "Bad hexadecimal digit in input\n"), exit(EXIT_FAILURE);
 }
 
@@ -33,7 +33,7 @@ void PutHex(FILE *ExF, byte Ch) {
 }
 
 void PutWord(FILE *ExF, word W) {
-   PutHex(ExF, (byte)(W >> 8)); PutHex(ExF, (byte)(W&0xff));
+   PutHex(ExF, (byte)(W >> 8)), PutHex(ExF, (byte)(W&0xff));
 }
 
 int Relocate(word Offset, FILE *InF, FILE *ExF) {
@@ -47,13 +47,13 @@ int Relocate(word Offset, FILE *InF, FILE *ExF) {
       byte Size = GetHex(InF); word Addr = GetWord(InF) + Offset; Mark = GetHex(InF);
       byte Buffer[0x10];
       for (int I = 0; I < Size; I++) Buffer[I] = GetHex(InF);
-      (void)GetHex(InF); (void)fgetc(InF);
+      GetHex(InF), fgetc(InF);
       if (CheckSum != 0) {
          fprintf(stderr, "Bad checksum.\n"); return 0;
       }
       fputc(':', ExF);
       CheckSum = 0;
-      PutHex(ExF, Size); PutWord(ExF, Addr); PutHex(ExF, Mark);
+      PutHex(ExF, Size), PutWord(ExF, Addr), PutHex(ExF, Mark);
       for (int I = 0; I < Size; I++) PutHex(ExF, Buffer[I]);
       PutHex(ExF, (byte)-CheckSum);
       fputc('\n', ExF);
@@ -65,7 +65,7 @@ word atoh(char *S) {
    word Val = 0;
    for (; *S != '\0'; S++)
       if (isdigit(*S)) Val = (Val << 4) | (*S - '0');
-      else if (isxdigit(*S)) Val = (Val << 4) | (tolower(*S) - 'a' + 10);
+      else if (isxdigit(*S)) Val = (Val << 4) | (tolower(*S) - 'a' + 0xa);
       else return 0;
    return Val;
 }

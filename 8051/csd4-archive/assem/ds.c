@@ -7,7 +7,7 @@ typedef unsigned short word;
 void Fatal(char *Msg) { printf(Msg), putchar('\n'); exit(EXIT_FAILURE); }
 
 byte GetB(FILE *InF) {
-   int A= fgetc(InF); if (A == EOF) Fatal("Unexpected EOF.");
+   int A = fgetc(InF); if (A == EOF) Fatal("Unexpected EOF.");
    return A&0xff;
 }
 
@@ -52,30 +52,28 @@ int main(int AC, char *AV[]) {
    printf("File(s): %ld\n", Files);
    if (Files > 0) {
       printf("## Name,\n");
-      for (long S = 0; S < Files; S++) {
+      for (long F = 0; F < Files; F++) {
          char Buf[0x100]; word L = GetW(InF);
          fread(Buf, 1, L, InF), Buf[L] = '\0';
-         printf("%2ld %15s\n", S, Buf);
+         printf("%2ld %15s\n", F, Buf);
       }
    }
    printf("Segment(s): %ld\n", Segs);
-   if (Segs > 5) { /* The number of types */
+   if (Segs > 5) { // The number of types.
       printf("## Line File Rel Type Base Size  Loc\n");
       for (long S = 5; S < Segs; S++) {
          word Line = GetW(InF), File = GetW(InF);
-         word U = GetW(InF), Size = GetW(InF), Base = GetW(InF); long Loc = GetL(InF);
+         word U = GetW(InF), Size = GetW(InF), Base = GetW(InF); unsigned long Loc = GetL(InF);
          word Rel = (U >> 8)&1, Type = U&0xff;
-         printf("%2ld %4d %4d  %c %4x %4x %4x %8lx\n",
-            S, Line, File, Rel? 'r': ' ', Type, Base, Size, Loc
-         );
+         printf("%2ld %4d %4d  %c %4x %4x %4x %8lx\n", S, Line, File, Rel? 'r': ' ', Type, Base, Size, Loc);
       }
    }
    printf("Gap(s): %ld\n", Gaps);
    if (Gaps > 0) {
       printf("##  Seg  Off Size\n");
-      for (long S = 0; S < Gaps; S++) {
+      for (long G = 0; G < Gaps; G++) {
          word Seg = GetW(InF), Off = GetW(InF), Size = GetW(InF);
-         printf("%2ld %4x %4x %4x\n", S, Seg, Off, Size);
+         printf("%2ld %4x %4x %4x\n", G, Seg, Off, Size);
       }
    }
    printf("Symbol(s): %ld\n", Syms);
@@ -94,20 +92,19 @@ int main(int AC, char *AV[]) {
             case 0xc: printf("   global"); break;
          }
          printf("  %c  ", B&1? 'v': ' ');
-         if (B&2) { /* Address */
+         if (B&2) // Address.
             printf("ADDR  %2d:%4x", U, Offset);
-         } else {
+         else
             printf(" NUM  %4x   ", Offset);
-         }
          printf(" %s\n", Buf);
       }
    }
    printf("Expression(s): %ld\n", Exps);
    if (Exps > 0) {
       printf("## Line File  Tag Args...\n");
-      for (unsigned long S = 0; S < Exps; S++) {
+      for (unsigned long E = 0; E < Exps; E++) {
          word Line = GetW(InF), File = GetW(InF); char Tag = GetB(InF);
-         printf("%2lx %4d %4d ", S, Line, File);
+         printf("%2lx %4d %4d ", E, Line, File);
          switch (Tag) {
             case 0: printf(" NUM %4x", GetW(InF)); break;
             case 1: {
@@ -138,7 +135,7 @@ int main(int AC, char *AV[]) {
    printf("Relocation(s): %ld\n", Relocs);
    if (Relocs > 0) {
       printf("Line File Tag  Exp  Seg: Off\n");
-      for (long S = 0; S < Relocs; S++) {
+      for (long R = 0; R < Relocs; R++) {
          word Line = GetW(InF), File = GetW(InF); char Tag = GetB(InF);
          word Index = GetW(InF), U = GetW(InF), Offset = GetW(InF);
          printf("%4d %4d  %c %4x  @ %2d:%4x\n", Line, File, Tag, Index, U, Offset);

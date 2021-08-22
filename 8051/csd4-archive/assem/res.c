@@ -114,13 +114,12 @@ DoMap:
 
 void Reloc(byte Code, byte Tag, Exp E) {
    if (RCur == RMax) {
-      RMax += R_EXTEND, RTab = (Item)realloc(RTab, RMax * sizeof *RTab);
+      RMax += R_EXTEND, RTab = realloc(RTab, RMax*sizeof *RTab);
       if (RTab == NULL) Fatal("Out of memory.");
    }
    Item IP = &RTab[RCur];
-   IP->Tag = Tag, IP->E = E, IP->Seg = SegP, IP->Offset = CurLoc;
-   IP->Map = false, IP->Line = StartLine, IP->File = StartF;
-/* ajmp: Tag = 'P', acall: Tag = 'Q' */
+   IP->Tag = Tag, IP->E = E, IP->Seg = SegP, IP->Offset = CurLoc, IP->Map = false, IP->Line = StartLine, IP->File = StartF;
+// ajmp: Tag = 'P', acall: Tag = 'Q'.
    if (IP->Tag == 'P' && (Code&0x10)) IP->Tag = 'Q';
    Resolve(IP);
 }

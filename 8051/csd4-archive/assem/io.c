@@ -9,7 +9,7 @@
 
 extern bool Active;
 
-/* SKIP LISTS are used to implement the symbol table */
+// Skip lists are used to implement the symbol table.
 
 char *CopyS(char *S) {
    if (S == NULL) return NULL;
@@ -47,7 +47,7 @@ static Symbol Path[MAX_BREADTH];
 static int Breadth;
 
 static Symbol Form(int B, char *Name) {
-   Symbol N = (Symbol)malloc(sizeof *N + B*sizeof(Symbol));
+   Symbol N = malloc(sizeof *N + B*sizeof(Symbol));
    if (N == NULL) fprintf(stderr, "Out of memory.\n"), exit(EXIT_FAILURE);
    N->Name = CopyS(Name),
    N->Defined = N->Global = N->Variable = N->Address = N->Map = false;
@@ -333,45 +333,39 @@ typedef struct ValItem {
    char *Name; byte Type; word Val;
 } *ValItem;
 static struct ValItem ValTab[] = {
-/* Special function registers */
-   { "P0", SFR, 0x80 }, { "P1", SFR, 0x90 },
-   { "P2", SFR, 0xa0 }, { "P3", SFR, 0xb0 },
+// Special function registers.
+   { "P0", SFR, 0x80 }, { "P1", SFR, 0x90 }, { "P2", SFR, 0xa0 }, { "P3", SFR, 0xb0 },
    { "PCON", SFR, 0x87 }, { "TCON", SFR, 0x88 }, { "TMOD", SFR, 0x89 },
    { "SCON", SFR, 0x98 }, { "SBUF", SFR, 0x99 },
-   { "IE",   SFR, 0xa8 }, { "IP",   SFR, 0xb8 },
-   { "TL0", SFR, 0x8a }, { "TL1", SFR, 0x8b },
-   { "TH0", SFR, 0x8c }, { "TH1", SFR, 0x8d },
-   { "SP",   SFR, 0x81 }, { "DPL",  SFR, 0x82 }, { "DPH",  SFR, 0x83 },
-   { "PSW",  SFR, 0xd0 }, { "ACC",  SFR, 0xe0 }, { "B",    SFR, 0xf0 },
-/* Special funcgtion register bits */
-   { "RI",  BIT, 0x98 }, { "TI",  BIT, 0x99 },    /* SCON */
-   { "RB8", BIT, 0x9a }, { "TB8", BIT, 0x9b },
-   { "REN", BIT, 0x9c }, { "SM2", BIT, 0x9d },
-   { "SM1", BIT, 0x9e }, { "SM0", BIT, 0x9f },
-   { "RXD",  BIT, 0xb0 }, { "TXD",  BIT, 0xb1 },  /* Port 3 */
-   { "INT0", BIT, 0xb2 }, { "INT1", BIT, 0xb3 },
-   { "T0",   BIT, 0xb4 }, { "T1",   BIT, 0xb5 },
-   { "WR",   BIT, 0xb6 }, { "RD",   BIT, 0xb7 },
-   { "P",   BIT, 0xd0 }, { "OV",  BIT, 0xd2 },    /* PSW */
-   { "RS0", BIT, 0xd3 }, { "RS1", BIT, 0xd4 },
-   { "F0",  BIT, 0xd5 }, { "AC",  BIT, 0xd6 }, { "CY",  BIT, 0xd7 },
-   { "IT0", BIT, 0x88 }, { "IE0", BIT, 0x89 },    /* TCON */
-   { "IT1", BIT, 0x8a }, { "IE1", BIT, 0x8b },
-   { "TR0", BIT, 0x8c }, { "TF0", BIT, 0x8d },
-   { "TR1", BIT, 0x8e }, { "TF1", BIT, 0x8f },
-   { "EX0", BIT, 0xa8 }, { "ET0", BIT, 0xa9 },    /* IE */
-   { "EX1", BIT, 0xaa }, { "ET1", BIT, 0xab },
-   { "ES",  BIT, 0xac }, { "EA",  BIT, 0xaf },
-   { "PX0", BIT, 0xb8 }, { "PT0", BIT, 0xb9 },    /* IP */
-   { "PX1", BIT, 0xba }, { "PT1", BIT, 0xbb }, { "PS",  BIT, 0xbc }
+   { "IE", SFR, 0xa8 }, { "IP", SFR, 0xb8 },
+   { "TL0", SFR, 0x8a }, { "TL1", SFR, 0x8b }, { "TH0", SFR, 0x8c }, { "TH1", SFR, 0x8d },
+   { "SP", SFR, 0x81 }, { "DPL", SFR, 0x82 }, { "DPH", SFR, 0x83 },
+   { "PSW", SFR, 0xd0 }, { "ACC", SFR, 0xe0 }, { "B", SFR, 0xf0 },
+// Special funcgtion register bits.
+// SCON:
+   { "RI", BIT, 0x98 }, { "TI", BIT, 0x99 }, { "RB8", BIT, 0x9a }, { "TB8", BIT, 0x9b },
+   { "REN", BIT, 0x9c }, { "SM2", BIT, 0x9d }, { "SM1", BIT, 0x9e }, { "SM0", BIT, 0x9f },
+// Port 3:
+   { "RXD", BIT, 0xb0 }, { "TXD", BIT, 0xb1 }, { "INT0", BIT, 0xb2 }, { "INT1", BIT, 0xb3 },
+   { "T0", BIT, 0xb4 }, { "T1", BIT, 0xb5 }, { "WR", BIT, 0xb6 }, { "RD", BIT, 0xb7 },
+// PSW:
+   { "P", BIT, 0xd0 }, { "OV", BIT, 0xd2 }, { "RS0", BIT, 0xd3 }, { "RS1", BIT, 0xd4 },
+   { "F0", BIT, 0xd5 }, { "AC", BIT, 0xd6 }, { "CY", BIT, 0xd7 },
+// TCON:
+   { "IT0", BIT, 0x88 }, { "IE0", BIT, 0x89 }, { "IT1", BIT, 0x8a }, { "IE1", BIT, 0x8b },
+   { "TR0", BIT, 0x8c }, { "TF0", BIT, 0x8d }, { "TR1", BIT, 0x8e }, { "TF1", BIT, 0x8f },
+// IE:
+   { "EX0", BIT, 0xa8 }, { "ET0", BIT, 0xa9 }, { "EX1", BIT, 0xaa }, { "ET1", BIT, 0xab }, { "ES", BIT, 0xac },
+   { "EA", BIT, 0xaf },
+// IP:
+   { "PX0", BIT, 0xb8 }, { "PT0", BIT, 0xb9 }, { "PX1", BIT, 0xba }, { "PT1", BIT, 0xbb }, { "PS", BIT, 0xbc }
 };
 
 void RegInit(void) {
    static ValItem EndV = ValTab + ELEMENTS(ValTab);
    for (ValItem V = ValTab; V < EndV; V++) {
       Symbol Sym = LookUp(V->Name);
-      Sym->Defined = Sym->Address = true;
-      Sym->Seg = &SegTab[V->Type], Sym->Offset = V->Val;
+      Sym->Defined = Sym->Address = true, Sym->Seg = &SegTab[V->Type], Sym->Offset = V->Val;
    }
 }
 
@@ -471,9 +465,8 @@ Start:
       S = Text;
       if (isx(TextP[-1])) TextP--;
       else if (TextP >= S + 2 && S[0] == '0' && isx(S[1])) S += 2;
-      for (Value = 0; S < TextP; S++) {
-         Value <<= 4, Value += isdigit(*S)? *S - '0': tolower(*S) - 'a' + 10;
-      }
+      for (Value = 0; S < TextP; S++)
+         Value <<= 4, Value += isdigit(*S)? *S - '0': tolower(*S) - 'a' + 0xa;
       Ret(NUMBER);
    }
    switch (Next) {
@@ -523,18 +516,15 @@ Start:
          }
          if (Next == '\\') {
             Get();
-            if (isoctal(Next)) {
+            if (isoctal(Next))
                for (Value = 0; isoctal(Next); Get())
                   Value <<= 3, Value += Next - '0';
-            } else if (tolower(Next) == 'x') {
+            else if (tolower(Next) == 'x') {
                Get();
-               if (!isxdigit(Next)) {
-                  Error("Bad hexadecimal character.");
-                  Value = 'x';
-               } else for (int I = 0; I < 2 && isxdigit(Next); I++, Get()) {
-                  Value <<= 4;
-                  Value += isdigit(Next)? Next - '0': tolower(Next) - 'a' + 10;
-               }
+               if (!isxdigit(Next))
+                  Error("Bad hexadecimal character."), Value = 'x';
+               else for (int I = 0; I < 2 && isxdigit(Next); I++, Get())
+                  Value <<= 4, Value += isdigit(Next)? Next - '0': tolower(Next) - 'a' + 10;
             } else {
                switch (Next) {
                   case 'a': Value = 0x07; break;
@@ -561,20 +551,16 @@ Start:
                if (Next == EOF) Fatal("Unexpected EOF inside string.");
                if (isoctal(Next)) {
                   char Value = 0;
-                  while (isoctal(Next)) {
+                  for (; isoctal(Next); Next = fgetc(InF))
                      Value = (Value << 3) + (Next - '0');
-                     Next = fgetc(InF);
-                  }
                   *TextP++ = Value;
                } else if (tolower(Next) == 'x') {
                   Next = fgetc(InF);
                   if (!isxdigit(Next)) *TextP++ = 'x';
                   else {
                      char Value = 0;
-                     for (; isxdigit(Next); Next = fgetc(InF)) {
-                        Value <<= 4;
-                        Value += isdigit(Next)? Next - '0': tolower(Next) - 'a' + 10;
-                     }
+                     for (; isxdigit(Next); Next = fgetc(InF))
+                        Value <<= 4, Value += isdigit(Next)? Next - '0': tolower(Next) - 'a' + 10;
                      *TextP++ = Value;
                   }
                } else {

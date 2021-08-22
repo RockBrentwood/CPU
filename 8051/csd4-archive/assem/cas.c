@@ -11,7 +11,6 @@
 int main(int AC, char *AV[]) {
    char *App = AC > 0? AV[0]: NULL; if (App == NULL || *App == '\0') App = "cas";
    int Status = EXIT_FAILURE;
-   bool DoHex = false;
    if (AC < 2) {
       fprintf(stderr, "Usage: %s -c File... to assemble\n", App);
       fprintf(stderr, "Usage: %s [-o Output] File... to link\n", App);
@@ -31,7 +30,7 @@ int main(int AC, char *AV[]) {
          fprintf(stderr, "Usage: %s -o Output File... to link\n", App);
          goto Exit;
       }
-      DoHex = true, Hex = CopyS(AV[2]), Fs -= 3, AP += 3;
+      Hex = CopyS(AV[2]), Fs -= 3, AP += 3;
    } else {
       fprintf(stderr, "Invalid option: %s\n", AV[1]); goto Exit;
    }
@@ -50,7 +49,7 @@ int main(int AC, char *AV[]) {
          sprintf(Obj, "%s.o", Src);
          if (S > Src) *S = Ch;
       }
-      if (DoLink) FTab[A].Name = Obj;
+      if (FTab != NULL) FTab[A].Name = Obj;
       if (Src != NULL) {
          fprintf(stderr, "assembling %s -> %s\n", Src, Obj);
          ExF = OpenObj(Obj);
@@ -62,8 +61,8 @@ int main(int AC, char *AV[]) {
    }
    Check();
    Status = EXIT_SUCCESS;
-   if (!DoLink) goto Exit;
-   if (!DoHex) {
+   if (FTab == NULL) goto Exit;
+   if (Hex == NULL) {
       char *Obj = FTab[0].Name, *S = Obj + strlen(Obj) - 1;
       for (; S > Obj; S--)
          if (*S == '.') break;

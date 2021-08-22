@@ -7,10 +7,9 @@
 #include "st.h"
 #include "res.h"
 
-/* Derived from the syntax:
-   Ex = primary | unary Ex | Ex binary Ex | Ex "?" Ex ":" Ex | "(" Ex ")".
-   with the usual C-like precedence rules.
- */
+// Derived from the syntax:
+// Ex = primary | unary Ex | Ex binary Ex | Ex "?" Ex ":" Ex | "(" Ex ")",
+// with the usual C-like precedence rules.
 
 Exp ExpHead;
 static Exp ExpTail;
@@ -21,7 +20,7 @@ void ExpInit(void) {
    for (int H = 0; H < 0x100; H++) ExpHash[H] = 0;
 }
 
-static byte Direct = 2; /* 0 = Absolute, 1 = Relative, 2 = Undefined */
+static byte Direct = 2; // 0 = Absolute, 1 = Relative, 2 = Undefined.
 
 #define STACK_MAX 100
 
@@ -98,25 +97,24 @@ Exp EvalExp(Exp E) {
          Op = OpOf(E), A = ArgA(E), B = ArgB(E);
          if (Phase == 1) A = EvalExp(A), B = EvalExp(B);
          if (Op == PLUS) {
-            if (A->Tag == NumX && B->Tag == NumX) {
+            if (A->Tag == NumX && B->Tag == NumX)
                Tag = NumX, Value = ValOf(A) + ValOf(B);
-            } else if (A->Tag == NumX && B->Tag == AddrX) {
+            else if (A->Tag == NumX && B->Tag == AddrX)
                Tag = AddrX, Seg = SegOf(B), Offset = ValOf(A) + OffOf(B);
-            } else if (A->Tag == AddrX && B->Tag == NumX) {
+            else if (A->Tag == AddrX && B->Tag == NumX)
                Tag = AddrX, Seg = SegOf(A), Offset = OffOf(A) + ValOf(B);
-            } else if (A->Tag == AddrX && B->Tag == AddrX) {
-               Error("Illegal combination: address + address");
+            else if (A->Tag == AddrX && B->Tag == AddrX)
+               Error("Illegal combination: address + address"),
                Tag = AddrX, Seg = SegOf(A), Offset = OffOf(A) + OffOf(B);
-            }
          } else if (Op == MINUS) {
-            if (A->Tag == NumX && B->Tag == NumX) {
+            if (A->Tag == NumX && B->Tag == NumX)
                Tag = NumX, Value = ValOf(A) - ValOf(B);
-            } else if (A->Tag == NumX && B->Tag == AddrX) {
-               Error("Illegal combination: number - address");
+            else if (A->Tag == NumX && B->Tag == AddrX)
+               Error("Illegal combination: number - address"),
                Tag = NumX, Value = ValOf(A) - (SegOf(B)->Base + OffOf(B));
-            } else if (A->Tag == AddrX && B->Tag == NumX) {
+            else if (A->Tag == AddrX && B->Tag == NumX)
                Tag = AddrX, Seg = SegOf(A), Offset = OffOf(A) - ValOf(B);
-            } else if (A->Tag == AddrX && B->Tag == AddrX) {
+            else if (A->Tag == AddrX && B->Tag == AddrX) {
                if (SegOf(A)->Type != SegOf(B)->Type)
                   Error("Addresses of different types cannot be subtracted."),
                   Tag = AddrX, Seg = SegOf(A), Offset = OffOf(A) - OffOf(B);
@@ -263,7 +261,7 @@ Exp EvalExp(Exp E) {
             if (A == ArgA(E) && B == ArgB(E) && C == ArgC(E)) return E;
       break;
    }
-   if (Phase == 1) E = E1, E->Mark = 1;
+   if (Phase == 1) E = E1, E->Mark = true;
    else {
       E = Allocate(sizeof *E);
       E->Hash = H, E->Tail = ExpHash[H], ExpHash[H] = E;
@@ -312,9 +310,9 @@ Exp MakeExp(ExpTag Tag, ...) {
 }
 
 #define uO 0x10
-/* Operator types: 20 = ), 40 = :, 60 = ?, 80 = binary */
+// Operator types: 20 = ), 40 = :, 60 = ?, 80 = binary.
 #define bO 0x80
-int OpTab[] = { /* Bits 0-3: precedence, Bit 4:unary, Bits 5-7: operator type */
+int OpTab[] = { // Bits 0-3: precedence, Bit 4: unary, Bits 5-7: operator type.
    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
    0x20, 0x40, 0x60,
@@ -325,13 +323,13 @@ int OpTab[] = { /* Bits 0-3: precedence, Bit 4:unary, Bits 5-7: operator type */
 };
 
 char *Action[6] = {
-/*  .):?+ */
-   "...?+", /* BOT:     -> Exp $                 */
-   "B)B?+", /* PAR: Exp -> '(' Exp $ ')'         */
-   "AA:?+", /* COND Exp -> Exp '?' Exp $ ':' Exp */
-   "ccc?+", /* ELS: Exp -> Exp '?' Exp ':' Exp $ */
-   "bbbbC", /* BIN: Exp -> Exp bin Exp $         */
-   "uuuuu"  /* UN:  Exp -> un Exp $              */
+//  .):?+
+   "...?+", // BOT:     → Exp ∙
+   "B)B?+", // PAR: Exp → '(' Exp ∙ ')'
+   "AA:?+", // COND Exp → Exp '?' Exp ∙ ':' Exp
+   "ccc?+", // ELS: Exp → Exp '?' Exp ':' Exp ∙
+   "bbbbC", // BIN: Exp → Exp bin Exp ∙
+   "uuuuu"  // UN:  Exp → un Exp ∙
 };
 
 Exp Parse(int Dir) {
