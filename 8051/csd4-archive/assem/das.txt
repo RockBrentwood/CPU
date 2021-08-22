@@ -1,7 +1,7 @@
 8051 Disassembler, notes on use.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 0. Command Line, Input Format
-―――――――――――――――――――――――――――――
+─────────────────────────────
 This is a disassembler for the Intel 8051-family of processors.
 It is currently set to read up to and including the 8052.
 
@@ -24,14 +24,14 @@ with the H's representing the digits of the address in hexadecimal.
 Typically entry points are assigned to 0000, the starting address, and the address of each interrupt-handler that is used.
 
 1. Output Format
-――――――――――――――――
+────────────────
 The output of the disassembler is not exactly re-assembleable.
 When the disassembler searches for reachible segments of code,
 it will fail to resolve indirect jumps (jmp @A + DPTR, jmp @A + PC),
 and will fail to recognize virtual jumps created by manipulating the stack pointer, e.g.
 	push DPL
 	push DPH
-	ret        ;;; An indirect jump to the address pointed to by DPTR.
+	ret		;;; An indirect jump to the address pointed to by DPTR.
 In addition, if the original program contained data tables, these would normally be passed by untouched.
 
 The disassembler will regard anything in the allocated code space that was not accessible as being data.
@@ -47,7 +47,7 @@ For assistance, a list of locations where indirect jumps occur will be listed in
 In the sample program provided, there were no indirect jumps.
 However, since the assembly-language software implements a multitasking kernel, it heavily manipulates the stack pointer.
 Consquently, the addresses listed in the entries file are not just the starting address (0000), and interrupt handler(s) (0023),
-but also derived addresses: 0067 (found on the first iteration). and 0131 (found on the second).
+but also derived addresses: 0067 (found on the first iteration), and 0131 (found on the second).
 
 Also, any addresses referenced that lie outside the range of the Intel Hex Format file will be listed as external references.
 These are listed in the following form:
@@ -56,7 +56,7 @@ These are listed in the following form:
 Data segments will be clearly marked as such, beginning with the header:
 	DATA at <Address>
 following which will be a hexadecimal listing of the ‟data” in the format illustrated below:
-	34 aa ef 00 00 00 00 00 34 ee ff 00 00 00 00 00 |4       4      |
+	34 aa ef 00 00 00 00 00 34 ee ff 00 00 00 00 00 |4       4       |
 A list of up to 16 bytes in hexadecimal notation is generated,
 and then between vertical bars is the list of corresponding ASCII characters.
 Control characters and meta characters (those ranging from 128 to 255) are ‟blanked” out.
@@ -73,9 +73,8 @@ The initial letter indicates the number of times this address is referenced with
 the next 4 items represent that actual address of the label in hexadecimal.
 
 2. Errors
-―――――――――
+─────────
 The disassembler will duly note where disassembled instructions overlap, or where it cannot further process input.
-
 ∙	No entry points listed.
 ∙	Bad hexadecimal digit in input.
 		The input file ‟entries” was not found, or contained corrupt data.
@@ -110,7 +109,7 @@ The disassembler will duly note where disassembled instructions overlap, or wher
 		The number of pending points for the disassembler to process exceeded its capacity.
 
 3. User Support and Guarantee
-―――――――――――――――――――――――――――――
+─────────────────────────────
 This software has been rigorously verified with respect to the description given above.
 It will also conform to the description of the binary coding of the 8051 processor supplied by Intel.
 

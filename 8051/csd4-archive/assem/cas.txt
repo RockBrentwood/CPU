@@ -67,7 +67,7 @@ But there are now two major differences:
 	and because the assembler no longer has to process the assembly language itself by the second stage.
 
 1. Command line arguments
-――――――――――――――――――――――――――
+─────────────────────────
 The cas assembler's command line basically follows that of a typical C compiler.
 In the examples:
 	(a)	cas -c kernel.s
@@ -87,7 +87,7 @@ In the examples:
 
 2. Directives
 ―――――――――――――
-   The following is a summary of the directives available in this language.
+The following is a summary of the directives available in this language.
 
 a. «File Inclusion» ― include "FILE"
 ⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
@@ -151,7 +151,7 @@ The segments types supported by this 8051 assembler are the following:
 ∙	code:	the 8051 code address space, ranges from 0 to ffff hex.
 ∙	xdata:	the external data address space, same range.
 ∙	data:	the internal data/register space.
-		Ranges from 0 hex to ff hex.
+		Ranges from 0 to ff hex.
 		Only addresses under 80 hex can be used in mnemonics involving direct addressing.
 
 Other segment types are internally used by the assembler.
@@ -163,8 +163,8 @@ They are:
 
 Defining a new segment with one of these types will result in an error.
 
-c. Defining new «Labels» ― LABEL equ Exp, LABEL Type Exp, LABEL:, LABEL set Exp, LABEL = Exp
-⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+c. Defining new «Labels» ― LABEL {equ,Type,set,=} Exp and LABEL:
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
 These operations are defined as follows:
 ∙	LABEL equ Exp
 		defines a constant value LABEL and sets it to the value Exp.
@@ -213,7 +213,6 @@ One can also define anonymous numeric labels, as in the following example:
 		ret
 	2:	clr C
 		ret
-
 Each occurrence of ‟1:” stands for a unique anonymous label, likewise for ‟2:”.
 Any number may be used in this way to denote an anonymous label.
 
@@ -255,7 +254,6 @@ or
 	public LABEL equ Exp
 	public LABEL Type Exp
 	public LABEL:
-
 What this does is to make these labels visible to modules other than the one where these labels are defined.
 By default, all labels are visible only in the file where they are used.
 
@@ -372,7 +370,7 @@ k. Special notes on statement formatting:
 	However, this semicolon can be elided if it is the last item on a line.
 	This allows compatibility with more traditional one-statement-on-a-line type assemblers.
 	So normally, you don't have to even concern yourself with this if you adhere to one-statement per line style.
-▪	«A Basic statement ((a) through (h)) must be written all on one line.»
+▪	«A basic statement ((a) through (h)) must be written all on one line.»
 	It cannot be split up into two or more lines.
 ▪	«All comments are in C++ style.»
 	Many assemblers use the semicolon to initiate comments.
@@ -394,7 +392,7 @@ l. What goes in a *.s/*.asm file, what goes in a *.h file?
 Generally speaking, declarations should be placed in a *.h header file.
 The design of this assembler (especially with it being a one-pass assembler) is intended to support this usage.
 Any of the following is a declaration:
-	c. Defining new «Labels» ― LABEL equ Exp, LABEL Type Exp, LABEL set Exp, LABEL = Exp
+	c. Defining new «Labels» ― LABEL {equ,Type,set,=} Exp
 	f. Declaring «External» labels ― extern {Type,equ} LABEL, ..., LABEL
 Declarations only meant to be accessed within one module should be made inside that module, instead of out in a header file.
 
@@ -415,7 +413,7 @@ The last two items are generally used in many different contexts, and so can be 
 	j. Statement «Grouping» ― { ... }, multiple statements on a line.
 
 3. Expressions
-――――――――――――――
+──────────────
 a. Operators
 ⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
 The syntax is the same as in C.
@@ -474,7 +472,6 @@ A variable address that denotes the current location within the current segment.
 	dw $; dw $ - 2; dw $ - 4
 which is equivalent to:
 	1: dw 1b; dw 1b; dw 1b
-
 The location counter advances in the middle of a dw or db.
 
 e. «Numeric constant»
@@ -487,7 +484,7 @@ The relation between the (extended) C notation and Intel notation is illustrated
 			23	= 23d
 ∙	«octal»:	034	= 34q
 			056	= 56o
-∙	«binary»:	0b1001 = 1001b
+∙	«binary»:	0b1001	= 1001b
 Upper case may be used anywhere lower case is used, so the above can be written as:
 ∙	«hexadecimal»:	0XA44F	= 0A44FH
 			0X23	= 23H
@@ -550,561 +547,524 @@ the assembler will go back and fill in the zero with the appropriate value(s).
 ∙	No run-time checks are made against the object files processed.
 	A corrupt object file will crash the assembler during the linking phase.
 
-(6) Diagnostics
-   The assembler will only print out a screenful of diagnostics (24) before
-it stops.  When applicable, the file and line number where the error occurred
-are given.  An attempt is made to indicate the line where the error actually
-occurred, rather than where its effects were first seen.
-
-   Assembly is stopped at certain points if errors have been detected, since it
-would make no sense to go on past the given point.
-
-   The following is an alphabetized listing of diagnostics classified by
-whether they are fatal or non-fatal.  Assembly always stops after the former
-but will continue after the latter (until the error limit is reached).
-
-   Internal errors should be reported to me, see the README file at the FTP
-site csd4.csd.uwm.edu in the directory /pub/8051 or /pub/micro/8051 for more
-information.  If you get an internal error, you should display the object file
-using the object file display program provided with the assembler.  If you
-want me to resolve the bugs (if any exist) I would need to see this as well.
-
-   Alternatively, the source for the assembler is yours.  If you want to make
-modifications, try your hand at it, and if something significant results let
-everyone know by placing it in the public domain.
-
-   (a) Fatal Errors
-   These diagnostics will cause assembly to stop immediately, they usually
-represent serious inconsistencies or serious points of confusion for the
-assembler that makes further processing impossible or pointless.
-
-Address <Decimal Number> out of range
-   The location counter points to the indicated address, which lies outside the
-   address space of the current segment.  These address spaces are as follows:
-                     Type       Low        High
-                     code         0        65535  (or ffff hexadecimal)
-                     xdata        0        65535  (or ffff hexadecimal)
-                     data         0          255  (or   ff hexadecimal)
-
-Attempting to write to a non-code segment.
-   This happens if you try to use any image generating statement (db/byte,
-   dw/word, or any opcode) in a data or xdata segment.  Only code segments will
-   accept these statements.
-
-Bad opcode initialization.
-   This is an internal error you should never see.  It indicates an internal
-   inconsistency in the assembler's opcode tables.  These tables are used to
-   process the 8051 mnemonics.
-
-Cannot fit segment.
-   The linker tries its best to fit all the relatively addressed segment in the
-   tightest fitting space it can.  It may fail to pack them all in, if they can
-   only fit real tightly, or your segments may actually not fit at all.  Use
-   the object file display program that accompanies this assembler to look at
-   your object files in some detail.
-
-Cannot open <FILE>
-   An file was lost sometime during processing, or the file named probably
-   does not exist, or is not readible.
-
-Cannot open object file for <FILE>.
-   The object file for the source file indicated was somehow lost or made
-   inaccessible between the time it was created and the time it was processed
-   by the linker.
-
-Cannot open output file.
-   For some unexpected reason, the assembler could not create an .hex output
-   file.  If you're running this on a UNIX, then you're probably assembling
-   output into a directory where you have no write access.  Also possible: you
-   ran out of disk space.
-
-Cannot reopen <FILE>
-   A failure to reopen the current file after processing an include file
-   occurred.  This indicates either an internal flaw in the assembler or that
-   something happened to the file during assembly.
-
-Corrupt object file <NAME>.
-   A rudimentary check are made on object files.  The file indicated didn't pass
-   that check.  It's was either corrupted, or the assembler itself has an
-   internal flaw that made it produce corrupt object files.
-
-Could not restore <FILE>'s position.
-   A failure to resume processing the current file past the most recent include
-   statement occurred.  This indicates either an internal flaw in the assembler
-   or that the file undergoing processing was corrupted during assembly.
-
-Could not save <FILE>'s position.
-   A transient error occurred while setting up to include another file.  This
-   is either a serious system flaw, or an internal flaw in the assembler.
-
-Expression too complex ... aborting.
-   If you see this, you must be Lieutenant Commander Data.  An expression has
-   to be pretty complicated before it confuses the assembler.  Break it up,
-   by symbolically defining subexpressions first.
-
-Internal error (0).
-   An inconsistency was detected by the linker in the object file undergoing
-   processing.  A relocation item of undefined type was found.
-
-Internal error (1).
-   An inconsistency was detected by the linker in the object file undergoing
-   processing.  An undefined expression was found.
-
-Internal error (2).
-   A flaw in the assembler made it lose track of all the code segments, even
-   though at least one was defined.
-
-Internal error (3).
-   A flaw in the assembler made it think that a ds/rb, or rw statement was
-   reserving memory outside the segment where it was defined.
-
-Internal error (4).
-   A flaw in the assembler caused it to try and relocate two or more items to
-   the same address.  This can also be caused by a corrupt object file.
-
-Internal error (5).
-   A flaw in the assembler caused it to have trouble resolving an expression
-   during linking.  This can also be caused by a corrupt object file.
-
-Internal error (6).
-   A flaw in the assembler made it fail to sort the list of items to be
-   relocated.  A corrupt object file can cause this too.
-
-Internal error (7).
-   A flaw in the assembler made it think it was trying to patch up a hole of
-   size other than 1 or 2 bytes.  This can also be caused by a corrupt object
-   file.
-
-Internal error (8).
-   The assembler is expecting an object file larger than what it sees.  This
-   is the result of either an internal flaw or corrupt object file.
-
-Invalid object file <NAME>.
-   The first type bytes of all object files are 55 and aa (hexadecimal).  The
-   object file undergoing processing doesn't show this.  It's was either
-   corrupted, or the assembler itself has an internal flaw that made it produce
-   corrupt object files.
-
-Invalid option: -<OPTION>
-   Only -c and -o are recognized.
-
-Missing ';' after include statement.
-   The include statement (like all other statements) needs to be followed
-   by a semicolon, or otherwise be the last statement on the line.
-
-Missing filename in 'include'
-   The include statement has the form: include "FILE", with the file name
-   enclosed in double-quotes, as indicated.
-
-Out of memory.
-   The assembler's resources exceeded the system's available space.
-   If this happens during linking it may point to the high degree of
-   interconnectivity between modules thereby indicating a need to make the
-   interfaces between modules more clean-cut.  If it happens during assembly
-   it may point to a need to break the assembly-language file into smaller
-   modules.
-
-Overlapping segments: <FILE> [<LINE>] and <FILE> [<LINE>].
-   The segments in the indicated places have overlapping ranges of addresses.
-   Move one or both of them, if possible.
-
-Overlapping segments at [<LINE>] <FILE> and [<LINE>] <FILE>.
-   This one is actually an internal error.
-
-Statement too complex
-   If you see this, you must be Lieutenant Commander Data.  An statement has
-   to be pretty complicated with many layers of if's and else's and brackets
-   '{' and '}' before it confuses the assembler.  There is no direct recourse
-   here other than to try and simplify your program.
-
-Too many nested include files.
-   Up to 5 levels of nested includes are allowed.
-
-Too many segments.
-   Up to 32 segments can be defined per file.  Any occurrence of the org/at or
-   seg statements will start a new segment.  The first 5 segments are defined by
-   and used internally by the assembler, which leaves you with 27.
-
-Undefined segment type.
-   Only the types: code, xdata, or data can be used with the seg statement.
-
-Unexpected EOF.
-   Attempted to read past the end of an object file.
-   The object file is corrupt
-
-Use: <CAS> -c File... to assemble.
-   At least one input file should be listed with the -c option.
+6. Diagnostics
+――――――――――――――
+The assembler will only print out a screenful of diagnostics (24) before it stops.
+When applicable, the file and line number where the error occurred are given.
+An attempt is made to indicate the line where the error actually occurred, rather than where its effects were first seen.
+
+Assembly is stopped at certain points if errors have been detected, since it would make no sense to go on past the given point.
+
+The following is an alphabetized listing of diagnostics classified by whether they are fatal or non-fatal.
+Assembly always stops after the former but will continue after the latter (until the error limit is reached).
+
+Internal errors should be reported to me,
+see the README file at the FTP site csd4.csd.uwm.edu in the directory /pub/8051 or /pub/micro/8051 for more information.
+If you get an internal error, you should display the object file using the object file display program provided with the assembler.
+If you want me to resolve the bugs (if any exist) I would need to see this as well.
+
+Alternatively, the source for the assembler is yours.
+If you want to make modifications, try your hand at it,
+and if something significant results let everyone know by placing it in the public domain.
+
+a. Fatal Errors
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+These diagnostics will cause assembly to stop immediately,
+they usually represent serious inconsistencies or serious points of confusion for the assembler
+that makes further processing impossible or pointless.
+
+∙	Address <Decimal Number> out of range
+		The location counter points to the indicated address, which lies outside the address space of the current segment.
+		These address spaces are as follows:
+			Type	Low	High
+			――――	―――	――――
+			code	0	65535	(or ffff hexadecimal)
+			xdata	0	65535	(or ffff hexadecimal)
+			data	0	255	(or ff hexadecimal)
+
+∙	Attempting to write to a non-code segment.
+		This happens if you try to use any image generating statement (db/byte, dw/word, or any opcode)
+		in a data or xdata segment.
+		Only code segments will accept these statements.
+
+∙	Bad opcode initialization.
+		This is an internal error you should never see.
+		It indicates an internal inconsistency in the assembler's opcode tables.
+		These tables are used to process the 8051 mnemonics.
+
+∙	Cannot fit segment.
+		The linker tries its best to fit all the relatively addressed segment in the tightest fitting space it can.
+		It may fail to pack them all in, if they can only fit real tightly, or your segments may actually not fit at all.
+		Use the object file display program that accompanies this assembler to look at your object files in some detail.
+
+∙	Cannot open <FILE>
+		An file was lost sometime during processing, or the file named probably does not exist, or is not readible.
+
+∙	Cannot open object file for <FILE>.
+		The object file for the source file indicated was somehow lost or made inaccessible
+		between the time it was created and the time it was processed by the linker.
+
+∙	Cannot open output file.
+		For some unexpected reason, the assembler could not create an .hex output file.
+		If you're running this on a UNIX, then you're probably assembling output into a directory
+		where you have no write access.
+		Also possible: you ran out of disk space.
+
+∙	Cannot reopen <FILE>
+		A failure to reopen the current file after processing an include file occurred.
+		This indicates either an internal flaw in the assembler or that something happened to the file during assembly.
+
+∙	Corrupt object file <NAME>.
+		A rudimentary check are made on object files.
+		The file indicated didn't pass that check.
+		It's was either corrupted, or the assembler itself has an internal flaw that made it produce corrupt object files.
+
+∙	Could not restore <FILE>'s position.
+		A failure to resume processing the current file past the most recent include statement occurred.
+		This indicates either an internal flaw in the assembler
+		or that the file undergoing processing was corrupted during assembly.
+
+∙	Could not save <FILE>'s position.
+		A transient error occurred while setting up to include another file.
+		This is either a serious system flaw, or an internal flaw in the assembler.
+
+∙	Expression too complex ... aborting.
+		If you see this, you must be Lieutenant Commander Data.
+		An expression has to be pretty complicated before it confuses the assembler.
+		Break it up, by symbolically defining subexpressions first.
+
+∙	Internal error (0).
+		An inconsistency was detected by the linker in the object file undergoing processing.
+		A relocation item of undefined type was found.
+
+∙	Internal error (1).
+		An inconsistency was detected by the linker in the object file undergoing processing.
+		An undefined expression was found.
+
+∙	Internal error (2).
+		A flaw in the assembler made it lose track of all the code segments, even though at least one was defined.
+
+∙	Internal error (3).
+		A flaw in the assembler made it think
+		that a ds/rb, or rw statement was reserving memory outside the segment where it was defined.
+
+∙	Internal error (4).
+		A flaw in the assembler caused it to try and relocate two or more items to the same address.
+		This can also be caused by a corrupt object file.
 
-Use: <CAS> -o Output File... to link.
-   At least one source or object file should be listed with the -o option.
+∙	Internal error (5).
+		A flaw in the assembler caused it to have trouble resolving an expression during linking.
+		This can also be caused by a corrupt object file.
 
-Use: <CAS> [-o Output] File... to link.
-   At least one source or object file should be listed with the -o option or
-   with no options.
+∙	Internal error (6).
+		A flaw in the assembler made it fail to sort the list of items to be relocated.
+		A corrupt object file can cause this too.
 
-   (b) Non-Fatal Errors
-   These are errors the assembler will attempt to recover from and continue
-processing after.
+∙	Internal error (7).
+		A flaw in the assembler made it think it was trying to patch up a hole of size other than 1 or 2 bytes.
+		This can also be caused by a corrupt object file.
 
-Address <NAME> redeclared as number: <FILE> <FILE>
-   The symbol indicated was declared as a global number in the first indicated
-   files and as a global address in the second.
+∙	Internal error (8).
+		The assembler is expecting an object file larger than what it sees.
+		This is the result of either an internal flaw or corrupt object file.
 
-Address cannot appear in: x? x: x.
-   Addresses cannot be used as conditions of conditionals in the combination
-   address? x: x.  Only numeric values can be used there.
+∙	Invalid object file <NAME>.
+		The first type bytes of all object files are 55 and aa (hexadecimal).
+		The object file undergoing processing doesn't show this.
+		It's was either corrupted, or the assembler itself has an internal flaw that made it produce corrupt object files.
+
+∙	Invalid option: -<OPTION>
+		Only -c and -o are recognized.
 
-Address cannot be used with infix operator.
-   The only allowable combinations of addresses involving infix operations are
-   pretty much like in C:
-                             number + address
-                             address + number
-                             address - number
-   In addition, the combination
-                           reg.bit
-   can be used for bit addressible registers "reg" and values of 0 to 7 for
-   "bit".
+∙	Missing ';' after include statement.
+		The include statement (like all other statements) needs to be followed by a semicolon,
+		or otherwise be the last statement on the line.
 
-Address cannot be used with prefix operator.
-   Prefix operators other than + (-, !, ~, high, low) can only be used with
-   numeric values, not addresses.
+∙	Missing filename in 'include'
+		The include statement has the form: include "FILE", with the file name enclosed in double-quotes, as indicated.
 
-Address of wrong type in reg.pos
-   Only data or sfr addresses can be used in the place referred to ("reg").
+∙	Out of memory.
+		The assembler's resources exceeded the system's available space.
+		If this happens during linking it may point to the high degree of interconnectivity
+		between modules thereby indicating a need to make the interfaces between modules more clean-cut.
+		If it happens during assembly it may point to a need to break the assembly-language file into smaller modules.
 
-Address type mismatch.
-   Rudimentary type-checking is done for operations involving bit addresses,
-   data and sfr addresses, or code addresses.  Type checking is not done on
-   xdata addresses, as there are not 8051 operations that directly involve such
-   addresses.
+∙	Overlapping segments: <FILE> [<LINE>] and <FILE> [<LINE>].
+		The segments in the indicated places have overlapping ranges of addresses.
+		Move one or both of them, if possible.
 
-Addresses of different types cannot be subtracted.
-   Addresses must be of the same type in order to be subtracted.  They can be
-   of different segments, however, as long as the segments have the same type.
+∙	Overlapping segments at [<LINE>] <FILE> and [<LINE>] <FILE>.
+		This one is actually an internal error.
 
-Attempting to make local label global.
-   Local (numeric) labels cannot be made global.
+∙	Statement too complex
+		If you see this, you must be Lieutenant Commander Data.
+		A statement has to be pretty complicated with many layers of if's and else's and brackets '{' and '}'
+		before it confuses the assembler.
+		There is no direct recourse here other than to try and simplify your program.
 
-Attempting to redefine <NAME>
-   The label indicated was used in the context LABEL:, but is already defined,
+∙	Too many nested include files.
+		Up to 5 levels of nested includes are allowed.
 
-Bad hexadecimal character.
-   A hexadecimal character takes the form: \xHK or \XHK, where H and K are
-   hexadecimal digits.  Exactly two hex digits must be seen.  An \x by itself
-   without any following hexadecimal digits is interpreted as just x.
+∙	Too many segments.
+		Up to 32 segments can be defined per file.
+		Any occurrence of the org/at or seg statements will start a new segment.
+		The first 5 segments are defined by and used internally by the assembler, which leaves you with 27.
 
-Binary number has non-binary digits.
-   A number with a binary prefix (0b, 0B) or binary suffix (b, B) can only
-   contain the digits 0 and 1.
+∙	Undefined segment type.
+		Only the types: code, xdata, or data can be used with the seg statement.
 
-Bit address out of range.
-   Bit addresses range only from 0 to ff hex (0 to 255 decimal).
+∙	Unexpected EOF.
+		Attempted to read past the end of an object file.
+		The object file is corrupt
 
-Bit position out of range.
-   The operation reg.pos only allows values of 0 to 7 for "pos".
+∙	Use: <CAS> -c File... to assemble.
+		At least one input file should be listed with the -c option.
 
-Byte value out of range (hex value).
-   An immediate byte value in the range -80 (hex) to ff (hex) (or -128 to 255)
-   is required in this context.
+∙	Use: <CAS> -o Output File... to link.
+		At least one source or object file should be listed with the -o option.
 
-Cannot use @A+A
-   Only @A+DPTR, and @A+PC can be used with the 8051 language.
+∙	Use: <CAS> [-o Output] File... to link.
+		At least one source or object file should be listed with the -o option or with no options.
 
-Cannot use @A+AB.
-   Only @A+DPTR, and @A+PC can be used with the 8051 language.
+b. Non-Fatal Errors
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+These are errors the assembler will attempt to recover from and continue processing after.
 
-Cannot use @A+C.
-   Only @A+DPTR, and @A+PC can be used with the 8051 language.
+∙	Address <NAME> redeclared as number: <FILE> <FILE>
+		The symbol indicated was declared as a global number in the first indicated files
+		and as a global address in the second.
 
-Cannot use @A+Rn
-   Only @A+DPTR, and @A+PC can be used with the 8051 language.
+∙	Address cannot appear in: x? x: x.
+		Addresses cannot be used as conditions of conditionals in the combination address? x: x.
+		Only numeric values can be used there.
 
-Cannot use @A.
-   The only valid combinations using @ are @R0, @R1, @DPTR, @A+DPTR, and @A+PC.
+∙	Address cannot be used with infix operator.
+		The only allowable combinations of addresses involving infix operations are pretty much like in C:
+			number + address
+			address + number
+			address - number
+		In addition, the combination
+			reg.bit
+		can be used for bit addressible registers "reg" and values of 0 to 7 for "bit".
 
-Cannot use @AB.
-   The only valid combinations using @ are @R0, @R1, @DPTR, @A+DPTR, and @A+PC.
+∙	Address cannot be used with prefix operator.
+		Prefix operators other than + (-, !, ~, high, low) can only be used with numeric values, not addresses.
 
-Cannot use @C.
-   The only valid combinations using @ are @R0, @R1, @DPTR, @A+DPTR, and @A+PC.
+∙	Address of wrong type in reg.pos
+		Only data or sfr addresses can be used in the place referred to ("reg").
 
-Cannot use @PC.
-   The only valid combinations using @ are @R0, @R1, @DPTR, @A+DPTR, and @A+PC.
+∙	Address type mismatch.
+		Rudimentary type-checking is done for operations involving
+		bit addresses, data and sfr addresses, or code addresses.
+		Type checking is not done on xdata addresses, as there are not 8051 operations that directly involve such addresses.
 
-Cannot use PC as a register.
-   PC only appears in the combination @A+PC in the statement movc A, @A+PC.
+∙	Addresses of different types cannot be subtracted.
+		Addresses must be of the same type in order to be subtracted.
+		They can be of different segments, however, as long as the segments have the same type.
 
-Code address out of range.
-   Code addresses can only range from 0 to ffff hex (or 0 to 65535 decimal).
+∙	Attempting to make local label global.
+		Local (numeric) labels cannot be made global.
 
-Data address out of range.
-   Only direct data register addresses (0 to 7f hex, or 0 to 127), or special
-   function register addresses can be used here.
+∙	Attempting to redefine <NAME>
+		The label indicated was used in the context LABEL:, but is already defined,
 
-Decimal number has non-decimal digits.
-   The number indicated has hexadecimal digits (a through f, or A through F)
-   but no hexadecimal prefix (0x, 0X, 0h, 0H) or suffix (h, H, x, X).
+∙	Bad hexadecimal character.
+		A hexadecimal character takes the form: \xHK or \XHK, where H and K are hexadecimal digits.
+		Exactly two hex digits must be seen.
+		An \x by itself without any following hexadecimal digits is interpreted as just x.
 
-Division by 0.
-   x / 0 is not defined.
+∙	Binary number has non-binary digits.
+		A number with a binary prefix (0b, 0B) or binary suffix (b, B) can only contain the digits 0 and 1.
 
-Empty character constant.
-   A single quote cannot be quoted as a character (''').  Use '\'' instead.
-   Alternatively, you attempted to define an empty string ("") with single
-   quotes.
+∙	Bit address out of range.
+		Bit addresses range only from 0 to ff hex (0 to 255 decimal).
 
-Expected an argument/prefix operator.
-   The expression indicated is probably missing a prefix operator, a symbol or
-   constant, or an opening parenthesis '('.
+∙	Bit position out of range.
+		The operation reg.pos only allows values of 0 to 7 for "pos".
 
-Expected segment type.
-   The statement: seg Type, must have Type code, xdata, or data.
+∙	Byte value out of range (hex value).
+		An immediate byte value in the range -80 (hex) to ff (hex) (or -128 to 255) is required in this context.
 
-Expected symbol after 'global'
-   Only symbols can be declared as global.
+∙	Cannot use @A+A
+		Only @A+DPTR, and @A+PC can be used with the 8051 language.
 
-Expected symbol in 'extern'
-   Only symbols can be declared as external.
+∙	Cannot use @A+AB.
+		Only @A+DPTR, and @A+PC can be used with the 8051 language.
 
-Expected type or 'equ' after 'extern'.
-   External symbols must be declared as a type (sfr, bit, code, data, xdata)
-   or as a numeric constant (equ).  The valid forms are:
-            extern (sfr, bit, code, data, xdata, or equ) Symbol, ..., Symbol
+∙	Cannot use @A+C.
+		Only @A+DPTR, and @A+PC can be used with the 8051 language.
 
-Expression type does not match.
-   The expression occurring on the right hand side of the statement of the
-   form: Symbol Type Value, does not have the indicated type.
+∙	Cannot use @A+Rn
+		Only @A+DPTR, and @A+PC can be used with the 8051 language.
 
-Extra ','.
-   An extra command was inserted after the last operand.  Alternatively, the
-   operand following the last comma is missing.
+∙	Cannot use @A.
+		The only valid combinations using @ are @R0, @R1, @DPTR, @A+DPTR, and @A+PC.
 
-Illegal combination: address + address
-   Only numeric values can be added to or subtracted from addresses.  The
-   rules for address arithmetic are basically like those in C.
+∙	Cannot use @AB.
+		The only valid combinations using @ are @R0, @R1, @DPTR, @A+DPTR, and @A+PC.
 
-Illegal combination: number - address
-   Numbers can only be subtracted from addresses, not the other way around.  The
-   rules for address arithmetic are basically like those in C.
-
-Illegal combination: reg.bit
-   Only numeric values in the range 0 to 7 can be used in place of "bit", not
-   addresses.
-
-Indirect registers are not bit addressible.
-   The register referred to ("reg") must be a data address in the range 20-2f.
-   The address referred to lies above 80 (hex).  It is possible you may have
-   meant to use a Special Function Register here, not a data address.
-
-Invalid addressing mode: <MNEMONIC>
-   This mnemonic is not defined for this combination of operands.
-
-Missing '(' in 'if (...)'.
-   The if statement must have the form: if (x) ..., as it does in C.
-
-Missing ')'
-   An unmatched closing parenthesis, ')', or possibly an extra opening
-   parenthesis, '(', occurred.
-
-Missing ')' in 'if (...)'.
-   The if statement must have the form: if (x) ..., as it does in C.
-
-Missing ':'
-   The conditional indicated is missing a colon.  Conditional expressions have
-   the form x? x: x.
-
-Missing ';'
-   Semi-colons must be used between two or more statements on the same line.
-   You may have mistyped a colon (:) insteady.
-
-Missing '}'.
-   An opening bracket '{' was never closed off with a ')'.
-
-Missing DPTR or PC after @A+
-   Only @A+DPTR, and @A+PC can be used with the 8051 language.
-
-Missing a ' in character constant.
-   No more than one item can be enclosed between single quotes (e.g. 'ab', or
-   'a\n', though '\n' is okay.)  You may have meant to define a string here.
-   Use double quotes.
-
-Modulo by 0
-   x  684s not defined.
-
-Number <NAME> redeclared as address: <FILE> <FILE>
-   The symbol indicated was declared as a global address in the first indicated
-   files and as a global number in the second.
-
-Octal number has non-octal digits.
-   A number with an octal prefix (0, other than those with an appropriate
-   suffix), or an octal suffix (o, O, q, Q) can only contain the digits 0
-   through 7.
-
-Only code, xdata, or data segments allowed.
-   The types sfr and bit cannot be used with segments.
-
-Paged address out of range.
-   Paged jump or call instructions (ajmp, acall) must have destinations that lie
-   on the same code page (every 800 hex bytes, starting at 0 is a code page).
-   This only happens when your program gets beyond a certain size, or when it
-   is located at an odd address (such as 7ff hex).  Generally, it's a good idea
-   to start your programs on even multiples of 800 hex.  Stand-alone programs
-   have to start at the reset address (0) anyway.
-
-Redeclaring address <NAME> as number.
-   A symbol already defined as an address is being declared as an external
-   numeric value.
-
-Redeclaring local symbol <NAME> as external.
-   A symbol already defined as a local symbol is being defined as external.
-   This may also be a name clash between a local and global symbol.
-
-Redeclaring number <NAME> as address.
-   A symbol already defined as a number is being declared as an external
-   address.
-
-Register address out of range.
-   Only directly addressible data registers (0 to 7f hex, or 0 to 127) can be
-   used here.  This error may have inadvertently been created by the assembler
-   if you defined relatively addresses data registers, and the assembler tried
-   to map them beyond 80 hex.  See the Bugs section of the document.
-
-Register in @Rn out of range.
-   Only registers R0 or R1 can be used as register pointers.
-
-Register in reg.bit not bit addressible.
-   The register referred to ("reg") must be a data address in the range 20-2f
-   (hexadecimal, 32-47 decimal), or must be one of the Special Function
-   Registers whose address is evenly divisible by 8 (in hexadecimal: 80, 88,
-   90, ..., f0, f8).
-
-Register must appear after @.
-   Numeric or address expressions cannot appear after @.
-
-Relative address cannot be used here
-   Only absolute addresses, or numeric values containing objects that have been
-   previously defined (in terms of other such absolute objects) can appear in
-   the conditional (if (E) ...), or in address setting/modifying statements
-   (org/at, ds/rb, rw).
-
-Relative address out of range.
-   Some jump instruction (cjne, djnz, sjmp, jz, jnz, jc, jnc, jbc, jb, jnb)
-   require their destinations to be within a certain range (-80 hex to +7f hex)
-   of the first byte following the jump instruction.  Generally, you should not
-   use these operations to jump across segment boundaries when one or more of
-   the segments is relatively addressed.
-
-SFR address out of range.
-   Special function register addresses can only have values in the range (80
-   to ff hex, or 128 to 255 decimal).
-
-Symbol <NAME> already declared as external number.
-   The symbol indicated was declared as an external numeric constant but was
-   defined as an address.
-
-Symbol <NAME> already declared as external.
-   The symbol indicated was already declared as an external/global, and so
-   cannot be defined as a variable, or local constant.  If you had intended
-   to define it as a global constant, precede the definition with the word
-   'global' or 'public'.
-
-Symbol <NAME> already declared as number.
-   The symbol indicated was used in the context LABEL:, but is already declared
-   as a numeric constant.
-
-Symbol <NAME> already defined as constant.
-   Constant symbols cannot be redefined as variables.
-
-Symbol <NAME> already defined.
-   Constant symbols can only be defined once.
-
-Symbol <NAME> cannot be equated to relative address.
-   The symbol indicated was declared as an external numeric constant.  It
-   can only be set to an absolute address or numeric value.
-
-Symbol <NAME> cannot be set to relative address.
-   Variables can only be set to absolute addresses, or numbers.
-
-Symbol <NAME> redefined: <FILE> <FILE>.
-   The symbol indicated was defined as a global in both of the files listed.  It
-   can only be defined as a global once.
-
-Symbol <NAME>'s type does not match.
-   The symbol indicated was declared as an external of one type and defined as
-   a global of a different type.
-
-Syntax error
-   This statement so totally eluded the assembler's ability to process it, that
-   it didn't even know what you intended.  This can also occur if it gets set
-   off-track as a result of previous errors.
-
-Too many arguments specified.
-   More operands were supplied than is accepted by this mnemonic.
-
-Too many gaps.
-   Each time you issue a statement to the assembler to reserve space (ds/rb, rw)
-   the assembler internally creates a gap for it.  No more than 256 such
-   statements can occur per file.  You should probably break this file into
-   smaller modules.
-
-Type mismatch <NAME>: <FILE> <FILE>
-   The symbol indicated was declared as a global with different types in the
-   files indicated.
-
-Type mismatch: <NAME>.
-   A symbol already defined as an address of one type is being declared as an
-   address of another type.
-
-Undefined expression
-   The expression indicated must be defined either as an absolute or relative
-   address, or number in this statemen.  This occurs in any statement where a
-   new label is being defined.
-
-Undefined label <DIGIT>
-   A numeric label was used in a forward reference (e.g. 1f, 2f, 3f, ...), but
-   was not defined anywhere in the current segment.  Numeric labels can not be
-   referenced across segments.
-
-Undefined local symbol <DIGIT>b
-   A backward reference was made to a numeric label (e.g. 1b, 2b, 3b, ...) that
-   was not previously defined in the current segment.  References to numeric
-   labels cannot be made across segments.
-
-Undefined symbol: <NAME>
-   If a line number and file are indicated, then either the symbol is being
-   used on the right hand side of a label definition (in which case, its value
-   must be an already known absolute address, or number), you may be using a
-   mnemonic not known to the assembler, may have misspelled one that is known,
-   or you may have tried to write a label-defining statement but made an
-   error somewhere.
-   If no line and file numer are indicated, the symbol indicated was used in
-   the file without ever being defined.  It needs to be declared as an external
-   (if it is defined in another file) or needs to be defined before it is used.
-
-Unexpected EOF inside // comment.
-   A // comment occurred at the end of the current file, and no end of line
-   marker was seen.  This indicates your source file is not in text mode.
-
-Unexpected EOF inside ;; comment.
-   A ;; comment occurred at the end of the current file, and no end of line
-   marker was seen.  This indicates your source file is not in text mode.
-
-Unexpected EOF inside comment.
-   A /* comment was seen, but was never closed with a */.
-
-Unexpected EOF inside string.
-   A double quote was seen without a matching pair anywhere.
-
-Unresolved external: <NAME>.
-   A symbol was declared as an external but wasn't defined anywhere.  If it's
-   a register or bit address defined for one of the 8051 extensions (8052,
-   or 8051fa), you will have to use one of the include files provided (8052.h
-   or 8051fa.h), or make your own.
-
-Variables cannot be made global.
-   The keyword 'global' cannot be used with the statements Var = Val, or
-   Var set Val.  Variables can only be defined as local symbols.
-
-Word value out of range.
-   An immediate word value (range -8000 to ffff hex, or -32768 to 65535
-   decimal) is required here.
+∙	Cannot use @C.
+		The only valid combinations using @ are @R0, @R1, @DPTR, @A+DPTR, and @A+PC.
+
+∙	Cannot use @PC.
+		The only valid combinations using @ are @R0, @R1, @DPTR, @A+DPTR, and @A+PC.
+
+∙	Cannot use PC as a register.
+		PC only appears in the combination @A+PC in the statement movc A, @A+PC.
+
+∙	Code address out of range.
+		Code addresses can only range from 0 to ffff hex (or 0 to 65535 decimal).
+
+∙	Data address out of range.
+		Only direct data register addresses (0 to 7f hex, or 0 to 127),
+		or special function register addresses can be used here.
+
+∙	Decimal number has non-decimal digits.
+		The number indicated has hexadecimal digits (a through f, or A through F)
+		but no hexadecimal prefix (0x, 0X, 0h, 0H) or suffix (h, H, x, X).
+
+∙	Division by 0.
+		x / 0 is not defined.
+
+∙	Empty character constant.
+		A single quote cannot be quoted as a character (''').
+		Use '\'' instead.
+		Alternatively, you attempted to define an empty string ("") with single quotes.
+
+∙	Expected an argument/prefix operator.
+		The expression indicated is probably missing
+		a prefix operator, a symbol or constant, or an opening parenthesis '('.
+
+∙	Expected segment type.
+		The statement: seg Type, must have Type code, xdata, or data.
+
+∙	Expected symbol after 'global'
+		Only symbols can be declared as global.
+
+∙	Expected symbol in 'extern'
+		Only symbols can be declared as external.
+
+∙	Expected type or 'equ' after 'extern'.
+		External symbols must be declared as a type (sfr, bit, code, data, xdata) or as a numeric constant (equ).
+		The valid forms are:
+			extern (sfr, bit, code, data, xdata, or equ) Symbol, ..., Symbol
+
+∙	Expression type does not match.
+		The expression occurring on the right hand side of the statement of the form:
+			Symbol Type Value,
+		does not have the indicated type.
+
+∙	Extra ','.
+		An extra command was inserted after the last operand.
+		Alternatively, the operand following the last comma is missing.
+
+∙	Illegal combination: address + address
+		Only numeric values can be added to or subtracted from addresses.
+		The rules for address arithmetic are basically like those in C.
+
+∙	Illegal combination: number - address
+		Numbers can only be subtracted from addresses, not the other way around.
+		The rules for address arithmetic are basically like those in C.
+
+∙	Illegal combination: reg.bit
+		Only numeric values in the range 0 to 7 can be used in place of "bit", not addresses.
+
+∙	Indirect registers are not bit addressible.
+		The register referred to ("reg") must be a data address in the range 20-2f.
+		The address referred to lies above 80 (hex).
+		It is possible you may have meant to use a Special Function Register here, not a data address.
+
+∙	Invalid addressing mode: <MNEMONIC>
+		This mnemonic is not defined for this combination of operands.
+
+∙	Missing '(' in 'if (...)'.
+		The if statement must have the form: if (x) ..., as it does in C.
+
+∙	Missing ')'
+		An unmatched closing parenthesis, ')', or possibly an extra opening parenthesis, '(', occurred.
+
+∙	Missing ')' in 'if (...)'.
+		The if statement must have the form: if (x) ..., as it does in C.
+
+∙	Missing ':'
+		The conditional indicated is missing a colon.
+		Conditional expressions have the form x? x: x.
+
+∙	Missing ';'
+		Semi-colons must be used between two or more statements on the same line.
+		You may have mistyped a colon (:) insteady.
+
+∙	Missing '}'.
+		An opening bracket '{' was never closed off with a ')'.
+
+∙	Missing DPTR or PC after @A+
+		Only @A+DPTR, and @A+PC can be used with the 8051 language.
+
+∙	Missing a ' in character constant.
+		No more than one item can be enclosed between single quotes (e.g. 'ab', or 'a\n', though '\n' is okay).
+		You may have meant to define a string here.
+		Use double quotes.
+
+∙	Modulo by 0
+		x  684s not defined.
+
+∙	Number <NAME> redeclared as address: <FILE> <FILE>
+		The symbol indicated was declared as a global address in the first indicated files
+		and as a global number in the second.
+
+∙	Octal number has non-octal digits.
+		A number with an octal prefix (0, other than those with an appropriate suffix),
+		or an octal suffix (o, O, q, Q) can only contain the digits 0 through 7.
+
+∙	Only code, xdata, or data segments allowed.
+		The types sfr and bit cannot be used with segments.
+
+∙	Paged address out of range.
+		Paged jump or call instructions (ajmp, acall) must have destinations
+		that lie on the same code page (every 800 hex bytes, starting at 0 is a code page).
+		This only happens when your program gets beyond a certain size,
+		or when it is located at an odd address (such as 7ff hex).
+		Generally, it's a good idea to start your programs on even multiples of 800 hex.
+		Stand-alone programs have to start at the reset address (0) anyway.
+
+∙	Redeclaring address <NAME> as number.
+		A symbol already defined as an address is being declared as an external numeric value.
+
+∙	Redeclaring local symbol <NAME> as external.
+		A symbol already defined as a local symbol is being defined as external.
+		This may also be a name clash between a local and global symbol.
+
+∙	Redeclaring number <NAME> as address.
+		A symbol already defined as a number is being declared as an external address.
+
+∙	Register address out of range.
+		Only directly addressible data registers (0 to 7f hex, or 0 to 127) can be used here.
+		This error may have inadvertently been created by the assembler
+		if you defined relatively addresses data registers, and the assembler tried to map them beyond 80 hex.
+		See the Bugs section of the document.
+
+∙	Register in @Rn out of range.
+		Only registers R0 or R1 can be used as register pointers.
+
+∙	Register in reg.bit not bit addressible.
+		The register referred to ("reg") must be a data address in the range 20-2f (hexadecimal, 32-47 decimal),
+		or must be one of the Special Function
+		Registers whose address is evenly divisible by 8 (in hexadecimal: 80, 88, 90, ..., f0, f8).
+
+∙	Register must appear after @.
+		Numeric or address expressions cannot appear after @.
+
+∙	Relative address cannot be used here
+		Only absolute addresses, or numeric values containing objects
+		that have been previously defined (in terms of other such absolute objects)
+		can appear in the conditional (if (E) ...), or in address setting/modifying statements (org/at, ds/rb, rw).
+
+∙	Relative address out of range.
+		Some jump instruction (cjne, djnz, sjmp, jz, jnz, jc, jnc, jbc, jb, jnb) require their destinations
+		to be within a certain range (-80 hex to +7f hex) of the first byte following the jump instruction.
+		Generally, you should not use these operations to jump across segment boundaries
+		when one or more of the segments is relatively addressed.
+
+∙	SFR address out of range.
+		Special function register addresses can only have values in the range (80 to ff hex, or 128 to 255 decimal).
+
+∙	Symbol <NAME> already declared as external number.
+		The symbol indicated was declared as an external numeric constant but was defined as an address.
+
+∙	Symbol <NAME> already declared as external.
+		The symbol indicated was already declared as an external/global,
+		and so cannot be defined as a variable, or local constant.
+		If you had intended to define it as a global constant, precede the definition with the word 'global' or 'public'.
+
+∙	Symbol <NAME> already declared as number.
+		The symbol indicated was used in the context LABEL:, but is already declared as a numeric constant.
+
+∙	Symbol <NAME> already defined as constant.
+		Constant symbols cannot be redefined as variables.
+
+∙	Symbol <NAME> already defined.
+		Constant symbols can only be defined once.
+
+∙	Symbol <NAME> cannot be equated to relative address.
+		The symbol indicated was declared as an external numeric constant.
+		It can only be set to an absolute address or numeric value.
+
+∙	Symbol <NAME> cannot be set to relative address.
+		Variables can only be set to absolute addresses, or numbers.
+
+∙	Symbol <NAME> redefined: <FILE> <FILE>.
+		The symbol indicated was defined as a global in both of the files listed.
+		It can only be defined as a global once.
+
+∙	Symbol <NAME>'s type does not match.
+		The symbol indicated was declared as an external of one type and defined as a global of a different type.
+
+∙	Syntax error
+		This statement so totally eluded the assembler's ability to process it,
+		that it didn't even know what you intended.
+		This can also occur if it gets set off-track as a result of previous errors.
+
+∙	Too many arguments specified.
+		More operands were supplied than is accepted by this mnemonic.
+
+∙	Too many gaps.
+		Each time you issue a statement to the assembler to reserve space (ds/rb, rw)
+		the assembler internally creates a gap for it.
+		No more than 256 such statements can occur per file.
+		You should probably break this file into smaller modules.
+
+∙	Type mismatch <NAME>: <FILE> <FILE>
+		The symbol indicated was declared as a global with different types in the files indicated.
+
+∙	Type mismatch: <NAME>.
+		A symbol already defined as an address of one type is being declared as an address of another type.
+
+∙	Undefined expression
+		The expression indicated must be defined either as an absolute or relative address, or number in this statemen.
+		This occurs in any statement where a new label is being defined.
+
+∙	Undefined label <DIGIT>
+		A numeric label was used in a forward reference (e.g. 1f, 2f, 3f, ...),
+		but was not defined anywhere in the current segment.
+		Numeric labels can not be referenced across segments.
+
+∙	Undefined local symbol <DIGIT>b
+		A backward reference was made to a numeric label (e.g. 1b, 2b, 3b, ...)
+		that was not previously defined in the current segment.
+		References to numeric labels cannot be made across segments.
+
+∙	Undefined symbol: <NAME>
+		If a line number and file are indicated,
+		then either the symbol is being used on the right hand side of a label definition
+		(in which case, its value must be an already known absolute address, or number),
+		you may be using a mnemonic not known to the assembler, may have misspelled one that is known,
+		or you may have tried to write a label-defining statement but made an error somewhere.
+
+		If no line and file numer are indicated, the symbol indicated was used in the file without ever being defined.
+		It needs to be declared as an external (if it is defined in another file) or needs to be defined before it is used.
+
+∙	Unexpected EOF inside // comment.
+		A // comment occurred at the end of the current file, and no end of line marker was seen.
+		This indicates your source file is not in text mode.
+
+∙	Unexpected EOF inside ;; comment.
+		A ;; comment occurred at the end of the current file, and no end of line marker was seen.
+		This indicates your source file is not in text mode.
+
+∙	Unexpected EOF inside comment.
+		A /* comment was seen, but was never closed with a */.
+
+∙	Unexpected EOF inside string.
+		A double quote was seen without a matching pair anywhere.
+
+∙	Unresolved external: <NAME>.
+		A symbol was declared as an external but wasn't defined anywhere.
+		If it's a register or bit address defined for one of the 8051 extensions (8052, or 8051fa),
+		you will have to use one of the include files provided (8052.h or 8051fa.h), or make your own.
+
+∙	Variables cannot be made global.
+		The keyword 'global' cannot be used with the statements Var = Val, or Var set Val.
+		Variables can only be defined as local symbols.
+
+∙	Word value out of range.
+		An immediate word value (range -8000 to ffff hex, or -32768 to 65535 decimal) is required here.
