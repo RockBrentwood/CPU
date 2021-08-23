@@ -12,12 +12,11 @@
 // with the usual C-like precedence rules.
 
 Exp ExpHead;
-static Exp ExpTail;
-static Exp ExpHash[0x100];
+static Exp ExpTail, ExpHash[0x100];
 
 void ExpInit(void) {
-   ExpTail = ExpHead = 0;
-   for (int H = 0; H < 0x100; H++) ExpHash[H] = 0;
+   ExpTail = ExpHead = NULL;
+   for (int H = 0; H < 0x100; H++) ExpHash[H] = NULL;
 }
 
 static byte Direct = 2; // 0 = Absolute, 1 = Relative, 2 = Undefined.

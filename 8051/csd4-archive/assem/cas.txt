@@ -7,7 +7,8 @@ a. Features
 This is a free full-featured one-pass 8051 assembler, it could very well be the first one-pass assembler
 for the popular MCS-51 family of microprocessors.
 What you get are the following features:
-∙	Seperately assembleable files. There are two stages of assembly:
+∙	Seperately assembleable files.
+	There are two stages of assembly:
 	―	Pass 1: Creation of object files
 	―	Pass 1 1/3: Linking of object files
 ∙	Segmentation
@@ -578,9 +579,9 @@ that makes further processing impossible or pointless.
 		These address spaces are as follows:
 			Type	Low	High
 			――――	―――	――――
-			code	0	65535	(or ffff hexadecimal)
-			xdata	0	65535	(or ffff hexadecimal)
-			data	0	255	(or ff hexadecimal)
+			code	0	65535 = 0xffff
+			xdata	0	65535 = 0xffff
+			data	0	255 = 0xff
 
 ∙	Attempting to write to a non-code segment.
 		This happens if you try to use any image generating statement (db/byte, dw/word, or any opcode)
@@ -906,7 +907,7 @@ These are errors the assembler will attempt to recover from and continue process
 		Use double quotes.
 
 ∙	Modulo by 0
-		x  684s not defined.
+		Division by 0 is not defined.
 
 ∙	Number <NAME> redeclared as address: <FILE> <FILE>
 		The symbol indicated was declared as a global address in the first indicated files
@@ -948,8 +949,8 @@ These are errors the assembler will attempt to recover from and continue process
 
 ∙	Register in reg.bit not bit addressible.
 		The register referred to ("reg") must be a data address in the range 20-2f (hexadecimal, 32-47 decimal),
-		or must be one of the Special Function
-		Registers whose address is evenly divisible by 8 (in hexadecimal: 80, 88, 90, ..., f0, f8).
+		or must be one of the Special Function Registers
+		whose address is evenly divisible by 8 (in hexadecimal: 80, 88, 90, ..., f0, f8).
 
 ∙	Register must appear after @.
 		Numeric or address expressions cannot appear after @.
@@ -1040,7 +1041,7 @@ These are errors the assembler will attempt to recover from and continue process
 		you may be using a mnemonic not known to the assembler, may have misspelled one that is known,
 		or you may have tried to write a label-defining statement but made an error somewhere.
 
-		If no line and file numer are indicated, the symbol indicated was used in the file without ever being defined.
+		If no line and file number are indicated, the symbol indicated was used in the file without ever being defined.
 		It needs to be declared as an external (if it is defined in another file) or needs to be defined before it is used.
 
 ∙	Unexpected EOF inside // comment.

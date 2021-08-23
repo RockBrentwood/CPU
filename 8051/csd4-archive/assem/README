@@ -3,24 +3,24 @@ CAS: The Free Full-Featured 8051 Assembler
 Released and located originally at the FTP site csd4.csd.uwm.edu in /pub/8051/assem in 1992/07.
 
 This is a 1-pass assembler for the MCS-51 family of microprocessors with the following features:
-(1)	Seperately assembleable files.
+∙	Seperately assembleable files.
 	There are two stages of assembly:
-	(a)	Pass 1: Creation of object files
-	(b)	Pass 1 1/3: Linking of object files
-(2)	Relative addressing
-(3)	Unnamed segments
-(4)	Conditional assembly
+	―	Pass 1: Creation of object files
+	―	Pass 1 1/3: Linking of object files
+∙	Relative addressing
+∙	Unnamed segments
+∙	Conditional assembly
 	With a C-like syntax, e.g.
 		if (Condition) {
 			Assembly instructions...
 		} else {
 			Assembly instructions...
 		}
-(5)	Multiple statements per line with C-like syntax.
-(6)	C-like expression syntax.
-(7)	Command-line options similar to those of the UNIX C compiler.
+∙	Multiple statements per line with C-like syntax.
+∙	C-like expression syntax.
+∙	Command-line options similar to those of the UNIX C compiler.
 	Compatible with UNIX's make.
-(8)	An extensive archive of real-life assembly language programs, including a multi-tasking library.
+∙	An extensive archive of real-life assembly language programs, including a multi-tasking library.
 Plus, if you don't want to learn all the elaborate ins and outs of this tool right away,
 it is just as easy to use the first time out as any minimal assembler.
 Read the start-up notes for details.
@@ -28,9 +28,9 @@ Read the start-up notes for details.
 It has been tested and verified against all the software contained in the rest of the 8051 archive.
 
 With enough demand and support, I may add in the following features in future versions of this assembler:
-(9)	More compatibility between the 8051 disassembler and assembler.
-(10)	A powerful macro facility, to allow significant customizations on the 8051 language.
-(11)	The ability to include "Pre-assembled" macros.
+∙	More compatibility between the 8051 disassembler and assembler.
+∙	A powerful macro facility, to allow significant customizations on the 8051 language.
+∙	The ability to include "Pre-assembled" macros.
 
 This is probably the most elaborate 8051 assembler you will find anywhere in the public domain.
 It's yours with the source for free.

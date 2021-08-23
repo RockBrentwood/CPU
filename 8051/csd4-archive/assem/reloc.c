@@ -2,6 +2,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef unsigned char byte;
 typedef unsigned int word;
@@ -16,9 +17,8 @@ byte Nib(int X) {
 byte CheckSum;
 byte GetHex(FILE *InF) {
    int A = fgetc(InF), B = fgetc(InF);
-   if (A == EOF || B == EOF) {
-      fprintf(stderr, "Unexpected EOF.\n"); exit(EXIT_FAILURE);
-   }
+   if (A == EOF || B == EOF)
+      fprintf(stderr, "Unexpected EOF.\n"), exit(EXIT_FAILURE);
    byte Bt = Nib(A) << 4 | Nib(B);
    CheckSum = (CheckSum + Bt)&0xff; return Bt;
 }
@@ -29,19 +29,19 @@ word GetWord(FILE *InF) {
 }
 
 void PutHex(FILE *ExF, byte Ch) {
-   fprintf(ExF, "%02x", Ch); CheckSum = (CheckSum + Ch)&0xff;
+   fprintf(ExF, "%02x", Ch), CheckSum = (CheckSum + Ch)&0xff;
 }
 
 void PutWord(FILE *ExF, word W) {
    PutHex(ExF, (byte)(W >> 8)), PutHex(ExF, (byte)(W&0xff));
 }
 
-int Relocate(word Offset, FILE *InF, FILE *ExF) {
+static bool Relocate(word Offset, FILE *InF, FILE *ExF) {
    byte Mark;
    do {
       int Ch;
       do
-         if ((Ch = fgetc(InF)) == EOF) { fprintf(stderr, "Unexpected EOF.\n"); return 0; }
+         if ((Ch = fgetc(InF)) == EOF) { fprintf(stderr, "Unexpected EOF.\n"); return false; }
       while (Ch != ':');
       CheckSum = 0;
       byte Size = GetHex(InF); word Addr = GetWord(InF) + Offset; Mark = GetHex(InF);
@@ -49,7 +49,7 @@ int Relocate(word Offset, FILE *InF, FILE *ExF) {
       for (int I = 0; I < Size; I++) Buffer[I] = GetHex(InF);
       GetHex(InF), fgetc(InF);
       if (CheckSum != 0) {
-         fprintf(stderr, "Bad checksum.\n"); return 0;
+         fprintf(stderr, "Bad checksum.\n"); return false;
       }
       fputc(':', ExF);
       CheckSum = 0;
@@ -57,8 +57,8 @@ int Relocate(word Offset, FILE *InF, FILE *ExF) {
       for (int I = 0; I < Size; I++) PutHex(ExF, Buffer[I]);
       PutHex(ExF, (byte)-CheckSum);
       fputc('\n', ExF);
-   } while (!Mark);
-   return 1;
+   } while (Mark == 0);
+   return true;
 }
 
 word atoh(char *S) {
@@ -71,10 +71,7 @@ word atoh(char *S) {
 }
 
 char *Convert(char *Path) {
-   char *S = malloc(strlen(Path) + 1);
-   if (S == NULL) return NULL;
-   strcpy(S, Path);
-   char *T = S + strlen(S);
+   char *S = strdup(Path), *T = S + strlen(S);
    for (; T > S; T--)
       if (T[-1] == '.') break;
    if (T == S) { free(S); return NULL; }

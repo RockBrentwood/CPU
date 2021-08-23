@@ -104,7 +104,7 @@ void OpInit(void) {
    for (Code *OC = CodeTab; OC < CodeTab + ELEMENTS(CodeTab); OC++) {
       OC->Start = M; M += OC->Modes;
       if (M > ModeTab + ELEMENTS(ModeTab))
-         fprintf(stderr, "Bad opcode initialization.\n"), exit(1);
+         fprintf(stderr, "Bad opcode initialization.\n"), exit(EXIT_FAILURE);
    }
 }
 

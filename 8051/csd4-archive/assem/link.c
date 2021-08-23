@@ -88,8 +88,7 @@ static Free *FHead;
 static int *FSize;
 
 void SetFree(void) {
-   FHead = Allocate(SEG_TYPES*sizeof *FHead);
-   FSize = Allocate(SEG_TYPES*sizeof *FSize);
+   FHead = Allocate(SEG_TYPES*sizeof *FHead), FSize = Allocate(SEG_TYPES*sizeof *FSize);
    for (int T = 0; T < SEG_TYPES; T++) {
       FHead[T] = Allocate((BSize[T] + 1)*sizeof *FHead[T]);
       Block P = NULL; Free F = FHead[T];
@@ -137,8 +136,7 @@ void SetSeg(void) {
    USeg = Allocate(TYPES*sizeof *USeg);
    for (Segment S = USeg; S < USeg + TYPES; S++)
       S->Line = 0, S->File = 0, S->Rel = false, S->Type = S - USeg, S->Base = 0, S->Size = 0, S->Loc = 0L;
-   BHead = Allocate(SEG_TYPES*sizeof *BHead);
-   BSize = Allocate(SEG_TYPES*sizeof *BSize);
+   BHead = Allocate(SEG_TYPES*sizeof *BHead), BSize = Allocate(SEG_TYPES*sizeof *BSize);
    for (int T = 0; T < SEG_TYPES; T++) BHead[T] = NULL, BSize[T] = 0;
 }
 
@@ -175,14 +173,12 @@ void GetHead(FileBuf F) {
    if (GetL(InF) != S&0xffffffff) Fatal("Corrupt object file %s.", F->Name);
    F->File = Allocate((word)F->Files*sizeof *F->File);
    F->Seg = F->Segs < TYPES? NULL: Allocate((word)(F->Segs - TYPES)*sizeof *F->Seg);
-   F->G = Allocate((word)F->Gaps*sizeof *F->G);
-   F->Sym = Allocate((word)F->Syms*sizeof *F->Sym);
+   F->G = Allocate((word)F->Gaps*sizeof *F->G), F->Sym = Allocate((word)F->Syms*sizeof *F->Sym);
    FileTab = F->File;
    fseek(InF, F->Loc, SEEK_SET);
    for (long S = 0; S < F->Files; S++) {
       word L = GetW(InF);
-      char Buf[0x100]; fread(Buf, 1, L, InF), Buf[L] = '\0';
-      F->File[S] = CopyS(Buf);
+      char Buf[0x100]; fread(Buf, 1, L, InF), Buf[L] = '\0', F->File[S] = CopyS(Buf);
    }
    for (long S = TYPES; S < F->Segs; S++) {
       Segment Seg = F->Seg + S - TYPES;

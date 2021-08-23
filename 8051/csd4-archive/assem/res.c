@@ -107,7 +107,7 @@ return;
 DoMap:
    switch (Phase) {
       case 0: RCur++; L = 0; goto Generate;
-      case 1: IP->Map = true; MarkExp(IP->E = E); break;
+      case 1: IP->Map = true, MarkExp(IP->E = E); break;
       case 2: Fatal("Internal error (1).");
    }
 }

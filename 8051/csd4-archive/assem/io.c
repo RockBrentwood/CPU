@@ -169,8 +169,7 @@ void OpenF(char *Name) {
       ISP->Next = Next, ISP->Line = Line, ISP->Path = CurF;
    }
    if (Files >= FileMax) {
-      FileMax += 4;
-      FileTab = realloc(FileTab, FileMax*sizeof *FileTab);
+      FileMax += 4, FileTab = realloc(FileTab, FileMax*sizeof *FileTab);
       if (FileTab == NULL) Fatal("Out of memory.");
    }
    ISP++, CurF = Files, FileTab[Files++] = CopyS(Name);
@@ -217,7 +216,7 @@ void SegInit(void) {
    SegP->Line = StartLine, SegP->File = StartF,
    SegP->Base = 0, SegP->Size = 0, SegP->Loc = ftell(ExF);
    CurLoc = 0;
-   for (int D = 0; D < 10; D++) BTab[0] = FTab[0] = 0;
+   for (int D = 0; D < 10; D++) BTab[D] = FTab[D] = NULL;
    GapP = GapTab;
 }
 
@@ -234,13 +233,13 @@ void StartSeg(byte Type, bool Rel, word Base) {
    SegP->Line = StartLine, SegP->File = StartF,
    SegP->Base = Base, SegP->Size = 0, SegP->Loc = ftell(ExF);
    CurLoc = 0;
-   for (int D = 0; D < 10; D++) BTab[0] = FTab[0] = 0;
+   for (int D = 0; D < 10; D++) BTab[D] = FTab[D] = NULL;
 }
 
 void EndSeg(void) {
    if (!Active) return;
    for (int D = 0; D < 10; D++)
-      if (FTab[D] != 0) Error("Undefined label %d", D);
+      if (FTab[D] != NULL) Error("Undefined label %d", D);
    SegP->Size = (word)CurLoc;
    if (SegP->Size > 0) SegP++;
    InSeg = 0;
@@ -250,8 +249,7 @@ void Space(word Size) {
    if (!Active) return;
    if (AdP->ReadOnly) {
       if (GapP >= GapTab + GAP_MAX) Fatal("Too many gaps.");
-      GapP->Seg = SegP, GapP->Offset = CurLoc, GapP->Size = Size;
-      GapP++;
+      GapP->Seg = SegP, GapP->Offset = CurLoc, GapP->Size = Size, GapP++;
    }
    CurLoc += Size;
    unsigned long Addr = SegP->Base + CurLoc;
@@ -524,7 +522,7 @@ Start:
                if (!isxdigit(Next))
                   Error("Bad hexadecimal character."), Value = 'x';
                else for (int I = 0; I < 2 && isxdigit(Next); I++, Get())
-                  Value <<= 4, Value += isdigit(Next)? Next - '0': tolower(Next) - 'a' + 10;
+                  Value <<= 4, Value += isdigit(Next)? Next - '0': tolower(Next) - 'a' + 0xa;
             } else {
                switch (Next) {
                   case 'a': Value = 0x07; break;

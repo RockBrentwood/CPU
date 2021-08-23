@@ -45,8 +45,7 @@ int main(int AC, char *AV[]) {
       else {
          char Ch;
          if (S > Src) Ch = *S, *S = '\0';
-         Obj = Allocate(strlen(Src) + 3);
-         sprintf(Obj, "%s.o", Src);
+         Obj = Allocate(strlen(Src) + 3), sprintf(Obj, "%s.o", Src);
          if (S > Src) *S = Ch;
       }
       if (FTab != NULL) FTab[A].Name = Obj;
@@ -68,8 +67,7 @@ int main(int AC, char *AV[]) {
          if (*S == '.') break;
       char Ch;
       if (S > Obj) Ch = *S, *S = '\0';
-      Hex = Allocate(strlen(Obj) + 5);
-      sprintf(Hex, "%s.hex", Obj);
+      Hex = Allocate(strlen(Obj) + 5), sprintf(Hex, "%s.hex", Obj);
       if (S > Obj) *S = Ch;
    }
    fprintf(stderr, "linking");
