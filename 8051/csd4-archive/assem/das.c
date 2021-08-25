@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 
-typedef unsigned char byte;
-typedef unsigned int word;
+typedef uint8_t byte;
+typedef int8_t sbyte;
+typedef uint16_t word;
 
 byte Arg[3];
 word PC;
@@ -13,14 +15,6 @@ byte Ref[0x4000], Hex[0x4000];
 #define OP    0x40
 #define ARG   0x20
 #define LINKS 0x1f
-
-word Paged(byte P) {
-   return PC&0xf800 | (Arg[0]&0xe0) << 3 | P;
-}
-
-word Relative(byte R) {
-   return PC + (signed char)R;
-}
 
 word Entries[0x100], *EP = Entries;
 
@@ -39,27 +33,25 @@ void PushAddr(word Address) {
    *EP++ = Address;
 }
 
-// (Indirect? 0x10: 0) | (Breaking? 8: 0) | (Addressing? 4: 0) | OpBytes
-// Indirect is true only for opcode 0x73: it is the only indirectly-addressed jump or call in the MCS-51.
-// Breaking is true only for *jmp and ret* operations.
+// (Addressing? 4: 0) | OpBytes
 // Addressing is already determined from Code[] (true if and only if any of %L,%P,%R appear).
-// OpBytes is already determined from Code[] (1 for a valid mnemonic + 1 for %D,%1D,%2D,%R,%P,%B,%I + 2 for %L,%W).
+// OpBytes is already determined from Code[] (1 for a valid mnemonic + 1 for %D,%R,%P,%B,%I + 2 for %L,%W,%X).
 byte Mode[0x100] = {
- 1, 14, 15,  1,  1,  2,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
+ 1,  6,  7,  1,  1,  2,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
  7,  6,  7,  1,  1,  2,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
- 7, 14,  9,  1,  2,  2,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
- 7,  6,  9,  1,  2,  2,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
- 6, 14,  2,  3,  2,  2,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
+ 7,  6,  1,  1,  2,  2,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
+ 7,  6,  1,  1,  2,  2,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
  6,  6,  2,  3,  2,  2,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
- 6, 14,  2,  3,  2,  2,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
- 6,  6,  2, 25,  2,  3,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-14, 14,  2,  1,  1,  3,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
+ 6,  6,  2,  3,  2,  2,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
+ 6,  6,  2,  3,  2,  2,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
+ 6,  6,  2,  9,  2,  3,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
+ 6,  6,  2,  1,  1,  3,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
  3,  6,  2,  1,  2,  2,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
- 2, 14,  2,  1,  1,  0,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
+ 2,  6,  2,  1,  1,  0,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
  2,  6,  2,  1,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,
- 2, 14,  2,  1,  1,  2,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
+ 2,  6,  2,  1,  1,  2,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
  2,  6,  2,  1,  1,  7,  1,  1,  6,  6,  6,  6,  6,  6,  6,  6,
- 1, 14,  1,  1,  1,  2,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
+ 1,  6,  1,  1,  1,  2,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
  1,  6,  1,  1,  1,  2,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
 };
 
@@ -97,7 +89,7 @@ char *Code[0x100] = {
    "mov %n, %I",      "mov %n, %I",      "mov %n, %I",      "mov %n, %I",
    "mov %n, %I",      "mov %n, %I",      "mov %n, %I",      "mov %n, %I",
 "sjmp %R",       "ajmp %P",  "anl C, %B",   "movc A, @A+PC",
-   "div AB",         "mov %2D, %1D",   "mov %D, %i",      "mov %D, %i",
+   "div AB",         "mov %X",   "mov %D, %i",      "mov %D, %i",
    "mov %D, %n",      "mov %D, %n",      "mov %D, %n",      "mov %D, %n",
    "mov %D, %n",      "mov %D, %n",      "mov %D, %n",      "mov %D, %n",
 "mov DPTR, %W",  "acall %P", "mov %B, C",   "movc A, @A+DPTR",
@@ -152,7 +144,7 @@ char *SFRs[0x80] = {
   "B", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-void PrintData(byte D) { /* THIS ASSUMES THE 8052 */
+void PutDReg(byte D) { // This assumes the 8052.
    if (!Generating) return;
    if (D < 0x80 || SFRs[D - 0x80] == 0) { PrintByte(D); return; }
    printf(SFRs[D - 0x80]);
@@ -174,7 +166,7 @@ char *Bits[0x80] = {
    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-void PrintBit(byte B) {
+void PutBReg(byte B) {
    if (!Generating) return;
    if (B < 0x80) { PrintByte(B); return; }
    B -= 0x80;
@@ -184,15 +176,15 @@ void PrintBit(byte B) {
    PrintByte((byte)(B + 0x80));
 }
 
-void PrintImmByte(byte B) {
+void PutImmByte(byte B) {
    if (Generating) putchar('#'), PrintByte(B);
 }
 
-void PrintImmWord(word W) {
+void PutImmWord(word W) {
    if (Generating) putchar('#'), PrintWord(W);
 }
 
-byte CheckSum; word HighAddr;
+byte CheckSum; word LoPC, HiPC;
 
 byte Nib(int X) {
    if (X >= '0' && X <= '9') return X - '0';
@@ -202,7 +194,7 @@ byte Nib(int X) {
    exit(EXIT_FAILURE);
 }
 
-byte GetHex(void) {
+byte GetByte(void) {
    int A = getchar(), B = getchar();
    if (A == EOF || B == EOF) {
       fprintf(stderr, "Unexpected EOF.\n"); exit(EXIT_FAILURE);
@@ -212,12 +204,12 @@ byte GetHex(void) {
 }
 
 word GetWord(void) {
-   word A = GetHex(), B = GetHex();
+   word A = GetByte(), B = GetByte();
    return (A << 8) | B;
 }
 
 void HexLoad(void) {
-   HighAddr = 0;
+   HiPC = 0x0000, LoPC = 0xffff;
    while (true) {
       int Ch;
       do {
@@ -225,23 +217,21 @@ void HexLoad(void) {
          if (Ch == EOF) { fprintf(stderr, "Unexpected EOF.\n"); exit(EXIT_FAILURE); }
       } while (Ch != ':');
       byte CheckSum = 0;
-      byte Size = GetHex(); word Addr = GetWord(); byte Mark = GetHex();
-      byte Buffer[0x10]; for (int I = 0; I < Size; I++) Buffer[I] = GetHex();
-      (void)GetHex();
+      byte Size = GetByte(); word CurPC = GetWord(); bool Mark = GetByte() != 0;
+      byte Buffer[0x10]; for (word H = 0; H < Size; H++) Buffer[H] = GetByte();
+      (void)GetByte();
       if (CheckSum != 0) {
          fprintf(stderr, "Bad checksum.\n"); exit(EXIT_FAILURE);
       }
-      if (Mark) break;
-      if (Addr >= 0x4000 - Size) {
-         printf("Address out of range 0 - 4000h in input.\n"); exit(EXIT_FAILURE);
-      }
-      for (int I = 0; I < Size; I++, Addr++) Hex[Addr] = Buffer[I], Ref[Addr] = 0;
-      if (Addr > HighAddr) HighAddr = Addr;
+      if (Mark || Size == 0) break;
+      if (CurPC < LoPC) LoPC = CurPC;
+      for (word H = 0; H < Size; H++, CurPC++) Hex[CurPC] = Buffer[H], Ref[CurPC] = 0;
+      if (CurPC > HiPC) HiPC = CurPC;
       (void)getchar();
    }
 }
 
-#define IN_RANGE(A) ((A) >= 0x0000 && (A) < HighAddr)
+#define IN_RANGE(A) ((A) >= LoPC && (A) < HiPC)
 
 word Address;
 void PutLabel(word PC) {
@@ -256,21 +246,35 @@ void MakeOp(char *S) {
          if (Generating) putchar(*S);
          continue;
       }
-      S++;
-      if (*S >= '0' && *S <= '2') A = *S++ - '0';
+      byte B; word Lab;
+      switch (*++S) {
+      // 8-bit data or address:
+         case 'B': case 'D': case 'I':
+            B = Arg[A++];
+         break;
+      // Relative address (8-bit signed):
+         case 'R':
+            Lab = PC + (sbyte)Arg[A++];
+         break;
+      // Paged address (3+8-bit unsigned):
+         case 'P':
+            Lab = PC&0xf800 | (Arg[0]&0xe0) << 3 | Arg[A++];
+         break;
+      // 16-bit data or address
+         case 'L': case 'W': case 'X':
+            Lab = Arg[A++], Lab = Lab << 8 | Arg[A++];
+         break;
+      }
       switch (*S) {
-         case 'L': { byte B = Arg[A++]; PutLabel(B << 8 | Arg[A++]); } break;
-         case 'P': PutLabel(Paged(Arg[A++])); break;
-         case 'R': PutLabel(Relative(Arg[A++])); break;
-         case 'D': PrintData(Arg[A++]); break;
-         case 'B': PrintBit(Arg[A++]); break;
-         case 'I': PrintImmByte(Arg[A++]); break;
-         case 'W': { byte B = Arg[A++]; PrintImmWord(B << 8 | Arg[A++]); } break;
-         case 'i': if (Generating) printf("@R%1x", Arg[0]&1); break;
-         case 'n': if (Generating) printf("R%1x", Arg[0]&7); break;
-         default:
-            fprintf(stderr, "Bad format string, PC = %04x.\n", PC);
-         exit(EXIT_FAILURE);
+         case 'X': PutDReg(Lab&0xff), printf(", "), PutDReg(Lab >> 8); break;
+         case 'R': case 'P': case 'L': PutLabel(Lab); break;
+         case 'D': PutDReg(B); break;
+         case 'B': PutBReg(B); break;
+         case 'I': PutImmByte(B); break;
+         case 'W': PutImmWord(Lab); break;
+         case 'i': if (Generating) printf("@R%1x", (unsigned)Arg[0]&1); break;
+         case 'n': if (Generating) printf("R%1x", (unsigned)Arg[0]&7); break;
+         default: fprintf(stderr, "Bad format string, PC = %04x.\n", PC); exit(EXIT_FAILURE);
       }
    }
    if (Generating) putchar('\n');
@@ -290,7 +294,13 @@ bool Disassemble(void) {
    }
    byte Op = Arg[0] = Hex[PC++];
    byte Xs = Mode[Op];
-   bool Indirect = (Xs&0x10) != 0, Breaking = (Xs&8) != 0, Addressing = (Xs&4) != 0;
+// Indirectly-addressed jump or call.
+   bool Indirect = Op == 0x73;
+// For *jmp and ret* operations.
+   bool Breaking = (Op&0x1f) == 0x01 || Op == 0x80 || Op == 0x02 || (Op&~0x10) == 0x22;
+// True if and only if any of %L,%P,%R appear; i.e. the operation makes direct reference to an external code address.
+   bool Addressing = (Xs&4) != 0;
+// 1 for a valid mnemonic + 1 for %D,%R,%P,%B,%I + 2 for %L,%W,%X.
    byte OpBytes = Xs&3;
    char *Name = Code[Op];
    for (int I = 1; I < OpBytes; I++) {
@@ -319,17 +329,17 @@ bool Disassemble(void) {
 
 void PCHAR(byte B) { putchar((B < 0x20 || B >= 0x7f)? ' ': B); }
 
-int Ended; FILE *EntryF;
+bool Ended; FILE *EntryF;
 
-byte fGetHex(void) {
+byte fGetByte(void) {
    if (Ended) return 0;
    int A = fgetc(EntryF), B = fgetc(EntryF);
-   if (A == EOF || B == EOF) { Ended = 1; return 0; }
+   if (A == EOF || B == EOF) { Ended = true; return 0; }
    return Nib(A) << 4 | Nib(B);
 }
 
 word fGetWord(void) {
-   word A = fGetHex(), B = fGetHex();
+   word A = fGetByte(), B = fGetByte();
    (void)fgetc(EntryF);
    if (Ended) return 0;
    return (A << 8) | B;
@@ -338,11 +348,11 @@ word fGetWord(void) {
 int main(void) {
    HexLoad();
    Generating = false, fprintf(stderr, "First pass\n");
+   EP = Entries;
    EntryF = fopen("entries", "r");
-   if (EntryF == NULL) {
-      fprintf(stderr, "No entry points listed.\n"); return EXIT_FAILURE;
-   }
-   for (Ended = 0, EP = Entries; !Ended; ) {
+   if (EntryF == NULL)
+      fprintf(stderr, "No entry points listed, using 0x%04x as the starting address.\n", LoPC), PushAddr(LoPC);
+   for (Ended = false; !Ended; ) {
       word W = fGetWord(); if (!Ended) PushAddr(W);
    }
    while (EP > Entries) {

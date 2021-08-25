@@ -12,8 +12,8 @@ The output is placed in standard output (or in a file when redirection is used).
 A third file:
 	entries
 is used to specify a list of entry points for das to use.
+If no entry points are listed, then the lowest address found in the hex input file will be used, instead.
 
-Currently, it will only accept input in Intel Hex format located between the addresses 0000 and 4000 (hex).
 It will read entry points from a file: ‟entries”
 and recursively disassemble all the addresses ‟reachible” from those listed as entry points.
 A sample entries file, input file and output file are provided with the software.
@@ -75,13 +75,10 @@ the next 4 items represent that actual address of the label in hexadecimal.
 2. Errors
 ─────────
 The disassembler will duly note where disassembled instructions overlap, or where it cannot further process input.
-∙	No entry points listed.
+∙	No entry points listed, using «Addr» as the starting address.
+		The input file ‟entries” was not found, so the lowest address listed in the input hex file will be used, instead.
 ∙	Bad hexadecimal digit in input.
-		The input file ‟entries” was not found, or contained corrupt data.
-∙	Address out of range 0 - 4000h in input.
-		The input file contains a portion of a program lying outside the address range 0 to 4000 (hex).
-		The disassembler cannot go beyond 4000h.
-		This is a fatal error, disassembly stops.
+		The input file ‟entries” contained corrupt data.
 ∙	Bad format string, PC = HHHH.
 		Something's wrong with your compiler or operating system, or the source file has been corrupted.
 		Report this promptly to me, if you should see this. :)
