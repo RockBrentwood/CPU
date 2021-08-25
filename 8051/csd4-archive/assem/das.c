@@ -122,12 +122,12 @@ char *Code[0x100] = {
    "mov %n, A",       "mov %n, A",       "mov %n, A",       "mov %n, A"
 };
 
-void PrintByte(byte B) {
+void PutByte(byte B) {
    if (B >= 0xa0) putchar('0');
    printf("%02xh", B);
 }
 
-void PrintWord(word W) {
+void PutWord(word W) {
    if (W >= 0xa000) putchar('0');
    printf("%04xh", W);
 }
@@ -145,8 +145,7 @@ char *SFRs[0x80] = {
 };
 
 void PutDReg(byte D) { // This assumes the 8052.
-   if (!Generating) return;
-   if (D < 0x80 || SFRs[D - 0x80] == 0) { PrintByte(D); return; }
+   if (D < 0x80 || SFRs[D - 0x80] == 0) { PutByte(D); return; }
    printf(SFRs[D - 0x80]);
 }
 
@@ -167,21 +166,12 @@ char *Bits[0x80] = {
 };
 
 void PutBReg(byte B) {
-   if (!Generating) return;
-   if (B < 0x80) { PrintByte(B); return; }
+   if (B < 0x80) { PutByte(B); return; }
    B -= 0x80;
    if (Bits[B] != 0) { printf(Bits[B]); return; }
    byte Byte = B&0x78, Bit = B&0x07;
    if (SFRs[Byte] != 0) { printf("%s.%1x", SFRs[Byte], Bit); return; }
-   PrintByte((byte)(B + 0x80));
-}
-
-void PutImmByte(byte B) {
-   if (Generating) putchar('#'), PrintByte(B);
-}
-
-void PutImmWord(word W) {
-   if (Generating) putchar('#'), PrintWord(W);
+   PutByte((byte)(B + 0x80));
 }
 
 byte CheckSum; word LoPC, HiPC;
@@ -235,9 +225,8 @@ void HexLoad(void) {
 
 word Address;
 void PutLabel(word PC) {
-   if (!Generating) Address = PC;
-   else if (PC >= 0x4000) PrintWord(PC);
-   else printf("%c%04x", (Ref[PC]&LINKS) + 'A', PC);
+   if (IN_RANGE(PC)) printf("%c%04x", (Ref[PC]&LINKS) + 'A', PC);
+   else PutWord(PC);
 }
 
 void MakeOp(char *S) {
@@ -265,16 +254,18 @@ void MakeOp(char *S) {
             Lab = Arg[A++], Lab = Lab << 8 | Arg[A++];
          break;
       }
-      switch (*S) {
+      if (Generating) switch (*S) {
+         case 'I': putchar('#'), PutByte(B); break;
+         case 'B': PutBReg(B); break;
+         case 'D': PutDReg(B); break;
          case 'X': PutDReg(Lab&0xff), printf(", "), PutDReg(Lab >> 8); break;
          case 'R': case 'P': case 'L': PutLabel(Lab); break;
-         case 'D': PutDReg(B); break;
-         case 'B': PutBReg(B); break;
-         case 'I': PutImmByte(B); break;
-         case 'W': PutImmWord(Lab); break;
-         case 'i': if (Generating) printf("@R%1x", (unsigned)Arg[0]&1); break;
-         case 'n': if (Generating) printf("R%1x", (unsigned)Arg[0]&7); break;
+         case 'W': putchar('#'), PutWord(Lab); break;
+         case 'i': printf("@R%1x", (unsigned)Arg[0]&1); break;
+         case 'n': printf("R%1x", (unsigned)Arg[0]&7); break;
          default: fprintf(stderr, "Bad format string, PC = %04x.\n", PC); exit(EXIT_FAILURE);
+      } else switch (*S) {
+         case 'R': case 'P': case 'L': Address = Lab; break;
       }
    }
    if (Generating) putchar('\n');
@@ -327,7 +318,7 @@ bool Disassemble(void) {
    return Generating? !Ref[PC]: Breaking;
 }
 
-void PCHAR(byte B) { putchar((B < 0x20 || B >= 0x7f)? ' ': B); }
+void fPutChar(byte B) { putchar((B < 0x20 || B >= 0x7f)? ' ': B); }
 
 bool Ended; FILE *EntryF;
 
@@ -361,10 +352,10 @@ int main(void) {
    }
    Generating = true, fprintf(stderr, "Second pass\n");
    if (Ref[0]) printf("org 0\n");
-   for (PC = 0x00; IN_RANGE(PC); ) {
+   for (PC = 0x00; PC < HiPC; ) {
       byte F, Buf[16];
       if (!Ref[PC]) {
-         printf("DATA AT "); PrintWord(PC); putchar('\n');
+         printf("DATA AT "), PutWord(PC), putchar('\n');
          for (F = 0; !Ref[PC] && IN_RANGE(PC); PC++) {
             Buf[F++] = Hex[PC];
             if (F == 16) {
@@ -372,7 +363,7 @@ int main(void) {
                   printf("%2x", Buf[F]);
                   if (F < 15) putchar(' '); else putchar('|');
                }
-               for (F = 0; F < 16; F++) PCHAR(Buf[F]);
+               for (F = 0; F < 16; F++) fPutChar(Buf[F]);
                putchar('|'); putchar('\n');
                F = 0;
             }
@@ -384,11 +375,11 @@ int main(void) {
                Buf[F1] = 0;
                printf("  "); if (F1 < 15) putchar(' '); else putchar('|');
             }
-            for (F = 0; F < 16; F++) PCHAR(Buf[F]);
+            for (F = 0; F < 16; F++) fPutChar(Buf[F]);
             putchar('|'); putchar('\n');
          }
          if (!IN_RANGE(PC)) break;
-         printf("org "); PrintWord(PC); putchar('\n');
+         printf("org "), PutWord(PC), putchar('\n');
       }
       while (!Disassemble());
    }
