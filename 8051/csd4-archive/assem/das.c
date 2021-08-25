@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
+#include <ctype.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -7,31 +9,31 @@ typedef uint8_t byte;
 typedef int8_t sbyte;
 typedef uint16_t word;
 
-byte Arg[3];
-word PC;
-bool Generating;
-byte Ref[0x4000], Hex[0x4000];
-#define ENTRY 0x80
-#define OP    0x40
-#define ARG   0x20
-#define LINKS 0x1f
-
-word Entries[0x100], *EP = Entries;
-
-void PushAddr(word Address) {
-   byte B = Ref[Address]&LINKS;
-   if (Ref[Address]&ARG) {
-      fprintf(stderr, "Entry into ARG at %04x.\n", PC); return;
-   }
-   if (++B <= LINKS) Ref[Address] = Ref[Address]&~LINKS | B;
-   if (Ref[Address]&ENTRY) return;
-   Ref[Address] |= ENTRY;
-   if (Ref[Address]&OP) return;
-   if (EP - Entries == 0x100) {
-      fprintf(stderr, "Too many entries, PC = %04x.\n", PC); exit(EXIT_FAILURE);
-   }
-   *EP++ = Address;
-}
+// The MCS-51 has the following register/address space alignment:
+// ∙    byte xdata[0x10000];    // external RAM for variable data.
+// ∙    byte cdata[0x10000];    // external ROM for code and constant data.
+// ∙    byte ddata[0x100];      // internal RAM for data and special function registers, accessible only by direct addressing.
+// ∙    byte idata[0x100];      // internal RAM for data and stack space, accessible only through 8-bit pointers in R0, R1 and SP.
+// ∙    bool bdata[0x100];      // internal RAM for 1-bit variable data.
+// ∙    byte rdata[8];          // register file for R0,R1,R2,R3,R4,R5,R6,R7.
+// ∙    word DPTR, PC, AB;      // 16-bit registers.
+// ∙    byte A;                 // 8-bit register.
+// ∙    bool C;                 // 1-bit register.
+// The subspace of ddata[] in the address range 0x80-0xff makes up the ‟special function registers”.
+// Several of the registers in ddata[] and bdata[] are specially named, as indicated below, respectively, in DTab[] and BTab[].
+// All of the registers named in DTab[] and BTab[] reside in the special function registers area.
+// The register spaces, in some places, overlap, with the following aliasing relations:
+// ∙    ddata[D] = idata[D], for D ∈ [0x00,0x7f],
+// ∙    bdata[B] = ddata[0x20 + B/8].(B%8), for B ∈ [0x00,0x7f],
+// ∙    bdata[B] = ddata[B&0xf8].(B%8), for B ∈ [0x80,0xff],
+// ∙    rdata[R] = ddata[ddata[0xd0]&0x18|R], for R ∈ [0,7] (i.e. rdata[R] = ddata[PSW&0x18|R] = ddata[RS1:RS0:R]),
+// ∙    A = ddata[0xe0] (i.e. A = ACC),
+// ∙    DPTR = ddata[0x83]:ddata[0x82] (i.e. DPTR = DPH:DPL),
+// ∙    AB = ddata[0xf0]:ddata[0xe0] (i.e. AB = B:ACC),
+// ∙    C = bdata[0xd7] (i.e. C = CY = PSW.7).
+// As such, the only «independent» spaces are xdata[], cdata[], {d,i}data[0x00-0x7f], idata[0x80-0xff], ddata[0x80-0xff] and PC.
+// Everything else is aliased, somewhere, into one of these spaces.
+// Note also that the subspace idata[0x80-0xff] is not officially available on the 8051.
 
 // (Addressing? 4: 0) | OpBytes
 // Addressing is already determined from Code[] (true if and only if any of %L,%P,%R appear).
@@ -122,6 +124,41 @@ char *Code[0x100] = {
    "mov %n, A",       "mov %n, A",       "mov %n, A",       "mov %n, A"
 };
 
+byte Arg[3];
+bool Generating;
+
+void Error(bool Fatal, char *Format, ...) {
+   va_list AP; va_start(AP, Format), vfprintf(stderr, Format, AP), va_end(AP);
+   fputc('\n', stderr);
+   if (Fatal) exit(EXIT_FAILURE);
+}
+
+word LoPC, HiPC, PC;
+#define IN_RANGE(A) ((A) >= LoPC && (A) < HiPC)
+
+byte Ref[0x4000], Hex[0x4000];
+#define ENTRY 0x80
+#define OP    0x40
+#define ARG   0x20
+#define LINKS 0x1f
+
+word Entries[0x100], *EP = Entries;
+const word *EEnd = Entries + sizeof Entries/sizeof Entries[0];
+
+void PushAddr(word Address) {
+   if (!IN_RANGE(Address)) {
+      printf("REF: %04x\n", Address); return;
+   } else if (Ref[Address]&ARG) {
+      Error(false, "Entry into ARG at %04x.", PC); return;
+   }
+   byte B = Ref[Address]&LINKS;
+   if (++B <= LINKS) Ref[Address] = Ref[Address]&~LINKS | B;
+   if (Ref[Address]&ENTRY) return;
+   Ref[Address] |= ENTRY;
+   if (Ref[Address]&OP) return;
+   if (EP >= EEnd) Error(true, "Too many entries, PC = %04x.", PC);
+   *EP++ = Address;
+}
 void PutByte(byte B) {
    if (B >= 0xa0) putchar('0');
    printf("%02xh", B);
@@ -174,28 +211,24 @@ void PutBReg(byte B) {
    PutByte((byte)(B + 0x80));
 }
 
-byte CheckSum; word LoPC, HiPC;
-
-byte Nib(int X) {
-   if (X >= '0' && X <= '9') return X - '0';
-   if (X >= 'a' && X <= 'f') return X - 'a' + 10;
-   if (X >= 'A' && X <= 'F') return X - 'A' + 10;
-   fprintf(stderr, "Bad hexadecimal digit in input.\n");
-   exit(EXIT_FAILURE);
+byte Nib(int Ch) {
+   if (!isxdigit(Ch)) Error(true, "Bad hexadecimal digit in input.");
+   return isdigit(Ch)? Ch - '0': isupper(Ch)? Ch - 'A' + 0xA: Ch - 'a' + 0xa;
 }
 
+byte CheckSum;
+
 byte GetByte(void) {
-   int A = getchar(), B = getchar();
-   if (A == EOF || B == EOF) {
-      fprintf(stderr, "Unexpected EOF.\n"); exit(EXIT_FAILURE);
-   }
-   byte Bt = Nib(A) << 4 | Nib(B);
-   CheckSum = (CheckSum + Bt)&0xff; return Bt;
+   int a = getchar(); if (a == EOF) Error(true, "Unexpected EOF.");
+   int b = getchar(); if (b == EOF) Error(true, "Unexpected EOF.");
+   byte A = Nib(a), B = A << 4 | Nib(b);
+   CheckSum += B;
+   return B;
 }
 
 word GetWord(void) {
    word A = GetByte(), B = GetByte();
-   return (A << 8) | B;
+   return A << 8 | B;
 }
 
 void HexLoad(void) {
@@ -204,15 +237,13 @@ void HexLoad(void) {
       int Ch;
       do {
          Ch = getchar();
-         if (Ch == EOF) { fprintf(stderr, "Unexpected EOF.\n"); exit(EXIT_FAILURE); }
+         if (Ch == EOF) Error(true, "Unexpected EOF.");
       } while (Ch != ':');
       byte CheckSum = 0;
       byte Size = GetByte(); word CurPC = GetWord(); bool Mark = GetByte() != 0;
       byte Buffer[0x10]; for (word H = 0; H < Size; H++) Buffer[H] = GetByte();
       (void)GetByte();
-      if (CheckSum != 0) {
-         fprintf(stderr, "Bad checksum.\n"); exit(EXIT_FAILURE);
-      }
+      if (CheckSum != 0) Error(true, "Bad checksum.");
       if (Mark || Size == 0) break;
       if (CurPC < LoPC) LoPC = CurPC;
       for (word H = 0; H < Size; H++, CurPC++) Hex[CurPC] = Buffer[H], Ref[CurPC] = 0;
@@ -221,61 +252,15 @@ void HexLoad(void) {
    }
 }
 
-#define IN_RANGE(A) ((A) >= LoPC && (A) < HiPC)
-
 word Address;
 void PutLabel(word PC) {
    if (IN_RANGE(PC)) printf("%c%04x", (Ref[PC]&LINKS) + 'A', PC);
    else PutWord(PC);
 }
 
-void MakeOp(char *S) {
-   for (int A = 1; *S != '\0'; S++) {
-      if (*S != '%') {
-         if (Generating) putchar(*S);
-         continue;
-      }
-      byte B; word Lab;
-      switch (*++S) {
-      // 8-bit data or address:
-         case 'B': case 'D': case 'I':
-            B = Arg[A++];
-         break;
-      // Relative address (8-bit signed):
-         case 'R':
-            Lab = PC + (sbyte)Arg[A++];
-         break;
-      // Paged address (3+8-bit unsigned):
-         case 'P':
-            Lab = PC&0xf800 | (Arg[0]&0xe0) << 3 | Arg[A++];
-         break;
-      // 16-bit data or address
-         case 'L': case 'W': case 'X':
-            Lab = Arg[A++], Lab = Lab << 8 | Arg[A++];
-         break;
-      }
-      if (Generating) switch (*S) {
-         case 'I': putchar('#'), PutByte(B); break;
-         case 'B': PutBReg(B); break;
-         case 'D': PutDReg(B); break;
-         case 'X': PutDReg(Lab&0xff), printf(", "), PutDReg(Lab >> 8); break;
-         case 'R': case 'P': case 'L': PutLabel(Lab); break;
-         case 'W': putchar('#'), PutWord(Lab); break;
-         case 'i': printf("@R%1x", (unsigned)Arg[0]&1); break;
-         case 'n': printf("R%1x", (unsigned)Arg[0]&7); break;
-         default: fprintf(stderr, "Bad format string, PC = %04x.\n", PC); exit(EXIT_FAILURE);
-      } else switch (*S) {
-         case 'R': case 'P': case 'L': Address = Lab; break;
-      }
-   }
-   if (Generating) putchar('\n');
-   else if (!IN_RANGE(Address)) printf("REF: %04x\n", Address);
-   else PushAddr(Address);
-}
-
 bool Disassemble(void) {
    if (Ref[PC]&ARG) {
-      fprintf(stderr, "OP into ARG at %04x.\n", PC); return true;
+      Error(false, "OP into ARG at %04x.", PC); return true;
    }
    if (Generating) {
       if (Ref[PC]&ENTRY) { PutLabel(PC); printf(":\n"); }
@@ -296,11 +281,11 @@ bool Disassemble(void) {
    char *Name = Code[Op];
    for (int I = 1; I < OpBytes; I++) {
       if (Ref[PC]&OP) {
-         fprintf(stderr, "ARG into OP at %04x.\n", PC); return true;
+         Error(false, "ARG into OP at %04x.", PC); return true;
       }
       if (!Generating) {
          if (Ref[PC]&ARG) {
-            fprintf(stderr, "ARG into ARG at %04x.\n", PC); return true;
+            Error(false, "ARG into ARG at %04x.", PC); return true;
          }
          Ref[PC] |= ARG;
       }
@@ -308,12 +293,49 @@ bool Disassemble(void) {
    }
    if (Generating) {
       if (!Breaking) printf("   ");
-      MakeOp(Name);
-   } else {
-      if (Addressing) MakeOp(Name);
-      if (Indirect) {
-         printf("Indirect jump at %04x\n", PC - OpBytes);
+   } else if (Indirect) printf("Indirect jump at %04x\n", PC - OpBytes);
+   if (Generating || Addressing) {
+      int A = 1;
+      for (char *S = Name; *S != '\0'; S++) {
+         if (*S != '%') {
+            if (Generating) putchar(*S);
+            continue;
+         }
+         byte B; word Lab;
+         switch (*++S) {
+         // 8-bit data or address:
+            case 'B': case 'D': case 'I':
+               B = Arg[A++];
+            break;
+         // Relative address (8-bit signed):
+            case 'R':
+               Lab = PC + (sbyte)Arg[A++];
+            break;
+         // Paged address (3+8-bit unsigned):
+            case 'P':
+               Lab = PC&0xf800 | (Arg[0]&0xe0) << 3 | Arg[A++];
+            break;
+         // 16-bit data or address
+            case 'L': case 'W': case 'X':
+               Lab = Arg[A++], Lab = Lab << 8 | Arg[A++];
+            break;
+         }
+         if (Generating) switch (*S) {
+            case 'I': putchar('#'), PutByte(B); break;
+            case 'B': PutBReg(B); break;
+            case 'D': PutDReg(B); break;
+            case 'X': PutDReg(Lab&0xff), printf(", "), PutDReg(Lab >> 8); break;
+            case 'R': case 'P': case 'L': PutLabel(Lab); break;
+            case 'W': putchar('#'), PutWord(Lab); break;
+            case 'i': printf("@R%1x", (unsigned)Arg[0]&1); break;
+            case 'n': printf("R%1x", (unsigned)Arg[0]&7); break;
+            default: Error(true, "Bad format string, PC = %04x.", PC);
+         } else switch (*S) {
+            case 'R': case 'P': case 'L': Address = Lab; break;
+         }
       }
+      if (Generating) putchar('\n');
+      else PushAddr(Address);
    }
    return Generating? !Ref[PC]: Breaking;
 }
@@ -342,7 +364,7 @@ int main(void) {
    EP = Entries;
    EntryF = fopen("entries", "r");
    if (EntryF == NULL)
-      fprintf(stderr, "No entry points listed, using 0x%04x as the starting address.\n", LoPC), PushAddr(LoPC);
+      Error(false, "No entry points listed, using 0x%04x as the starting address.", LoPC), PushAddr(LoPC);
    for (Ended = false; !Ended; ) {
       word W = fGetWord(); if (!Ended) PushAddr(W);
    }
