@@ -1,8 +1,16 @@
+## For DOS:
+#X=.exe
+#O=.obj
+#RM=del
+#CC=qcl
+#CFLAGS=-g
+## For Linux:
 X=
 O=.o
 RM=rm -f
 CC=gcc
 CFLAGS=-std=gnu99 -g
+
 EXES=ds$X cas$X das$X reloc$X semi$X nl$X
 .c$O:
 	$(CC) $(CFLAGS) -c $*.c
