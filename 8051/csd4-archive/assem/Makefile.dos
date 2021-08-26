@@ -1,4 +1,4 @@
-X=$X
+X=.exe
 O=.obj
 RM=del
 CC=qcl
