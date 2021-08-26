@@ -1,22 +1,15 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
-#include <stdbool.h>
 #include "io.h"
 #include "op.h"
 
 extern bool Active;
 
 // Skip lists are used to implement the symbol table.
-
-char *CopyS(char *S) {
-   if (S == NULL) return NULL;
-   char *NewS = Allocate(strlen(S) + 1);
-   strcpy(NewS, S);
-   return NewS;
-}
 
 static int CompS(char *A, char *B) {
    if (A == NULL) return B == NULL? 0: +1;
@@ -49,8 +42,7 @@ static int Breadth;
 static Symbol Form(int B, char *Name) {
    Symbol N = malloc(sizeof *N + B*sizeof(Symbol));
    if (N == NULL) fprintf(stderr, "Out of memory.\n"), exit(EXIT_FAILURE);
-   N->Name = CopyS(Name),
-   N->Defined = N->Global = N->Variable = N->Address = N->Map = false;
+   N->Name = Name == NULL? NULL: strdup(Name), N->Defined = N->Global = N->Variable = N->Address = N->Map = false;
    return N;
 }
 
@@ -172,7 +164,7 @@ void OpenF(char *Name) {
       FileMax += 4, FileTab = realloc(FileTab, FileMax*sizeof *FileTab);
       if (FileTab == NULL) Fatal("Out of memory.");
    }
-   ISP++, CurF = Files, FileTab[Files++] = CopyS(Name);
+   ISP++, CurF = Files, FileTab[Files++] = strdup(Name);
    StartLine = Line = 1;
    InF = fopen(Name, "r");
    if (InF == NULL) Fatal("Cannot open %s", Name);

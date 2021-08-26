@@ -1,10 +1,11 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include "io.h"
 #include "ex.h"
-#include "res.h"
 #include "st.h"
+#include "res.h"
 
 typedef struct FileBuf *FileBuf;
 struct FileBuf {
@@ -178,7 +179,7 @@ void GetHead(FileBuf F) {
    fseek(InF, F->Loc, SEEK_SET);
    for (long S = 0; S < F->Files; S++) {
       word L = GetW(InF);
-      char Buf[0x100]; fread(Buf, 1, L, InF), Buf[L] = '\0', F->File[S] = CopyS(Buf);
+      char Buf[0x100]; fread(Buf, 1, L, InF), Buf[L] = '\0', F->File[S] = strdup(Buf);
    }
    for (long S = TYPES; S < F->Segs; S++) {
       Segment Seg = F->Seg + S - TYPES;
@@ -206,7 +207,7 @@ void GetHead(FileBuf F) {
          Sym->Seg = !Address? NULL: U < TYPES? &USeg[U]: &F->Seg[U - TYPES];
          Sym->Offset = Offset;
          Sym->Index = F - FTab;
-         Sym->Name = CopyS(Buf);
+         Sym->Name = strdup(Buf);
       } else if (Sym->Defined && Defined)
          Error("Symbol %s redefined: %s %s.", Sym->Name, FTab[Sym->Index].Name, F->Name);
       else {

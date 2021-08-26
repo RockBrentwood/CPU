@@ -41,7 +41,6 @@ extern void PByte(byte B);
 extern void PString(char *S);
 
 extern void SymInit(void);
-extern char *CopyS(char *S);
 extern Symbol LookUp(char *Name);
 extern void RegInit(void);
 

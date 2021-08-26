@@ -1,12 +1,12 @@
-#include <stdlib.h>
 #include <stdio.h>
-#include <ctype.h>
-#include <string.h>
+#include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
+#include <ctype.h>
 #include "io.h"
 #include "ex.h"
-#include "op.h"
 #include "res.h"
+#include "op.h"
 
 #define MAX_ST 20
 typedef enum { BotS, IfS, ElseS, GroupS } StTag;
@@ -168,7 +168,7 @@ BegSt:
       goto AtSemi;
       case INCLUDE: {
          if ((L = Scan()) != STRING) Fatal("Missing filename in 'include'.");
-         char *S = CopyS(Text);
+         char *S = strdup(Text);
          InSemi = true;
          if ((L = Scan()) != SEMI) Fatal("Missing ';' after include statement.");
          OpenF(S), free(S);

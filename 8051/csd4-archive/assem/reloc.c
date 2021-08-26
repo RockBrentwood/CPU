@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include <ctype.h>
-#include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
+#include <ctype.h>
 
 typedef unsigned char byte;
 typedef unsigned int word;

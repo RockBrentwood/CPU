@@ -1,11 +1,11 @@
 #include <stdio.h>
-#include <ctype.h>
-#include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
+#include <ctype.h>
 #include "io.h"
-#include "op.h"
 #include "st.h"
+#include "op.h"
 #include "link.h"
 
 int main(int AC, char *AV[]) {
@@ -30,7 +30,7 @@ int main(int AC, char *AV[]) {
          fprintf(stderr, "Usage: %s -o Output File... to link\n", App);
          goto Exit;
       }
-      Hex = CopyS(AV[2]), Fs -= 3, AP += 3;
+      Hex = strdup(AV[2]), Fs -= 3, AP += 3;
    } else {
       fprintf(stderr, "Invalid option: %s\n", AV[1]); goto Exit;
    }
@@ -41,7 +41,7 @@ int main(int AC, char *AV[]) {
       for (; S > Src; S--)
          if (*S == '.') break;
       char *Obj;
-      if (strcmp(S, ".o") == 0) Obj = CopyS(Src), Src = NULL;
+      if (strcmp(S, ".o") == 0) Obj = strdup(Src), Src = NULL;
       else {
          char Ch;
          if (S > Src) Ch = *S, *S = '\0';

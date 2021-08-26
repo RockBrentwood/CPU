@@ -1,7 +1,7 @@
-#include <stdlib.h>
 #include <stdio.h>
-#include <stdarg.h>
+#include <stdlib.h>
 #include <stdbool.h>
+#include <stdarg.h>
 #include "io.h"
 #include "ex.h"
 #include "st.h"

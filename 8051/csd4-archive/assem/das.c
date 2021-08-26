@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdarg.h>
-#include <ctype.h>
 #include <stdbool.h>
+#include <ctype.h>
+#include <stdarg.h>
 #include <stdint.h>
 
 typedef uint8_t byte;
@@ -159,6 +159,7 @@ void PushAddr(word Address) {
    if (EP >= EEnd) Error(true, "Too many entries, PC = %04x.", PC);
    *EP++ = Address;
 }
+
 void PutByte(byte B) {
    if (B >= 0xa0) putchar('0');
    printf("%02xh", B);
@@ -258,17 +259,34 @@ void PutLabel(word PC) {
    else PutWord(PC);
 }
 
-bool Disassemble(void) {
-   if (Ref[PC]&ARG) {
-      Error(false, "OP into ARG at %04x.", PC); return true;
-   }
-   if (Generating) {
-      if (Ref[PC]&ENTRY) { PutLabel(PC); printf(":\n"); }
+int Fetch(bool IsOp) {
+   if (IsOp) {
+      if (Ref[PC]&ARG) {
+         Error(false, "OP into ARG at %04x.", PC); return EOF;
+      }
+      if (Generating) {
+         if (Ref[PC]&ENTRY) { PutLabel(PC); printf(":\n"); }
+      } else {
+         if (Ref[PC]&OP) return EOF;
+         Ref[PC] |= OP;
+      }
    } else {
-      if (Ref[PC]&OP) return true;
-      Ref[PC] |= OP;
+      if (Ref[PC]&OP) {
+         Error(false, "ARG into OP at %04x.", PC); return EOF;
+      }
+      if (!Generating) {
+         if (Ref[PC]&ARG) {
+            Error(false, "ARG into ARG at %04x.", PC); return EOF;
+         }
+         Ref[PC] |= ARG;
+      }
    }
-   byte Op = Arg[0] = Hex[PC++];
+   return Hex[PC++];
+}
+
+bool Disassemble(void) {
+   int Ch = Fetch(true); if (Ch == EOF) return true;
+   byte Op = Arg[0] = (byte)Ch;
    byte Xs = Mode[Op];
 // Indirectly-addressed jump or call.
    bool Indirect = Op == 0x73;
@@ -279,17 +297,9 @@ bool Disassemble(void) {
 // 1 for a valid mnemonic + 1 for %D,%R,%P,%B,%I + 2 for %L,%W,%X.
    byte OpBytes = Xs&3;
    char *Name = Code[Op];
-   for (int I = 1; I < OpBytes; I++) {
-      if (Ref[PC]&OP) {
-         Error(false, "ARG into OP at %04x.", PC); return true;
-      }
-      if (!Generating) {
-         if (Ref[PC]&ARG) {
-            Error(false, "ARG into ARG at %04x.", PC); return true;
-         }
-         Ref[PC] |= ARG;
-      }
-      Arg[I] = Hex[PC++];
+   for (int A = 1; A < OpBytes; A++) {
+      if ((Ch = Fetch(false)) == EOF) return true;
+      Arg[A] = (byte)Ch;
    }
    if (Generating) {
       if (!Breaking) printf("   ");
@@ -358,16 +368,21 @@ word fGetWord(void) {
    return (A << 8) | B;
 }
 
-int main(void) {
-   HexLoad();
-   Generating = false, fprintf(stderr, "First pass\n");
+bool Configure(char *Path) {
    EP = Entries;
    EntryF = fopen("entries", "r");
-   if (EntryF == NULL)
-      Error(false, "No entry points listed, using 0x%04x as the starting address.", LoPC), PushAddr(LoPC);
+   if (EntryF == NULL) return false;
    for (Ended = false; !Ended; ) {
       word W = fGetWord(); if (!Ended) PushAddr(W);
    }
+   return true;
+}
+
+int main(void) {
+   HexLoad();
+   Generating = false, fprintf(stderr, "First pass\n");
+   if (!Configure("entries"))
+      Error(false, "No entry points listed, using 0x%04x as the starting address.", LoPC), PushAddr(LoPC);
    while (EP > Entries) {
       PC = *--EP;
       while (!Disassemble());
