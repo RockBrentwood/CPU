@@ -211,16 +211,15 @@ void PutWord(word W) {
 }
 
 byte Nib(int Ch) {
-   if (!isxdigit(Ch)) Error(true, "Bad hexadecimal digit in input.");
+   if (Ch == EOF) Error(true, "Unexpected EOF.");
+   else if (!isxdigit(Ch)) Error(true, "Bad hexadecimal digit in input.");
    return isdigit(Ch)? Ch - '0': isupper(Ch)? Ch - 'A' + 0xA: Ch - 'a' + 0xa;
 }
 
 byte CheckSum;
 
 byte GetByte(void) {
-   int a = getchar(); if (a == EOF) Error(true, "Unexpected EOF.");
-   int b = getchar(); if (b == EOF) Error(true, "Unexpected EOF.");
-   byte A = Nib(a), B = A << 4 | Nib(b);
+   byte A = Nib(getchar()), B = A << 4 | Nib(getchar());
    CheckSum += B;
    return B;
 }
@@ -297,95 +296,97 @@ int Fetch(bool IsOp) {
    return Hex[PC++];
 }
 
-bool Disassemble(void) {
-   int Ch = Fetch(true); if (Ch == EOF) return true;
-   byte Op = Arg[0] = (byte)Ch;
-   byte Xs = Mode[Op];
-// Indirectly-addressed jump or call.
-   bool Indirect = Op == 0x73;
-// For *jmp and ret* operations.
-   bool Breaking = (Op&0x1f) == 0x01 || Op == 0x80 || Op == 0x02 || (Op&~0x10) == 0x22;
-// True if and only if any of %L,%P,%R appear; i.e. the operation makes direct reference to an external code address.
-   bool Addressing = (Xs&4) != 0;
-// 1 for a valid mnemonic + 1 for %D,%R,%P,%B,%I + 2 for %L,%W,%X.
-   byte OpBytes = Xs&3;
-   char *Name = Code[Op];
-   for (int A = 1; A < OpBytes; A++) {
-      if ((Ch = Fetch(false)) == EOF) return true;
-      Arg[A] = (byte)Ch;
-   }
-   if (Generating) {
-      if (!Breaking) printf("   ");
-   } else if (Indirect) printf("Indirect jump at %04x\n", PC - OpBytes);
-   if (Generating || Addressing) {
-      int A = 1;
-      for (char *S = Name; *S != '\0'; S++) {
-         if (*S != '%') {
-            if (Generating) putchar(*S);
-            continue;
-         }
-         byte B; word Lab;
-         switch (*++S) {
-         // 8-bit data or address:
-            case 'B': case 'D': case 'I':
-               B = Arg[A++];
-            break;
-         // Relative address (8-bit signed):
-            case 'R':
-               Lab = PC + (sbyte)Arg[A++];
-            break;
-         // Paged address (3+8-bit unsigned):
-            case 'P':
-               Lab = PC&0xf800 | (Arg[0]&0xe0) << 3 | Arg[A++];
-            break;
-         // 16-bit data or address
-            case 'L': case 'W': case 'X':
-               Lab = Arg[A++], Lab = Lab << 8 | Arg[A++];
-            break;
-         }
-         if (Generating) switch (*S) {
-            case 'I': putchar('#'), PutByte(B); break;
-            case 'B': PutBReg(B); break;
-            case 'D': PutDReg(B); break;
-            case 'X': PutDReg(Lab&0xff), printf(", "), PutDReg(Lab >> 8); break;
-            case 'R': case 'P': case 'L': PutLabel(Lab); break;
-            case 'W': putchar('#'), PutWord(Lab); break;
-            case 'i': printf("@R%1x", (unsigned)Arg[0]&1); break;
-            case 'n': printf("R%1x", (unsigned)Arg[0]&7); break;
-            default: Error(true, "Bad format string, PC = %04x.", PC);
-         } else switch (*S) {
-            case 'R': case 'P': case 'L': PushAddr(Lab); break;
-         }
+void Disassemble(void) {
+   for (int Ch; (Ch = Fetch(true)) != EOF; ) {
+      byte Op = Arg[0] = (byte)Ch;
+      byte Xs = Mode[Op];
+   // Indirectly-addressed jump or call.
+      bool Indirect = Op == 0x73;
+   // For *jmp and ret* operations.
+      bool Breaking = (Op&0x1f) == 0x01 || Op == 0x80 || Op == 0x02 || (Op&~0x10) == 0x22;
+   // True if and only if any of %L,%P,%R appear; i.e. the operation makes direct reference to an external code address.
+      bool Addressing = (Xs&4) != 0;
+   // 1 for a valid mnemonic + 1 for %D,%R,%P,%B,%I + 2 for %L,%W,%X.
+      byte OpBytes = Xs&3;
+      char *Name = Code[Op];
+      for (int A = 1; A < OpBytes; A++) {
+         if ((Ch = Fetch(false)) == EOF) return;
+         Arg[A] = (byte)Ch;
       }
-      if (Generating) putchar('\n');
+      if (Generating) {
+         if (!Breaking) printf("   ");
+      } else if (Indirect) printf("Indirect jump at %04x\n", PC - OpBytes);
+      if (Generating || Addressing) {
+         int A = 1;
+         for (char *S = Name; *S != '\0'; S++) {
+            if (*S != '%') {
+               if (Generating) putchar(*S);
+               continue;
+            }
+            byte B; word Lab;
+            switch (*++S) {
+            // 8-bit data or address:
+               case 'B': case 'D': case 'I':
+                  B = Arg[A++];
+               break;
+            // Relative address (8-bit signed):
+               case 'R':
+                  Lab = PC + (sbyte)Arg[A++];
+               break;
+            // Paged address (3+8-bit unsigned):
+               case 'P':
+                  Lab = PC&0xf800 | (Arg[0]&0xe0) << 3 | Arg[A++];
+               break;
+            // 16-bit data or address
+               case 'L': case 'W': case 'X':
+                  Lab = Arg[A++], Lab = Lab << 8 | Arg[A++];
+               break;
+            }
+            if (Generating) switch (*S) {
+               case 'I': putchar('#'), PutByte(B); break;
+               case 'B': PutBReg(B); break;
+               case 'D': PutDReg(B); break;
+               case 'X': PutDReg(Lab&0xff), printf(", "), PutDReg(Lab >> 8); break;
+               case 'R': case 'P': case 'L': PutLabel(Lab); break;
+               case 'W': putchar('#'), PutWord(Lab); break;
+               case 'i': printf("@R%1x", (unsigned)Arg[0]&1); break;
+               case 'n': printf("R%1x", (unsigned)Arg[0]&7); break;
+               default: Error(true, "Bad format string, PC = %04x.", PC);
+            } else switch (*S) {
+               case 'R': case 'P': case 'L': PushAddr(Lab); break;
+            }
+         }
+         if (Generating) putchar('\n');
+      }
+      if (Generating? Ref[PC] == 0: Breaking) break;
    }
-   return Generating? !Ref[PC]: Breaking;
 }
 
-void fPutChar(byte B) { putchar((B < 0x20 || B >= 0x7f)? ' ': B); }
-
-bool Ended; FILE *EntryF;
-
-byte fGetByte(void) {
-   if (Ended) return 0;
-   int A = fgetc(EntryF), B = fgetc(EntryF);
-   if (A == EOF || B == EOF) { Ended = true; return 0; }
-   return Nib(A) << 4 | Nib(B);
+void PutData(byte *Buf, size_t N, size_t Max) {
+   for (size_t n = 0; n < N; n++) {
+      printf("%2x", Buf[n]);
+      if (n < Max - 1) putchar(' '); else putchar('|');
+   }
+   for (size_t n = N; n < Max; n++) {
+      printf("  ", Buf[n]), Buf[n] = 0;
+      if (n < Max - 1) putchar(' '); else putchar('|');
+   }
+   for (size_t n = 0; n < Max; n++) {
+      int Ch = Buf[n]; putchar(isprint(Ch)? Ch: ' ');
+   }
+   putchar('|'); putchar('\n');
 }
 
-word fGetWord(void) {
-   word A = fGetByte(), B = fGetByte();
-   (void)fgetc(EntryF);
-   if (Ended) return 0;
-   return (A << 8) | B;
-}
 
 bool Configure(char *Path) {
-   EP = Entries;
-   EntryF = fopen("entries", "r");
+   EP = Entries, Line = 1;
+   FILE *EntryF = fopen("entries", "r");
    if (EntryF == NULL) return false;
-   for (Ended = false; !Ended; ) {
-      word W = fGetWord(); if (!Ended) PushAddr(W);
+   for (int Ch; (Ch = fgetc(EntryF)) != EOF && isxdigit(Ch); ) {
+      word W = Nib(Ch);
+      while ((Ch = fgetc(EntryF)) != EOF && isxdigit(Ch)) W = W << 4 | Nib(Ch);
+      PushAddr(W);
+      if ((Ch = fgetc(EntryF)) == '\n') Line++; else ungetc(Ch, EntryF);
    }
    return true;
 }
@@ -395,42 +396,22 @@ int main(void) {
    Generating = false, fprintf(stderr, "First pass\n");
    if (!Configure("entries"))
       Error(false, "No entry points listed, using 0x%04x as the starting address.", LoPC), PushAddr(LoPC);
-   while (EP > Entries) {
-      PC = *--EP;
-      while (!Disassemble());
-   }
+   while (EP > Entries) PC = *--EP, Disassemble();
    Generating = true, fprintf(stderr, "Second pass\n");
    if (Ref[0]) printf("org 0\n");
    for (PC = 0x00; PC < HiPC; ) {
-      byte F, Buf[16];
+      byte Buf[0x10]; size_t Max = sizeof Buf/sizeof Buf[0], N;
       if (Ref[PC] == 0) {
-         printf("DATA AT "), PutWord(PC), putchar('\n');
-         for (F = 0; !Ref[PC] && InRange(PC); PC++) {
-            Buf[F++] = Hex[PC];
-            if (F == 16) {
-               for (F = 0; F < 16; F++) {
-                  printf("%2x", Buf[F]);
-                  if (F < 15) putchar(' '); else putchar('|');
-               }
-               for (F = 0; F < 16; F++) fPutChar(Buf[F]);
-               putchar('|'); putchar('\n');
-               F = 0;
-            }
+         printf(";; DATA at "), PutWord(PC), putchar('\n');
+         for (N = 0; !Ref[PC] && InRange(PC); PC++) {
+            Buf[N] = Hex[PC];
+            if (++N >= Max) PutData(Buf, Max, Max), N = 0;
          }
-         if (F > 0) {
-            byte F1;
-            for (F1 = 0; F1 < F; F1++) printf("%2x ", Buf[F1]);
-            for (; F1 < 16; F1++) {
-               Buf[F1] = 0;
-               printf("  "); if (F1 < 15) putchar(' '); else putchar('|');
-            }
-            for (F = 0; F < 16; F++) fPutChar(Buf[F]);
-            putchar('|'); putchar('\n');
-         }
+         if (N > 0) PutData(Buf, N, Max);
          if (!InRange(PC)) break;
          printf("org "), PutWord(PC), putchar('\n');
       }
-      while (!Disassemble());
+      Disassemble();
    }
    return EXIT_SUCCESS;
 }

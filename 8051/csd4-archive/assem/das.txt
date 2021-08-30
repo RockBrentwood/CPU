@@ -54,7 +54,7 @@ These are listed in the following form:
 	External reference at <PC> to <Address>
 
 Data segments will be clearly marked as such, beginning with the header:
-	DATA at <Address>
+	;; DATA at <Address>
 following which will be a hexadecimal listing of the ‟data” in the format illustrated below:
 	34 aa ef 00 00 00 00 00 34 ee ff 00 00 00 00 00 |4       4       |
 A list of up to 16 bytes in hexadecimal notation is generated,
