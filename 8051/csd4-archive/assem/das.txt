@@ -51,7 +51,7 @@ but also derived addresses: 0067 (found on the first iteration), and 0131 (found
 
 Also, any addresses referenced that lie outside the range of the Intel Hex Format file will be listed as external references.
 These are listed in the following form:
-	REF: <Address>
+	External reference at <PC> to <Address>
 
 Data segments will be clearly marked as such, beginning with the header:
 	DATA at <Address>

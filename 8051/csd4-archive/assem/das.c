@@ -35,6 +35,34 @@ typedef uint16_t word;
 // Everything else is aliased, somewhere, into one of these spaces.
 // Note also that the subspace idata[0x80-0xff] is not officially available on the 8051.
 
+char *SFRs[0x80] = {
+  "P0", "SP", "DPL", "DPH", 0, 0, 0, "PCON",
+  "TCON", "TMOD", "TL0", "TL1", "TH0", "TH1", 0, 0,
+  "P1", 0, 0, 0, 0, 0, 0, 0, "SCON", "SBUF", 0, 0, 0, 0, 0, 0,
+  "P2", 0, 0, 0, 0, 0, 0, 0, "IE", 0, 0, 0, 0, 0, 0, 0,
+  "P3", 0, 0, 0, 0, 0, 0, 0, "IP", 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, "T2CON", 0, "RCAP2L", "RCAP2H", "TL2", "TH2", 0, 0,
+  "PSW", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  "ACC", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  "B", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+
+char *Bits[0x80] = {
+   0, 0, 0, 0, 0, 0, 0, 0,
+   "IT0", "IE0", "IT1", "IE1", "TR0", "TF0", "TR1", "TF1",
+   "T2", "T2EX", 0, 0, 0, 0, 0, 0,
+   "RI", "TI", "RB8", "TB8", "REN", "SM2", "SM1", "SM0",
+   0, 0, 0, 0, 0, 0, 0, 0,
+   "EX0", "ET0", "EX1", "ET1", "ES", "ET2", 0, "EA",
+   "RXD", "TXD", "INT0", "INT1", "T0", "T1", "WR", "RD",
+   "PX0", "PT0", "PX1", "PT1", "PS", "PT2", 0, 0,
+   0, 0, 0, 0, 0, 0, 0, 0,
+   "CP_RL2", "C_T2", "TR2", "EXEN2", "TCLK", "RCLK", "EXF2", "TF2",
+   "P", 0, "OV", "RS0", "RS1", "F0", "AC", "CY", 0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+
 // (Addressing? 4: 0) | OpBytes
 // Addressing is already determined from Code[] (true if and only if any of %L,%P,%R appear).
 // OpBytes is already determined from Code[] (1 for a valid mnemonic + 1 for %D,%R,%P,%B,%I + 2 for %L,%W,%X).
@@ -126,15 +154,26 @@ char *Code[0x100] = {
 
 byte Arg[3];
 bool Generating;
+unsigned Line;
 
 void Error(bool Fatal, char *Format, ...) {
+   fprintf(stderr, "[%u] ", Line);
    va_list AP; va_start(AP, Format), vfprintf(stderr, Format, AP), va_end(AP);
    fputc('\n', stderr);
    if (Fatal) exit(EXIT_FAILURE);
 }
 
-word LoPC, HiPC, PC;
-#define IN_RANGE(A) ((A) >= LoPC && (A) < HiPC)
+char *LookUp(byte Type, word Key) {
+   switch (Type) {
+      default:
+   // cdata address.
+      case 0: return NULL; // For now.
+   // ddata address.
+      case 1: return Key >= 0x80 && Key < 0x100 && SFRs[Key - 0x80] != NULL? SFRs[Key - 0x80]: NULL;
+   // bdata address.
+      case 2: return Key >= 0x80 && Key < 0x100 && Bits[Key - 0x80] != NULL? Bits[Key - 0x80]: NULL;
+   }
+}
 
 byte Ref[0x4000], Hex[0x4000];
 #define ENTRY 0x80
@@ -142,19 +181,20 @@ byte Ref[0x4000], Hex[0x4000];
 #define ARG   0x20
 #define LINKS 0x1f
 
-word Entries[0x100], *EP = Entries;
+word LoPC, HiPC, PC;
+#define InRange(A) ((A) >= LoPC && (A) < HiPC)
+
+word Entries[0x400], *EP;
 const word *EEnd = Entries + sizeof Entries/sizeof Entries[0];
 
 void PushAddr(word Address) {
-   if (!IN_RANGE(Address)) {
-      printf("REF: %04x\n", Address); return;
+   if (!InRange(Address)) {
+      printf("External reference at %04x to %04x\n", PC, Address); return;
    } else if (Ref[Address]&ARG) {
       Error(false, "Entry into ARG at %04x.", PC); return;
    }
-   byte B = Ref[Address]&LINKS;
-   if (++B <= LINKS) Ref[Address] = Ref[Address]&~LINKS | B;
-   if (Ref[Address]&ENTRY) return;
-   Ref[Address] |= ENTRY;
+   if ((Ref[Address]&LINKS) <= LINKS) Ref[Address]++;
+   if (Ref[Address]&ENTRY) return; else Ref[Address] |= ENTRY;
    if (Ref[Address]&OP) return;
    if (EP >= EEnd) Error(true, "Too many entries, PC = %04x.", PC);
    *EP++ = Address;
@@ -168,48 +208,6 @@ void PutByte(byte B) {
 void PutWord(word W) {
    if (W >= 0xa000) putchar('0');
    printf("%04xh", W);
-}
-
-char *SFRs[0x80] = {
-  "P0", "SP", "DPL", "DPH", 0, 0, 0, "PCON",
-  "TCON", "TMOD", "TL0", "TL1", "TH0", "TH1", 0, 0,
-  "P1", 0, 0, 0, 0, 0, 0, 0, "SCON", "SBUF", 0, 0, 0, 0, 0, 0,
-  "P2", 0, 0, 0, 0, 0, 0, 0, "IE", 0, 0, 0, 0, 0, 0, 0,
-  "P3", 0, 0, 0, 0, 0, 0, 0, "IP", 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, "T2CON", 0, "RCAP2L", "RCAP2H", "TL2", "TH2", 0, 0,
-  "PSW", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  "ACC", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  "B", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-};
-
-void PutDReg(byte D) { // This assumes the 8052.
-   if (D < 0x80 || SFRs[D - 0x80] == 0) { PutByte(D); return; }
-   printf(SFRs[D - 0x80]);
-}
-
-char *Bits[0x80] = {
-   0, 0, 0, 0, 0, 0, 0, 0,
-   "IT0", "IE0", "IT1", "IE1", "TR0", "TF0", "TR1", "TF1",
-   "T2", "T2EX", 0, 0, 0, 0, 0, 0,
-   "RI", "TI", "RB8", "TB8", "REN", "SM2", "SM1", "SM0",
-   0, 0, 0, 0, 0, 0, 0, 0,
-   "EX0", "ET0", "EX1", "ET1", "ES", "ET2", 0, "EA",
-   "RXD", "TXD", "INT0", "INT1", "T0", "T1", "WR", "RD",
-   "PX0", "PT0", "PX1", "PT1", "PS", "PT2", 0, 0,
-   0, 0, 0, 0, 0, 0, 0, 0,
-   "CP_RL2", "C_T2", "TR2", "EXEN2", "TCLK", "RCLK", "EXF2", "TF2",
-   "P", 0, "OV", "RS0", "RS1", "F0", "AC", "CY", 0, 0, 0, 0, 0, 0, 0, 0,
-   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-};
-
-void PutBReg(byte B) {
-   if (B < 0x80) { PutByte(B); return; }
-   B -= 0x80;
-   if (Bits[B] != 0) { printf(Bits[B]); return; }
-   byte Byte = B&0x78, Bit = B&0x07;
-   if (SFRs[Byte] != 0) { printf("%s.%1x", SFRs[Byte], Bit); return; }
-   PutByte((byte)(B + 0x80));
 }
 
 byte Nib(int Ch) {
@@ -233,13 +231,13 @@ word GetWord(void) {
 }
 
 void HexLoad(void) {
-   HiPC = 0x0000, LoPC = 0xffff;
+   Line = 1, HiPC = 0x0000, LoPC = 0xffff;
    while (true) {
       int Ch;
-      do {
-         Ch = getchar();
-         if (Ch == EOF) Error(true, "Unexpected EOF.");
-      } while (Ch != ':');
+      do
+         if ((Ch = getchar()) == '\n') Line++;
+         else if (Ch == EOF) Error(true, "Unexpected EOF.");
+      while (Ch != ':');
       byte CheckSum = 0;
       byte Size = GetByte(); word CurPC = GetWord(); bool Mark = GetByte() != 0;
       byte Buffer[0x10]; for (word H = 0; H < Size; H++) Buffer[H] = GetByte();
@@ -249,14 +247,29 @@ void HexLoad(void) {
       if (CurPC < LoPC) LoPC = CurPC;
       for (word H = 0; H < Size; H++, CurPC++) Hex[CurPC] = Buffer[H], Ref[CurPC] = 0;
       if (CurPC > HiPC) HiPC = CurPC;
-      (void)getchar();
+      if ((getchar()) == '\n') Line++;
    }
 }
 
-word Address;
-void PutLabel(word PC) {
-   if (IN_RANGE(PC)) printf("%c%04x", (Ref[PC]&LINKS) + 'A', PC);
-   else PutWord(PC);
+void PutDReg(byte D) { // This assumes the 8052.
+   char *Name = LookUp(1, D);
+   if (Name != NULL) printf("%s", Name); else PutByte(D);
+}
+
+void PutBReg(byte B) {
+   char *Name = LookUp(2, B);
+   if (Name != NULL) { printf("%s", Name); return; }
+   Name = LookUp(1, (B < 0x80? B >> 3 | 0x20: B&~7));
+   if (Name != NULL) { printf("%s.%u", Name, B&7); return; }
+   PutByte(B);
+}
+
+void PutLabel(word C) {
+   char *Name = LookUp(0, C);
+   if (Name != NULL) { printf("%s", Name); return; }
+   byte R = Ref[C];
+   if (InRange(C)) printf("%c%04x", 'A' + (R&LINKS), C);
+   else PutWord(C);
 }
 
 int Fetch(bool IsOp) {
@@ -341,11 +354,10 @@ bool Disassemble(void) {
             case 'n': printf("R%1x", (unsigned)Arg[0]&7); break;
             default: Error(true, "Bad format string, PC = %04x.", PC);
          } else switch (*S) {
-            case 'R': case 'P': case 'L': Address = Lab; break;
+            case 'R': case 'P': case 'L': PushAddr(Lab); break;
          }
       }
       if (Generating) putchar('\n');
-      else PushAddr(Address);
    }
    return Generating? !Ref[PC]: Breaking;
 }
@@ -391,9 +403,9 @@ int main(void) {
    if (Ref[0]) printf("org 0\n");
    for (PC = 0x00; PC < HiPC; ) {
       byte F, Buf[16];
-      if (!Ref[PC]) {
+      if (Ref[PC] == 0) {
          printf("DATA AT "), PutWord(PC), putchar('\n');
-         for (F = 0; !Ref[PC] && IN_RANGE(PC); PC++) {
+         for (F = 0; !Ref[PC] && InRange(PC); PC++) {
             Buf[F++] = Hex[PC];
             if (F == 16) {
                for (F = 0; F < 16; F++) {
@@ -415,7 +427,7 @@ int main(void) {
             for (F = 0; F < 16; F++) fPutChar(Buf[F]);
             putchar('|'); putchar('\n');
          }
-         if (!IN_RANGE(PC)) break;
+         if (!InRange(PC)) break;
          printf("org "), PutWord(PC), putchar('\n');
       }
       while (!Disassemble());
