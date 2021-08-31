@@ -183,26 +183,19 @@ char *LookUp(byte Type, Symbol Sym, word Key) {
 }
 
 byte Ref[0x10000], Hex[0x10000];
-#define ENTRY 0x80
-#define OP    0x40
-#define ARG   0x20
-#define LINKS 0x1f
-
 word LoPC, HiPC, PC;
-#define InRange(A) ((A) >= LoPC && (A) < HiPC)
 
 word Entries[0x400], *EP;
 const word *EEnd = Entries + sizeof Entries/sizeof Entries[0];
 
 void PushAddr(word Address) {
-   if (!InRange(Address)) {
+   const size_t MaxLinks = 0x19;
+   if (Ref[Address] == 0) {
       printf(";; External reference at %04x to %04x\n", PC, Address); return;
-   } else if (Ref[Address]&ARG) {
+   } else if ((Ref[Address]&~0x80) == 0) {
       Error(false, "Entry into ARG at %04x.", PC); return;
-   }
-   if ((Ref[Address]&LINKS) <= LINKS) Ref[Address]++;
-   if (Ref[Address]&ENTRY) return; else Ref[Address] |= ENTRY;
-   if (Ref[Address]&OP) return;
+   } else if ((Ref[Address]&~0x80) < MaxLinks) Ref[Address]++;
+   if (Ref[Address] > 2) return;
    if (EP >= EEnd) Error(true, "Too many addresses, PC = %04x.", PC);
    *EP++ = Address;
 }
@@ -244,14 +237,17 @@ void HexLoad(void) {
          if ((Ch = getchar()) == '\n') Line++;
          else if (Ch == EOF) Error(true, "Unexpected EOF.");
       while (Ch != ':');
-      byte CheckSum = 0;
+      byte HBuf[0x20];
+      const size_t HMax = sizeof HBuf/sizeof HBuf[0];
+      CheckSum = 0;
       byte Size = GetByte(); word CurPC = GetWord(); bool Mark = GetByte() != 0;
-      byte HBuf[0x10]; for (word H = 0; H < Size; H++) HBuf[H] = GetByte();
+      if (Size > HMax) Error(true, "Record size too large.");
+      for (word H = 0; H < Size; H++) HBuf[H] = (byte)GetByte();
       (void)GetByte();
       if (CheckSum != 0) Error(true, "Bad checksum.");
       if (Mark || Size == 0) break;
       if (CurPC < LoPC) LoPC = CurPC;
-      for (word H = 0; H < Size; H++, CurPC++) Hex[CurPC] = HBuf[H], Ref[CurPC] = 0;
+      for (word H = 0; H < Size; H++, CurPC++) Hex[CurPC] = HBuf[H], Ref[CurPC] = 1;
       if (CurPC > HiPC) HiPC = CurPC;
       if (getchar() == '\n') Line++;
    }
@@ -274,31 +270,26 @@ void PutLabel(word C) {
    char *Name = LookUp(0, NULL, C);
    if (Name != NULL) { printf("%s", Name); return; }
    byte R = Ref[C];
-   if (InRange(C)) printf("%c%04x", 'A' + (R&LINKS), C);
+   if (R&0x80) printf("%c%04x", 'A' + (R&0x7f) - 1, C);
    else PutWord(C);
 }
 
 int Fetch(bool IsOp) {
-   if (IsOp) {
-      if (Ref[PC]&ARG) {
-         Error(false, "OP into ARG at %04x.", PC); return EOF;
-      }
-      if (Generating) {
-         if (Ref[PC]&ENTRY) { PutLabel(PC); printf(":\n"); }
-      } else {
-         if (Ref[PC]&OP) return EOF;
-         Ref[PC] |= OP;
-      }
+   if (Ref[PC] == 0) {
+      if (!Generating) Error(false, "Code fall-through at %04x.", PC);
+      return EOF;
+   } else if (IsOp) {
+      if ((Ref[PC]&~0x80) == 0) {
+         Error(false, "OP into ARG at %04x.", PC++); return EOF;
+      } else if (!Generating) {
+         if (Ref[PC]&0x80) return EOF; else Ref[PC] |= 0x80;
+      } else if ((Ref[PC]&~0x80) > 1) PutLabel(PC), printf(":\n");
    } else {
-      if (Ref[PC]&OP) {
+      if (Ref[PC] > 0x80) {
          Error(false, "ARG into OP at %04x.", PC); return EOF;
-      }
-      if (!Generating) {
-         if (Ref[PC]&ARG) {
-            Error(false, "ARG into ARG at %04x.", PC); return EOF;
-         }
-         Ref[PC] |= ARG;
-      }
+      } else if ((Ref[PC]&~0x80) > 1) {
+         Error(false, "ARG into Entry at %04x.", PC); return EOF;
+      } else if (!Generating) Ref[PC] = 0x80;
    }
    return (int)Hex[PC++];
 }
@@ -351,7 +342,9 @@ void Disassemble(void) {
             case 'n': printf("R%1x", (unsigned)Op&7); break;
             default: Error(true, "Bad format string, PC = %04x.", (unsigned)PC);
          } else switch (*S) {
-            case 'R': case 'P': case 'L': PushAddr(Lab); break;
+            case 'R': case 'P': case 'L':
+               if (Recursing || Calling) PushAddr(Lab);
+            break;
          }
       }
       if (Generating) putchar('\n');
@@ -360,18 +353,18 @@ void Disassemble(void) {
 }
 
 void PutData(byte *Buf, size_t N, size_t Max) {
+   if (NoData) return;
    for (size_t n = 0; n < N; n++) {
-      printf("%2x", Buf[n]);
-      if (n < Max - 1) putchar(' '); else putchar('|');
+      if (n == 0) printf("db "); else putchar(',');
+      byte Ch = Buf[n];
+      printf("%c%02xh", Ch >= 0xa0? '0': ' ', Ch);
    }
-   for (size_t n = N; n < Max; n++) {
-      printf("  ", Buf[n]), Buf[n] = 0;
-      if (n < Max - 1) putchar(' '); else putchar('|');
-   }
-   for (size_t n = 0; n < Max; n++) {
+   for (size_t n = N; n < Max; n++) printf("     ");
+   printf(" ;; %04x:", PC - N);
+   for (size_t n = 0; n < N; n++) {
       int Ch = Buf[n]; putchar(isprint(Ch)? Ch: ' ');
    }
-   putchar('|'); putchar('\n');
+   putchar('\n');
 }
 
 Symbol BList = NULL, CList = NULL, DList = NULL;
@@ -381,7 +374,7 @@ bool Configure(char *Path) {
    for (int D = 0; D < Ds; D++) LookUp(1, GetSym(1, DTab[D].Name), DTab[D].Key);
    for (int B = 0; B < Bs; B++) LookUp(2, GetSym(2, BTab[B].Name), BTab[B].Key);
    EP = Entries, Line = 1;
-   FILE *InF = fopen("entries", "r");
+   FILE *InF = fopen(Path, "r");
    if (InF == NULL) return false;
    int Ch = fgetc(InF);
    char *S; Symbol Sym; int Type; word Key; bool Empty;
@@ -482,21 +475,22 @@ int main(void) {
    for (Symbol Sym = DList; Sym != NULL; Sym = Sym->CLink)
       if (Sym->Defined) printf("%s %s ", Sym->Name, Sym->Key >= 0x80? "sfr": "data"), PutByte(Sym->Key), putchar('\n');
    for (Symbol Sym = CList; Sym != NULL; Sym = Sym->CLink)
-      if (Sym->Defined) printf(";; %s code ", Sym->Name), PutWord(Sym->Key), printf(" [%d]\n", (Ref[Sym->Key] - 1)&LINKS);
-   if (Ref[0]) printf("org 0\n");
+      if (Sym->Defined) printf(";; %s code ", Sym->Name), PutWord(Sym->Key), printf(" [%d]\n", (Ref[Sym->Key] - 1)&0x7f);
    for (PC = 0x00; PC < HiPC; ) {
-      byte Buf[0x10]; size_t Max = sizeof Buf/sizeof Buf[0], N;
-      if (Ref[PC] == 0) {
-         printf(";; DATA at "), PutWord(PC), putchar('\n');
-         for (N = 0; !Ref[PC] && InRange(PC); PC++) {
-            Buf[N] = Hex[PC];
+      printf("org "), PutWord(PC), putchar('\n');
+      while (Ref[PC] > 0) {
+         if (Ref[PC]&0x80) { Disassemble(); continue; }
+         printf(";; DATA at "), PutWord(PC);
+         if (NoData) printf(" (not shown)");
+         putchar('\n');
+         byte Buf[0x10]; size_t Max = sizeof Buf/sizeof Buf[0], N = 0;
+         while (Ref[PC] > 0 && !(Ref[PC]&0x80)) {
+            Buf[N] = Hex[PC++];
             if (++N >= Max) PutData(Buf, Max, Max), N = 0;
          }
          if (N > 0) PutData(Buf, N, Max);
-         if (!InRange(PC)) break;
-         printf("org "), PutWord(PC), putchar('\n');
       }
-      Disassemble();
+      while (Ref[PC] == 0 && PC < HiPC) PC++;
    }
    return EXIT_SUCCESS;
 }

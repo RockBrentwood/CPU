@@ -154,6 +154,9 @@ The disassembler will duly note where disassembled instructions overlap, or wher
 		The indicated name, listed on a definitions line on the configuration file, has already been defined.
 ∙	Bad hexadecimal digit in input.
 		The input file contained corrupt data.
+∙	Record size too large.
+		A line in the input file contains more than the 20 (hexadecimal) bytes.
+		The size limit is imposed by Intel Hex Format.
 ∙	Bad format string, PC = HHHH.
 		This should not appear.
 		The compiled program or source file for the disassembler has been corrupted.
