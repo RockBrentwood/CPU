@@ -9,19 +9,86 @@ The typical conmmand line for this disassembler is:
 	das <asm.hex >asm.s
 The input file (read from standard input) is assumed to be in Intel Hex Format.
 The output is placed in standard output (or in a file when redirection is used).
+
+0a. Configuration/Entry Point File
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
 A third file:
 	entries
-is used to specify a list of entry points for das to use.
+is used to specify:
+∙	a list of entry points for das to use,
+∙	definitions for addresses in the bit-register, byte-register spaces and code space.
 If no entry points are listed, then the lowest address found in the hex input file will be used, instead.
 
-It will read entry points from a file: ‟entries”
-and recursively disassemble all the addresses ‟reachible” from those listed as entry points.
+It will recursively disassemble all the addresses ‟reachible” from those listed as entry points.
 A sample entries file, input file and output file are provided with the software.
 The format of each address in the file is (starting at column 1):
 	HHHH<cr>
 with the H's representing the digits of the address in hexadecimal.
 
+In the file, one item per line may be listed:
+∙	Each line may contain a comment, prefixed by / or ; and continuing to the end of line
+∙	Each line may start with white space (spaces or tabs), which are ignored.
+∙	Following initial whitespaces, a line may begin with a keyword,
+	which consists of any sequence of non-white space characters (other than / or ;) beginning in b-e, B-E, x-y, X-Y,
+	followed by list (in the case of b-e, B-E) separated from the keyword by whitespace (tabs or spaces).
+
+The keywords are identified by their initials, which are:
+∙	e or E (optional):	For entry point lines.
+∙	b-d, B-D:		For definition lines, with:
+	―	d or D: For addresses in ddata[] (including sfr registers)
+	―	b or B: For addresses in bdata[]
+	―	c or C: For addresses in cdata[]
+∙	x-y, X-Y:		For configuration option lines, with:
+	―	x or X: To suppress recursive descent to subroutine addresses.
+	―	y or Y: To suppress the display of data segments.
+∙	Hexadecimal numeral:	Treated as an entry point line with the keyword omitted.
+	―	The hexadecimal numeral may be any numeral not beginning in b-e or B-E.
+∙	All other initials are treated as the beginning of a comment, extending to the end of line, and are ignored.
+
+An entry point line may list 1, 2 or more entry point addresses, each in hexadecimal,
+with the hexadecimal numerals in the list separated from one another by non-hexadecimal characters (other than ; /).
 Typically entry points are assigned to 0000, the starting address, and the address of each interrupt-handler that is used.
+Examples:
+∙	entry 0000, 0003, 000b, 0013, 001b, 0023, 002b
+∙	0, 3, B, 13, 1B, 23, 2B
+
+A definition line may list 1, 2 or more definitions, each consisting of a name followed by a numeric value.
+∙	A name consists of any sequence of 1, 2 or more letters, digits and underscores, not beginning in a digit.
+∙	Numerical values are all listed in hexadecimal.
+∙	Each name is separated from its numeric value, and each definition from one another
+	by 1, 2 or more characters other than ;, /, letters, digits or underscores.
+
+Example: The initial configuration built into das.
+This is what the built-in configuration could look like if it were supplied separately, instead, as part of ‟entries”.
+// MCS-51 generic special function byte registers.
+   data SP = 81, DPL = 82, DPH = 83, PSW = d0, ACC = e0, B = f0
+   data PCON 87, TCON 88, TMOD 89, TL0 8a, TL1 8b, TH0 8c, TH1 8d
+   data P0 80 P1 90 P2 a0 P3 b0
+   data SCON = 98 SBUF = 99 IE = a8 IP = b8
+// MCS-51 generic special function bit registers.
+// TCON:
+   bit IT0 = 88, IE0 = 89, IT1 = 8a, IE1 = 8b, TR0 = 8c, TF0 = 8d, TR1 = 8e, TF1 = 8f
+// SCON:
+   bit RI = 98, TI = 99, RB8 = 9a, TB8 = 9b, REN = 9c, SM2 = 9d, SM1 = 9e, SM0 = 9f
+// IE:
+   bit EX0 = a8, ET0 = a9, EX1 = aa, ET1 = ab, ES = ac, EA = af
+// IP:
+   bit PX0 = b8, PT0 = b9, PX1 = ba, PT1 = bb, PS = bc
+// P3:
+   bit RXD = b0, TXD = b1, INT0 = b2, INT1 = B3, T0 = b4, T1 = b5, WR = b6, RD = b7
+// PSW:
+   bit P = d0, OV = d2, RS0 = d3, RS1 = d4, F0 = d5, AC = d6, CY = d7
+// 8052-specific byte registers.
+   data T2CON = c8, RCAP2L = ca, RCAP2H = cb, TL2 = cc, TH2 = cd
+// 8052-specific bit registers.
+// P1:
+   bit T2 = 90, T2EX = 91
+// IE:
+   bit ET2 = ad
+// PI:
+   bit PT2 = bd
+// T2CON:
+   bit CP_RL2 = 0xc8, C_T2 = 0xc9, TR2 = 0xca, EXEN2 = 0xcb, TCLK = 0xcc, RCLK = 0xcd, EXF2 = 0xce, TF2 = 0xcf
 
 1. Output Format
 ────────────────
@@ -42,7 +109,7 @@ This, in turn, may reveal additional indirect addresses,
 so that there is an iterative process implied here to completely disassemble code.
 
 For assistance, a list of locations where indirect jumps occur will be listed in the following format:
-	Indirect jump at <Address>
+	;; Indirect jump at <Address>
 
 In the sample program provided, there were no indirect jumps.
 However, since the assembly-language software implements a multitasking kernel, it heavily manipulates the stack pointer.
@@ -51,7 +118,7 @@ but also derived addresses: 0067 (found on the first iteration), and 0131 (found
 
 Also, any addresses referenced that lie outside the range of the Intel Hex Format file will be listed as external references.
 These are listed in the following form:
-	External reference at <PC> to <Address>
+	;; External reference at <PC> to <Address>
 
 Data segments will be clearly marked as such, beginning with the header:
 	;; DATA at <Address>
@@ -75,15 +142,23 @@ the next 4 items represent that actual address of the label in hexadecimal.
 2. Errors
 ─────────
 The disassembler will duly note where disassembled instructions overlap, or where it cannot further process input.
+∙	No entry points listed on an entry points line.
+		The indicated line in the configuraiton file contains an empty list of entry points.
+∙	No definitions listed on a definitions line.
+		The indicated line in the configuraiton file contains an empty list of definitions.
+∙	No address listed for «Name».
+		A definition on the indicated line lists a name, but no value.
 ∙	No entry points listed, using «Addr» as the starting address.
 		The input file ‟entries” was not found, so the lowest address listed in the input hex file will be used, instead.
+∙	«Name» is already defined.
+		The indicated name, listed on a definitions line on the configuration file, has already been defined.
 ∙	Bad hexadecimal digit in input.
-		The input file ‟entries” contained corrupt data.
+		The input file contained corrupt data.
 ∙	Bad format string, PC = HHHH.
-		Something's wrong with your compiler or operating system, or the source file has been corrupted.
-		Report this promptly to me, if you should see this. :)
-∙	Bad hexadecimal digit in input.
+		This should not appear.
+		The compiled program or source file for the disassembler has been corrupted.
 ∙	Bad checksum.
+		The check sum on a line in the input file failed to match: the line may be corrupt.
 ∙	Unexpected EOF
 		The input file contained a portion not strictly in Intel Hex Format.
 ∙	Entry into ARG at <Address>.
@@ -102,16 +177,16 @@ The disassembler will duly note where disassembled instructions overlap, or wher
 		The presence of this error indicates that something is wrong with your compiler or operating system,
 		or the source file has been corrupted.
 		Report this promptly to me, as well, if you should see this error.
-∙	Too many entries, PC = <Address>.
-		The number of pending points for the disassembler to process exceeded its capacity.
+∙	Too many addresses, PC = «Address»
+		The number of pending points for the disassembler to process exceeded its capacity at the indicated address.
 
-3. User Support and Guarantee
-─────────────────────────────
-This software has been rigorously verified with respect to the description given above.
-It will also conform to the description of the binary coding of the 8051 processor supplied by Intel.
+3. Support and Bug Reports
+──────────────────────────
+This software was produced based on the description of the binary coding of the 8051 processor supplied by Intel.
 
 Since this was a hobby project mainly intended for myself and not for a wider audience,
 you will be on your own in using this software.
 Feedback may be provided here, through the archive site, currently on GitHub.
 If you want to make upgrades, I encourage you to try your hand at it.
 That's exactly why I'm distributing this package free.
+The upgrade of the configuraition file format, for instance, came by way of request.
