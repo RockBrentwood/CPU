@@ -1,259 +1,249 @@
-                      OBJECT FILE FORMAT, and
-                      OBJECT FILE DiSPLAY UTILITY
+Object File Display Utility and Object File Format
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+0. Command Line, Input Format
+─────────────────────────────
+This utility will display the contents of an object file created by the assembler.
+The command line is typically of the form:
+	ds file.o >file.x
 
-(0) COMMAND LINE, INPUT FORMAT
-   This utility will display the contents of an object file created by the
-assembler.  The command line is typically of the form:
-
-                     ds file.o >file.x
-
+1. Object File Format
+―――――――――――――――――――――
 The contents of an object file are as follows:
+	Header, Image, Files, Segments, Gaps, Symbols, Expressions, Relocations
 
-   HEADER, IMAGE, FILES, SEGMENTS, GAPS, SYMBOLS, EXPRESSIONS, RELOCATIONS
+1a. Header
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+	Bytes	Item
+	―――――	――――
+	2	The file type signature: 55aa.
+	4	The location of first item past the end of the memory IMAGE.
+	4	The number of Files listed.
+	4	The number of Segments listed.
+	4	The number of Gaps listed.
+	4	The number of Symbols listed.
+	4	The number of unresolved Expressions listed.
+	4	The Number of Relocation items listed.
+	4	The check sum of the previous 7 items.
 
-   (a) HEADER
-      Bytes   Item
-        2     55aa ... the file type signature.
-        4     Location of first item past the end of the memory IMAGE.
-        4     Number of FILES listed.
-        4     Number of SEGMENTS listed.
-        4     Number of GAPS listed.
-        4     Number of SYMBOLS listed.
-        4     Number of unresolved EXPRESSIONS listed.
-        4     Number of RELOCATION items listed.
-        4     Check sum of the previous 7 items.
+1b. Image
+⋯⋯⋯⋯⋯⋯⋯⋯⋯
+This is a binary listing of each of the code segments contained in this object file, all concatentated together.
+This binary format is listed by the display program 16 bytes per line, each byte written in hexadecimal form.
+It is also displayed in character form to the right-hand side, in order to show off any embedded strings.
 
-   (b) IMAGE
-   This is a binary listing of each of the code segments contained in
-this object file, all concatentated together.  This binary format is listed
-by the display program 16 bytes per line, each byte written in hexadecimal
-form.  It is also displayed in character form to the right-hand side, in order
-to show off any embedded strings.
+The size of the image is given in two ways:
+(a)	it is the sum of the sizes of all the code segments listed minus all the sizes of all the gaps listed, and
+(b)	it is the number of bytes contained between the end of the header and the end of the image
+	(which is indicated in the header).
 
-   The size of the image is given in two ways: (a) it is the sum of the sizes
-of all the code segments listed minus all the sizes of all the gaps listed, and
-(b) it is the number of bytes contained between the end of the header and the
-end of the image (which is indicated in the header).
+1c. Files
+⋯⋯⋯⋯⋯⋯⋯⋯⋯
+The source and header file names are added to the object file as needed
+to help the linker determine where any errors may be originating from.
+Each file is listed in the following form:
+	Bytes	Item
+	―――――	――――
+	1	L: the length of file name.
+	L	The file name.
 
-   (c) FILES
-   Source and header file names are added to the object file as needed to help
-the linker determine where any errors may be originating from.  Each file is
-listed in the following form:
+1d. Segments
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+The segments 0 through 4 are only used internally by the assembler.
+They have the types respectively code, xdata, data, sfr, and bit.
+Their sizes are 0, bases are 0, and they are absolute.
+These segments serve as default segments for absolute addresses.
 
-                  Bytes          Item
-                    1            L = length of file name
-                    L            file name
+The remaining segments (if there are any) are listed in the following format:
+	## Line File Rel Type Base Size Loc
+which indicate, respectively,
+∙	the segment's number,
+∙	the line and file where it is first defined,
+∙	whether it is relative,
+∙	the segment's type (0 = code, 1 = xdata, 2 = data, 3 = sfr, and 4 = bit, 3 and 4 are never seen).
+∙	The Base is 0 for relative segments, else it points to the actual starting address of the segment.
+∙	The Size is the number of bytes in the segment, and (for code segments)
+∙	Loc is the place in the object file where its image is found.
 
-   (d) SEGMENTS
-   The segments 0 through 4 are only used internally by the assembler.  They
-have the types respectively code, xdata, data, sfr, and bit.  Their sizes are
-0, bases are 0, and they are absolute.  These segments serve as default
-segments for absolute addresses.
-   The remaining segments (if there are any) are listed in the following
-format:
-                ## Line File Rel Type Base Size  Loc
+Each segment is formatted in the object file as follows:
+	Bytes	Item
+	―――――	――――
+	2	Line
+	2	File
+	2	Bits 0-7 = Type
+		Bit 8 = 1 for relative segments, 0 else.
+	2	Size
+	2	Base
+	4	Loc
+The file number indicated indexes the appropriate entry in the file list previously described.
 
-which indicate, respectively, the segment's number, the line and file where it
-is first defined, whether it is relative, the segment's type (0 = code,
-1 = xdata, 2 = data, 3 = sfr, and 4 = bit, 3 and 4 are never seen).  The Base
-is 0 for relative segments, else it points to the actual starting address of the
-segment.  The Size is the number of bytes in the segment, and (for code
-segments) Loc is the place in the object file where its image is found.
-   Each segment is formatted in the object file as follows:
-
-                  Bytes          Item
-                    2            Line
-                    2            File
-                    2            Bits 0-7 = Type
-                                 Bit 8 = 1 for relative segments, 0 else.
-                    2            Size
-                    2            Base
-                    4            Loc
-
-The file number indicated indexes the appropriate entry in the file list
-previously described.
-
-   (d) GAPS
-   Gaps are subsets of segments that are reserved but that have no
-corresponding memory image.  No memory output is generated for gaps.
+1d. Gaps
+⋯⋯⋯⋯⋯⋯⋯⋯
+Gaps are subsets of segments that are reserved but that have no corresponding memory image.
+No memory output is generated for gaps.
 They are displayed in the following format:
+	## Seg Off Size
+where Seg, and Off are the segment where the gap occurs and its offset within the segment.
+Size is the size of the gap.
 
-                        ##  Seg  Off Size
+Two constraints will apply for valid object files:
+(1)	every gap will be located entirely within its segment (Off + Size < segment's size), and
+(2)	only code segments contain gaps.
 
-where Seg, and Off are the segment where the gap occurs and its offset
-within the segment.  Size is the size of the gap.
-   Two constraints will apply for valid object files: (1) every gap will
-be located entirely within its segment (Off + Size < segment's size), and
-(2) only code segments contain gaps.
-   Each gap is formatted in the object file as follows:
+Each gap is formatted in the object file as follows:
+	Bytes	Item
+	―――――	――――
+	2	Segment index
+	2	Offset
+	2	Size
 
-                  Bytes          Item
-                    2            Segment index
-                    2            Offset
-                    2            Size
+1e. Symbols
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+Each symbol is displayed in the following format:
+	## Scope Var Type Value Name
+where ## is the symbol's index, Scope is defined in terms of the Global and Defined attributes as follows:
+	Scope		Global	Defined
+	―――――		――――――	―――――――
+	undefined	0	0
+	local		0	1
+	external	1	0
+	global		1	1
+Var is marked if the symbol is a variable.
+Variables and global/externals are mutually exclusive.
+The symbol's type and value will be displayed as one of the following:
+∙	ADDR Seg Offset
+	This case indicates a symbol defined as an address.
+	Its segment index and offset are then listed.
+∙	NUM Value
+	This case indicates numeric value.
+	The actual value is then listed.
 
-   (e) SYMBOLS
-   Each symbol is displayed in the following format:
-             ##     Scope Var Type   Value  Name
+Offset and Value are listed in hexadecimal format.
+Neither the Offset nor Value are applicable if the symbol is not defined (external or undefined).
+For undefined symbols, the Offset is listed as 0.
+Seg is inapplicable if the symbol is totally undefined.
 
-where ## is the symbol's index, Scope is defined in terms of the GLOBAL
-and DEFINED attributes as follows:
+Following this is the symbol's name.
 
-               Scope           GLOBAL    DEFINED
-               undefined
-               local                        x
-               external          x
-               global            x          x
+Each symbol is formatted in the object file as follows:
+	Bytes	Item
+	―――――	――――
+	1	Bit 0: 1 if variable, 0 if constant
+		Bit 1: 1 if address, 0 if numeric
+		Bit 2: Defined
+		Bit 3: Global
+	2	Segment index
+	2	Offset/Value
+	2	L = Length of symbol name
+	L	Symbol name
 
-Var is marked if the symbol is a variable.  Variables and global/externals
-are disjoint.  Its type and value will be displayed as one of the following:
+1f. Expressions
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+These items represent expressions that could not be evaluated from the information presented in the source files.
+Expression evaluation is deferred to the linker if the expression contains relative addresses, or externally defined symbols.
 
-                      ADDR  Seg   Offset
-                      NUM   Value
+They are displayed as follows:
+	## Line File Tag Args...
+where the first 3 items are respectively the expression's index, and the line and file where it is defined.
+Tag and args will take on one of the sets of values:
+	Description		Tag	Arguments
+	―――――――――――		―――	―――――――――
+	Number			0	Value
+	Address			1	Segment			Offset
+	Symbol			2	Name
+	Unary operation		3	Unary			A
+	Binary operation	4	Binary			A			B
+	Conditional		5	A			B			C
+where
+∙	A, B, and C are indexes of previously defined expression occurring earlier in the list,
+∙	Name is the name of the symbol which the expression is set to,
+∙	Segment and Offset are the segment and offset of an address expression,
+∙	Value is the numeric value of a numeric expression, and
+∙	Binary and Unary are symbolic number for operators defined as follows:
+	Unary Operators
+	―――――――――――――――
+		Value		27	28	29	30	31	32
+		Operator	~	!	high	low	+	-
+	Binary Operators
+	――――――――――――――――
+		Value		31	32	33	34	35	36	37	38	39	40
+		Operator	+	-	*	/	%	<	<=	>	>=	==
 
-The first case indicates a symbol defined as an address.  Its segment index
-and offset are then listed.  The second case indicates numeric value.  The
-actual value is then listed.  Offset and Value are listed in hexadecimal
-format.  Neither the Offset nor Value are applicable if the symvol is not
-defined (external or undefined).  Seg is inapplicable if the symbol is
-totally undefined.
-   Following this is the symbol's name.
+		Value		41	42	43	44	45	46	47	48	49	50
+		Operator	!=	&&	||	&	^	|	<<	>>	.	by
 
-   Each symbol is formatted in the object file as follows:
-
-                  Bytes          Item
-                    1            Bit 0: 1 if variable, 0 if constant
-                                 Bit 1: 1 if address, 0 if numeric
-                                 Bit 2: DEFINED
-                                 Bit 3: GLOBAL
-                    2            Segment index
-                    2            Offset/Value
-                    2            L = Length of symbol name
-                    L            Symbol name
-
-   (f) EXPRESSIONS
-   These items represent expressions that could not be evaluated from the
-information presented in the source files.  Expression evaluation is deferred
-to the linker if the expression contains relative addresses, or externally
-defined symbols.
-
-   They are displayed as follows:
-                     ## Line File  Tag Args...
-
-where the first 3 items are respectively the epxressions's index, and the line
-and file where it is defined.  Tag and args will take on one of the sets of
-values:
-
-             Descriuption      Tag  Args
-             Number             0   Value
-             Address            1   Seg           Offset
-             Symbol             2   Symbol Name
-             Unary operation    3   Unary         A
-             Binary operation   4   Binary        A        B
-             Conditional        5   A             B        C
-
-where A, B, and C are indexes of previously defined expression occurring earlier
-in the list, Symbol Name is the name of the symbol which the expression is set
-to, Seg and Offset are the segment and offset of an address expression, Value
-is the numeric value of a numeric expression, and Binary and Unary are
-symbolic number for operators defiend as follows:
-
-                            Unary Operators
-                           Operator   Value
-                              ~         27
-                              !         28
-                             high       29
-                             low        30
-                              +         31
-                              -         32
-
-                           Binary Operators
-                           Operator   Value
-                              +         31
-                              -         32
-                              *         33
-                              /         34
-                              %         35
-                              <         36
-                              <=        37
-                              >         38
-                              >=        39
-                              ==        40
-                              !=        41
-                              &&        42
-                              ||        43
-                              &         44
-                              ^         45
-                              |         46
-                              <<        47
-                              >>        48
-                              .         49
-                              by        50
-
-   The format of an expression in the object file is as follows:
-                  Bytes          Item
-                    2            Line
-                    2            File
-                    1            Tag
-
+The format of an expression in the object file is as follows:
+	Bytes	Item
+	―――――	――――
+	2	Line
+	2	File
+	1	Tag
 with the following cases:
-            (i) Numeric (Tag = 0)                     Number
-                  Bytes          Item
-                    2            Value
-            (i) Address (Tag = 1)                     Segment:Offset
-                  Bytes          Item
-                    2            Segment Index
-                    2            Offset
-            (i) Symbol (Tag = 2)                      Symbol
-                  Bytes          Item
-                    2            Symbol Index
-            (i) Unary operation (Tag = 3)             Op A
-                  Bytes          Item
-                    1            Operator
-                    2            Expression A's index.
-            (i) Binary operation (Tag = 4)            A Op B
-                  Bytes          Item
-                    1            Operator
-                    2            Expression A's index.
-                    2            Expression B's index.
-            (i) Conditional operation (Tag = 5)       A? B: C
-                  Bytes          Item
-                    2            Expression A's index.
-                    2            Expression B's index.
-                    2            Expression C's index.
-                   
-   (g) RELOCATIONS
-   A relocation item indicates an unevaluated expression, some information about
-its addressing mode, and the segment and offset where it is to be patched.
-These are items that the assembler could not properly determine because external
-references were used or relative addressing was used.  All relocations refer to
-positions within code segments, since only code segments have memory images.
+	Tag	Case
+	―――	――――
+	0	Numeral
+		Bytes	Item
+		―――――	――――
+		2	Value
+	1	Address (Segment:Offset)
+		Bytes	Item
+		―――――	――――
+		2	Segment Index
+		2	Offset
+	2	Symbol
+		Bytes	Item
+		―――――	――――
+		2	Symbol Index
+	3	Unary Operation (Operator A)
+		Bytes	Item
+		―――――	――――
+		1	Operator
+		2	Expression A's index.
+	4	Binary Operation (A Operator B)
+		Bytes	Item
+		―――――	――――
+		1	Operator
+		2	Expression A's index.
+		2	Expression B's index.
+	5	Conditional Operation (A? B: C)
+		Bytes	Item
+		―――――	――――
+		2	Expression A's index.
+		2	Expression B's index.
+		2	Expression C's index.
 
-   A relocation item is displayed as follows:
+1g. Relocations
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+A relocation item indicates
+∙	an unevaluated expression,
+∙	some information about its addressing mode,
+∙	and the segment and offset where it is to be patched.
+These are items that the assembler could not properly determine
+because external references were used or relative addressing was used.
+All relocations refer to positions within code segments, since only code segments have memory images.
 
-              Line File Tag  Exp  Seg: Off
+A relocation item is displayed as follows:
+	Line File Tag Exp Seg: Off
+where
+∙	Line and File determine the corresponding point in the source file,
+∙	Seg and Off refer to the location where the patch is to be applied,
+∙	Exp is the item to be patched, and
+∙	Tag is the type of reliocation defined as follows:
+		Tag	Description
+		―――	―――――――――――
+		b	Byte-sized constant
+		w	Word-sized constant
+		B	Bit address
+		D	Direct register address: Data address < 80 (hex), or SFR address ≥ 80 (hex).
+		R	Relative code address
+		P, Q	Paged code address.
+		L	Absolute (long) code address.
 
-where Line and File determine the corresponding point in the source file, Seg
-and Off refer to the location where the patch is to be applied, Exp is the item
-to be patched, and Tag is the type of reliocation defined as follows:
-
-                      Tag       Description
-                       b        Byte-sized constant
-                       w        Word-sized constant
-                       B        Bit address
-                       D        Direct register address
-                                   Data address < 80h
-                                or SFR address >= 80h.
-                       R        Relative code address
-                       P, Q     Paged code address.
-                       L        Absolute (long) code address.
-
-   Relocation items are formatted in the object file as follows:
-
-                  Bytes          Item
-                    2            Line
-                    2            File
-                    1            Tag
-                    2            Expression index
-                    2            Segment index
-                    2            Offset
+Relocation items are formatted in the object file as follows:
+	Bytes	Item
+	―――――	――――
+	2	Line
+	2	File
+	1	Tag
+	2	Expression index
+	2	Segment index
+	2	Offset

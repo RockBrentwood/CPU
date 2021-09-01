@@ -1,22 +1,20 @@
-                 8051 RELOCATER, notes on use.
+Intel Hex Format relocater, notes on use.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+0. Command Line, Input Format
+─────────────────────────────
+This is a simple utility to relocate the addresses in Intel Hex files.
+A typical use would be the following: you assemble a stand-alone program for address 0.
+However, when loading the program in preparation to blast it into EPROM or other non-volatile storage,
+you have to upload it to memory address 4000 and then blast it to address 0. 
 
-(0) COMMAND LINE, INPUT FORMAT
-   This is a simple utility to relocate hex files.  A typical use would be
-the following: you assemble a stand-alone program for address 0.  However,
-when loading the program in preparation to blast it into EPROM, you have to
-upload it to memory address 4000 and then blast it to address 0. 
-
-   The typical conmmand line for this utility is:
-
-                     reloc Offset File
-
+The typical conmmand line for this utility is:
+	reloc Offset File
 For example:
-                     reloc 4000 debug
+	reloc 4000 debug
+will take the file debug.hex and generate the output in debug.hx.
+The input file must be suffixed in .hex, and the output will always have the .hx suffix.
 
-will take the file debug.hex and generate the output in debug.hx.  The input
-file must be suffixed in .hex, and the output will always have the .hx suffix.
-
-   The offset must be a 4-digit hexadecimal number.  The source file's
-addresses are shifted by the amount indicated by this offset.  Address
-calculations are done modulo 10000 hex, so an offset of c000 will effectively
-shift addresses at or above 4000 back by 4000.
+The offset must be a 4-digit hexadecimal number.
+The source file's addresses are shifted by the amount indicated by this offset.
+Address calculations are done modulo 10000 hex,
+so an offset of c000 will effectively shift addresses at or above 4000 back by 4000.
