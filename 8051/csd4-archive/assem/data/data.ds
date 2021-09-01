@@ -1,0 +1,340 @@
+Image:
+   0: 75 d9  1 75 da 11 75 db 11 75 dc 11 75 dd 11 75
+  10: de 11 d2 93 d2 94 d2 95 d2 96 d2 97 c2 be 22 d2
+  20: 91 d2 c8 d2 cb c2 c9 c2 bd 22 e5 89 54 f0 24  1
+  30: f5 89 c2 b9 22 75 e9  0 75 f9  0 75  0  0 75  0
+  40:  0 c2 df d2 ae d2 de 22  5  0 e5  0 70  2  5  0
+  50: 80 f5 75 cc  0 75 cd  0 75  0  0 75  0  0 c2 cf
+  60: d2 ad d2 ca 22  5  0 e5  0 70  2  5  0 80 f5 85
+  70: cc  0 85 cd  0 85  0  0 85  0  0 85 e9  0 85 f9
+  80:  0 85  0  0 85  0  0 85 e9  0 85 f9  0 85  0  0
+  90: 85  0  0 85 e9  0 85 f9  0 85  0  0 85  0  0 85
+  a0: e9  0 85 f9  0 85  0  0 85  0  0 85 e9  0 85 f9
+  b0:  0 85  0  0 85  0  0 22  0 80 15 c0 2b  0 3f 40
+  c0: 55 80 6a c0 e5  0 23 f5 f0 90  0  0 93 c5 f0  4
+  d0: 93 f5 34 85 f0 35 22 e5  0 23 24  0 f8 e6 8a f0
+  e0: a4 f5 36 85 f0 37  8 e6 8a f0 a4 25 37 c5 37 22
+  f0: e5 34 25 36 f5 82 e5 35 35 37 f5 83 e6  8 f0 a3
+ 100: da fa 22 78  0 7a  6 76  1  8 da fb 75  0 3f 78
+ 110:  0 7a 84  0  0 22 e5  0 23 23 24  0 f8 24 dc f9
+ 120: 7a  4  0  0 e5  0 23 23 24  0 f8 24 c4 f9 7a  4
+ 130:  0  0 22 78 30 e5  0 23 23 24  0 f9 7a  4  0  0
+ 140: 78 30 e5  0 23 23 24  0 f9 7a  4  0  0  0  0 7a
+ 150:  4  0  0 78 30 7a  4  0  0 e5  0 23 24  0 f8 7a
+ 160:  2  0  0 75  0 30 75  0  4 75  0 30 75  0  4 e5
+ 170:  0 23 23 23 24  0 f5  0  0  0 80 a8 d2 b2 d2 88
+ 180: c2 b8 22 c2 ce c2 d8 c2 d9 c2 da c2 db c2 dc 75
+ 190:  0  0 75  0  0 22  0  0  0  0  0  0  0  0 75  0
+ 1a0: 40 22  0  0 c2 89 d2 a8 78  0  0  0  0  0  0  0
+ 1b0:  0  0  0  0 c2 89 78  0  0  0 c2 a8 c2 8c c2 a9
+ 1c0: c2 ca c2 ad c2 de c2 ae  0  0 22 74 23  0  0 74
+ 1d0: 17  0  0 e5  0  0  0 ab  0 e5  0 23 ff 24  0 f5
+ 1e0: 34 7a  2  0  0 78 30 ef 23 ff 24  0 f5 34 7a  4
+ 1f0:  0  0 ef 24  0 f5 34 7a  4  0  0 ef 24  0 f5 34
+ 200: 7a  4  0  0 ef 23 24  0 f5 34 7a  8  0  0 eb  0
+ 210:  0 22 a8 34  5 34 e6 cb 2b cb  0  0 da f4 22 7c
+ 220:  3 e5 36 45 37 70  5 74 2e  0  0 22 74 3a  0  0
+ 230: e5 36  0  0 7b  0 85 34 82 85 35 83 aa 36 e0 a3
+ 240: cb 2b cb  0  0 da f7 eb  0  0  0  0 b4 1b  5 dc
+ 250:  1 22  0  0 b4 1c 13 e5 36 60  5 75 36  0 80  2
+ 260: 15 37 85 82 34 85 83 35  0  0 22  0  0  0  0 f5
+ 270:  0 54 38 c5  0 54  7 c5  0 b4  0  e 20 a8 ee e5
+ 280:  0 b4  6  0 50 e7  0  0 80 e3 b4  8 14 20 a8 dd
+ 290: e5  0 b4  6  0 50 d6  0  0 7a  4  0  0  0  0 80
+ 2a0: cc b4 10 19 e5  0 b4  0 c4 30 ad  4 74 32 80  9
+ 2b0: 30 a8  4 74 31 80  2 74 30  0  0 80 b0 b4 18 2b
+ 2c0: e5  0 b4  0  c 20 a8 a5 78  0 90  0  0  0  0 80
+ 2d0: 9c b4  7 15 30 a8 96 c2 a8 c2 8c c2 a9 c2 ca c2
+ 2e0: ad c2 de c2 ae  0  0 d2  0  0  0  0  0  0  0 78
+ 2f0:  0 90  0  0  0  0 d2 af 22
+File(s): 5
+## Name,
+ 0        data.asm
+ 1        8051fa.h
+ 2        kernel.h
+ 3          math.h
+ 4         stdio.h
+Segment(s): 13
+## Line File Rel Type Base Size  Loc
+ 5    7    0  r    2    0    4       22
+ 6   11    0  r    0    0  103       22
+ 7  154    0  r    2    0    6      125
+ 8  162    0  r    2    0   84      125
+ 9  176    0       2   30    8      125
+10  181    0  r    0    0  1ea      125
+11  462    0  r    2    0   20      30f
+12  466    0  r    0    0    c      30f
+Gap(s): 0
+Symbol(s): 41
+##     Scope Var Type   Value  Name
+ 0  external     ADDR   2:   0 ArgX
+ 1  external     ADDR   2:   0 ArgY
+ 2  external     ADDR   2:   0 ArgZ
+ 3  external     ADDR   0:   0 ClearX
+ 4  external     ADDR   0:   0 CopyX
+ 5  external     ADDR   2:   0 Counter
+ 6  external     ADDR   2:   0 CSTATUS
+ 7    global     ADDR   6:  48 CTick
+ 8    global     ADDR   5:   0 CTIME
+ 9  external     ADDR   4:   0 FXX
+ a  external     ADDR   0:   0 getchar
+ b  external     ADDR   0:   0 IncX
+ c    global     ADDR  12:   0 main
+ d  external     ADDR   0:   0 MultiplyX
+ e    global     ADDR  10:  30 Nutation
+ f    global     ADDR  10:  13 Partial
+10  external     ADDR   0:   0 Pause
+11  external     ADDR   0:   0 putchar
+12  external     ADDR   0:   0 Scheduler
+13    global     ADDR   7:   0 Sector0
+14    global     ADDR   7:   1 Sector1
+15    global     ADDR   7:   2 Sector2
+16    global     ADDR   7:   3 Sector3
+17    global     ADDR   7:   4 Sector4
+18    global     ADDR   7:   5 Sector5
+19  external     ADDR   0:   0 SetPort
+1a  external     ADDR   2:   0 SizeX
+1b  external     ADDR   2:   0 SizeY
+1c  external     ADDR   2:   0 SP_IE0
+1d  external     ADDR   0:   0 Spawn
+1e  external     ADDR   2:   0 State
+1f  external     ADDR   0:   0 SubtractX
+20    global     ADDR   6:  65 Tick
+21    global     ADDR   5:   2 TIME
+22    global     ADDR   8:   0 TIME0
+23    global     ADDR   8:   4 TIME1
+24    global     ADDR   8:   8 TIME2
+25    global     ADDR   8:   c TIME3
+26    global     ADDR   8:  10 TIME4
+27    global     ADDR   8:  14 TIME5
+28  external     ADDR   2:   0 TSTATUS
+Expression(s): 78
+## Line File  Tag Args...
+ 0   46    0 ADDR  5    0
+ 1   47    0 ADDR  5    1
+ 2   64    0 ADDR  5    2
+ 3   65    0 ADDR  5    3
+ 4   81    0 ADDR  8    1
+ 5   82    0 ADDR  8    2
+ 6   83    0 ADDR  8    3
+ 7   84    0 ADDR  8    4
+ 8   85    0 ADDR  8    5
+ 9   86    0 ADDR  8    6
+ a   87    0 ADDR  8    7
+ b   88    0 ADDR  8    8
+ c   89    0 ADDR  8    9
+ d   90    0 ADDR  8    a
+ e   91    0 ADDR  8    b
+ f   92    0 ADDR  8    c
+10   93    0 ADDR  8    d
+11   94    0 ADDR  8    e
+12   95    0 ADDR  8    f
+13   96    0 ADDR  8   10
+14   97    0 ADDR  8   11
+15   98    0 ADDR  8   12
+16   99    0 ADDR  8   13
+17  100    0 ADDR  8   14
+18  101    0 ADDR  8   15
+19  102    0 ADDR  8   16
+1a  103    0 ADDR  8   17
+1b  108    0  SYM  5
+1c  111    0 ADDR  6   b8
+1d  183    0 ADDR  7    0
+1e  189    0  SYM 1e
+1f  190    0 ADDR  8    0
+20  192    0  SYM  3
+21  195    0 ADDR  8   24
+22  200    0  SYM  4
+23  202    0 ADDR  8   3c
+24  219    0  SYM 1f
+25  220    0 ADDR  6   c4
+26  222    0 ADDR  6   d7
+27  225    0 ADDR  6   f0
+28  226    0 ADDR  8   18
+29  229    0  SYM  b
+2a  230    0  SYM  0
+2b  231    0  SYM 1a
+2c  232    0  SYM  1
+2d  233    0  SYM 1b
+2e  234    0 ADDR  8   54
+2f  235    0  SYM  2
+30  236    0  SYM  d
+31  252    0  SYM 28
+32  253    0  SYM  6
+33  257    0 ADDR 10   79
+34  258    0 ADDR  6   1f
+35  259    0 ADDR  6    0
+36  260    0 ADDR  6   2a
+37  264    0 ADDR 10    0
+38  267    0  SYM 1c
+39  268    0  SYM 10
+3a  269    0 ADDR  6   52
+3b  270    0 ADDR  6   35
+3c  271    0 ADDR 10   80
+3d  272    0  SYM 12
+3e  283    0 ADDR  6   6f
+3f  290    0  SYM 11
+40  340    0 ADDR 10  10f
+41  373    0  SYM  a
+42  378    0 ADDR 10  129
+43  389    0 ADDR 10  11c
+44  400    0  SYM 19
+45  409    0 ADDR 10  16a
+46  413    0 ADDR 10   c8
+47  444    0 ADDR 11   10
+48  445    0 ADDR 10   9f
+49  446    0  SYM 1d
+4a  458    0  SYM  9
+4b  468    0 ADDR 10   93
+4c  469    0 ADDR 11    0
+4d  470    0 ADDR 10  168
+Relocation(s): 148
+Line File Tag  Exp  Seg: Off
+  46    0  D    0  @  6:  3c
+  47    0  D    1  @  6:  3f
+  54    0  D    0  @  6:  49
+  55    0  D    0  @  6:  4b
+  57    0  D    1  @  6:  4f
+  64    0  D    2  @  6:  59
+  65    0  D    3  @  6:  5c
+  72    0  D    2  @  6:  66
+  73    0  D    2  @  6:  68
+  75    0  D    3  @  6:  6c
+  80    0  D   1f  @  6:  71
+  81    0  D    4  @  6:  74
+  82    0  D    2  @  6:  76
+  82    0  D    5  @  6:  77
+  83    0  D    3  @  6:  79
+  83    0  D    6  @  6:  7a
+  84    0  D    7  @  6:  7d
+  85    0  D    8  @  6:  80
+  86    0  D    0  @  6:  82
+  86    0  D    9  @  6:  83
+  87    0  D    1  @  6:  85
+  87    0  D    a  @  6:  86
+  88    0  D    b  @  6:  89
+  89    0  D    c  @  6:  8c
+  90    0  D    0  @  6:  8e
+  90    0  D    d  @  6:  8f
+  91    0  D    1  @  6:  91
+  91    0  D    e  @  6:  92
+  92    0  D    f  @  6:  95
+  93    0  D   10  @  6:  98
+  94    0  D    0  @  6:  9a
+  94    0  D   11  @  6:  9b
+  95    0  D    1  @  6:  9d
+  95    0  D   12  @  6:  9e
+  96    0  D   13  @  6:  a1
+  97    0  D   14  @  6:  a4
+  98    0  D    0  @  6:  a6
+  98    0  D   15  @  6:  a7
+  99    0  D    1  @  6:  a9
+  99    0  D   16  @  6:  aa
+ 100    0  D   17  @  6:  ad
+ 101    0  D   18  @  6:  b0
+ 102    0  D    0  @  6:  b2
+ 102    0  D   19  @  6:  b3
+ 103    0  D    1  @  6:  b5
+ 103    0  D   1a  @  6:  b6
+ 108    0  D   1b  @  6:  c5
+ 111    0  w   1c  @  6:  ca
+ 120    0  D   1b  @  6:  d8
+ 122    0  b   28  @  6:  db
+ 183    0  b   1d  @ 10:   1
+ 189    0  D   1e  @ 10:   a
+ 190    0  b   1f  @ 10:   d
+ 192    0  Q   20  @ 10:  10
+ 195    0  D   1b  @ 10:  14
+ 195    0  b   21  @ 10:  18
+ 200    0  Q   22  @ 10:  1f
+ 202    0  D   1b  @ 10:  22
+ 202    0  b   23  @ 10:  26
+ 207    0  Q   22  @ 10:  2d
+ 211    0  D   1b  @ 10:  33
+ 211    0  b   1f  @ 10:  37
+ 214    0  Q   22  @ 10:  3b
+ 216    0  D   1b  @ 10:  40
+ 216    0  b   23  @ 10:  44
+ 219    0  Q   24  @ 10:  48
+ 220    0  Q   25  @ 10:  4a
+ 222    0  Q   26  @ 10:  4e
+ 225    0  Q   27  @ 10:  54
+ 226    0  D   1b  @ 10:  57
+ 226    0  b   28  @ 10:  5a
+ 229    0  Q   29  @ 10:  5e
+ 230    0  D   2a  @ 10:  61
+ 231    0  D   2b  @ 10:  64
+ 232    0  D   2c  @ 10:  67
+ 233    0  D   2d  @ 10:  6a
+ 234    0  D   1b  @ 10:  6d
+ 234    0  b   2e  @ 10:  72
+ 235    0  D   2f  @ 10:  74
+ 236    0  Q   30  @ 10:  75
+ 252    0  D   31  @ 10:  8d
+ 253    0  D   32  @ 10:  90
+ 257    0  Q   33  @ 10:  93
+ 258    0  Q   34  @ 10:  95
+ 259    0  Q   35  @ 10:  97
+ 260    0  Q   36  @ 10:  99
+ 261    0  D   1e  @ 10:  9c
+ 264    0  Q   37  @ 10:  9f
+ 267    0  b   38  @ 10:  a6
+ 268    0  Q   39  @ 10:  a7
+ 269    0  Q   3a  @ 10:  a9
+ 270    0  Q   3b  @ 10:  ab
+ 271    0  Q   3c  @ 10:  ad
+ 272    0  Q   3d  @ 10:  af
+ 274    0  b   38  @ 10:  b4
+ 275    0  Q   39  @ 10:  b5
+ 283    0  Q   3e  @ 10:  c5
+ 290    0  Q   3f  @ 10:  ca
+ 292    0  Q   3f  @ 10:  ce
+ 293    0  D   1e  @ 10:  d1
+ 294    0  Q   3f  @ 10:  d2
+ 295    0  D   1e  @ 10:  d5
+ 296    0  D   1b  @ 10:  d7
+ 299    0  b   28  @ 10:  db
+ 302    0  Q   40  @ 10:  e0
+ 307    0  b   1f  @ 10:  e8
+ 310    0  Q   40  @ 10:  ed
+ 312    0  b   21  @ 10:  f1
+ 315    0  Q   40  @ 10:  f6
+ 317    0  b   23  @ 10:  fa
+ 320    0  Q   40  @ 10:  ff
+ 323    0  b   2e  @ 10: 104
+ 326    0  Q   40  @ 10: 109
+ 328    0  Q   3f  @ 10: 10c
+ 339    0  Q   3f  @ 10: 117
+ 352    0  Q   3f  @ 10: 126
+ 356    0  Q   3f  @ 10: 12b
+ 358    0  Q   3f  @ 10: 12f
+ 369    0  Q   3f  @ 10: 140
+ 372    0  Q   3f  @ 10: 145
+ 373    0  Q   41  @ 10: 147
+ 378    0  P   42  @ 10: 14f
+ 389    0  P   43  @ 10: 165
+ 400    0  Q   44  @ 10: 168
+ 402    0  Q   41  @ 10: 16a
+ 403    0  D   1b  @ 10: 16d
+ 405    0  D   1b  @ 10: 171
+ 407    0  D   1b  @ 10: 175
+ 410    0  D   1b  @ 10: 17d
+ 413    0  Q   46  @ 10: 183
+ 417    0  D   1b  @ 10: 18e
+ 420    0  Q   25  @ 10: 194
+ 422    0  Q   26  @ 10: 198
+ 423    0  Q   43  @ 10: 19a
+ 426    0  D   1b  @ 10: 1a2
+ 438    0  Q   3f  @ 10: 1b6
+ 441    0  D   1b  @ 10: 1be
+ 444    0  b   47  @ 10: 1c6
+ 445    0  w   48  @ 10: 1c8
+ 446    0  Q   49  @ 10: 1ca
+ 457    0  Q   3e  @ 10: 1e2
+ 458    0  B   4a  @ 10: 1e5
+ 459    0  P   45  @ 10: 1e6
+ 460    0  P   45  @ 10: 1e8
+ 468    0  Q   4b  @ 12:   0
+ 469    0  b   4c  @ 12:   3
+ 470    0  w   4d  @ 12:   5
+ 471    0  Q   49  @ 12:   7

@@ -92,7 +92,8 @@ void FileInit(void) {
 }
 
 static byte Errors = 0;
-char InSeg = 0;
+bool InSeg = false;
+
 void Error(const char *Format, ...) {
    if (InSeg) printf("%s: [%d] ", FileTab[StartF], StartLine);
    va_list AP; va_start(AP, Format);
@@ -155,8 +156,7 @@ void OpenF(char *Name) {
    if (ISP >= IS + INCLUDE_MAX - 1) Fatal("Too many nested include files.");
    if (ISP >= IS) {
       ISP->Loc = ftell(InF);
-      if (ISP->Loc == -1L)
-         Fatal("Could not save %s's position.", FileTab[CurF]);
+      if (ISP->Loc == -1L) Fatal("Could not save %s's position.", FileTab[CurF]);
       fclose(InF);
       ISP->Next = Next, ISP->Line = Line, ISP->Path = CurF;
    }
@@ -203,7 +203,7 @@ void SegInit(void) {
       SegP->Type = I, SegP->Rel = false;
       SegP->Base = 0, SegP->Size = 0, SegP->Loc = ftell(ExF);
    }
-   AdP = AddrTab; InSeg = 1;
+   AdP = AddrTab; InSeg = true;
    SegP->Type = 0, SegP->Rel = true,
    SegP->Line = StartLine, SegP->File = StartF,
    SegP->Base = 0, SegP->Size = 0, SegP->Loc = ftell(ExF);
@@ -215,12 +215,10 @@ void SegInit(void) {
 void StartSeg(byte Type, bool Rel, word Base) {
    if (!Active) return;
    if (SegP >= SegTab + SEG_MAX) Fatal("Too many segments.");
-   if (Type > sizeof AddrTab/sizeof *AddrTab)
-      Fatal("Undefined segment type.");
+   if (Type > sizeof AddrTab/sizeof *AddrTab) Fatal("Undefined segment type.");
    AdP = AddrTab + Type;
-   if (!Rel && (Base < AdP->Lo || Base > AdP->Hi))
-      Fatal("Address %u out of range", Base);
-   InSeg = 1;
+   if (!Rel && (Base < AdP->Lo || Base > AdP->Hi)) Fatal("Address %u out of range", Base);
+   InSeg = true;
    SegP->Type = Type, SegP->Rel = Rel,
    SegP->Line = StartLine, SegP->File = StartF,
    SegP->Base = Base, SegP->Size = 0, SegP->Loc = ftell(ExF);
@@ -234,7 +232,7 @@ void EndSeg(void) {
       if (FTab[D] != NULL) Error("Undefined label %d", D);
    SegP->Size = (word)CurLoc;
    if (SegP->Size > 0) SegP++;
-   InSeg = 0;
+   InSeg = false;
 }
 
 void Space(word Size) {
@@ -507,8 +505,7 @@ Start:
          if (Next == '\\') {
             Get();
             if (isoctal(Next))
-               for (Value = 0; isoctal(Next); Get())
-                  Value <<= 3, Value += Next - '0';
+               for (Value = 0; isoctal(Next); Get()) Value <<= 3, Value += Next - '0';
             else if (tolower(Next) == 'x') {
                Get();
                if (!isxdigit(Next))
@@ -550,7 +547,7 @@ Start:
                   else {
                      char Value = 0;
                      for (; isxdigit(Next); Next = fgetc(InF))
-                        Value <<= 4, Value += isdigit(Next)? Next - '0': tolower(Next) - 'a' + 10;
+                        Value <<= 4, Value += isdigit(Next)? Next - '0': tolower(Next) - 'a' + 0xa;
                      *TextP++ = Value;
                   }
                } else {

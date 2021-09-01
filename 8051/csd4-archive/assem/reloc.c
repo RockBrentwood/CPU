@@ -17,8 +17,7 @@ byte Nib(int X) {
 byte CheckSum;
 byte GetHex(FILE *InF) {
    int A = fgetc(InF), B = fgetc(InF);
-   if (A == EOF || B == EOF)
-      fprintf(stderr, "Unexpected EOF.\n"), exit(EXIT_FAILURE);
+   if (A == EOF || B == EOF) fprintf(stderr, "Unexpected EOF.\n"), exit(EXIT_FAILURE);
    byte Bt = Nib(A) << 4 | Nib(B);
    CheckSum = (CheckSum + Bt)&0xff; return Bt;
 }
@@ -72,8 +71,7 @@ word atoh(char *S) {
 
 char *Convert(char *Path) {
    char *S = strdup(Path), *T = S + strlen(S);
-   for (; T > S; T--)
-      if (T[-1] == '.') break;
+   for (; T > S; T--) if (T[-1] == '.') break;
    if (T == S) { free(S); return NULL; }
    *T++ = 'h', *T++ = 'x', *T = '\0';
    return S;

@@ -37,6 +37,8 @@ typedef uint16_t word;
 // As such, the only «independent» spaces are xdata[], cdata[], {d,i}data[0x00-0x7f], idata[0x80-0xff], ddata[0x80-0xff] and PC.
 // Everything else is aliased, somewhere, into one of these spaces.
 // Note also that the subspace idata[0x80-0xff] is not officially available on the 8051.
+// Unnamed registers in the spaces xdata[], bdata[], cdata[], ddata[] are decompiled respectively as Axxxx, Bxx, {B-Z}xxxx, Dxx,
+// containing an uppercase prefix (A-Z) and a hexadecimal numeral of 2 or 4 ‟hexits” (0-9, a-f).
 
 struct {
    char *Name; byte Key;
@@ -46,7 +48,7 @@ struct {
    {"PCON", 0x87}, {"TCON", 0x88}, {"TMOD", 0x89}, {"TL0", 0x8a},
    {"TL1", 0x8b}, {"TH0", 0x8c}, {"TH1", 0x8d}, {"P1", 0x90},
    {"SCON", 0x98}, {"SBUF", 0x99}, {"P2", 0xa0}, {"IE", 0xa8},
-   {"P3", 0xb0}, {"IP", 0xb8}, {"PSW", 0xd0}, {"ACC", 0xe0}, {"B", 0xf0},
+   {"P3", 0xb0}, {"IP", 0xb8}, {"PSW", 0xd0}, {"A", 0xe0}, {"B", 0xf0},
 // 8052-specific registers.
    {"T2CON", 0xc8}, {"RCAP2L", 0xca}, {"RCAP2H", 0xcb}, {"TL2", 0xcc}, {"TH2", 0xcd}
 }, BTab[] = {
@@ -57,7 +59,7 @@ struct {
    {"EX1", 0xaa}, {"ET1", 0xab}, {"ES", 0xac}, {"EA", 0xaf}, {"PX0", 0xb8}, {"PT0", 0xb9},
    {"PX1", 0xba}, {"PT1", 0xbb}, {"PS", 0xbc}, {"RXD", 0xb0}, {"TXD", 0xb1}, {"INT0", 0xb2},
    {"INT1", 0xb3}, {"T0", 0xb4}, {"T1", 0xb5}, {"WR", 0xb6}, {"RD", 0xb7}, {"P", 0xd0},
-   {"OV", 0xd2}, {"RS0", 0xd3}, {"RS1", 0xd4}, {"F0", 0xd5}, {"AC", 0xd6}, {"CY", 0xd7},
+   {"OV", 0xd2}, {"RS0", 0xd3}, {"RS1", 0xd4}, {"F0", 0xd5}, {"AC", 0xd6}, {"C", 0xd7},
 // 8052-specific registers.
    {"T2", 0x90}, {"T2EX", 0x91}, {"ET2", 0xad}, {"PT2", 0xbd}, {"CP_RL2", 0xc8}, {"C_T2", 0xc9},
    {"TR2", 0xca}, {"EXEN2", 0xcb}, {"TCLK", 0xcc}, {"RCLK", 0xcd}, {"EXF2", 0xce}, {"TF2", 0xcf}
@@ -66,71 +68,29 @@ struct {
 const size_t Ds = sizeof DTab/sizeof DTab[0], Bs = sizeof BTab/sizeof BTab[0];
 
 char *Code[0x100] = {
-"nop",           "ajmp %P",  "ljmp %L",     "rr A",
-   "inc A",          "inc %D",         "inc %i",          "inc %i",
-   "inc %n",          "inc %n",          "inc %n",          "inc %n",
-   "inc %n",          "inc %n",          "inc %n",          "inc %n",
-"jbc %B, %R",    "acall %P", "lcall %L",    "rrc A",
-   "dec A",          "dec %D",         "dec %i",          "dec %i",
-   "dec %n",          "dec %n",          "dec %n",          "dec %n",
-   "dec %n",          "dec %n",          "dec %n",          "dec %n",
-"jb %B, %R",     "ajmp %P",  "ret",         "rl A",
-   "add A, %I",      "add A, %D",      "add A, %i",       "add A, %i",
-   "add A, %n",       "add A, %n",       "add A, %n",       "add A, %n",
-   "add A, %n",       "add A, %n",       "add A, %n",       "add A, %n",
-"jnb %B, %R",    "acall %P", "reti",        "rlc A",
-   "addc A, %I",     "addc A, %D",     "addc A, %i",      "addc A, %i",
-   "addc A, %n",      "addc A, %n",      "addc A, %n",      "addc A, %n",
-   "addc A, %n",      "addc A, %n",      "addc A, %n",      "addc A, %n",
-"jc %R",         "ajmp %P",  "orl %D, A",   "orl %D, %I",
-   "orl A, %I",      "orl A, %D",      "orl A, %i",       "orl A, %i",
-   "orl A, %n",       "orl A, %n",       "orl A, %n",       "orl A, %n",
-   "orl A, %n",       "orl A, %n",       "orl A, %n",       "orl A, %n",
-"jnc %R",        "acall %P", "anl %D, A",   "anl %D, %I",
-   "anl A, %I",      "anl A, %D",      "anl A, %i",       "anl A, %i",
-   "anl A, %n",       "anl A, %n",       "anl A, %n",       "anl A, %n",
-   "anl A, %n",       "anl A, %n",       "anl A, %n",       "anl A, %n",
-"jz %R",         "ajmp %P",  "xrl %D, A",   "xrl %D, %I",
-   "xrl A, %I",      "xrl A, %D",      "xrl A, %i",       "xrl A, %i",
-   "xrl A, %n",       "xrl A, %n",       "xrl A, %n",       "xrl A, %n",
-   "xrl A, %n",       "xrl A, %n",       "xrl A, %n",       "xrl A, %n",
-"jnz %R",        "acall %P", "orl C, %B",   "jmp @A+DPTR",
-   "mov A, %I",      "mov %D, %I",     "mov %i, %I",      "mov %i, %I",
-   "mov %n, %I",      "mov %n, %I",      "mov %n, %I",      "mov %n, %I",
-   "mov %n, %I",      "mov %n, %I",      "mov %n, %I",      "mov %n, %I",
-"sjmp %R",       "ajmp %P",  "anl C, %B",   "movc A, @A+PC",
-   "div AB",         "mov %X",         "mov %D, %i",      "mov %D, %i",
-   "mov %D, %n",      "mov %D, %n",      "mov %D, %n",      "mov %D, %n",
-   "mov %D, %n",      "mov %D, %n",      "mov %D, %n",      "mov %D, %n",
-"mov DPTR, %W",  "acall %P", "mov %B, C",   "movc A, @A+DPTR",
-   "subb A, %I",     "subb A, %D",     "subb A, %i",      "subb A, %i",
-   "subb A, %n",      "subb A, %n",      "subb A, %n",      "subb A, %n",
-   "subb A, %n",      "subb A, %n",      "subb A, %n",      "subb A, %n",
-"orl C, /%B",    "ajmp %P",  "mov C, %B",   "inc DPTR",
-   "mul AB",         "ERROR",          "mov %i, %D",      "mov %i, %D",
-   "mov %n, %D",      "mov %n, %D",      "mov %n, %D",      "mov %n, %D",
-   "mov %n, %D",      "mov %n, %D",      "mov %n, %D",      "mov %n, %D",
-"anl C, /%B",    "acall %P", "cpl %B",      "cpl C",
-   "cjne A, %I, %R", "cjne A, %D, %R", "cjne %i, %I, %R", "cjne %i, %I, %R",
-   "cjne %n, %I, %R", "cjne %n, %I, %R", "cjne %n, %I, %R", "cjne %n, %I, %R",
-   "cjne %n, %I, %R", "cjne %n, %I, %R", "cjne %n, %I, %R", "cjne %n, %I, %R",
-"push %D",       "ajmp %P",  "clr %B",      "clr C",
-   "swap A",         "xch A, %D",      "xch A, %i",       "xch A, %i",
-   "xch A, %n",       "xch A, %n",       "xch A, %n",       "xch A, %n",
-   "xch A, %n",       "xch A, %n",       "xch A, %n",       "xch A, %n",
-"pop %D",        "acall %P", "setb %B",     "setb C",
-   "da A",           "djnz %D, %R",    "xchd A, %i",      "xchd A, %i",
-   "djnz %n, %R",     "djnz %n, %R",     "djnz %n, %R",     "djnz %n, %R",
-   "djnz %n, %R",     "djnz %n, %R",     "djnz %n, %R",     "djnz %n, %R",
-"movx A, @DPTR", "ajmp %P",  "movx A, %i", "movx A, %i",
-   "clr A",          "mov A, %D",      "mov A, %i",       "mov A, %i",
-   "mov A, %n",       "mov A, %n",       "mov A, %n",       "mov A, %n",
-   "mov A, %n",       "mov A, %n",       "mov A, %n",       "mov A, %n",
-"movx @DPTR, A", "acall %P", "movx %i, A", "movx %i, A",
-   "cpl A",          "mov %D, A",      "mov %i, A",       "mov %i, A",
-   "mov %n, A",       "mov %n, A",       "mov %n, A",       "mov %n, A",
-   "mov %n, A",       "mov %n, A",       "mov %n, A",       "mov %n, A"
+   "", "P", "L", "A", "A", "D", "i", "i", "n", "n", "n", "n", "n", "n", "n", "n",
+   "BR", "P", "L", "A", "A", "D", "i", "i", "n", "n", "n", "n", "n", "n", "n", "n",
+   "BR", "P", "", "A", "AI", "AD", "Ai", "Ai", "An", "An", "An", "An", "An", "An", "An", "An",
+   "BR", "P", "", "A", "AI", "AD", "Ai", "Ai", "An", "An", "An", "An", "An", "An", "An", "An",
+   "CR", "P", "DA", "DI", "AI", "AD", "Ai", "Ai", "An", "An", "An", "An", "An", "An", "An", "An",
+   "CR", "P", "DA", "DI", "AI", "AD", "Ai", "Ai", "An", "An", "An", "An", "An", "An", "An", "An",
+   "AR", "P", "DA", "DI", "AI", "AD", "Ai", "Ai", "An", "An", "An", "An", "An", "An", "An", "An",
+   "AR", "P", "CB", "dA", "AI", "DI", "iI", "iI", "nI", "nI", "nI", "nI", "nI", "nI", "nI", "nI",
+   "R", "P", "CB", "AZ", "bA", "DD", "iD", "iD", "nD", "nD", "nD", "nD", "nD", "nD", "nD", "nD",
+   "dW", "P", "CB", "Ad", "AI", "AD", "Ai", "Ai", "An", "An", "An", "An", "An", "An", "An", "An",
+   "CB", "P", "CB", "d", "bA", "", "iD", "iD", "nD", "nD", "nD", "nD", "nD", "nD", "nD", "nD",
+   "CB", "P", "B", "C", "AIR", "ADR", "iIR", "iIR", "nIR", "nIR", "nIR", "nIR", "nIR", "nIR", "nIR", "nIR",
+   "D", "P", "B", "C", "A", "AD", "Ai", "Ai", "An", "An", "An", "An", "An", "An", "An", "An",
+   "D", "P", "B", "C", "A", "DR", "Ai", "Ai", "nR", "nR", "nR", "nR", "nR", "nR", "nR", "nR",
+   "Ad", "P", "Ap", "Ap", "A", "AD", "Ai", "Ai", "An", "An", "An", "An", "An", "An", "An", "An",
+   "Ad", "P", "Ap", "Ap", "A", "AD", "Ai", "Ai", "An", "An", "An", "An", "An", "An", "An", "An"
 };
+
+char Mode[0x100] =
+   "aHHmAAAAAAAAAAAA" "bIIoBBBBBBBBBBBB" "cHhnCCCCCCCCCCCC" "dIipDDDDDDDDDDDD"
+   "cHJJJJJJJJJJJJJJ" "dIKKKKKKKKKKKKKK" "dHLLLLLLLLLLLLLL" "cIJeMMMMMMMMMMMM"
+   "HHKufNNNNNNNNNNN" "MINuEEEEEEEEEEEE" "qHMAg.MMMMMMMMMM" "rIssFFFFFFFFFFFF"
+   "jHxxlOOOOOOOOOOO" "kIyyzGPPGGGGGGGG" "vHvvxMMMMMMMMMMM" "wIwwtNNNNNNNNNNN";
 
 bool Generating;
 unsigned Line;
@@ -194,7 +154,7 @@ const word *EEnd = Entries + sizeof Entries/sizeof Entries[0];
 void PushAddr(word Address) {
    const unsigned MaxLinks = 0x19;
    if (Ref[Address] == 0) {
-      printf(";; External reference at %04x to %04x\n", PC, Address); return;
+      printf("// External reference at %04x to %04x\n", PC, Address); return;
    } else if ((Ref[Address]&~0x80) == 0) {
       Error(false, "Entry into ARG at %04x.", PC); return;
    } else if ((Ref[Address]&~0x80) < MaxLinks) Ref[Address]++;
@@ -203,14 +163,104 @@ void PushAddr(word Address) {
    *EP++ = Address;
 }
 
+char *Decompile(unsigned char Op) {
+   switch (Mode[Op]) {
+   // nop
+      case 'a': return "delta(1);";
+   // jbc B, Addr
+      case 'b': return "if (%1) { %1 = 0; goto %2; }";
+   // jb B, Addr/jc Addr/jz Addr
+      case 'c': return "if (%1) goto %2;";
+   // jnb B, Addr/jnc Addr/jnz Addr
+      case 'd': return "if (!%1) goto %2;";
+   // cjne D1, D2, Addr
+      case 'F': return "C = (%1 < %2); if (%1 != %2) goto %3;";
+   // djnz D, Addr
+      case 'G': return "if (--%1 != 0) goto %2;";
+   // jmp @A+DPTR
+      case 'e': return "goto %1[%2];";
+   // sjmp Addr/ajmp Addr/ljmp Addr
+      case 'H': return "goto %1;";
+   // acall Addr/lcall Addr
+      case 'I': return "%1();";
+   // ret
+      case 'h': return "return;";
+   // reti
+      case 'i': return "clri(); return;";
+   // swap D
+      case 'l': return "%1 = rot(%1, 4);";
+   // rr D
+      case 'm': return "%1 = rot(%1, -1);";
+   // rl D
+      case 'n': return "%1 = rot(%1, 1);";
+   // rrc D
+      case 'o': return "%1:C = C:%1;";
+   // rlc D
+      case 'p': return "C:%1 = %1:C;";
+   // inc D
+      case 'A': return "%1++;";
+   // dec D
+      case 'B': return "%1--;";
+   // add D1, D2
+      case 'C': return "C:%1 += %2;";
+   // addc D1, D2
+      case 'D': return "C:%1 += %2 + C;";
+   // subb D1, D2
+      case 'E': return "C:%1 -= %2 + C;";
+   // div AB
+      case 'f': return "%1:%2 = div(%1:%2);";
+   // mul AB
+      case 'g': return "%1:%2 = %2*%1;";
+   // orl D1, D2
+      case 'J': return "%1 |= %2;";
+   // anl D1, D2
+      case 'K': return "%1 &= %2;";
+   // xrl D1, D2
+      case 'L': return "%1 ^= %2;";
+   // orl B1, /B2
+      case 'q': return "%1 |= !%2;";
+   // anl B1, /B2
+      case 'r': return "%1 &= !%2;";
+   // cpl B
+      case 's': return "%1 = !%1;";
+   // cpl D
+      case 't': return "%1 = ~%1;";
+   // mov D1, D2
+      case 'M': return "%1 = %2;";
+   // mov D2, D1
+      case 'N': return "%2 = %1;";
+   // xch D1, D2
+      case 'O': return "%1 <-> %2;";
+   // movc A, @A+PC/movc A, @A+DPTR
+      case 'u': return "%1 = %2[%1];";
+   // movx A, @DPTR/movx A, @Ri
+      case 'v': return "%1 = *%2;";
+   // movx @DPTR, A/movx @Ri, A
+      case 'w': return "*%2 = %1;";
+   // push D
+      case 'j': return "push(%1);";
+   // pop D
+      case 'k': return "%1 = pop();";
+   // clr D/clr B
+      case 'x': return "%1 = 0;";
+   // setb B
+      case 'y': return "%1 = 1;";
+   // (undefined)
+      case '.': return "ERROR";
+   // da D
+      case 'z': return "%1 = da(%1);";
+   // xchd D1, @D2
+      case 'P': return "%1 <-d-> %2;";
+      default: return NULL;
+   }
+}
+
 void PutByte(byte B) {
-   if (B >= 0xa0) putchar('0');
-   printf("%02xh", (unsigned)B);
+   printf("0x%02x", (unsigned)B);
 }
 
 void PutWord(word W) {
-   if (W >= 0xa000) putchar('0');
-   printf("%04xh", (unsigned)W);
+   printf("0x%04x", (unsigned)W);
 }
 
 byte Nib(int Ch) {
@@ -258,7 +308,7 @@ void HexLoad(void) {
 
 void PutDReg(byte D) {
    char *Name = LookUp(1, NULL, D);
-   if (Name != NULL) printf("%s", Name); else PutByte(D);
+   if (Name != NULL) printf("%s", Name); else printf("D%02x", D);
 }
 
 void PutBReg(byte B) {
@@ -266,8 +316,10 @@ void PutBReg(byte B) {
    if (Name != NULL) { printf("%s", Name); return; }
    Name = LookUp(1, NULL, B < 0x80? B >> 3 | 0x20: B&~7);
    if (Name != NULL) { printf("%s.%u", Name, B&7); return; }
-   PutByte(B);
+   printf("B%02x", B);
 }
+
+void PutXData(word X) { printf("A%04x", (unsigned)X); }
 
 void PutLabel(word C) {
    char *Name = LookUp(0, NULL, C);
@@ -298,6 +350,7 @@ int Fetch(bool IsOp) {
 }
 
 void Disassemble(void) {
+   struct { word Value; int Space; } Rand[4];
    for (int Ch; (Ch = Fetch(true)) != EOF; ) {
       byte Op = (byte)Ch;
    // This is the only indirectly-addressed jump or call in the MCS-51.
@@ -308,49 +361,83 @@ void Disassemble(void) {
       bool Breaking = (Op&~0x10) == 0x22 || (Op&0x1f) == 0x01 || Op == 0x02 || Op == 0x80 || Op == 0x73;
       if (Generating) {
          if (!Breaking) printf("   ");
-      } else if (Indirect) printf(";; Indirect jump at %04x\n", (unsigned)PC - 1);
-      for (char *S = Code[Op]; *S != '\0'; S++) {
-         if (*S != '%') {
-            if (Generating) putchar(*S);
-            continue;
-         }
-         byte Arg; word Lab;
-         switch (*++S) {
-         // 8-bit data or address:
-            case 'B': case 'D': case 'I':
-               if ((Ch = Fetch(false)) == EOF) return; else Arg = (byte)Ch;
-            break;
-         // Relative address (8-bit signed):
-            case 'R':
-               if ((Ch = Fetch(false)) == EOF) return; else Lab = PC + (sbyte)Ch;
-            break;
-         // Paged address (3+8-bit unsigned):
-            case 'P':
-               if ((Ch = Fetch(false)) == EOF) return; else Lab = PC&0xf800 | (Op&0xe0) << 3 | (byte)Ch;
-            break;
-         // 16-bit data or address:
-            case 'L': case 'W': case 'X':
-               if ((Ch = Fetch(false)) == EOF) return; else Lab = (byte)Ch;
-               if ((Ch = Fetch(false)) == EOF) return; else Lab = Lab << 8 | (byte)Ch;
-            break;
-         }
-         if (Generating) switch (*S) {
-            case 'I': putchar('#'), PutByte(Arg); break;
-            case 'B': PutBReg(Arg); break;
-            case 'D': PutDReg(Arg); break;
-            case 'X': PutDReg(Lab&0xff), printf(", "), PutDReg(Lab >> 8); break;
-            case 'R': case 'P': case 'L': PutLabel(Lab); break;
-            case 'W': putchar('#'), PutWord(Lab); break;
-            case 'i': printf("@R%1x", (unsigned)Op&1); break;
-            case 'n': printf("R%1x", (unsigned)Op&7); break;
-            default: Error(true, "Bad format string, PC = %04x.", (unsigned)PC);
-         } else switch (*S) {
-            case 'R': case 'P': case 'L':
-               if (Recursing || Calling) PushAddr(Lab);
-            break;
-         }
+      } else if (Indirect) printf("// Indirect jump at %04x\n", (unsigned)PC - 1);
+      unsigned Rx = 0, Lab;
+      for (char *S = Code[Op]; *S != '\0'; S++) switch (*S) {
+      // Data register De0 (ACC) is A.
+         case 'A': Rand[Rx].Value = 0xe0, Rand[Rx++].Space = 1; break;
+      // 8-bit bit register address Bxx in bdata[].
+         case 'B':
+            if ((Ch = Fetch(false)) == EOF) return; else Rand[Rx].Value = (byte)Ch, Rand[Rx++].Space = 2;
+         break;
+      // Bit register Bd7 (CY) is C.
+         case 'C': Rand[Rx].Value = 0xd7, Rand[Rx++].Space = 2; break;
+      // 8-bit data register address Dxx in ddata[].
+         case 'D':
+            if ((Ch = Fetch(false)) == EOF) return; else Rand[Rx].Value = (byte)Ch, Rand[Rx++].Space = 1;
+         break;
+      // 8-bit data value xx.
+         case 'I':
+            if ((Ch = Fetch(false)) == EOF) return; else Rand[Rx].Value = (byte)Ch, Rand[Rx++].Space = 4;
+         break;
+      // 16-bit code address xxxx in cdata[].
+         case 'L':
+            if ((Ch = Fetch(false)) == EOF) return; else Lab = (byte)Ch;
+            if ((Ch = Fetch(false)) == EOF) return; else Lab = Lab << 8 | (byte)Ch;
+         goto AddLabel;
+      // 8-bit paged code address xx in cdata[].
+         case 'P':
+            if ((Ch = Fetch(false)) == EOF) return; else Lab = PC&0xf800 | (Op&0xe0) << 3 | (byte)Ch;
+         goto AddLabel;
+      // 8-bit code address offset xx in cdata[].
+         case 'R':
+            if ((Ch = Fetch(false)) == EOF) return; else Lab = PC + (sbyte)Ch;
+         AddLabel:
+            Rand[Rx].Value = Lab, Rand[Rx++].Space = 0;
+            if (!Generating && (Recursing || Calling)) PushAddr(Lab);
+         break;
+      // 16-bit data value xxxx.
+         case 'W':
+            if ((Ch = Fetch(false)) == EOF) return; else Lab = (byte)Ch;
+            if ((Ch = Fetch(false)) == EOF) return; else Lab = Lab << 8 | (byte)Ch;
+            Rand[Rx].Value = Lab, Rand[Rx++].Space = 5;
+         break;
+      // 16-bit program counter PC.
+         case 'Z': Rand[Rx].Value = PC, Rand[Rx++].Space = 3; break;
+      // Data register Df0 (ACC) is B.
+         case 'b': Rand[Rx].Value = 0xf0, Rand[Rx++].Space = 1; break;
+      // The 16-bit DPTR register (aliased as DPTR = DPH:DPL = D83:D82).
+         case 'd': Rand[Rx].Value = 0, Rand[Rx++].Space = 8; break;
+      // The 1-bit address (i = 0, 1) for the 8-bit register pointer @Ri into idata[].
+         case 'i': Rand[Rx].Value = Op&1, Rand[Rx++].Space = 7; break;
+      // The 3-bit address (n = 0,1,2,3,4,5,6,7) for register Rn in rdata[].
+         case 'n': Rand[Rx].Value = Op&7, Rand[Rx++].Space = 6; break;
+      // The 1-bit address (i = 0, 1) for the 16-bit register pointer P2:@Ri into xdata[].
+         case 'p': Rand[Rx].Value = Op&1, Rand[Rx++].Space = 9; break;
       }
-      if (Generating) putchar('\n');
+      if (Generating) {
+         for (char *S = Decompile(Op); *S != '\0'; S++) {
+            if (*S != '%') { putchar(*S); continue; }
+            int Ch;
+            switch (*++S) {
+               case '1': case '2': case '3': case '4': Ch = *S - '1'; break;
+               default: Error(true, "Bad format string, PC = %04x.", PC); continue;
+            }
+            switch (Rand[Ch].Space) {
+               case 0: PutLabel(Rand[Ch].Value); break;
+               case 1: PutDReg(Rand[Ch].Value); break;
+               case 2: PutBReg(Rand[Ch].Value); break;
+               case 3: PutXData(Rand[Ch].Value); break;
+               case 4: PutByte(Rand[Ch].Value); break;
+               case 5: PutWord(Rand[Ch].Value); break;
+               case 6: printf("R%1x", Rand[Ch].Value); break;
+               case 7: printf("*R%1x", Rand[Ch].Value); break;
+               case 8: printf("DPTR"); break;
+               case 9: printf("P2:R%1x", Rand[Ch].Value); break;
+            }
+         }
+         putchar('\n');
+      }
       if (Breaking) break;
    }
 }
@@ -358,9 +445,9 @@ void Disassemble(void) {
 void PutData(byte *Buf, size_t N, size_t Max) {
    if (NoData) return;
    for (size_t n = 0; n < N; n++) {
-      if (n == 0) printf("db "); else putchar(',');
+      if (n == 0) printf("// db "); else putchar(',');
       unsigned Ch = Buf[n];
-      printf("%c%02xh", Ch >= 0xa0? '0': ' ', Ch);
+      printf("0x%02x", Ch);
    }
    for (size_t n = N; n < Max; n++) printf("     ");
    printf(" ;; %04x:", PC - N);
@@ -471,16 +558,16 @@ int main(void) {
    while (EP > Entries) PC = *--EP, Disassemble();
    Generating = true; if (Loud) fprintf(stderr, "Second pass\n");
    for (Symbol Sym = BList; Sym != NULL; Sym = Sym->CLink)
-      if (Sym->Defined) printf("%s bit ", Sym->Name), PutByte(Sym->Key), putchar('\n');
+      if (Sym->Defined) printf("// %s bit ", Sym->Name), PutByte(Sym->Key), putchar('\n');
    for (Symbol Sym = DList; Sym != NULL; Sym = Sym->CLink)
-      if (Sym->Defined) printf("%s %s ", Sym->Name, Sym->Key >= 0x80? "sfr": "data"), PutByte(Sym->Key), putchar('\n');
+      if (Sym->Defined) printf("// %s %s ", Sym->Name, Sym->Key >= 0x80? "sfr": "data"), PutByte(Sym->Key), putchar('\n');
    for (Symbol Sym = CList; Sym != NULL; Sym = Sym->CLink)
-      if (Sym->Defined) printf(";; %s code ", Sym->Name), PutWord(Sym->Key), printf(" [%d]\n", (Ref[Sym->Key] - 1)&0x7f);
+      if (Sym->Defined) printf("// %s code ", Sym->Name), PutWord(Sym->Key), printf(" [%d]\n", (Ref[Sym->Key] - 1)&0x7f);
    for (PC = 0x0000; PC < HiPC; ) {
-      printf("org "), PutWord(PC), putchar('\n');
+      printf("// org "), PutWord(PC), putchar('\n');
       while (Ref[PC] > 0) {
          if (Ref[PC]&0x80) { Disassemble(); continue; }
-         printf(";; DATA at "), PutWord(PC);
+         printf("// DATA at "), PutWord(PC);
          if (NoData) printf(" (not shown)");
          putchar('\n');
          byte Buf[0x10]; size_t Max = sizeof Buf/sizeof Buf[0], N = 0;

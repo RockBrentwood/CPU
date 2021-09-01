@@ -31,8 +31,7 @@ static struct Exp EStack[STACK_MAX], *EP;
 static Exp AStack[STACK_MAX], *AP;
 
 static void Push(StackTag Tag) {
-   if (TP >= TStack + STACK_MAX)
-      Fatal("Expression too complex ... aborting.");
+   if (TP >= TStack + STACK_MAX) Fatal("Expression too complex ... aborting.");
    *TP++ = Tag;
 }
 
@@ -79,7 +78,7 @@ Exp EvalExp(Exp E) {
          if (Op == PLUS) return A;
          switch (A->Tag) {
             case AddrX:
-               Error("Address cannot be used with prefix operator.");
+               Error("Address cannot be used with prefix operator."),
                Tag = NumX; Value = SegOf(A)->Base + OffOf(A);
             break;
             case NumX: Tag = NumX; Value = ValOf(A); break;
@@ -138,9 +137,7 @@ Exp EvalExp(Exp E) {
                      Tag = BinX; break;
                   } else {
                      Offset = SegOf(A)->Base + OffOf(A);
-                     if (SegOf(A)->Type == DATA && Offset >= 0x80)
-                        Error("Indirect registers are not bit addressible."),
-                        Offset = 0;
+                     if (SegOf(A)->Type == DATA && Offset >= 0x80) Error("Indirect registers are not bit addressible."), Offset = 0;
                   }
                goto XX;
                default: Tag = BinX; break;
@@ -148,8 +145,7 @@ Exp EvalExp(Exp E) {
             if (Tag == AddrX) switch (B->Tag) {
                case NumX: {
                   word ValB = ValOf(B);
-                  if (ValB >= 8)
-                     Error("Bit position out of range."), ValB &= 7;
+                  if (ValB >= 8) Error("Bit position out of range."), ValB &= 7;
                   Offset += ValB;
                }
                break;
@@ -162,7 +158,8 @@ Exp EvalExp(Exp E) {
             Tag = NumX;
             if (A->Tag == AddrX || B->Tag == AddrX)
                Error("Address cannot be used with infix operator.");
-            else if (A->Tag != NumX && B->Tag != NumX) Tag = BinX;
+            else if (A->Tag != NumX && B->Tag != NumX)
+               Tag = BinX;
             if (Tag == NumX) {
                Value = A->Tag == NumX? ValOf(A): OffOf(A);
                word ValB = B->Tag == NumX? ValOf(B): OffOf(B);
@@ -199,8 +196,10 @@ Exp EvalExp(Exp E) {
          if (Phase == 1) A = EvalExp(A), B = EvalExp(B), C = EvalExp(C);
          if (A->Tag == AddrX) {
             Error("Address cannot appear in: x? x: x"); return C;
-         } else if (A->Tag != NumX) Tag = CondX;
-         else return EvalExp((ValOf(A))? B: C);
+         } else if (A->Tag != NumX)
+            Tag = CondX;
+         else
+            return EvalExp((ValOf(A))? B: C);
       break;
    }
    if (Direct < 2) {
@@ -209,12 +208,10 @@ Exp EvalExp(Exp E) {
             if (Seg->Rel) Error("Relative address cannot be used here");
             Tag = NumX, Value = Seg->Base + Offset;
          }
-      } else {
-         if (Tag == SymX)
-            Error("Undefined symbol: %s", Sym->Name), Tag = NumX, Value = 0;
-         else if (Tag != NumX)
-            Error("Undefined expression"), Tag = NumX, Value = 0;
-      }
+      } else if (Tag == SymX)
+         Error("Undefined symbol: %s", Sym->Name), Tag = NumX, Value = 0;
+      else if (Tag != NumX)
+         Error("Undefined expression"), Tag = NumX, Value = 0;
       if (Tag == NumX)
          EP->Tag = NumX, ValOf(EP) = Value;
       else
@@ -228,36 +225,30 @@ Exp EvalExp(Exp E) {
    switch (Tag) {
       case NumX:
          H = (Value^(Value>>6)^(Value>>12))&0x3f;
-         for (E = ExpHash[H]; E != NULL; E = E->Tail)
-            if (Value == ValOf(E)) return E;
+         for (E = ExpHash[H]; E != NULL; E = E->Tail) if (Value == ValOf(E)) return E;
       break;
       case AddrX:
          H = (Bs^(Bs>>6)^Offset^(Offset>>6)^(Offset>>12))&0x3f|0x40;
-         for (E = ExpHash[H]; E != NULL; E = E->Tail)
-            if (Seg == SegOf(E) && Offset == OffOf(E)) return E;
+         for (E = ExpHash[H]; E != NULL; E = E->Tail) if (Seg == SegOf(E) && Offset == OffOf(E)) return E;
       break;
       case SymX: {
          char *S;
          for (H = 0, S = Sym->Name; *S != '\0'; S++) H ^= *S;
          H = H&0x3f|0x80;
-         for (E = ExpHash[H]; E != NULL; E = E->Tail)
-            if (Sym == SymOf(E)) return E;
+         for (E = ExpHash[H]; E != NULL; E = E->Tail) if (Sym == SymOf(E)) return E;
       }
       break;
       case UnX:
          H = (Op^(Op>>6)^A->Hash)&0xf|0xe0;
-         for (E = ExpHash[H]; E != NULL; E = E->Tail)
-            if (Op == OpOf(E) && A == ArgA(E)) return E;
+         for (E = ExpHash[H]; E != NULL; E = E->Tail) if (Op == OpOf(E) && A == ArgA(E)) return E;
       break;
       case BinX:
          H = (Op^(Op>>6)^A->Hash^B->Hash)&0x1f|0xc0;
-         for (E = ExpHash[H]; E != NULL; E = E->Tail)
-            if (Op == OpOf(E) && A == ArgA(E) && B == ArgB(E)) return E;
+         for (E = ExpHash[H]; E != NULL; E = E->Tail) if (Op == OpOf(E) && A == ArgA(E) && B == ArgB(E)) return E;
       break;
       case CondX:
          H = (A->Hash^B->Hash^C->Hash)&0xf|0xf0;
-         for (E = ExpHash[H]; E != NULL; E = E->Tail)
-            if (A == ArgA(E) && B == ArgB(E) && C == ArgC(E)) return E;
+         for (E = ExpHash[H]; E != NULL; E = E->Tail) if (A == ArgA(E) && B == ArgB(E) && C == ArgC(E)) return E;
       break;
    }
    if (Phase == 1) E = E1, E->Mark = true;
@@ -353,8 +344,7 @@ BegEx:
    }
 EndEx:
    Act = Action[*--TP][OpTab[L] >> 5];
-   if (Act == 'C')
-      Act = ((OpTab[L]&0xe0) < (OpTab[OP[-1]]&0xe0))? '+': 'b';
+   if (Act == 'C') Act = ((OpTab[L]&0xe0) < (OpTab[OP[-1]]&0xe0))? '+': 'b';
    switch (Act) {
       case '+': TP++; Push(BIN); *OP++ = L; PutE(A); L = Scan(); goto BegEx;
       case '?': TP++; Push(COND); PutE(A); L = Scan(); goto BegEx;

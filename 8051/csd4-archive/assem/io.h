@@ -3,7 +3,7 @@ typedef unsigned short word;
 
 extern FILE *ExF;
 
-extern char InSeg;
+extern bool InSeg;
 extern char **FileTab;
 extern int StartF, CurF;
 extern long Files;

@@ -103,8 +103,7 @@ void OpInit(void) {
    Mode *M = ModeTab;
    for (Code *OC = CodeTab; OC < CodeTab + ELEMENTS(CodeTab); OC++) {
       OC->Start = M; M += OC->Modes;
-      if (M > ModeTab + ELEMENTS(ModeTab))
-         fprintf(stderr, "Bad opcode initialization.\n"), exit(EXIT_FAILURE);
+      if (M > ModeTab + ELEMENTS(ModeTab)) fprintf(stderr, "Bad opcode initialization.\n"), exit(EXIT_FAILURE);
    }
 }
 
@@ -182,8 +181,7 @@ void ParseArgs(byte Mnem) {
    *XP = 0, *EP = NULL;
    Code *CP = CodeTab + Mnem;
    Mode *MP = CP->Start;
-   for (; MP < CP->Start + CP->Modes; MP++)
-      if (strcmp(XBuf, MP->X) == 0) break;
+   for (; MP < CP->Start + CP->Modes; MP++) if (strcmp(XBuf, MP->X) == 0) break;
    if (MP >= CP->Start + CP->Modes) {
       Error("Invalid addressing mode: %s.", CP->Name); return;
    }

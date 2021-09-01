@@ -1,0 +1,34 @@
+Image:
+   0: 75 98 c0 c2 bc c2 cd c2 cc e5 89 54  f 24 20 f5
+  10: 89 75 8d fd d2 8e c2 9b c2 98 c2 99 d2 9d d2 ac
+  20: 22 30 b4  4 c2 b4 d2 9c 78  0  0  0 e5 99 30 e6
+  30: f0 54 3f 22 20 b4  8 7e 64 de fe c2 9c d2 b4 f5
+  40: 99 78  0  0  0 22
+File(s): 3
+## Name,
+ 0       stdio.asm
+ 1        8051fa.h
+ 2        kernel.h
+Segment(s): 6
+## Line File Rel Type Base Size  Loc
+ 5  259    0  r    0    0   46       22
+Gap(s): 0
+Symbol(s): 6
+##     Scope Var Type   Value  Name
+ 0    global     ADDR   5:  21 getchar
+ 1  external     ADDR   0:   0 Pause
+ 2    global     ADDR   5:  34 putchar
+ 3    global     ADDR   5:   0 SetPort
+ 4  external     ADDR   2:   0 SP_RI
+ 5  external     ADDR   2:   0 SP_TI
+Expression(s): 3
+## Line File  Tag Args...
+ 0   33    0  SYM  4
+ 1   34    0  SYM  1
+ 2   48    0  SYM  5
+Relocation(s): 4
+Line File Tag  Exp  Seg: Off
+  33    0  b    0  @  5:  29
+  34    0  Q    1  @  5:  2a
+  48    0  b    2  @  5:  42
+  49    0  Q    1  @  5:  43

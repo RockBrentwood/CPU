@@ -1,0 +1,27 @@
+=== Running cas on data ===
+=== Assembling data ===
+=== Linking data to d.hex ===
+=== Running reloc on d.hex ===
+=== Testing reloc on d.hex ===
+=== Running and Testing ds on data ===
+=== ds: math.o ===
+=== ds: data.o ===
+=== ds: kernel.o ===
+=== ds: stdio.o ===
+=== Running das on d.hex ===
+=== Testing das on d.hex ===
+=== Running dac on d.hex ===
+=== Testing dac on d.hex ===
+=== Testing cas on data: data.hex versus d.hex ===
+=== Running cas on hexs ===
+=== Assembling hexs ===
+=== Linking hexs to rr.hex ===
+=== Running reloc on rr.hex ===
+=== Testing reloc on rr.hex ===
+=== Running and Testing ds on hexs ===
+=== ds: r.o ===
+=== Running das on rr.hex ===
+=== Testing das on rr.hex ===
+=== Running dac on rr.hex ===
+=== Testing dac on rr.hex ===
+=== Testing case on hexs: r.hex versus rr.hex ===

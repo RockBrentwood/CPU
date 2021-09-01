@@ -10,6 +10,8 @@ The typical conmmand line for this disassembler is:
 The input file (read from standard input) is assumed to be in Intel Hex Format.
 The output is placed in standard output (or in a file when redirection is used).
 
+A very primitive decompiler, dac, is also included, which produces rough pseudo-code C equivalents of the MCS-51 mnemonics.
+
 0a. Configuration/Entry Point File
 ⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
 A third file:
@@ -52,9 +54,9 @@ Examples:
 ∙	entry 0000, 0003, 000b, 0013, 001b, 0023, 002b
 ∙	0, 3, B, 13, 1B, 23, 2B
 
-A definition line may list 1, 2 or more definitions, each consisting of a name followed by a numeric value.
+A definition line may list 1, 2 or more definitions, each consisting of a name followed by a numeral.
 ∙	A name consists of any sequence of 1, 2 or more letters, digits and underscores, not beginning in a digit.
-∙	Numerical values are all listed in hexadecimal.
+∙	Numerals are all listed in hexadecimal.
 ∙	Each name is separated from its numeric value, and each definition from one another
 	by 1, 2 or more characters other than ;, /, letters, digits or underscores.
 
@@ -138,6 +140,17 @@ In the output, addresses are labeled in the format illustrated below:
 The initial letter indicates the number of times this address is referenced with the following key:
 	B = 1 reference, C = 2 references, D = 3, E = 4, etc.
 the next 4 items represent that actual address of the label in hexadecimal.
+
+1a. Addendum on the DAC decompiler
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+For the DAC decompiler, a similar format is used for output, with the following modifications:
+∙	Comments are prefixed by ‟//”, instead of by ‟;;”.
+∙	The ‟db” and ‟org” directives are commented out.
+∙	The 8051 mnemonics are replaced by their approximate C equivalents.
+	Some operations are listed in pseudo-code form (e.g. A <-> B for the ‟xch” operation).
+∙	The side effects of operations on flags are not accounted for.
+	One way to resolve this in an upward revision of DAC,
+	is to introduce such effects on a need-to-use basis, as separate operations.
 
 2. Errors
 ─────────

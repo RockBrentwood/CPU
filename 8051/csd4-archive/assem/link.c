@@ -43,8 +43,7 @@ static void SetImage(void) {
    for (Block BP = BHead[0]; BP != NULL; BP = BP->Next) {
       Segment Seg = BP->Seg;
       Image IP = IHead;
-      for (; IP != NULL; IP = IP->Next)
-         if (IP->Base >= Seg->Base) break;
+      for (; IP != NULL; IP = IP->Next) if (IP->Base >= Seg->Base) break;
       Image P = IP == NULL? ITail: IP->Prev;
       if (P != NULL && P->Base + P->Size > Seg->Base)
          Fatal("Overlapping segments at [%d] %s and [%d] %s.", P->Line, P->Src, Seg->Line, BP->Src);
@@ -60,8 +59,7 @@ static void SetImage(void) {
 static void FitGap(Gap G) {
    word Base = G->Seg->Base + G->Offset; long Size = G->Size;
    Image IP = IHead;
-   for (; IP != NULL; IP = IP->Next)
-      if (IP->Base > Base) break;
+   for (; IP != NULL; IP = IP->Next) if (IP->Base > Base) break;
    Image P = IP == NULL? ITail: IP->Prev;
    if (P == NULL) Fatal("Internal error (2).");
    long End = Base + Size, EndP = P->Base + P->Size;
@@ -95,12 +93,10 @@ void SetFree(void) {
       Block P = NULL; Free F = FHead[T];
       for (Block B = BHead[T]; B != NULL; P = B, B = B->Next) {
          long Base = P == NULL? AddrTab[T].Lo: (long)P->Seg->Base + P->Seg->Size;
-         if (Base < B->Seg->Base)
-            F->Base = Base, F->Size = (long)B->Seg->Base - Base, F->BP = P, F++;
+         if (Base < B->Seg->Base) F->Base = Base, F->Size = (long)B->Seg->Base - Base, F->BP = P, F++;
       }
       long Base = P == NULL? AddrTab[T].Lo: (long)P->Seg->Base + P->Seg->Size;
-      if (Base <= AddrTab[T].Hi)
-         F->Base = Base, F->Size = (long)AddrTab[T].Hi + 1 - Base, F->BP = P, F++;
+      if (Base <= AddrTab[T].Hi) F->Base = Base, F->Size = (long)AddrTab[T].Hi + 1 - Base, F->BP = P, F++;
       FSize[T] = F - FHead[T];
    }
 }
@@ -152,8 +148,7 @@ void Fit(char *Obj, Segment Seg) {
    if (Seg->Rel) return;
    byte T = Seg->Type;
    Block Prev = NULL, Cur = BHead[T];
-   for (; Cur != NULL; Prev = Cur, Cur = Cur->Next)
-      if (Cur->Seg->Base >= Seg->Base) break;
+   for (; Cur != NULL; Prev = Cur, Cur = Cur->Next) if (Cur->Seg->Base >= Seg->Base) break;
    if (Prev != NULL && Prev->Seg->Base + Prev->Seg->Size > Seg->Base)
       Error("Overlapping segments: %s [%d] and %s [%d].", FileTab[Seg->File], Seg->Line, Prev->Src, Prev->Seg->Line);
    if (Cur != NULL && Cur->Seg->Base < Seg->Base + Seg->Size)
@@ -241,8 +236,7 @@ RList RHead;
 
 void AddReloc(byte Size, long PC, long Val) {
    RList P = NULL, S = RHead;
-   for (; S != NULL; P = S, S = S->Next)
-      if (S->PC >= PC) break;
+   for (; S != NULL; P = S, S = S->Next) if (S->PC >= PC) break;
    if (S != NULL && S->PC == PC) Fatal("Internal error (4).");
    RList R = Allocate(sizeof *R);
    if (P == NULL) RHead = R; else P->Next = R;
@@ -322,8 +316,7 @@ void EndHex(void) {
    if (HexX > 0) {
       int Sum = (HexAddr&0xff) + ((HexAddr >> 8)&0xff) + HexX;
       fprintf(HexF, ":%02X%04X00", HexX, HexAddr);
-      for (unsigned H = 0; H < HexX; H++)
-         fprintf(HexF, "%02X", HexBuf[H]), Sum += HexBuf[H];
+      for (unsigned H = 0; H < HexX; H++) fprintf(HexF, "%02X", HexBuf[H]), Sum += HexBuf[H];
       fprintf(HexF, "%02X\n", (unsigned)((-Sum)&0xff));
       HexX = 0;
    }
@@ -334,8 +327,7 @@ void PutHex(long Addr, byte Hex) {
    if (HexX == 0x10) {
       int Sum = (HexAddr&0xff) + ((HexAddr >> 8)&0xff) + HexX;
       fprintf(HexF, ":10%04X00", HexAddr);
-      for (unsigned H = 0; H < HexX; H++)
-         fprintf(HexF, "%02X", HexBuf[H]), Sum += HexBuf[H];
+      for (unsigned H = 0; H < HexX; H++) fprintf(HexF, "%02X", HexBuf[H]), Sum += HexBuf[H];
       fprintf(HexF, "%02X\n", (unsigned)((-Sum)&0xff));
       HexX = 0;
    }
@@ -385,14 +377,13 @@ void Link(char *Hex) {
    Active = true, Phase = 2;
    SymInit(); SetSeg();
    for (int F = 0; F < Fs; F++) GetHead(FTab + F);
-   for (Sym = NIL->Next[0]; Sym != NIL; Sym = Sym->Next[0])
-      if (!Sym->Defined) Error("Unresolved external: %s.", Sym->Name);
+   for (Sym = NIL->Next[0]; Sym != NIL; Sym = Sym->Next[0]) if (!Sym->Defined) Error("Unresolved external: %s.", Sym->Name);
    Check();
-   InSeg = 1;
+   InSeg = true;
    SetFree();
    for (int F = 0; F < Fs; F++) FitSegs(FTab + F);
    PurgeFree();
-   InSeg = 0;
+   InSeg = false;
    Check();
    SetImage();
    for (int F = 0; F < Fs; F++) {
@@ -401,9 +392,9 @@ void Link(char *Hex) {
    }
    Check();
    FreeBlocks();
-   InSeg = 1; RHead = NULL;
+   InSeg = true; RHead = NULL;
    for (int F = 0; F < Fs; F++) SetRelocs(FTab + F);
-   InSeg = 0;
+   InSeg = false;
    Check();
    GenImage(Hex);
 }

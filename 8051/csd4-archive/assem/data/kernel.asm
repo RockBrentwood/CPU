@@ -4,12 +4,12 @@ include "data.h"
 
 extern code main
 seg data at 0
-RB0: ds 8 ;;; Register space.
+RB0: ds 8 ;; Register space.
 
 seg data at 8
 /* Process stack. */
-HW:    ds 1 ;;; int **HW;
-Stack: ds 3 ;;; int *Stack[3];
+HW:    ds 1 ;; int **HW;
+Stack: ds 3 ;; int *Stack[3];
 
 /* Interrupt descriptor table. */
 global SP_IE0: ds 1
@@ -46,7 +46,7 @@ sjmp UpdateStatus
 
 DidBoth:
    mov A, RCAP2H
-   jb ACC.7, DidEXF2 ;;; This determines if TF2 or EXF2 was first.
+   jb ACC.7, DidEXF2 ;; This determines if TF2 or EXF2 was first.
 DidTF2:
    clr TF2
    acall Tick
@@ -64,11 +64,11 @@ DidEXF2:
 reti
 EndSeg = $
 
-;;; Software to insert to handle 5 additional falling edge capture counters.
-;;; This will resolve multiple EC interrupts in such a way that
-;;; captures that occur before timer overflows are handled first.
+;; Software to insert to handle 5 additional falling edge capture counters.
+;; This will resolve multiple EC interrupts in such a way that
+;; captures that occur before timer overflows are handled first.
 seg data at 0x20
-global CSTATUS: ds 1       ;;; High-priority interrupt queue.
+global CSTATUS: ds 1       ;; High-priority interrupt queue.
 global PCF  bit CSTATUS.7
 global PCF0 bit CSTATUS.0
 global PCF1 bit CSTATUS.1
@@ -77,7 +77,7 @@ global PCF3 bit CSTATUS.3
 global PCF4 bit CSTATUS.4
 
 seg code at EndSeg
-UpdateStatus: ;;; Update CSTATUS 
+UpdateStatus: ;; Update CSTATUS 
    setb PCF
 1: jnb CCF0, 1f; mov A, CCAP0H; mov C, ACC.7; mov PCF0, C
 1: jnb CCF1, 1f; mov A, CCAP1H; mov C, ACC.7; mov PCF1, C
@@ -85,7 +85,7 @@ UpdateStatus: ;;; Update CSTATUS
 1: jnb CCF3, 1f; mov A, CCAP3H; mov C, ACC.7; mov PCF3, C
 1: jnb CCF4, 1f; mov A, CCAP4H; mov C, ACC.7; mov PCF4, C
 1:
-DequeueHigh:        ;;; Dequeue high priority flags.
+DequeueHigh:        ;; Dequeue high priority flags.
    jbc PCF0, DoCCF0
    jbc PCF1, DoCCF1
    jbc PCF2, DoCCF2
@@ -96,7 +96,7 @@ DoCF:
    clr CF
    acall CTick
 reti
-DequeueLow:         ;;; Dequeue low priority flags.
+DequeueLow:         ;; Dequeue low priority flags.
    jbc CCF0, DidCCF0
    jbc CCF1, DidCCF1
    jbc CCF2, DidCCF2
@@ -162,15 +162,15 @@ DidCCF0:
    1:
 reti
 
-;;; Pulse input scheduler
-;;; When SECTORS (20) pulse inputs are counted from an input source, one full
-;;; nutation is marked off, the time of that nutation is saved in the
-;;; corresponding TIMEn variable, and the sector count is reset.  TCn marks this
-;;; event.  At regular intervals a pending input is dequeued by looking for and
-;;; resetting the first marked TCn flag.
-;;; FXn is used to mark the first nutation in a test.  It is cleared thereafter.
+;; Pulse input scheduler
+;; When SECTORS (20) pulse inputs are counted from an input source, one full
+;; nutation is marked off, the time of that nutation is saved in the
+;; corresponding TIMEn variable, and the sector count is reset.  TCn marks this
+;; event.  At regular intervals a pending input is dequeued by looking for and
+;; resetting the first marked TCn flag.
+;; FXn is used to mark the first nutation in a test.  It is cleared thereafter.
 seg data at 0x21
-global TSTATUS: ds 1      ;;; Pulse-counter queue.
+global TSTATUS: ds 1      ;; Pulse-counter queue.
 global TC0 bit TSTATUS.0
 global TC1 bit TSTATUS.1
 global TC2 bit TSTATUS.2
@@ -198,10 +198,10 @@ global Scheduler:
    setb TR0
    setb ET0
 ret
-Process:             ;;; "Pause on TF0"
+Process:             ;; "Pause on TF0"
    clr ET0
    clr TR0
-   jbc TC0, ResumeX0  ;;; Dequeue input from pulse-counter queue.
+   jbc TC0, ResumeX0  ;; Dequeue input from pulse-counter queue.
    jbc TC1, ResumeX1
    jbc TC2, ResumeX2
    jbc TC3, ResumeX3
@@ -239,43 +239,43 @@ ResumeX5:
    jbc FX5, FirstPartial
 sjmp Next
 
-Start: ;;; Install main(), set its return address to Idle().
-   mov HW, #Stack          ;;; HW = &Stack[0];
-   mov SP, #(SP_BASE - 1)  ;;; SP = SP_BASE - 1;
+Start: ;; Install main(), set its return address to Idle().
+   mov HW, #Stack          ;; HW = &Stack[0];
+   mov SP, #(SP_BASE - 1)  ;; SP = SP_BASE - 1;
    mov DPTR, #Exit
    push DPL
-   push DPH                ;;; @SP++ = Exit();
+   push DPH                ;; @SP++ = Exit();
    acall main
 Idle:
    orl PCON, #1
 sjmp Idle
 
-global Spawn:            ;;; int Spawn(int @R0, void *(DPTR())) {
+global Spawn:            ;; int Spawn(int @R0, void *(DPTR())) {
    mov R1, HW
    mov @R1, SP
-   inc HW                ;;;    @HW++ = SP;
+   inc HW                ;;    @HW++ = SP;
    dec R0
-   mov SP, R0            ;;;    SP = --R0;
-   acall Enter           ;;;    (*DPTR)();
+   mov SP, R0            ;;    SP = --R0;
+   acall Enter           ;;    (*DPTR)();
 Exit:
    dec HW
    mov R0, HW
-   mov SP, @R0           ;;;    SP = @--HW;
-ret                      ;;; }
+   mov SP, @R0           ;;    SP = @--HW;
+ret                      ;; }
 Enter:
    push DPL
    push DPH
 ret
 
-global Pause:              ;;; void Pause(int @@R0) {
-   mov @R0, SP             ;;;    @R0 = SP;
+global Pause:              ;; void Pause(int @@R0) {
+   mov @R0, SP             ;;    @R0 = SP;
    dec HW
    mov R0, HW
-   mov SP, @R0             ;;;    SP = @--HW;
-ret                        ;;;    "idle until resume";
+   mov SP, @R0             ;;    SP = @--HW;
+ret                        ;;    "idle until resume";
 global Resume:
    mov R1, HW
    mov @R1, SP
-   inc HW                  ;;;    @HW++ = SP;
-   mov SP, @R0             ;;;    SP = @R0;
-ret                        ;;; }
+   inc HW                  ;;    @HW++ = SP;
+   mov SP, @R0             ;;    SP = @R0;
+ret                        ;; }

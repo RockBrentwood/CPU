@@ -4,6 +4,7 @@
 #RM=del
 #CC=qcl
 #CFLAGS=-g
+
 ## For Linux:
 X=
 O=.o
@@ -11,16 +12,21 @@ RM=rm -f
 CC=gcc
 CFLAGS=-std=gnu99 -g
 
-EXES=ds$X cas$X das$X reloc$X semi$X nl$X
+BINDIR=/usr/local/bin
+
+EXES=ds$X cas$X dac$X das$X reloc$X semi$X nl$X
 .c$O:
 	$(CC) $(CFLAGS) -c $*.c
+DACOBJS=dac$O
 DASOBJS=das$O
 DSOBJS=ds$O
 CASOBJS=cas$O link$O st$O res$O op$O ex$O io$O
 RELOCOBJS=reloc$O
 SEMIOBJS=semi$O
 NLOBJS=nl$O
-all:	ds$X cas$X das$X reloc$X semi$X nl$X
+all:	ds$X cas$X dac$X das$X reloc$X semi$X nl$X
+dac$X:	$(DACOBJS)
+	$(CC) -o dac$X $(DACOBJS)
 das$X:	$(DASOBJS)
 	$(CC) -o das$X $(DASOBJS)
 ds$X:	$(DSOBJS)
@@ -40,6 +46,13 @@ res$O:	io.h ex.h st.h res.h
 op$O:	io.h ex.h st.h res.h op.h
 ex$O:	io.h ex.h st.h res.h
 io$O:	io.h op.h
+test:
+	@sh test.sh >& Log
+	@echo "=== Current Test versus Previous Tests (Differences): ==="
+	@diff Log LogEx
+	@rm Log
+install:
+	cp $(EXES) $(BINDIR)
 clean:
 	$(RM) *$O
 clobber: clean

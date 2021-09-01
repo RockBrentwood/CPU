@@ -306,14 +306,13 @@ void Generate(void) {
    for (Segment Seg = SegTab + TYPES; Seg < SegP; Seg++)
       PutW(Seg->Line, ExF), PutW(Seg->File, ExF), PutW((Seg->Rel&1) << 8 | Seg->Type&0xff, ExF),
       PutW(Seg->Size, ExF), PutW(Seg->Base, ExF), PutL(Seg->Loc, ExF);
-   for (Gap G = GapTab; G < GapP; G++)
-      PutW(G->Seg - SegTab, ExF), PutW(G->Offset, ExF), PutW(G->Size, ExF);
+   for (Gap G = GapTab; G < GapP; G++) PutW(G->Seg - SegTab, ExF), PutW(G->Offset, ExF), PutW(G->Size, ExF);
    unsigned long Syms = 0UL;
    for (Symbol S = NIL->Next[0]; S != NIL; S = S->Next[0]) if (S->Map || S->Global && S->Defined) {
       byte B = S->Global << 3  | S->Defined << 2 | S->Address << 1 | S->Variable;
       word L = strlen(S->Name);
-      if (!S->Global && !S->Defined)
-         Error("Undefined symbol: %s.", S->Name);
+      if (!S->Global && !S->Defined) Error("Undefined symbol: %s.", S->Name);
+      if (!S->Defined) S->Offset = 0;
       S->Index = Syms++;
       PutB(B, ExF), PutW(S->Seg - SegTab, ExF), PutW(S->Offset, ExF), PutW(L, ExF);
       if (L > 0) fwrite(S->Name, 1, L, ExF);

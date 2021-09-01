@@ -33,8 +33,7 @@ void Resolve(Item IP) {
                if (Seg->Type != BIT) Error("Address type mismatch.");
             break;
             case 'D':
-               if (Seg->Type != DATA && Seg->Type != SFR)
-                  Error("Address type mismatch.");
+               if (Seg->Type != DATA && Seg->Type != SFR) Error("Address type mismatch.");
             break;
             case 'R': case 'L': case 'P': case 'Q':
                if (Seg->Type != CODE) Error("Address type mismatch.");

@@ -1,0 +1,46 @@
+Image:
+   0: 76  0  8 da fb 22 d3 e6 34  0 f6  8 da f9 22 e7
+  10:  9 f6  8 da fa 22 c3 e6 97  9 f6  8 da f9 22 7d
+  20:  0 a8  0 e6 fa  5  0 a8  0  5  0 a9  0 ab  0 7c
+  30:  0 60 23 ea 87 f0  9 a4 2c c5 f0 34  0 c5 f0 26
+  40: f6  8 e5 f0 34  0 fc db ea ab  0 ec 26 f6  8 50
+  50:  5 74  1 db f7  d d5  0 c8 22
+File(s): 1
+## Name,
+ 0        math.asm
+Segment(s): 8
+## Line File Rel Type Base Size  Loc
+ 5    0    0  r    0    0   1f       22
+ 6   34    0  r    2    0    5       41
+ 7   41    0  r    0    0   3b       41
+Gap(s): 0
+Symbol(s): 11
+##     Scope Var Type   Value  Name
+ 0    global     ADDR   6:   2 ArgX
+ 1    global     ADDR   6:   3 ArgY
+ 2    global     ADDR   6:   4 ArgZ
+ 3    global     ADDR   5:   7 CarryX
+ 4    global     ADDR   5:   0 ClearX
+ 5    global     ADDR   5:   f CopyX
+ 6    global     ADDR   5:   6 IncX
+ 7    global     ADDR   7:   0 MultiplyX
+ 8    global     ADDR   6:   0 SizeX
+ 9    global     ADDR   6:   1 SizeY
+ a    global     ADDR   5:  16 SubtractX
+Expression(s): 5
+## Line File  Tag Args...
+ 0   45    0 ADDR  6    2
+ 1   49    0 ADDR  6    4
+ 2   51    0 ADDR  6    3
+ 3   52    0 ADDR  6    1
+ 4   71    0 ADDR  6    0
+Relocation(s): 8
+Line File Tag  Exp  Seg: Off
+  45    0  D    0  @  7:   3
+  48    0  D    0  @  7:   7
+  49    0  D    1  @  7:   9
+  50    0  D    1  @  7:   b
+  51    0  D    2  @  7:   d
+  52    0  D    3  @  7:   f
+  71    0  D    4  @  7:  2b
+  82    0  D    4  @  7:  38

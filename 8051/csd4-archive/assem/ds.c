@@ -86,10 +86,10 @@ int main(int AC, char *AV[]) {
          Buf[L] = '\0';
          printf("%2lx ", S);
          switch (B&0xc) {
-            case 0x0: printf("undefined"); break;
-            case 0x4: printf("    local"); break;
-            case 0x8: printf(" external"); break;
-            case 0xc: printf("   global"); break;
+            case 0x0: printf("undefined"); break; // local & undefined
+            case 0x4: printf("    local"); break; // local & defined
+            case 0x8: printf(" external"); break; // global & undefined
+            case 0xc: printf("   global"); break; // global & defined
          }
          printf("  %c  ", B&1? 'v': ' ');
          if (B&2) // Address.
