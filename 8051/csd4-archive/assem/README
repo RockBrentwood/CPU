@@ -1,6 +1,15 @@
 CAS: The Free Full-Featured 8051 Assembler
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Released and located originally at the FTP site csd4.csd.uwm.edu in /pub/8051/assem in 1992/07.
+This is an experimental public domain one-pass assembler for the 8051 processor that uses skip lists for its symbol table.
+The source can be compiled on any system with an ANSI-C compiler (and sufficient memory), and DOS executables are provided.
+The software was released, in 1992/07, located originally at
+∙	csd4-archive:	ftp://csd4.csd.uwm.edu/pub/8051
+∙	CAS assembler:	ftp://csd4.csd.uwm.edu/pub/8051/assem
+It was subsequently stored, from 1993-on, at the FTP archive:
+∙	csd4-archive:	ftp://nic.funet.fi/pub/microprocs/MCS-51/csd4-archive/
+∙	CAS assembler:	ftp://nic.funet.fi/pub/microprocs/MCS-51/csd4-archive/assem
+and at:
+∙	CAS assembler:	ftp://lyman.pppl.gov/pub/8051/assem
 
 This is a 1-pass assembler for the MCS-51 family of microprocessors with the following features:
 ∙	Seperately assembleable files.
@@ -23,11 +32,14 @@ This is a 1-pass assembler for the MCS-51 family of microprocessors with the fol
 ∙	An extensive archive of real-life assembly language programs, including a multi-tasking library.
 Plus, if you don't want to learn all the elaborate ins and outs of this tool right away,
 it is just as easy to use the first time out as any minimal assembler.
-Read the start-up notes for details.
 
-It has been tested and verified against all the software contained in the rest of the 8051 archive.
+Read the start-up notes, Notes.txt, for details.
+Also, take a look at the sample 8051 program provided in the subdirectory data, particularily the Makefile.
 
-With enough demand and support, I may add in the following features in future versions of this assembler:
+CAS has been tested and verified against all the software contained in the rest of the 8051 archive.
+
+The following features are planned for future versions of this assembler,
+possibly in conjunction with the convertence of this and the other assemblers on this archive site:
 ∙	More compatibility between the 8051 disassembler and assembler.
 ∙	A powerful macro facility, to allow significant customizations on the 8051 language.
 ∙	The ability to include "Pre-assembled" macros.
