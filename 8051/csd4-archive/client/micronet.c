@@ -7,11 +7,7 @@
 #include "Com.h"
 #include "Micronet.h"
 
-void SendCmd(int Addr, int Tx) {
-   SetTx();
-   Send((Addr << 6)&0300 | Tx&077);
-   SetRx();
-}
+void SendCmd(int Addr, int Tx) { SetTx(), Send((Addr << 6)&0300 | Tx&077), SetRx(); }
 
 int GetStats(int Counter, byte *Buf, int Bytes) {
    int Header, Size, I, Rx, Sum;
@@ -86,7 +82,8 @@ void SendAbort(int Unit) {
       case 1:  SendCmd(2, ABORT); break;
       default: SendCmd(3, ABORT); break;
    }
-} 
+}
+
 void SendTest(int Unit) {
    switch (Unit) {
       case 0:  SendCmd(1, 030); break;

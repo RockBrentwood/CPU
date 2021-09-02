@@ -7,7 +7,7 @@
 #include "Port.h"
 #include "Console.h"
 
-FILE *FP = 0;
+FILE *FP = NULL;
 
 byte TestX = 2, AbortX = 2, StatusX = 0, DumpX = 0, DataX = 0, Cursor = 0;
 
@@ -68,59 +68,38 @@ void Screen(void) {
 void Prompt(int Cursor, int On) {
    int Color = On? RedC: GreenC;
    switch (Cursor) {
-      case 0:
-         Border(ROW(2, -4), ROW(3, 3), COL(15, -4), COL(16, 3), Color);
-      break;
-      case 1:
-         Border(ROW(2, -4), ROW(3, 3), COL(26, -4), COL(27, 3), Color);
-      break;
-      case 2:
-         Border(ROW(2, -4), ROW(3, 3), COL(37, -4), COL(38, 3), Color);
-      break;
-      case 3:
-         Border(ROW(4, -4), ROW(5, 3), COL(4, -4), COL(6, 3), Color);
-      break;
-      case 4:
-         Border(ROW(4, -4), ROW(5, 3), COL(15, -4), COL(17, 3), Color);
-      break;
+      case 0: Border(ROW(2, -4), ROW(3, 3), COL(15, -4), COL(16, 3), Color); break;
+      case 1: Border(ROW(2, -4), ROW(3, 3), COL(26, -4), COL(27, 3), Color); break;
+      case 2: Border(ROW(2, -4), ROW(3, 3), COL(37, -4), COL(38, 3), Color); break;
+      case 3: Border(ROW(4, -4), ROW(5, 3), COL(4, -4), COL(6, 3), Color); break;
+      case 4: Border(ROW(4, -4), ROW(5, 3), COL(15, -4), COL(17, 3), Color); break;
    }
 }
 
 void ShowLine(void) {
-   static int LastState = 0; int Color;
-   if (LastState == Status) return;
-   LastState = Status;
+   static int LastState = 0;
+   if (LastState == Status) return; else LastState = Status;
    if (FP) fprintf(FP, "Status %2x\n", Status);
-   Color = (Status&BUFFER_FULL)? RedC: BlackC;
-   Box(ROW(5, 0), ROW(6, -1), COL(50, 0), COL(51, -1), Color);
-   Color = (Status&OVERRUN_ERR)? RedC: BlackC;
-   Box(ROW(6, 0), ROW(7, -1), COL(50, 0), COL(51, -1), Color);
-   Color = (Status&PARITY_ERR)? RedC: BlackC;
-   Box(ROW(7, 0), ROW(8, -1), COL(50, 0), COL(51, -1), Color);
-   Color = (Status&FRAMING_ERR)? RedC: BlackC;
-   Box(ROW(8, 0), ROW(9, -1), COL(50, 0), COL(51, -1), Color);
-   Color = (Status&TIMED_OUT)? RedC: BlackC;
-   Box(ROW(5, 0), ROW(6, -1), COL(62, 0), COL(63, -1), Color);
-   Color = (Status&BAD_HEADER)? RedC: BlackC;
-   Box(ROW(6, 0), ROW(7, -1), COL(62, 0), COL(63, -1), Color);
-   Color = (Status&BAD_SUM)? RedC: BlackC;
-   Box(ROW(7, 0), ROW(8, -1), COL(62, 0), COL(63, -1), Color);
-   Color = (Status&PACKET_OVER)? RedC: BlackC;
-   Box(ROW(8, 0), ROW(9, -1), COL(62, 0), COL(63, -1), Color);
+   Box(ROW(5, 0), ROW(6, -1), COL(50, 0), COL(51, -1), Status&BUFFER_FULL? RedC: BlackC);
+   Box(ROW(6, 0), ROW(7, -1), COL(50, 0), COL(51, -1), Status&OVERRUN_ERR? RedC: BlackC);
+   Box(ROW(7, 0), ROW(8, -1), COL(50, 0), COL(51, -1), Status&PARITY_ERR? RedC: BlackC);
+   Box(ROW(8, 0), ROW(9, -1), COL(50, 0), COL(51, -1), Status&FRAMING_ERR? RedC: BlackC);
+   Box(ROW(5, 0), ROW(6, -1), COL(62, 0), COL(63, -1), Status&TIMED_OUT? RedC: BlackC);
+   Box(ROW(6, 0), ROW(7, -1), COL(62, 0), COL(63, -1), Status&BAD_HEADER? RedC: BlackC);
+   Box(ROW(7, 0), ROW(8, -1), COL(62, 0), COL(63, -1), Status&BAD_SUM? RedC: BlackC);
+   Box(ROW(8, 0), ROW(9, -1), COL(62, 0), COL(63, -1), Status&PACKET_OVER? RedC: BlackC);
    FlushPort();
 }
 
 unsigned long GetInt(byte *B, int Size) {
    unsigned long Val;
-   for (Val = 0, B = B + Size - 1; Size > 0; Size--, B--)
-      Val = (Val << 8) | *B;
+   for (Val = 0, B = B + Size - 1; Size > 0; Size--, B--) Val = (Val << 8) | *B;
    return Val;
 }
 
 double GetD(byte *B, int Size) {
    double Val;
-   for (Val = 0.0, B = B + Size - 1; Size > 0; Size--, B--)
-      Val = 256.0*Val + (double)*B;
+   for (Val = 0.0, B = B + Size - 1; Size > 0; Size--, B--) Val = 256.0*Val + (double)*B;
    return Val;
 }
 
@@ -128,24 +107,20 @@ double GetD(byte *B, int Size) {
 #define STAT_SIZE 0x17
 #define X_SIZE 0x1540
 static byte StatBuf[STAT_SIZE], XBuf[X_SIZE];
-main() {
+
+int main(void) {
    int Ch, Rx, Bytes, I; char Buf[80];
    Screen(); OpenPort(COM1, 9600, DATA8 | PAR_LOW | STOP1, 0x4000);
    Cursor = 0; Prompt(Cursor, 1);
    while (1) switch (Keyboard()) {
       case 3:
-         if (FP != 0) fclose(FP);
+         if (FP != NULL) fclose(FP);
          ClosePort(); ScrReset();
-      exit(0);
+      return 0;
       case 6: FlushPort(), ShowLine(); break;
-      case 4:
-         Box(ROW(10, 0), ROW(30, -1), COL(0, 0), COL(80, -1), BlackC);
-      break;
+      case 4: Box(ROW(10, 0), ROW(30, -1), COL(0, 0), COL(80, -1), BlackC); break;
       case Esc:
-         if (FP != 0) {
-            fclose(FP);
-            Box(ROW(2, 0), ROW(3, -1), COL(46, 0), COL(80, -1), BlackC);
-         }
+         if (FP != NULL) fclose(FP), Box(ROW(2, 0), ROW(3, -1), COL(46, 0), COL(80, -1), BlackC);
       break;
       case 12:
          PutString(2, 46, RedC, "Logging.  Filename: ");
@@ -170,12 +145,8 @@ main() {
          }
       BreakEnter:
       break;
-      case Right:
-         Prompt(Cursor, 0); Cursor = (Cursor + 1)%5; Prompt(Cursor, 1);
-      break;
-      case Left:
-         Prompt(Cursor, 0); Cursor = (Cursor + 4)%5; Prompt(Cursor, 1);
-      break;
+      case Right: Prompt(Cursor, 0); Cursor = (Cursor + 1)%5; Prompt(Cursor, 1); break;
+      case Left: Prompt(Cursor, 0); Cursor = (Cursor + 4)%5; Prompt(Cursor, 1); break;
       case Up: switch (Cursor) {
          case 0: TestX = (TestX + 1)%3; ShowTest(); break;
          case 1: AbortX = (AbortX + 1)%3; ShowAbort(); break;
@@ -194,12 +165,12 @@ main() {
       break;
       case '\r': switch (Cursor) {
          case 0:
-            SendTest(TestX); if (FP) fprintf(FP, "TEST %c\n", Ch);
+            SendTest(TestX); if (FP != NULL) fprintf(FP, "TEST %c\n", Ch);
             ShowLine();
          break;
          case 1:
             FlushPort();
-            SendAbort(AbortX); if (FP) fprintf(FP, "ABORT %c\n", Ch);
+            SendAbort(AbortX); if (FP != NULL) fprintf(FP, "ABORT %c\n", Ch);
             ShowLine();
          break;
          case 2:
@@ -210,29 +181,24 @@ main() {
                case '2': PutString(6, 35, WhiteC, "Testing"); break;
                default:  PutString(6, 35, WhiteC, "(%2x)  ", Rx); break;
             }
-            if (FP) fprintf(FP, "STATUS %d => %c\n", StatusX + 1, Rx);
+            if (FP != NULL) fprintf(FP, "STATUS %d => %c\n", StatusX + 1, Rx);
             ShowLine();
          break;
          case 3:
             Box(ROW(10, 0), ROW(30, -1), COL(0, 0), COL(80, -1), BlackC);
-            if (FP) fprintf(FP, "DUMP %2d\n", DumpX + 1);
+            if (FP != NULL) fprintf(FP, "DUMP %2d\n", DumpX + 1);
             Bytes = GetDump(DumpX, XBuf, X_SIZE);
             if (Status == 0) { /* DUMP */
               int Row, Col, I;
               for (Row = 10, Col = 0, I = 0; I < Bytes; I += 4) {
-                 PutString(Row, Col, WhiteC, "%9.6f",
-                    GetD(XBuf + I, 4)/OSC
-                 );
-                 if (FP) fprintf(FP, "%9.6f\n", GetD(XBuf + I, 4)/OSC);
+                 PutString(Row, Col, WhiteC, "%9.6f", GetD(XBuf + I, 4)/OSC);
+                 if (FP != NULL) fprintf(FP, "%9.6f\n", GetD(XBuf + I, 4)/OSC);
                  if (++Row == 30) {
                     Row = 10, Col += 10;
                     if (Col == 80) {
-                       Check:
+                    Check:
                        switch (Keyboard()) {
-                          case '\r':
-                             Col = 0;
-                             Box(ROW(10, 0), ROW(30, -1), COL(0, 0), COL(80, -1), BlackC);
-                          break;
+                          case '\r': Col = 0, Box(ROW(10, 0), ROW(30, -1), COL(0, 0), COL(80, -1), BlackC); break;
                           case Esc: goto QuitDump;
                           default: goto Check;
                        }
@@ -245,11 +211,11 @@ main() {
          break;
          case 4:
             Box(ROW(10, 0), ROW(30, -1), COL(0, 0), COL(80, -1), BlackC);
-            if (FP) fprintf(FP, "DATA %2d\n", DataX + 1);
+            if (FP != NULL) fprintf(FP, "DATA %2d\n", DataX + 1);
             Bytes = GetStats(DataX, StatBuf, STAT_SIZE);
             if (Status == 0 && Bytes != STAT_SIZE) {
                PutString(10, 5, RedC, "Statistics ... packet error");
-               if (FP) fprintf(FP, "Packet error.\n");
+               if (FP != NULL) fprintf(FP, "Packet error.\n");
             } else if (Status == 0) { /* DATA */
                byte StatusS; word CyclesS;
                unsigned long TimeS, FirstS, LastS;
@@ -267,7 +233,7 @@ main() {
                PutString(18, 5, WhiteC, "Last   %11.6f", (double)LastS/OSC);
                PutString(20, 5, WhiteC, "Time   %11.6f", (double)TimeS/OSC);
                PutString(22, 5, WhiteC, "Square %11.6f", SquareS/OSC/OSC);
-               if (FP) {
+               if (FP != NULL) {
                   fprintf(FP, "Status %2x\n", StatusS);
                   fprintf(FP, "Cycles %4d\n", CyclesS);
                   fprintf(FP, "First  %11.6f\n", (double)FirstS/OSC);
@@ -279,41 +245,26 @@ main() {
                PutString(12, 49, WhiteC, "Test Time %11.6f", (double)TimeS/OSC);
                if (StatusS&0x40) {
                   PutString(14, 49, RedC, "Aborted.");
-                  if (FP) fprintf(FP, "Aborted.\n");
+                  if (FP != NULL) fprintf(FP, "Aborted.\n");
                } else if (FirstS == LastS) {
                   PutString(14, 49, RedC, "No pulses.");
-                  if (FP) fprintf(FP, "No pulses.\n");
+                  if (FP != NULL) fprintf(FP, "No pulses.\n");
                } else {
-                  double
-                     Ave = (double)(LastS - FirstS)/(double)CyclesS,
-                     Ave2 = SquareS/(double)CyclesS;
-                  PutString(14, 49, WhiteC, "Nutations %11.6f",
-                     (double)TimeS/Ave
-                  );
-                  PutString(15, 52, WhiteC, "First Partial %11.6f",
-                     (double)FirstS/Ave
-                  );
-                  PutString(16, 52, WhiteC, "Whole Cycles  %11.6f",
-                     (double)CyclesS
-                  );
-                  PutString(17, 52, WhiteC, "Last Partial  %11.6f",
-                     (double)(TimeS - LastS)/Ave
-                  );
-                  if (FP)
+                  double Ave = (double)(LastS - FirstS)/(double)CyclesS, Ave2 = SquareS/(double)CyclesS;
+                  PutString(14, 49, WhiteC, "Nutations %11.6f", (double)TimeS/Ave);
+                  PutString(15, 52, WhiteC, "First Partial %11.6f", (double)FirstS/Ave);
+                  PutString(16, 52, WhiteC, "Whole Cycles  %11.6f", (double)CyclesS);
+                  PutString(17, 52, WhiteC, "Last Partial  %11.6f", (double)(TimeS - LastS)/Ave);
+                  if (FP != NULL)
                      fprintf(FP, "Nutations: %11.6f (%11.6f + %11.6f + %11.6f)\n",
-                        (double)TimeS/Ave, (double)FirstS/Ave, (double)CyclesS,
-                        (double)(TimeS - LastS)/Ave
+                        (double)TimeS/Ave, (double)FirstS/Ave, (double)CyclesS, (double)(TimeS - LastS)/Ave
                      );
                   if (Ave2 < Ave*Ave) {
-                     PutString(19, 49, RedC, "Cannot calculate vatiation");
-                     if (FP) fprintf(FP, "Cannot calculate variation.\n");
+                     PutString(19, 49, RedC, "Cannot calculate variation");
+                     if (FP != NULL) fprintf(FP, "Cannot calculate variation.\n");
                   } else {
-                     PutString(19, 49, WhiteC, "Variation %3.4f%%",
-                        sqrt(Ave2/(Ave*Ave) - 1.0)*100.0
-                     );
-                     if (FP) fprintf(FP, "Variation %3.4f%%\n",
-                        sqrt(Ave2/(Ave*Ave) - 1.0)*100.0
-                     );
+                     PutString(19, 49, WhiteC, "Variation %3.4f%%", sqrt(Ave2/(Ave*Ave) - 1.0)*100.0);
+                     if (FP != NULL) fprintf(FP, "Variation %3.4f%%\n", sqrt(Ave2/(Ave*Ave) - 1.0)*100.0);
                   }
                }
             }
