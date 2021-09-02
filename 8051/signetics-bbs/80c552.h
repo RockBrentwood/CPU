@@ -177,4 +177,4 @@ sbit PCM1 = 0xFD;  /* IP1.5       T2 Comparator 1           */
 sbit PCM2 = 0xFE;  /* IP1.6       T2 Comparator 2           */
 sbit PT2  = 0xFF;  /* IP1.7       T2 Overflow               */
 
-              
+��������������
