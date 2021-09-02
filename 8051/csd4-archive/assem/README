@@ -39,7 +39,7 @@ Also, take a look at the sample 8051 program provided in the subdirectory data, 
 CAS has been tested and verified against all the software contained in the rest of the 8051 archive.
 
 The following features are planned for future versions of this assembler,
-possibly in conjunction with the convertence of this and the other assemblers on this archive site:
+possibly in conjunction with the convergence of this and the other assemblers on this archive site:
 ∙	More compatibility between the 8051 disassembler and assembler.
 ∙	A powerful macro facility, to allow significant customizations on the 8051 language.
 ∙	The ability to include "Pre-assembled" macros.
