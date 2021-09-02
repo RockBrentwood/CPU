@@ -1,9 +1,9 @@
-;;; EVENT TIMER: For timer 2.
+;; EVENT TIMER: For timer 2.
 SetTimer2:
    setb PT2
    clr EXEN2
    clr C_T2
-   clr CP_RL2       ;;; Timer 2: 16-bit auto-reload timer.
+   clr CP_RL2       ;; Timer 2: 16-bit auto-reload timer.
 ret
 
 Delay2:

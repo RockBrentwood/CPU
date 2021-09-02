@@ -1,12 +1,11 @@
-readme ...... A briefing on this package.
-manifest .... This file: a list and briefing on the files in this archive.
+README ...... A briefing on this package.
+Manifest .... This file: a list and briefing on the files in this archive.
 regs ........ A summary of the 8052 special function registers and interrupts
 creed ....... The Free Software Creed adhered to in this archive.
 
 8051 FORMATTING: To be used with UNIX's tgrind facility and LaTex.
 a51grind .... A specification file to be used with the UNIX tgrind utility.
-              Tells tgrind how to format 8051 software for LaTex.  The typical
-              command like would like this:
+              Tells tgrind how to format 8051 software for LaTex. The typical command like would like this:
                            tgrind -d a51grind <Source files...>
 
               This line
@@ -14,31 +13,28 @@ a51grind .... A specification file to be used with the UNIX tgrind utility.
         :kw=ds rb rw db byte dw word org at seg end global public\
             extern include if else equ set high low by code xdata data sft bit\
 
-              will have to be adjusted to reflect the keywords used by your
-              assembler.
+              will have to be adjusted to reflect the keywords used by your assembler.
 
 8051 ASSEMBLER and DISASSEMBLER: 8851/assem
 cas.c link.c st.c res.c op.c ex.c io.c ... Assembler source
 link.h st.h res.h op.h ex.h io.h
-cas.doc .................................. 8051 Assembler documentation
-err.doc .................................. An alphabetized listing of the
-                                           assembler diagnostics.
+cas.txt .................................. 8051 Assembler documentation
+err.txt .................................. An alphabetized listing of the assembler diagnostics.
 intro, notes ............................. Start-up notes in the assembler
 makefile ................................. UNIX-compatible makefile
 makefile.dos ............................. DOS-compatible makefile.
-semi.c, semi.doc ......................... A file conversion utility.
-nl.c, nl.doc ............................. Another file conversion utility
+semi.c, semi.txt ......................... A file conversion utility.
+nl.c, nl.txt ............................. Another file conversion utility
 ds.c ..................................... Object file display source
-ds.doc ................................... Document on ds.c and on object files
+ds.txt ................................... Document on ds.c and on object files
 reloc.c .................................. Hex file relocating utility
-reloc.doc ................................ Usage notes for reloc.c
+reloc.txt ................................ Usage notes for reloc.c
 cas.exe das.exe ds.exe reloc.exe
 semi.exe nl.exe .......................... The DOS-compatible executables
 
-DISASSEMBLER: The disassembler does some control flow analysis to find
-what to disassemble.
+DISASSEMBLER: The disassembler does some control flow analysis to find what to disassemble.
 das.c  ................................... 8052 Disassembler source
-das.doc .................................. Notes on usage
+das.txt .................................. Notes on usage
 
 SAMPLE FILES FOR ASSEMBLER: 8051/assem/data
 data.s kernel.s math.s stdio.s ........... A modularized copy of 8051/data
@@ -48,9 +44,9 @@ makefile ................................. A UNIX and DOS compatible makefile
 
 SAMPLE FILES FOR DISASSEMBLER: 8051/assem/hexs
   The demo program, r.a, is a program that echoes on every key sent it except s.
-On s, it performs a hex dump of a specific segment of memory.  This is solely
-to demonstrate the viability of communications at 57600 baud.  A 57600 baud PC
-client is included: client/demo.exe.
+On s, it performs a hex dump of a specific segment of memory.
+This is solely to demonstrate the viability of communications at 57600 baud.
+A 57600 baud PC client is included: client/demo.exe.
 r.a ......... A non-trivial sample assembly program.
 r.hex ....... Its Intel Hex listing.
 entries...... A list of entry points to be used with r.hex.
@@ -62,40 +58,37 @@ PC-compatible serial routines for RS-232, RS-422, RS-485.
            com.c com.h........... RS-232 interrupt-driven routines for PC.
            port.h ............... Generic declarations for the PC's COM ports.
            client.c client.exe... A 9600,N,8,1 PC client.
-           client.doc............ User reference for client.exe and demo.exe.
+           client.txt............ User reference for client.exe and demo.exe.
            demo.c demo.exe....... A 57600,N,9,1 PC client source.
-           micronet.c micronet.h. The MicroNet source, used with the data
-                                  collection software in the data directory.
-           micronet.doc ......... Command reference for MicroNet.
-           console.c console.h .. IBM AT-compatible, VGA-compatible console
-                                  routines.  Used with serial.c
-           serial.c serial.exe .. Diagnostic command/communications monitor
-                                  for MicroNet.
-           serial.doc ........... User reference for serial.exe.
+           micronet.c micronet.h. The MicroNet source, used with the data collection software in the data directory.
+           micronet.txt ......... Command reference for MicroNet.
+           console.c console.h .. IBM AT-compatible, VGA-compatible console routines. Used with serial.c
+           serial.c serial.exe .. Diagnostic command/communications monitor for MicroNet.
+           serial.txt ........... User reference for serial.exe.
 
 CRC: 8051/crc
-An 8051 8-bit CRC demo.  Redefines Intel Hex Format so that it uses 8-bit
+An 8051 8-bit CRC demo. Redefines Intel Hex Format so that it uses 8-bit
 CRC's, and performs a hex dump of addresses 0 to 2000h in the code space.
-   crc.doc ... A brief outline of the crc demo.
+   crc.txt ... A brief outline of the crc demo.
    8052.h .... Include file for crc.asm ... a copy of 8051/kernel/8052.h
    crc.asm ... A program that prints out an Intel Hex Format dump of addresses
-               0 to 1fffh in code space.  However, instead of calculating check
+               0 to 1fffh in code space. However, instead of calculating check
                sums by adding all the bytes on each line, as is done with Intel
                Hex Format, an 8-bit CRC is produced.
                This also demonstrates communications at 57600 baud using 9 bit
-               addressing.  The serial address in this program is ':'.  Every
-               key except 's' is echoed.  A hex dump, as described above, is
-               send when 's' is received.  Responses will only be produced
+               addressing. The serial address in this program is ':'. Every
+               key except 's' is echoed. A hex dump, as described above, is
+               send when 's' is received. Responses will only be produced
                when the address received exactly matches ':'.
    crc.hex ... The assembled CRC demo.
    crc.c ..... C source for a filter that verifies Intel Hex Format CRC's.
    sample.hex  A sample Intel Hex Format file redefined to use 8-bit CRC's.
                If crc.c is compiled into an executable (named crc), then
-               running crc <sample.hex will verify sample.hex.  This file was
+               running crc <sample.hex will verify sample.hex. This file was
                generated by crc.asm.
 
 DATA: 8051/data
-8051fa multitasking data collection software.  Can handle up to 6 falling edge
+8051fa multitasking data collection software. Can handle up to 6 falling edge
 inputs concurrently at rates up to 400Hz each.
    8051fa.h .... A copy of the 8051fa.h file in the kernel directory.
    math.lib .... A subset of the math.lib file in the kernel directory.
@@ -103,8 +96,7 @@ inputs concurrently at rates up to 400Hz each.
    kernel.lib .. Embedded multitasking kernel, customized for data.asm.
    data.asm .... The data collection software.
    data.hex .... The assembled data collection software.
-   data.doc .... Technical teference on the data collection unit and on
-                 MicroNet.
+   data.txt .... Technical teference on the data collection unit and on MicroNet.
 
 DEBUGGER:  8051/debug
 An 8052 Debugger, with the following features:
@@ -115,43 +107,40 @@ An 8052 Debugger, with the following features:
            8052.h ...... A copy of the 8052.h file in the kernel directory.
            debug.asm ... an 8051 debugger.
            debug.hex ... The debugger assembled in Intel Hex Format.
-           debug.doc ... user and programmer documentation.
+           debug.txt ... user and programmer documentation.
 
 DRIVE: 8051/drive
-An open-loop stepper motor driver.  Compatible on RS-232, RS-422, or RS-485.
-   kc.lib ...... embedded multitasking kernel (customized version of
-                 kernel.lib).
-   math.lib .... math library (a subset of the full library provided with the
-                 the 8051 package).
+An open-loop stepper motor driver. Compatible on RS-232, RS-422, or RS-485.
+   kc.lib ...... embedded multitasking kernel (customized version of kernel.lib).
+   math.lib .... math library (a subset of the full library provided with the the 8051 package).
    rx9.lib ..... RS-485 serial communication routines.
    timer.lib ... Timer 2 routines.
    drive.asm ... The stepper motor driver.
-   drive.doc ... Technical reference on the driver unit.
+   drive.txt ... Technical reference on the driver unit.
    drive.hex ... The assembled software in Intel Hex Format
 
 8051 KERNEL LIBRARY: 8051/kernel
 ROLL-YOUR-OWN 8051 KERNEL: A small library of routines for doing multitasking.
 kernel.lib .. The 8051 multitasking kernel skeleton.
-kernel.doc .. Usage notes on the multitasking kernel.
+kernel.txt .. Usage notes on the multitasking kernel.
 
 INCLUDE FILES FOR 8051 EXTENSIONS:
 8052.h, 8051fa.h  ... Include files to be used with the assembler provided.
 
 8051 ARBITRARY PRECISION MATH: Math routines, including square root and division
 math.lib .... The Math Library.
-math.doc .... User reference for the Math Library.
+math.txt .... User reference for the Math Library.
 
 LCD: This is a demo for the LCD/keypad library.
-IO: The LCD/keypad library.  Requires compatible hardware.
-           io.lib, io.doc ..... An LCD/keypad interface
-           lcd.asm, lcd.doc ... Demo software for io.lib
+IO: The LCD/keypad library. Requires compatible hardware.
+           io.lib, io.txt ..... An LCD/keypad interface
+           lcd.asm, lcd.txt ... Demo software for io.lib
            lcd.hex ............ The assembled demo software.
            kernel.lib ......... Needed for lcd.asm
 
 INTERRUPT: A 8051FA interrupt demo written to be used with a LCD
 and keypad routines (listed below).
-           int.asm, int.doc ... The 8051FA interrupt demo software
+           int.asm, int.txt ... The 8051FA interrupt demo software
            int.hex ............ The assembled interrupt demo software.
 
-   If you do any significant development using this, I'd be interested in
-hearing about it.  Keep in touch.
+   If you do any significant development using this, I'd be interested in hearing about it. Keep in touch.

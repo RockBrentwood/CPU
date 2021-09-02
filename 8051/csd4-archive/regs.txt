@@ -1,73 +1,87 @@
-Special Function Register Bits ... 8052.  *TMOD, PCON not bit-addressible.
- P1:    *    *    *     *     *     *     T2EX  T2
- P3:    RD   WR   T1    T0    *INT1 *INT0 TXD   RXD
- PSW:   CY   AC   F0    RS1   RS0   OV    *     P
- IE:    EA   *    ET2   ES    ET1   EX1   ET0   EX0
- IP:    *    *    PT2   PS    PT1   PX1   PT0   PX0
- TCON:  TF1  TR1  TF0   TR0   IE1   IT1   IE0   IT0
- T2CON: TF2  EXF2 RCLK  TCLK  EXEN2 TR2   C/*T2 CP/*RL2
- SCON:  SM0  SM1  SM2   REN   TB8   RB8   TI    RI
-*TMOD:  M0   M1   C/*T1 GATE1 M0    M1    C/*T0 GATE0
-*PCON:  SMOD *    *     *     GF1   GF0   PD    IDL
+Special Function Byte and Bit Registers: Summary
+――――――――――――――――――――――――――――――――――――――――――――――――
+By Location:
+	P1	│	∙	∙	∙	∙	∙	∙	T2EX	T2
+	P3	│	RD	WR	T1	T0	¬INT1	¬INT0	TXD	RXD
+	PSW	│	CY	AC	F0	RS1	RS0	OV	∙	P
+	IE	│	EA	∙	ET2	ES	ET1	EX1	ET0	EX0
+	IP	│	∙	∙	PT2	PS	PT1	PX1	PT0	PX0
+	TCON	│	TF1	TR1	TF0	TR0	IE1	IT1	IE0	IT0
+	T2CON	│	TF2	EXF2	RCLK	TCLK	EXEN2	TR2	C/¬T2	CP/¬RL2
+	SCON	│	SM0	SM1	SM2	REN	TB8	RB8	TI	RI
+	TMOD	│	M0	M1	C/¬T1	GATE1	M0	M1	C/¬T0	GATE0
+	PCON	│	SMOD	∙	∙	∙	GF1	GF0	PD	IDL
 
-Enables Priorities Flags Pins  Control/Status Bits  Interrupt
-EA
-   EX0     PX0      IE0  *INT0      (IT0)           External 0
-   ET0     PT0      TF0  (T0)   (TR0, TMOD[0-3])    Timer 0
-   EX1     PX1      IE1  *INT1      (IT1)           External 1
-   ET1     PT1      TF1  (T1)   (TR1, TMOD[4-7])    Timer 1
-   ES      PS                   (SM0, SM1, SMOD)    Serial
-                    TI   TXD    (TCLK, TB8)            Transmit
-      REN           RI   RXD    (RCLK, SM2, RB8)       Receive
-   ET2     PT2      TF2  (T2)    (TR2, C/*T2)       Timer 2
-      EXEN2         EXF2 T2EX     (CP/*RL2)         Capture Register 2
+By Function:
+∙	Interrupt-Related
+	Enables	Priorities	Flags	Pins	Control/Status Bits	Interrupt
+	―――――――	――――――――――	―――――	――――	――――――――――――――――――	―――――――――
+	EX0	PX0		IE0	¬INT0	(IT0)			External 0
+	ET0	PT0		TF0	(T0)	(TR0, TMOD[0-3])	Timer 0
+	EX1	PX1		IE1	¬INT1	(IT1)			External 1
+	ET1	PT1		TF1	(T1)	(TR1, TMOD[4-7])	Timer 1
+	ES	PS				(SM0, SM1, SMOD)	Serial: Transmit and Receive
+				TI	TXD	(TCLK, TB8)		Transmit
+	REN			RI	RXD	(RCLK, SM2, RB8)	Receive
+	ET2	PT2		TF2	(T2)	(TR2, C/¬T2)		Timer 2
+	EXEN2			EXF2	T2EX	(CP/¬RL2)		Capture Register 2
+	EA								(All Interrupts)
+∙	General Status Flags
+	CY, AC, OV, P
+∙	General Control Flags
+	RD, WR, RS1, RS0, PD, IDL
+∙	General Purpose Flags
+	F0, GF1, GF0
 
-General Status Flags: CY, AC, OV, P
-General Control Flags: RD, WR, RS1, RS0, PD, IDL
-    PD, IDL are in the PCON register and are not individually addressible.
-General purpose flags: F0, GF1, GF0
+Notes:
+∙	T2CON (and its bits), T2EX, T2, ET2, PT2 are additions made to the 8052, not present on the 8051.
+∙	None of the bits on TMOD and PCON are individually bit-addressible:
+	―	TMOD: M0, M1, C/¬T1, GATE1, M0, M1, C/¬T0, GATE0
+	―	PCON: SMOD, GF1, GF0, PD, IDL
 
-Interrupt conditions:
-IEn: Interrupt on EA & EXn.
-     Falling edge on *INTn, if ITn = 1
-     Low level on *INTn, if ITn = 0
-TFn: Interrupt on EA & ETn, on overflow from TIMERn.
-TIMERn gets its input as follows:
-   TRn & (GATEn  & INTn | ~GATEn)
-   C/*T = 1: From Tn ..... COUNTER MODE
-   C/*T = 0: From OSC .... TIMER MODE
-TIMERn overflows/counting limits:
-   M1:M0 = 0:0 -- 13-bit timer
-   M1:M0 = 0:1 -- 16-bit timer
-   M1:M0 = 1:0 -- TLn 8-bit timer, THn 8-bit reload
-   M1:M0 = 1:1 -- TL0 8-bit under TIMER0
-                  TH0 8-bit under TIMER1 (TIMER MODE only, TR1, TF1 used)
-                  TL1, TH1: free for other use (as baud rate timer)
-RI: Interrupt on EA & ES & REN.
-    SM2 = 1: By valid stop bit (mode 0), or 9th bit (modes 2, 3) (RB8 = 1)
-    SM2 = 0: On receipt of any stop bit.
-TI: Interrupt on EA & ES.
-Baud rates:
-   SM0:SM1 = 0:0 ... OSC/12.  No timers.  SM2 = 0
-                     This mode is used for SYNCHRONOUS communications.
-   SM0:SM1 = 1:0 ... 2^SMOD * OSC/64.
-   SM0:SM1 = *:1 ... TIMER1: 2^SMOD * OSC/12 / (32*(256 - TH1))
-                     TIMER2: OSC/(32*(65536 - RCAP2))
-Baud rate timer:
-   For reception ...... TImer 1 if RCLK = 0
-                        Timer 2 if RCLK = 1
-   For transmission ... TImer 1 if TCLK = 0
-                        Timer 2 if TCLK = 1
-Data bits:
-   SM0:SM1 = 0:* ... 8 bits.
-   SM0:SM1 = 1:* ... 9 bits.
-
-TF2: Interrupt on EA & ET2, on overflow from TIMER2.
-EXF2: Interrupt on EA & ET2 & EXEN2 on falling edge of T2EX.
-TIMER2 gets its input as follows:
-   TR2
-        C/*T2 = 1: On falling edge of T2 ... COUNTER MODE
-        C/*T2 = 0: From OSC ................ TIMER MODE
-Capture 2 works as follows:
-        CP/*RL2 = 1: Loads TIMER2 -> RCAP2
-        CP/*RL2 = 0: Loads RCAP2 -> TIEMR2
+Interrupt, status and control conditions:
+∙	IEn:	interrupt on EA ∧ EXn, for n = 0, 1,
+	―	ITn = 1:	on a falling edge on ¬INTn,
+	―	ITn = 0:	on a low level on ¬INTn.
+∙	TFn:	interrupt on EA ∧ ETn, for n = 0, 1, 2,
+	―	on an overflow from TIMERn.
+∙	EXF2:	interrupt on EA ∧ ET2 ∧ EXEN2
+	―	on a falling edge of T2EX.
+∙	TIMERn gets its input as follows, for n = 0, 1, 2:
+	―	TRn ∧ (INTn ∨ ¬GATEn)
+	―	C/¬Tn = 1:	«Counter Mode»	on a falling edge of Tn
+	―	C/¬Tn = 0:	«Timer Mode»	from OSC
+∙	TIMERn overflows/counting limits, for n = 0, 1:
+	―	M1:M0 = 0:0:	13-bit timer
+	―	M1:M0 = 0:1:	16-bit timer
+	―	M1:M0 = 1:0:	TLn 8-bit timer, THn 8-bit reload
+	―	M1:M0 = 1:1:	TL0 8-bit under TIMER0
+				TH0 8-bit under TIMER1 («Timer Mode» only, TR1, TF1 used)
+       				TL1, TH1: free for other use (as baud rate timer)
+∙	Capture 2 works as follows:
+	―	CP/¬RL2 = 1:	Loads TIMER2 → RCAP2
+	―	CP/¬RL2 = 0:	Loads RCAP2 → TIMER2
+∙	RI:	interrupt on EA ∧ ES ∧ REN,
+	―	SM2 = 1:	by a valid stop bit (mode 0), or 9th bit (modes 2, 3) (RB8 = 1),
+	―	SM2 = 0:	on receipt of any stop bit.
+∙	TI:	interrupt on EA ∧ ES.
+∙	Baud rates:
+	«Synchronous»
+	―	SM0:SM1 = 0:0 ... OSC/12.
+		No timers. SM2 = 0
+	«Asynchronous»
+	―	SM0:SM1 = 1:0 ... 2^SMOD × OSC/64.
+	―	SM0:SM1 = *:1
+		TIMER1: 2^SMOD × OSC/12 / (32×(256 - TH1))
+		TIMER2: OSC/(32×(65536 - RCAP2))
+∙	Baud rate timer:
+	―	For reception:
+		RCLK = 0:	TIMER1
+		RCLK = 1:	TIMER2
+	―	For transmission:
+		TCLK = 0:	TIMER1
+		TCLK = 1:	TIMER2
+∙	Byte size:
+	―	SM0:SM1 = 0:* ... 8 bits.
+	―	SM0:SM1 = 1:* ... 9 bits.
+	9 bits bytes are used to facilitate the control of transmission of 8-bit bytes over multi-controller networks.

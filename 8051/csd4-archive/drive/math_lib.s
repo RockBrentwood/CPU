@@ -10,52 +10,52 @@ Div1:
    clr C
    mov R0, #Op
    mov R2, #4
-   acall ShiftX          ;;; C:Op = Op*2;
+   acall ShiftX          ;; C:Op = Op*2;
    mov R0, #Rem
    mov R2, #4
-   acall ShiftX          ;;; Rem = Rem*2 + C;
+   acall ShiftX          ;; Rem = Rem*2 + C;
    mov R0, #Rem
    mov R1, #Divisor
    mov R2, #4
    acall LessX
-   jc Quot               ;;; if (Rem >= Divisor) {
+   jc Quot               ;; if (Rem >= Divisor) {
       mov R0, #Rem
       mov R1, #Divisor
       mov R2, #4
-      acall SubtractX    ;;;    Rem -= Divisor; C = 0;
+      acall SubtractX    ;;    Rem -= Divisor; C = 0;
       clr C
-   Quot:                 ;;; } else C = 1;
+   Quot:                 ;; } else C = 1;
 ret
 
 Div32:
    mov R0, #Rem
    mov R2, #4
-   acall ClearX          ;;; Rem = 0;
+   acall ClearX          ;; Rem = 0;
    mov R0, #Quo
    mov R2, #4
-   acall ClearX          ;;; Quo = 0;
+   acall ClearX          ;; Quo = 0;
    mov R3, #32
-   DivLoop:              ;;; for (R3 = 32; R3 > 0; R3--) {
+   DivLoop:              ;; for (R3 = 32; R3 > 0; R3--) {
       acall Div1
       cpl C
       mov R0, #Quo
       mov R2, #4
-      acall ShiftX          ;;; Quo = 2*Quo + (1 - C);
-   djnz R3, DivLoop      ;;; }
+      acall ShiftX          ;; Quo = 2*Quo + (1 - C);
+   djnz R3, DivLoop      ;; }
    mov R0, #Fract
    mov R2, #4
-   acall ClearX          ;;; Fract = 0;
+   acall ClearX          ;; Fract = 0;
    mov R3, #32
-   FractLoop:            ;;; for (R3 = 32; R3 > 0; R3--) {
+   FractLoop:            ;; for (R3 = 32; R3 > 0; R3--) {
       acall Div1
       cpl C
       mov R0, #Fract
       mov R2, #4
-      acall ShiftX          ;;; Fract = 2*Fract + (1 - C);
-   djnz R3, FractLoop    ;;; }
+      acall ShiftX          ;; Fract = 2*Fract + (1 - C);
+   djnz R3, FractLoop    ;; }
 ret
 
-MulBy10: ;;; Aux:Fract = 10*Fract;
+MulBy10: ;; Aux:Fract = 10*Fract;
    mov Aux, #0
    mov R0, #Fract
    mov R1, #Carry
