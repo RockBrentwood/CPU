@@ -1,0 +1,45 @@
+The IO Keypad/LCD Demo
+━━━━━━━━━━━━━━━━━━━━━━
+0. Overview
+───────────
+This demo is meant to be used with the io_lib.s software.
+For the routines in this archive that this was defined to be used with,
+its primary function has been to verify and test the keypad and LCD hardware, and the associated circuitry.
+
+1. Command Summary
+──────────────────
+To run this demo, you will either need:
+∙	compatible hardware to use with io_lib.s or
+∙	to write your own emulator for the io_lib.s routines.
+	The emulator could be, for instance, a set of routines that communicate with a client over an RS-232 line.
+
+You will need to locate the keys that correspond to the numeric values 0 to 15 before using this demo,
+since all the commands are executed from the keypad.
+
+	IO Demo Command Summary
+	―――――――――――――――――――――――
+	Command	Function
+	―――――――	――――――――
+	0 NN	cputs(NN)
+	1	clear
+	2	home
+	3 N	set_cursor(N)
+	4	cursor_left
+	5	cursor_right
+	6	shift_left
+	7	shift_right
+	8 RC	locate(Row, Col)
+	9	scr_init
+	10	cputs(‟This is a test”)
+	11	save_cursor
+	12	restore_cursor
+
+The numerical inputs, NN, N and RC are keyed in from the keypad following the command, one hexadecimal digit at a time.
+The keys 0 to 15 are mapped onto the hexadecimal digits 0-9, a-f respectively.
+The numbers NN and RC are two hexadecimal digits, and N is one.
+
+Because of the constraints on the command format, it will not be possible to ‟locate” past column 15 using the command 8.
+The first hex digit (R) is the row where the cursor is to be located, and the second is the cursor's new column,
+which cannot be larger than 16.
+
+The commands listed above are all described in io.txt.

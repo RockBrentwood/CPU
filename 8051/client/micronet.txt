@@ -1,0 +1,62 @@
+MicroNet PC Command Summary
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+0. Introduction
+───────────────
+A PC-based client has been provided for MicroNet.
+This is located in the files micronet.*.
+Communications can be established over COM1, COM2, COM3, or COM4.
+The software is also RS-485 compatible,
+and assumed that the OUT1 bit of the Moden Control Register is being used as the transmit enable.
+
+1. Command Summary
+──────────────────
+These are the commands and variables implemented by micronet.c:
+∙	int GetStats(int Counter, byte *Buf, int Bytes);
+	Queries the counter indicated (Counter) for statistica data.
+	Results are stored in the buffer indicated (Buf), and Bytes should be set to the size of the Buf.
+	Either a -1 is returned, if the command failed, or the number of bytes actually received is returned,
+	with the data itself stored in Buf.
+	The buffer will never be filled with more bytes than is indicated by Bytes.
+
+∙	int GetDump(int Counter, byte *Buf, int Bytes);
+	Similar to GetStats command, except the information stored is the actual set of nutation times from the counter indicated.
+
+∙	int SendStatus(int Unit);
+	Queries the microprocessor indicated for its current status.
+	A '0', '1', or '2' should be returned indicating the status of the micro as in the section containing the command summary.
+	The variable Unit can be set to 0 for microprocessor A, or 1 for B.
+
+∙	int Status;
+	The status of the serial port.
+	It has the following format:
+	―	Bit 7: Bad checksum ...
+		can occur in response to a data transfer failure in either the STATS or DUMP commands, when checksums fail to match.
+		This indicates that the Physical Layer is not functioning free of external noise.
+	―	Bit 6: Bad header ...
+		a similar protocol error relating to the reception of an invalid header (i.e. '#', ':', or '.').
+		This has the same basic cause as a bad checksum.
+	―	Bit 5: Packet overflow ...
+		indicates that data transmission was too long to be accomodated by the data buffer (Buf)
+		provided in either the GetStats or GetDump routine.
+	―	Bit 4: Timed out ...
+		indicates that a microprocessor failed to respond when it was supposed to.
+	―	Bit 3: Framing Error
+	―	Bit 2: Parity Error
+	―	Bit 1: Overrun Error ...
+		3 low-level communications errors directly related to failures in the low-level protocol
+		and in the Physical Layer.
+		This can be caused by external noise on the serial link, or by two or more processors trying to transmit at once.
+	―	Bit 0: Buffer Full ...
+		indicates that the internal data buffer of the port indicated has become full.
+		This is invariably the result of a microprocessor that refused to stop transmitting.
+
+∙	void SendAbort(int Addr);
+∙	void SendTest(int Addr);
+	Sends a abort/test command to the destination indicated.
+	The meanings of Addr as the following:
+		Addr	Meaning
+		――――	―――――――
+		0	Send the command to A.
+		1	Send the command to B.
+		2	Send the command to both A and B.
+	The SendAbort command will also erase any prior communication errors by clearing out the internal status flags.

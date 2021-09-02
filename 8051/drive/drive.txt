@@ -1,0 +1,322 @@
+8051-Based Stepper Motor Driver
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+0. Introduction
+─――――――――――――――
+This software is part of a larger real-life test system that was designed to test gear ratios on registers.
+The stepper motor was used to precisely control the total amount of rotation of the gear train
+in order to get precise measurements on this ratio.
+
+The system was configured as follows:
+∙	1 microprocessor-based server, connected to a keypad and display
+∙	4 microprocessor-based client units, each driving a stepper motor in open loop configuration.
+∙	One RS-485 serial link between the units.
+
+The server unit was set up to be as non-linguistic as possible (using numbers and pictures), because
+∙	people can see faster and more reliably than they can read,
+∙	non-linguistic cues can be more easily rendered in different modes (visually, tactile, auditory, etc.), and
+∙	the unit was to be used abroad.
+
+1. Multi-Threaded Control
+─────────────────────────
+Notes:
+∙	The term ‟Multi-Threaded” was originally ‟Multi-Tasking”,
+	because multi-threaded programming was not in widespread use at the time this system was created,
+	and the term multi-threaded was not yet in hardly anyone's vocabularity.
+∙	The main reason none of this could be done in the higher-level languages C or C++
+	is because there was no official support for multi-threading «at the language level» until 2 decades later in 2011.
+∙	Because the software was written as ‟assembly in C”, with an assembler (CAS) that provides some of the facilities of C,
+	it is possible to directly translate much of the source code here, and elsewhere, into C or C++
+	provided that the compiler permits user-defined multi-threaded run-time systems to be used in place of the compiler's.
+
+Each unit operates in real-time.
+That means correctness requires not only that correct outputs be produced for given input,
+but that it also be produced «at the correct time».
+This implies the need for process synchronization and points to the need for an underlying multi-tasking architecture.
+
+The kernel library routines provided with the 8051 package were custom fitted to this application (kc_lib.s).
+This kernel differs from the kernel used in the other demo software in that it operates at 3 distinct priority levels,
+instead of the usual two:
+∙	from within a high-priority interrupt,
+∙	from within a low-priority interrupt, and
+∙	outside all interrupts.
+As in other applications, since this is I/O-bound software, there will not be any foreground processing,
+so that the last level is effectively disabled.
+All processing occurs inside of interrupts.
+
+2. Hardware Configuration
+─────────────────────────
+A driver unit is connected as follows:
+∙	A stepper motor unit via 4 I/O lines.
+	These lines are for:
+	―	P1.0:	PULSE OUTPUT to control the motor.
+	―	P1.1:	DIRECTIONAL SETTING to control which way the motor rotates
+	―	P1.2:	ENCODE PULSE SIZE to control how many encoder pulse outputs make up one rotation of the motor (200 or 400).
+	―	P1.3:	ALL WINDINGS OFF to set or reset the motor so that it can be run.
+∙	Two LED units to display the status of the most recent test.
+	―	P1.4:	Red LED
+	―	P1.5:	Green LED.
+∙	A placement unit for the stepper motor, with inputs for:
+	―	INT1:	sense the placement of a register unit.
+			Activates the motor unit on a falling edge.
+	―	INT0:	to sense the position of the register needle.
+			Produces a falling edge for a sensor interrupt.
+
+3. Speed Control and Synchronization
+────────────────────────────────────
+3A. Overview
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+The stepper motor is controlled by sending out pulses of around 20 to 50 microseconds for each step.
+Depending on the setting of the motor, either 200 or 400 steps will generate one full rotation of the motor.
+The speed of the motor is therefore inversely proportional to the delay between consecutive pulses,
+and the length of time spent at a given speed is equal to that delay multiplied by the number of pulses sent out.
+In this setup, 200 pulses per rotation is always selected.
+
+The easiest way to accomplish acceleration or deceleration is to use a look-up table
+for converting desired speeds into desired pulse delays, and to ‟accelerate” the motor
+by driving it incrementally at higher and higher speeds.
+I have set up such a look-up table for this application that lists delays for multiples of 25 RPM,
+which comes out to 250/3 pulses per second at 200 encoder pulses per rotation, with the list ranging from 25 RPM to 2000 RPM.
+
+The natural time unit in this application is 3/250 second (the inverse of 25 RPM).
+To drive the motor at N multiples of 25 RPM for T time units
+will therefore require that N × T pulses be sent out: N pulses per time unit.
+
+The machine's instruction cycle rate is 921600 Hz, and this is also the rate of the internal clock used to measure pulse delays.
+So the delay for a 25 RPM pulse would be 921600 × 3/250 = 11059.2 cycles.
+Similarily, the delay for N multiples of 25 RPM will be 11059.2/N.
+These are the values stored in the table.
+
+So accelerating the motor simply comes down to driving it at 25 RPM for a certain number of time units,
+at 50 RPM for the same duration, at 75 RPM for the same duration, and so on up to the desired speed.
+A similar method accomplishes deceleration.
+The number of time units spent at each speed is an empirical constant that is chosen as small as possible.
+However, if it is chosen to be too small then the corresponding acceleration or deceleration will become so fast
+that the stepper motor will consistently lose coupling.
+So that determines the lower limit of the choice made.
+In general, different constants are chosen for acceleration and for deceleration.
+
+Driving the stepper motor past 1000 RPM will require time-critical software so precise
+that the delays described above would have to be carried out by the microprocessor down to the last clock cycle.
+That means microsecond precision.
+
+The reason for this can be illustrated by the following observation.
+At 1750 RPM (70 multiples of 25 RPM), the delay between pulses will only be 11059.2/70 clock cycles, or about 158 cycles.
+The speeds corresponding to 157, 158, and 159 cycles are;
+	11059.2/157, 11059.2/158, and 11059.2/159
+multiples of 25 RPM, which comes out to about:
+	1761 RPM, 1750 RPM, and 1739 RPM
+respectively.
+
+An algorithm that consistently misses its delay by random errors of merely 1 clock tick
+will cause a random plus or minus 11 RPM variation in the motor when it's running at around 1750 RPM.
+That will lead to vibrations that will cause the motor to lose coupling and break to a sudden stop!
+
+The timing is achieved simply by using a continuously running clock that automatically reloads itself (TIMER 2 of the 8052).
+Then one can keep the timer going without having to worry about calculating any latencies.
+
+3B. Example
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+This example will illustrate the process that is gone through to bring a stepper motor up to 1750 RPM,
+run it there for a while, and then step it down.
+In this application, motors are consistently set for counter-clockwise motion with 200 pulses per rotation.
+
+First SetDriver is called.  This will delay a second to wait for the windings to finish setting.
+The value 1750/25 is placed into the accumulator, A, and Accelerate is called.
+When complete, the motor will be running at 1750 RPM.
+
+Then PulseTrain is called.  This routine runs the motor at its current speed indefinitely.
+It only stops when either of the external flags, Change, or Aborting, is set by another process.
+The second flag is used to enable the operator to abort a test.
+The first is used to allow the test to abort normally.  We will assume that Change was set here.
+
+After PulseTrain is called, the motor is decelerated to a stop.
+This is done by placing the value 0 in the accumulator, A, and then calling Decelerate.
+It is possible in this application to bring the motor to an immediate stop, if desired,
+by just turning off the pulse timer after PulseTrain is finished.
+Afterwards, ResetDriver is called to turn off the windings.
+
+4. Testing Algorithms, Operator Interface
+─────────────────────────────────────────
+4A. Overview
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+There are two types of processes that the driver unit will support:
+∙	Test mode, and
+∙	Jog mode.
+The first uses the sensor input to mark off one full rotation of the register undergoing measurement,
+the second mode allows the operator to set the position of the dial on a register.
+
+The control loop is called StepperLoop.
+When a test starts, it will either enter jog mode or test mode depending on the variable, Testing,
+which must be set by another process before starting.
+The WaitForActive loop is set up to guard against spurious INT1 interrupts.
+
+4B. Test Mode
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+A driver unit will receive a command to enable test mode and a specification of the register unit type undergoing test.
+Both the specification and mode will remain between tests until the unit receives new speficiations.
+
+After test mode is enabled, then from then on each time the operator places a register in the Client(s) selected
+a test will automatically start.
+The motor on the Client(s) will accelerate to full test speed (1750 RPM).
+When the dial passes the dial sensor the first time output pulses will be counted.
+When the dial reaches the sensor the second time, the counting will be stopped and the motor will be immediately stopped.
+
+Thus, the dial sensor will serve both the purpose of marking off one full rotation of the register
+and of setting up the register's dial.
+
+When a test is thus completed, the driver unit will perform mathematical calculations
+to determine the outcome of the test and then light the green LED if the test passes, or else the red LED.
+Accuracy control limits, for this application, were set to 1/256 (0.4%).
+On request from the master unit, the driver unit will transfer more precise information on the actual percent error.
+
+Communication with the driver unit may take place during the test.
+This makes it possible for the master unit to periodically poll the driver for its current status
+and to determine when the driver is finished with a test.
+The driver unit may also receive an abort command from the master over the communications line,
+telling it to stop the test, or telling it to change speed or stop during jog mode.
+
+4C. Jog Mode
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+When the driver receives the jog command, it will be set in the jog mode for all the following tests
+until it next receives a different specification.
+Each time a register is placed, the driver unit will automatically start the jog process.
+
+The motor will accelerate up to a relatively fast speed.
+Each time the driver receives the change-speed command from the master,
+it will switch its speed between fast and slow (1750 RPM and 500 RPM).
+When it receives the abort command, it will stop the motor.
+
+5. Communications and Commands
+──────────────────────────────
+5A. Overview.
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+A RS-485 multidrop set-up is used to allow a master unit to communicate with the driver, and possible several drivers in parallel.  Communications are run with 9 bits, no parity, 1 data bit and at 9600 baud.
+
+At the driver unit, it is assumed that T0 will be driving the transmit buffer.
+When set, T0 enables transmissions over the RS-485, and when clear transmissions are disabled.
+
+In general, at no time can more than one unit on a RS-485 line have its transmission enabled.
+
+5B. Addresses and Address Matching.
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+The 9th bit can be used by a master unit to distinguish between an address and data.
+If the unit had one master and 4 drivers, then each driver can be given a different address,
+particularily, f7, fb, fd, and fe (hexadecimal).
+In this setup there can also be one broadcast address (ff).
+
+When these addresses are represented in binary, the look like this:
+	First Driver	f7: 1 1 1 1 0 1 1 1
+	Second Driver	fb: 1 1 1 1 1 0 1 1
+	Third Driver	fd: 1 1 1 1 1 1 0 1
+	Fourth Driver	fe: 1 1 1 1 1 1 1 0
+	Broadcasti	ff: 1 1 1 1 1 1 1 1
+A driver will respond to any addresses that ‟matches” its own address.
+A match occurs with any address is sent out with 1's occurring in AT LEAST the positions that the driver's address has 1's in.
+
+As an example that has nothing to do with the above,
+if the address to be matched was 33 in hexadecimal (00110011 binary), then the following 16 addresses would match it:
+	0 0 1 1 0 0 1 1		0 0 1 1 0 1 1 1		0 0 1 1 1 0 1 1		0 0 1 1 1 1 1 1
+	0 1 1 1 0 0 1 1		0 1 1 1 0 1 1 1		0 1 1 1 1 0 1 1		0 1 1 1 1 1 1 1
+	1 0 1 1 0 0 1 1		1 0 1 1 0 1 1 1		1 0 1 1 1 0 1 1		1 0 1 1 1 1 1 1
+	1 1 1 1 0 0 1 1		1 1 1 1 0 1 1 1		1 1 1 1 1 0 1 1		1 1 1 1 1 1 1 1
+which have hexadecimal values: 33, 37, 3b, 3f, 73, 77, 7b, 7f, b3, b7, bb, bf, f3, f7, fb, and ff.
+In the above cases, the only thing that matches address f7, fb, fd, or fe is the address itself and ff.
+This justifies calling ff the broadcast address.
+
+When the 9th bit is set to 0, then it is assumed that data is being sent.
+Only the units that have just been addressed will accept the data, the others will simply ignore it.
+
+A master does not need an address, so each driver will only send data with the 9th bit set to 0.
+No driver ever sends an address.
+The software for these communication routines is contained in rx9_lib.s.
+
+5C. Polling
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+A master unit can periodically poll each driver unit to determine when each has just completed a test.
+At that time, it will request more information on the test results from the driver.
+
+5D. Command summary
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+These are the possible commands that can be sent to the driver.
+The commands TEST, JOG, CHANGE, and ABORT can be sent with a broadcast address.
+The others, STATUS, and DATA can only be send to individual addresses.
+
+The format of a command must be:
+	Address (9th bit set to 1),
+	Command (9th bit set to 0)
+as described above.
+The values of the commands are respectively:
+	0:	TEST
+	1:	JOG
+	2:	CHANGE
+	3:	STATUS
+	4:	ABORT
+	5:	DATA
+The following is a summary of the commands:
+∙	STATUS: To poll the driver's status:
+	The driver will respond with two bytes:
+	―	Speed ... the current speed of the motor in 25 RPM units, represented iu Binary-Coded Decimal format.
+	―	Status ... the byte containing the status flags:
+		▪	Bit 0:		1 if the motor is currently active, 0 else.
+		▪	Bit 1:		1 if the Client is in testing mode, 0 for jogging.
+		▪	Bits 2 to 7:	are all 0.
+	The values of Status are thus:
+	―	0:	Motor off.
+			Waiting to begin jog.
+			This is the initial state.
+	―	1:	Motor running.
+			Currently in jog mode.
+	―	2:	Motor off.
+			Waiting to begin a test.
+	―	3:	Motor running.
+			Currently in a test.
+	The Speed is represented as a Binary-Coded Decimal taking on values
+	00 for (0 RPM), 01 (25 RPM), 02 (50 RPM), up to 70 (1750 RPM).
+
+	For obvious reasons, STATUS is also always responded to.
+
+∙	DATA: To query the driver's measurement of register accuracy.
+	The master unit should sent this command immediately after it detects a transition out of state 3.
+	The driver will respond by sending the following bytes:
+	―	Sensors ... the number of sensors recorded (0, 1, or 2).
+	―	Results ... the byte containing the results of the test:
+		▪	Bit 0:		1 if the test passed, 0 if it failed.
+		▪	Bit 1:		1 for a pulse match or over-count, 0 for a pulse-undercount.
+		▪	Bits 2 to 7:	are all 0.
+	―	Percentage ... a absolute value of the percent error.
+	The value of Results are thus:
+	―	0:	Test failed.
+			Pulse under-count.
+	―	1:	Test passed.
+			Measured pulse count < Calculated pulse count.
+	―	2:	Test failed.
+			Pulse over-count.
+	―	3:	Test passed.
+			Measured pulse count ≥ Calculated pulse count.
+	A test is considered to have passed if it falls within the accuracy control limit (currently set at 0.4%).
+
+	The last two items are only valid if the sensor count is two.
+	During a test, the Results and Percentage variables are set to 0.
+	Percentage is represented as a Binary-Coded-Decimal, taking on values 00h (0.0%), 01h (0.1%), all the way up to 99h (9.9%).
+	Any percent error exceeding 9.9% is truncated to 9.9%.
+
+	DATA is always responded to, but is only meaningful after a test has completed.
+	The values returned reflect the status of the last test run, or are meaningless if no previous test has been run.
+
+∙	TEST: To enable the test mode for the driver.
+	Data will be sent to indicate the theoretical number of pulses the motor
+	requires to rotate the register dial one full rotation.
+	The driver will use it to measure the register's accuracy against.
+	It will switch on Bit 1 obtained from the STATUS command.
+
+	The pulse number is sent to the driver as a 3 byte integer with the lowest order byte first.
+
+∙	JOG: To enable the jog mode for the driver.
+	The driver will switch off Bit 1, as read in the STATUS command.
+
+∙	CHANGE: To change the current jog speed.
+	The driver responds by switching between fast jog and slow jog.
+	This only has effect in state 1 (jog mode active).
+
+∙	ABORT: To abort a test, or to stop the jog mode.
+	This only takes effect when Bit 0 of the STATUS command is on (motor active).

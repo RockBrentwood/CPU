@@ -1,0 +1,28 @@
+8051 Client
+━━━━━━━━━━━
+0. Introduction
+───────────────
+This is a simple communications program that runs a dumb tty from an IBM compatible
+at 9600 baud, no parity, 8 data bits, and 1 stop bit (9600,N,8,1) over COM2 for RS-232 compatible serial links.
+With minor changes, it can also be made to run at 57600,N,9,1.
+This is illustrated in demo.c.
+
+These programs need to be compiled with MicroSoft's Quick C, version 2.5.
+The nmake facility should also work with the make file given here.
+
+A future revision may be done with the SDL library or in the QT framework with I/O generalized using sockets and pipes.
+
+1. Client
+─────────
+A brief summary of the special keys follows:
+∙	Left Arrow:
+	Closes the serial port.
+	I wanted to have the ability to transmit control-C, so it has been disabled.
+∙	Down Arrow:
+	Starts a binary file transfer from the PC client.
+	Press the Escape key (Esc) to end.
+	All other keys are ignored during the transfer.
+∙	Up Arrow:
+	Starts an ASCII transfer to the client,
+	typically for logging sessions or receiving data transfers, such as an Intel Hex Format memory dump.
+	Press the Escape key (Esc) to end the transter.
