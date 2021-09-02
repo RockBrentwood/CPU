@@ -27,7 +27,7 @@ Start-Up Notes
 	just run the assembler on the file indicated, for instance:
 		cas crc.asm
 	to assemble crc.asm.
-	All the other assembly language modules have names ending in .lib,
+	All the other assembly language modules have names ending in .s (and usually _lib.s),
 	and are combined with the source module (crc.asm in the example above) using the assembler's file inclusion feature.
 
 (5)	If your source file was written for another assembler that includes more than the minimal set of amenities,

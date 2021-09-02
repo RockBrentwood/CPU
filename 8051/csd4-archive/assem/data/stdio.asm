@@ -7,7 +7,7 @@ include "kernel.h"
 ;; (2) Send data    (REM = 0, T0 = 1)
 
 global SetPort:
-   mov SCON, #11000000b ;; Serial comm: 9 bits, no parity, 1 stop bit.   
+   mov SCON, #11000000b ;; Serial comm: 9 bits, no parity, 1 stop bit.
    clr PS
    clr RCLK
    clr TCLK

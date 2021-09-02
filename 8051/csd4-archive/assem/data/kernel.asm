@@ -77,7 +77,7 @@ global PCF3 bit CSTATUS.3
 global PCF4 bit CSTATUS.4
 
 seg code at EndSeg
-UpdateStatus: ;; Update CSTATUS 
+UpdateStatus: ;; Update CSTATUS
    setb PCF
 1: jnb CCF0, 1f; mov A, CCAP0H; mov C, ACC.7; mov PCF0, C
 1: jnb CCF1, 1f; mov A, CCAP1H; mov C, ACC.7; mov PCF1, C
