@@ -1,121 +1,105 @@
-               T h e   8 0 5 1 F A   I n t e r r u p t   D e m o
+The 8051FA Interrupt Demo
+━━━━━━━━━━━━━━━━━━━━━━━━━
+0. Introduction
+───────────────
+This is a diagnostic testing and demo program I've used when preparing 8051FA applications.
+It comes in real handy when you need to verify that the circuits containing the 8051FA
+will generate the correct interrupts on the microprocessor.
 
-(0) INTRODUCTION
-   This is a diagnostic testing and demo program I've used when preparing
-8051FA applications.  It comes in real handy when you need to verify that the
-circuits containing the 8051FA will generate the correct interrupts on the
-microprocessor.
+This software uses the IO library, which is an interface to a keypad and LCD unit.
+Either you will need compatible hardware, as described in the IO reference,
+or you will need to write an emulation of the necessary IO routines, for example,
+to display results and read commands over a RS-232.
 
-   This software uses the IO library, which is an interface to a keypad and
-LCD unit.  Either you will need compatible hardware, as described in the
-IO reference, or you will need to write an emulation of the necessary IO
-routines, for example, to  display results and read commands over a RS-232.
+For reference, these are the routines that you would need to emulate:
+∙	scr_init
+	Initializes the display unit, clears it, and sets the cursor to row 0, column 0.
+∙	cputc
+	Prints out the character contained in the accumulator A.
+	Moves the cursor right one column.
+	If the cursor was already at the last column it's location is undefined.
+∙	locate
+	Sets the cursor to the location given by the variables Row and Col.
+	Row should be in the range 0..3, and Col in the range 0..19.
+You will also need to allocate 1 byte of space in internal data memory each
+for the variable Row, and Col if you write your own IO routines.
 
-   For reference, these are the routines that you would need to emulate:
+1. Display
+──────────
+The display unit used with this software is a 4 x 20 LCD unit.
+The top row (row 0) is used to display the number of interrupts received from various sources.
+These numbers are single digits listed in the following format:
+	Column	Interrupt Source
+	──────	――――――――――――――――
+	0	IE0 ↓
+	1	IE1 ↓
+	2	T2EX ↓
+	3	CEX3 ↓
+	4	CEX3 ↑
+	5	CEX4 ↓
+	6	CEX4 ↑
+	7	CEX5 ↓
+	8	CEX5 ↑
+	9	CEX6 ↓
+	10	CEX6 ↑
+	11	CEX7 ↓
+	12	CEX7 ↑
+	↑ = rising edge
+	↓ = falling edge
+The CEX interrupt sources can distinguish both ↓ and ↑.
 
-         * scr_init
-           Initializes the display unit, clears it, and sets the cursor to
-           row 0, column 0.
-         * cputc
-           Prints out the character contained in the accumulator A.  Moves the
-           cursor right one column.  If the cursor was already at the last
-           column it's location is undefined.
-         * locate
-           Sets the cursor to the location given by the variables Row and Col.
-           Row should be in the range 0..3, and Col in the range 0..19.
+When the count for any interrupt source exceeds 10, its count is reset to 0 and a 0 is displayed for it.
 
-You will also need to allocate 1 byte of space in internal data memory each for
-the variable Row, and Col if you write your own IO routines.
+Rows 1, 2, and 3 illustrate the concurrent execution of the interrupt loops in TTY fashion:
+from column 0, rightward to column 19, and from row 1 down to row 3.
+When the display reaches the last row and column, it wraps around back to row 1 and column 0.
 
-(1) DISPLAY
-   The display unit used with this software is a 4 x 20 LCD unit.  The top row
-(row 0) is used to display the number of interrupts received from various
-sources.  These numbers are single digits listed in the following format:
-
-            Column                Interrupt Source
-               0                   IE0  falling edge
-               1                   IE1  falling edge
-               2                   T2EX falling edge
-               3                   CEX3 falling edge
-               4                   CEX3 rising edge
-               5                   CEX4 falling edge
-               6                   CEX4 rising edge
-               7                   CEX5 falling edge
-               8                   CEX5 rising edge
-               9                   CEX6 falling edge
-              10                   CEX6 rising edge
-              11                   CEX7 falling edge
-              12                   CEX7 rising edge
-
-The CEX interrupt sources can distinguish both falling edges and rising edges.
-
-   When the count for any interrupt source exceeds 10, its count is reset to 0
-and a 0 is displayed for it.
-
-   Rows 1, 2, and 3 illustrate the concurrent execution of the interrupt loops
-in TTY fashion: from column 0, rightward to column 19, and from row 1 down to
-row 3.  When the display reaches the last row and column, it wraps around back
-to row 1 and column 0.
-
-   The program starts when all the interrupt loops are "Spawned" from main.
+The program starts when all the interrupt loops are "Spawned" from main.
 In the followiing sequence:
+	main:
+		<a> spawn TestIE0
+		<b> spawn TestIE1
+		<c> spawn TestT2EX
+		<d> spawn TestCCF
+		<e> start the interrupts
+	ret
+The letters a, b, c, d, and e will be displayed as the corresponding points in the program are reached.
 
-main:
-   <a> spawn TestIE0
-   <b> spawn TestIE1 
-   <c> spawn TestT2EX
-   <d> spawn TestCCF
-   <e> start the interrupts
-ret
-
-The letters a, b, c, d, and e will be displayed as the corresponding points in
-the program are reached.
-
-Each time a CCF interrupt is triggered, a number: 0, 1, 2, 3, or 4 is displayed
-corresponding to the interrupt source (0 = CCF0, 1 = CCF1, 2 = CCF2, 3 = CCF3,
-and 4 = CCF4).
+Each time a CCF interrupt is triggered, a number:
+0, 1, 2, 3, or 4 is displayed corresponding to the interrupt source (0 = CCF0, 1 = CCF1, 2 = CCF2, 3 = CCF3, and 4 = CCF4).
 
 Finally, each of the loops is marked as follows:
+	TestIE0:
+		Initialize IE0
+		while (true) {
+			<f>
+			wait for IE0 interrupt
+			<g>
+		}
+	TestIE1:
+		Initialize IE1
+		while (true) {
+			<h>
+			wait for IE1 interrupt
+			<i>
+		}
+	TestT2EX:
+		Initialize T2EX
+		while (true) {
+			<j>
+			wait for T2EX interrupt
+			<k>
+		}
+	TestCCF:
+		Initialize CCF0, CCF1, CCF2, CCF3, CCF4
+		while (true) {
+			<l>
+			wait for T2EX interrupt
+			<m>
+		}
+The letters f, g, h, i, j, k, l, and m will be displayed as the corresponding point in each loop is reached.
 
-TestIE0:
-   Initialize IE0
-   while (1) {
-      <f>
-      wait for IE0 interrupt
-      <g>
-   }
-
-TestIE1:
-   Initialize IE1
-   while (1) {
-      <h>
-      wait for IE1 interrupt
-      <i>
-   }
-
-TestT2EX:
-   Initialize T2EX
-   while (1) {
-      <j>
-      wait for T2EX interrupt
-      <k>
-   }
-
-TestCCF:
-   Initialize CCF0, CCF1, CCF2, CCF3, CCF4
-   while (1) {
-      <l>
-      wait for T2EX interrupt
-      <m>
-   }
-
-The letters f, g, h, i, j, k, l, and m will be displayed as the corresponding
-point in each loop is reached.
-
-   The display will therefore will be the sequence:
-
-                     a f b h c j d i e
-
+The display will therefore will be the sequence:
+	a f b h c j d i e
 followed by one or more of the sequences:
-
-         g f, i h, k j, 0 m l, 1 m l, 2 m l, 3 m l, or 4 m l.
+	g f, i h, k j, 0 m l, 1 m l, 2 m l, 3 m l, or 4 m l.

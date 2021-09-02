@@ -77,7 +77,7 @@ ret
 SER_ADDR equ ':'
 
 SetPort:
-   mov SCON, #11000000b ;;; Serial comm: 8 bits, no parity, 1 stop bit.   
+   mov SCON, #11000000b ;;; Serial comm: 8 bits, no parity, 1 stop bit.
    clr PS
    clr RCLK
    clr TCLK

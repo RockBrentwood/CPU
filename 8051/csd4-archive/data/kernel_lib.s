@@ -73,7 +73,7 @@ PCF2 bit CSTATUS.2
 PCF3 bit CSTATUS.3
 PCF4 bit CSTATUS.4
 
-UpdateStatus: ;; Update CSTATUS 
+UpdateStatus: ;; Update CSTATUS
    setb PCF
 Q0: jnb CCF0, Q1
    mov A, CCAP0H

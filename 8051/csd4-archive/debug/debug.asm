@@ -380,8 +380,8 @@ ShowCBY:                  ;;; void ShowCBY(byte *Base, word Limit) {
       mov A, R2
       dec R2
    jnz LoopC
-      mov A, R3 
-      dec R3 
+      mov A, R3
+      dec R3
    jnz LoopC              ;;;    }
    acall nl               ;;;    putchar('\n');
 ret                       ;;; }
@@ -412,8 +412,8 @@ ShowXBY:                  ;;; void ShowXBY(byte *Base, word Limit) {
       mov A, R2
       dec R2
    jnz LoopX
-      mov A, R3 
-      dec R3 
+      mov A, R3
+      dec R3
    jnz LoopX              ;;;    }
    acall nl               ;;;    putchar('\n');
 ret                       ;;; }
@@ -469,8 +469,8 @@ HexSave:                  ;;; void HexSave(byte *Base, word Limit) {
       mov A, R2
       dec R2
    jnz LoopH
-      mov A, R3 
-      dec R3 
+      mov A, R3
+      dec R3
    jnz LoopH              ;;;    }
    mov R4, #0             ;;;    Clear CheckSum;
    mov A, #':'
@@ -612,7 +612,7 @@ pop DPL
       movc A, @A + DPTR
       inc DPTR
       acall puthex      ;;;       printf(" %2x", *DPTR++);
-   djnz R2, showLoop 
+   djnz R2, showLoop
    showBreak:           ;;;    }
    acall nl
 ret                     ;;; }

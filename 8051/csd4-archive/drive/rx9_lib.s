@@ -8,7 +8,7 @@ SER_ADDR equ 11110111b
 ;; All addresses should have the same number (7) of bits set.
 
 SetPort:
-   mov SCON, #11000000b ;; Serial comm: 8 bits, no parity, 1 stop bit.   
+   mov SCON, #11000000b ;; Serial comm: 8 bits, no parity, 1 stop bit.
    clr PS
    clr RCLK
    clr TCLK

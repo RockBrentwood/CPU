@@ -31,7 +31,7 @@ ShiftX:
       mov A, @R0
       rlc A
       mov @R0, A
-      inc R0 
+      inc R0
    djnz R2, ShiftLoop
 ret
 
@@ -60,7 +60,7 @@ IncX:
    setb C
 CarryX:
    CarryLoop:
-      mov A, @R0 
+      mov A, @R0
       addc A, #0
       mov @R0, A
       inc R0
@@ -71,7 +71,7 @@ DecX:
    setb C
 BorrowX:
    BorrowLoop:
-      mov A, @R0 
+      mov A, @R0
       subb A, #0
       mov @R0, A
       inc R0

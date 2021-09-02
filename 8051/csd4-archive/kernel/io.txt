@@ -1,117 +1,116 @@
-             T h e   I O   k e y p a d / L C D   I n t e r f a c e
+The IO keypad/LCD Interface
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+0. Overview
+───────────
+This software is meant to be used with a keypad/LCD unit and a 8051 stand-alone board to provide an I/O interface.
+This unit is configured in a specific way, and the io_lib.s software assumes this specific configuration.
 
-(0) OVERVIEW
-   I often use a keypad/LCD unit with my 8051 stand-alone board to provide
-an I/O interface.  This unit is configured in a specific way, and the io.lib
-software assumes this specific configuration.
+1. Hardware Interface
+─────────────────────
+1a. Memory Map
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+The io_lib.s module assumes that the following registers are mapped to «external data» memory
+(xdata[], as referred to in the debugger) as illustrated below:
+	Register		Address
+	――――――――		―――――――
+	LR (LCD REGISTER)	e080
+	LD (LCD DATA)		e081
+	LS (LCD STROBE)		e090
+	KD (KEYPAD DATA)	e0a0
+It assumes that the keypad input has an associated strobe which will trigger the «external interrupt» 1 pin (INT1)
+when INT1 is set in falling edge mode.
 
-(1) HARDWARE INTERFACE
-   (a) Memory Map
-   The io.lib module assumes that the following registers are mapped to
-EXTERNAL DATA memory (XBY memory, as referred to in the debugger) as
-illustrated below:
+1b. Keypad
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+The keypad is assumed to have 16 keys on it.
+When INT1 becomes active, the lower order 4 bits of the KD register will contain the numeric code of the key that was pressed,
 
-                      Register                  Address
-                      LR (LCD REGISTER)           e080
-                      LD (LCD DATA)               e081
-                      LS (LCD STROBE)            e090
-                      KD (KEYPAD DATA)            e0a0
+1c. Liquid Crystal Display (LCD)
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+The LCD is assumed to be 4 rows by 20 columns.
+The registers LR and LD are used to sending commands, and sending data, respectively.
+The strobe register, LS, is used to latch data to or from either of these registers.
 
-It assumes that the keypad input has an associated strobe which will trigger the
-EXTERNAL INTERRUPT 1 pin (INT1) when INT1 is set in falling edge mode.
+To write to LD or LR, write to its memory-mapped address, and then toggle the strobe, LS.
+For example:
+	│
+	│ WriteLR:
+	│    mov DPTR, #0e080h  ;; Write A to LR
+	│    movx @DPTR, A
+	│    mov DPTR, #0e090h  ;; Toggle LS.
+	│    mov A, #1
+	│    movx @DPTR, A
+	│    mov A, #0
+	│    movx @DPTR, A
+	│ ret
+	│
+	│ WriteLD:
+	│    mov DPTR, #0e081h ;; Write A to LD.
+	│    movx @DPTR, A
+	│    mov DPTR, #0e090h ;; Toggle LS.
+	│    mov A, #1
+	│    movx @DPTR, A
+	│    mov A, #0
+	│    movx @DPTR, A
+	│ ret
+	│
+	│ ReadLR:
+	│    mov DPTR, #0e080h  ;; Clear out LR.
+	│    movx A, @DPTR
+	│    mov DPTR, #0e090h  ;; Set LS to enable reading.
+	│    movx @DPTR, #1
+	│    mov DPTR, #0e080h  ;; Read LR.
+	│    movx A, @DPTR
+	│    mov DPTR, #0e090h  ;; Clear LS to complete the reading.
+	│    movx @DPTR, #0
+	│ ret
+	│
+	│ ReadLD:
+	│    mov DPTR, #0e081h  ;; Clear out LD.
+	│    movx A, @DPTR
+	│    mov DPTR, #0e090h  ;; Set LS.
+	│    movx @DPTR, #1
+	│    mov DPTR, #0e081h  ;; Read LD.
+	│    movx A, @DPTR
+	│    mov DPTR, #0e090h  ;; Clear LS.
+	│    movx @DPTR, #0
+	│ ret
 
-   (b) Keypad
-   The keypad is assumed to have 16 keys on it.  When INT1 becomes active, the
-lower order 4 bits of the KD register will contain the numeric code of the key
-that was pressed,
+The actual command codes used for the LCD will depend largely on the unit itself,
+and have mostly been ‟encapsulated” in the IO interface software.
+You will need to make the appropriate changes to the IO routines for your LCD unit.
 
-   (c) Liquid Crystal Display (LCD)
-   The LCD is assumed to be 4 rows by 20 columns.  The registers LR and LD are
-used to sending commands, and sending data, respectively.  The strobe register,
-LS, is used to latch data to or from either of these registers.
+2. I/O Functions
+────────────────
+The following is a description of the functions contained in the IO interface.
 
-   To write to LD or LR, write to its memory-mapped address, and then toggle
-the strobe, LS.  For example:
+2a. Keypad routines
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+	key_init:			Initialize the keypad, set up external interrupt 1.
+	cgetc:				Read the keypad data into A.
 
-WriteLR:
-   mov DPTR, #0e080h  ;;; Write A to LR
-   movx @DPTR, A
-   mov DPTR, #0e090h  ;;; Toggle LS.
-   mov A, #1
-   movx @DPTR, A
-   mov A, #0
-   movx @DPTR, A
-ret
+2b. LCD routines
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+	scr_init:			Initialize the display, and clear it.
+	clear:				Clear the display and set the cursor to row 0, column 0
+	home:				Set the cursor to row 0, column 0.
 
-WriteLD:
-   mov DPTR, #0e081h ;;; Write A to LD.
-   movx @DPTR, A
-   mov DPTR, #0e090h ;;; Toggle LS.
-   mov A, #1
-   movx @DPTR, A
-   mov A, #0
-   movx @DPTR, A
-ret
+	set_cursor:			Set the cursor to the mode indicated in the register A.
+					A can be a combination of any of the following values:
+					DISPLAY_ON:	Turn the display on
+					CURSOR_ON:	Turn on the cursor.
+					CURSOR_BLINK:	Make the cursor blink.
+	cursor_left, cursor_right:	To move the cursor.
+	shift-left, shift_right:	To move the display itself.
+	locate:				To place the cursor at the point indicated by the variables Row and Col.
+	save_cursor, restore_cursor:	So save and restore the more recent cursor position
+	cputc:				Print the character in A out to the display in TTY manner.
+	cputs:				Print out an entire string, pointed to by DPTR, to the display unit.
 
-ReadLR:
-   mov DPTR, #0e080h  ;;; Clear out LR.
-   movx A, @DPTR
-   mov DPTR, #0e090h  ;;; Set LS to enable reading.
-   movx @DPTR, #1
-   mov DPTR, #0e080h  ;;; Read LR.
-   movx A, @DPTR
-   mov DPTR, #0e090h  ;;; Clear LS to complete the reading.
-   movx @DPTR, #0
-ret
-
-ReadLD:
-   mov DPTR, #0e081h  ;;; Clear out LD.
-   movx A, @DPTR
-   mov DPTR, #0e090h  ;;; Set LS.
-   movx @DPTR, #1
-   mov DPTR, #0e081h  ;;; Read LD.
-   movx A, @DPTR
-   mov DPTR, #0e090h  ;;; Clear LS.
-   movx @DPTR, #0
-ret
-
-   The actual command codes used for the LCD will depend largely on the unit
-itself, and have mostly been "encapsulated" in the IO interface software.  You
-will need to make the appropriate changes to the IO routines for your LCD unit.
-
-(2) IO FUNCTIONS
-   The following is a description of the functions contained in the IO
-interface.
-
-   (a) Keypad routines
-       key_init ... Initialize the keypad, set up external interrupt 1.
-       cgetc ...... Read the keypad data into A.
-
-   (b) LCD routines
-       scr_init ... Initialize the display, and clear it.
-       clear ...... Clear the display and set the cursor to row 0, column 0
-       home ....... Set the cursor to row 0, column 0.
-
-       set_cursor ... Set the cursor to the mode indicated in the register A.
-                      A can be a combination of any of the following values:
-                         DISPLAY_ON:   Turn the display on
-                         CURSOR_ON:    Turn on the cursor.
-                         CURSOR_BLINK: Make the cursor blink.
-       cursor_left, cursor_right ... to move the cursor
-       shift-left,   shift_right ... to move the display itself.
-       locate ...... To place the cursor at the point indicated by the
-                     variables Row and Col.
-       save_cursor, restore_cursor:
-                     So save and restore the more recent cursor
-                     position
-       cputc ....... Print the character in A out to the display in TTY manner.
-       cputs ....... Print out an entire string, pointed to by DPTR, to the
-                     display unit.
-   (c) Variables
-   The io.lib software uses 6 bytes of space for variables.  They have been
-named as follows:
-
-               Row, Col:       The current cursor position
-               OldRow, OldCol: The most recent cursor position saved by the
-                               last call to save_cursor.
-               Counter: A 2-byte counter.
+2c. Variables
+⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯
+The io_lib.s software uses 6 bytes of space for variables.
+They have been named as follows:
+	Row, Col:			The current cursor position
+	OldRow, OldCol:			The most recent cursor position saved by the last call to save_cursor.
+	Counter:			A 2-byte counter.

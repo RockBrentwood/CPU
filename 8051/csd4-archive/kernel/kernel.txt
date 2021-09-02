@@ -1,193 +1,184 @@
-                The 8052 Real-Time Multi-Tasking Executive
+The 8052 Real-Time Multi-Threading Executive
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+0. Introduction
+───────────────
+An interrupt-driven multi-processing architecture has been designed for the Intel 8051-family of processors,
+complete with a small library of routines to implement its basic operations.
+Interrupts are generally reserved for process-switching and are dynamically enabled or disabled by the routines in this package.
 
-(0) INTRODUCTION
-   An interrupt-driven multi-processing architecture has been designed for the
-Intel 8051-family of processors, complete with a small library of routines to
-implement its basic operations.  Interrupts are generally reserved for
-process-switching and are dynamically enabled or disabled by the routines in
-this package.
-   Initially, the only process running is "main".  When the 8051-processor
-starts up from reset, a short initialization sequence will initialize the
-multiprocessing architecture and then send control to "main", which it is
-assumed the programmer will define (the same as in C).
+This is actually a template for a kernel that must be hand-configured (or compiler-generated) to fit the application at hand.
+Several configurations of it have been used and demonstrated elsewhere in this archive.
+The original conception of this library predates, by nearly a generation,
+the inclusion of multi-threading at the language level in high-level languages;
+and also predates the introduction of pthreads (and POSIX 1a, which was formerly POSIX 4) by several years.
+The absence of these facilities in high-level languages
+was one of the primary reasons that made it necessary to use assembly, rather than C, in the firmware presented in this archive.
+One of the main reasons for creating an assembler, CAS ― that captured more of the niceties of C ― was to serve as a compromise.
 
-   New processes are created by using "Spawn", which has the effect of calling
-the process, but also initializing a new stack segment for that process.  The
-new process will continue until either it returns, or until it calls "Pause".
-A "Pause" will stop it, and freeze its stack.  It will remain frozen until the
-corresponding "Resume" is called, at which point it resumes right at where it
-left off AS IF NOTHING HAPPENED IN BETWEEN.
+A later version of this kernel library was developed in the late 1990's that worked more consistently with the
+register window facility of 8051, allowing rapid switching between both threads «and» register windows.
+This version of the kernel may be upgraded in the future to include this.
 
-   It is assumed that each interrupt active will call its own "Resume".
-This provides a way to have processes go into the background and wait for a
-hardware interrupt while other processes can resume.
+Initially, the only process running is ‟main”.
+When the 8051-processor starts up from reset,
+a short initialization sequence will initialize the multiprocessing architecture and then send control to ‟main”,
+which it is assumed the programmer will define (the same as in C).
 
-(1) ARCHITECTURE
-   Each process "Spawn"-ed will have its own segment on the 8051 stack, which it
-can use as its calling stack.  Generally, the global stack will occupy registers
-128 to 255 in the current version of the library, and the address 128 is set to
-be the base address of the "main" process.
-   It is up to the programmer to define the stack segments used for each
-process.  Further, there is no error-checking for overlapping stack segments,
-so the programmer is responsible for assuring that large enough stack segments
-are allocated to each process to prevent conflicts.
-   The library, though it contains code for interrupt handlers, is not
-completely self-contained.  The programmer must make modifications to the
-interrupt handlers pushing and popping any registers that two or more processes
-make concurrent use of.  If the programmer is using more than one priority
-level of interrupts, then at the very least, the registers R0, R1 should be
-saved.  It is also assumed that the register bank is permanently switched to
-bank 0.
+New processes are created by using ‟Spawn”, which has the effect of calling the process,
+but also initializing a new stack segment for that process.
+The new process will continue until either it returns, or until it calls ‟Pause”.
+A ‟Pause” will stop it, and freeze its stack.
+It will remain frozen until the corresponding ‟Resume” is called,
+at which point it resumes right at where it left off «as if nothing happened in between».
 
-   The key to this multi-processing model is the Priority Stack.  Initially
-empty, each time a Spawn or Resume takes effect it will save the current
-stack pointer in order to allow the stack pointer for the new process to be
-loaded.  When this new process either returns or Pauses, the old stack pointer
-is popped off the stack and is restored as the current stack pointer.
+It is assumed that each interrupt active will call its own ‟Resume”.
+This provides a way to have processes go into the background and wait for a hardware interrupt while other processes can resume.
 
-   This allows stack segments to be switched very quickly and in a way that is
-consistent with the priority structure of the 8051 interrupts, so that
-processes Resumed with higher priority interrupts can preempt processes
-currently running.
+1. Architecture
+―――――――――――――――
+Each process ‟Spawn”-ed will have its own segment on the 8051 stack, which it can use as its calling stack.
+Generally, the global stack will occupy registers 128 to 255 in the current version of the library,
+and the address 128 is set to be the base address of the ‟main” process.
 
-   There will generally be registers for each interrupt source used to save
-stack pointers on Pauses and Resumes.  In addition, there will be more registers
-to effectively enable software interrupts.  This means that every process
-currently active will have its stack pointer saved either on the Priority
-Stack, in a stack pointer register, or will be currently running in the
-foreground with the current stack pointer.
+It is up to the programmer to define the stack segments used for each process.
+Further, there is no error-checking for overlapping stack segments,
+so the programmer is responsible for assuring that large enough stack segments are allocated to each process to prevent conflicts.
 
-   This library provides the following registers for saving stack pointers:
+The library, though it contains code for interrupt handlers, is not completely self-contained.
+The programmer must make modifications to the interrupt handlers pushing and popping any registers
+that two or more processes make concurrent use of.
+If the programmer is using more than one priority level of interrupts,
+then at the very least, the registers R0, R1 should be saved.
+It is also assumed that the register bank is permanently switched to bank 0.
 
-     SP_IE0, SP_IE1: For external interrupts 0, and 1.
-     SP_TF0, SP_TF1, SP_TF2: For timer 0, 1, and 2 overflow interrupts.
-     SP_RI, SP_TI: For serial receive and transmit interrupts.
-     SP_EXF2: For the timer 2 external capture interrupt.
-     SP_SW0, SP_SW1, SP_SW2, SP_SW3: For "software interrupts" 0, 1, 2, and 3.
+The key to this multi-processing model is the Priority Stack.
+Initially empty, each time a Spawn or Resume takes effect it will save the current stack pointer
+in order to allow the stack pointer for the new process to be loaded.
+When this new process either returns or Pauses, the old stack pointer is popped off the stack and is restored as the current stack pointer.
 
-The first 8 are tied to the hardware interrupts, so that for instance, when
-external interrupt 0 is active, its interrupt-handler will call Resume with
-register SP_IE0.
+This allows stack segments to be switched very quickly and in a way
+that is consistent with the priority structure of the 8051 interrupts,
+so that processes Resumed with higher priority interrupts can preempt processes currently running.
 
-(2) INITIALIZATION
-   Initialization consists of the following actions:
+There will generally be registers for each interrupt source used to save stack pointers on Pauses and Resumes.
+In addition, there will be more registers to effectively enable software interrupts.
+This means that every process currently active will have its stack pointer saved either on the Priority Stack,
+in a stack pointer register, or will be currently running in the foreground with the current stack pointer.
 
-    (1) The Priority Stack is cleared.
-    (2) The first stack segment, for main, is set up and the calling
-        address for "_Die" is pushed onto it.  Thus when main returns,
-        it will jump to the routine _Die, which is an infinite loop.
-    (3) Just under this stack, the calling address Exit will be inserted.
-        This provides a convenient place to initialize unused stack pointer
-        registers.
+This library provides the following registers for saving stack pointers:
+∙	SP_IE0, SP_IE1:				For external interrupts 0, and 1.
+∙	SP_TF0, SP_TF1, SP_TF2:			For timer 0, 1, and 2 overflow interrupts.
+∙	SP_RI, SP_TI:				For serial receive and transmit interrupts.
+∙	SP_EXF2:				For the timer 2 external capture interrupt.
+∙	SP_SW0, SP_SW1, SP_SW2, SP_SW3:		For ‟software interrupts” 0, 1, 2, and 3.
+The first 8 are tied to the hardware interrupts, so that for instance,
+when external interrupt 0 is active, its interrupt-handler will call Resume with register SP_IE0.
 
-(3) SPAWNING A NEW PROCESS
-   A new process is Spawned by loading its address into the DPTR register,
-and the base address of its stack segment (which is up to the programmer
-to provide) in register R0 and then calling Spawn.  Spawn will then perform
-the following actions:
+2. Initialization
+―――――――――――――――――
+Initialization consists of the following actions:
+∙	The Priority Stack is cleared.
+∙	The first stack segment, for main, is set up and the calling address for ‟_Die” is pushed onto it.
+	Thus when main returns, it will jump to the routine _Die, which is an infinite loop.
+∙	Just under this stack, the calling address Exit will be inserted.
+	This provides a convenient place to initialize unused stack pointer registers.
 
-     (1) Push the current stack pointer onto the Priority Stack.
-     (2) Set the stack pointer to R0
-     (3) Initialize the stack segment by pushing Exit onto it.
-     (4) Jump to the address indicated by DPTR to begin the process.
+3. Spawning a New Process
+―――――――――――――――――――――――――
+A new process is Spawned by loading its address into the DPTR register,
+and the base address of its stack segment (which is up to the programmer to provide) in register R0 and then calling Spawn.
+Spawn will then perform the following actions:
+∙	Push the current stack pointer onto the Priority Stack.
+∙	Set the stack pointer to R0
+∙	Initialize the stack segment by pushing Exit onto it.
+∙	Jump to the address indicated by DPTR to begin the process.
+By pushing the routine Exit onto the bottom of the stack, this provides a clean way for the process to finish.
+For when the process returns, the routine Exit will be called, which will reload the current stack pointer
+by popping the Priority Stack and thus effectively carrying out a return that eliminates the current process.
 
-By pushing the routine Exit onto the bottom of the stack, this provides
-a clean way for the process to finish.  For when the process returns, the
-routine Exit will be called, which will reload the current stack pointer by
-popping the Priority Stack and thus effectively carrying out a return that
-eliminates the current process.
+Spawning a new process that returns without ever calling ‟Pause”
+will therefore be the same as just calling that process and executing a normal return.
 
-   Spawning a new process that returns without ever calling "Pause" will
-therefore be the same as just calling that process and executing a normal
-return.
+4. Switching Processses with Pause and Resume
+―――――――――――――――――――――――――――――――――――――――――――――
+The routines Pause and Resume are called after loading register R0
+with the address of the stack pointer register that will be used to load or save the stack pointer.
 
-(4) SWITCHING PROCESSSES WITH Pause AND Resume
-   The routines Pause and Resume are called after loading register R0 with
-the address of the stack pointer register that will be used to load or save
-the stack pointer.
-   Pause carries out the following actions:
-
-     (1) The current stack pointer is saved in the location indicated by R0.
-     (2) An address is popped off the Priority Stack into the current stack
-         pointer.
-
+Pause carries out the following actions:
+∙	The current stack pointer is saved in the location indicated by R0.
+∙	An address is popped off the Priority Stack into the current stack pointer.
 Resume carries out the currespondingly opposite actions:
+∙	The current stack pointer is pushed onto the Priority Stack.
+∙	The current stack pointer is loaded with the value saved in the location indicated by register R0.
+	This location is ‟cleared” by setting it to the portion of the global stack
+	just under the ‟main” stack segment, where Exit is located.
+A Resume will thus reactivate the process frozen by the last call to the corresponding Pause
+at exactly the place this Pause was called.
 
-     (1) The current stack pointer is pushed onto the Priority Stack.
-     (2) The current stack pointer is loaded with the value saved in the
-         location indicated by register R0.  This location is "cleared" by
-         setting it to the portion of the global stack just under the
-         "main" stack segment, where Exit is located.
+Both of these routines are, what is known as, critical regions.
+Under no conditions can they be interrupted, because to do so would destroy the integrity of the Priority Stack architecture.
+Therefore, interrupts would need to be temporarily turned off in these routines
+if there is than one interrupt level in your application.
 
-A Resume will thus reactivate the process frozen by the last call to the
-corresponding Pause at exactly the place this Pause was called.
-   Both of these routines are, what is known as, critical regions.  Under no
-conditions can they be interrupted, because to do so would destroy the integrity
-of the Priority Stack architecture.  Therefore, interrupts would need to be
-temporarily turned off in these routines if there is than one interrupt level
-in your application.
+5. Example
+――――――――――
+Suppose we want to echo the keys pressed on a keyboard or keypad to a screen,
+while simultaneously listening on the serial communications line for new commands.
+Suppose that the keypad or keyboard is flagged using the external 0 interrupt.
+We would have a process, Echo, to carry out the echoing action and a process, Interpreter,
+for reading and interpreting commands obtained from the communications line.
 
-(5) EXAMPLE
-   Suppose we want to echo the keys pressed on a keyboard or keypad to
-a screen, while simultaneously listening on the serial communications line
-for new commands.  Suppose that the keypad or keyboard is flagged using the
-external 0 interrupt.  We would have a process, Echo, to carry out the echoing
-action and a process, Interpreter, for reading and interpreting commands
-obtained from the communications line.
+Then main could probably be written as follows:
+	│ main:
+	│    ... INITIALIZE INTERRUPTS AND REGISTERS ...
+	│ ;; Spawn the ‟Echo” routine, giving it the stack segment 90 to a0 (hex).
+	│    mov R0, #90h
+	│    mov DPTR, #Echo
+	│    call Spawn
+	│
+	│ ;; Spawn the ‟Interpreter” routine, giving it the stack segment a0 to b0 (hex).
+	│    mov R0, #0a0h
+	│    mov DPTR, #Interpreter
+	│    call Spawn
+	│
+	│ ;; Kill the main process ... it's no longer needed.
+	│ ret
+	│
+	│ The Echo process will repeatedly obtain a key and then display it.  It
+	│ might be written as follows:
+	│
+	│ Echo:
+	│    call GetKey
+	│    call DisplayKey
+	│ jmp Echo
+	│
+	│ GetKey will actually carry out the keyboard entry routine.  It will pause
+	│ until the keyboard has been flagged, and then read the key pressed and return:
+	│
+	│ GetKey:
+	│    mov R0, #SP_IE0
+	│    call Pause        ;; Pause on external interrupt 0.
+	│    ... READ THE KEY ...
+	│ ret
+	│
+	│ The Interpreter program will read commands from the serial line and then
+	│ interpret and carry them out.  It, too, will be an infinite loop:
+	│
+	│ Interpreter:
+	│    call Receive
+	│    call Execute
+	│ ret
+	│
+	│ Receive will wait for the serial line to flag a reception and then read the
+	│ command received:
+	│
+	│ Receive:
+	│    mov R0, #SP_RI
+	│    call Pause        ;; Pause on serial receive interrupt.
+	│    ... GET THE COMMAND ...
+	│ ret
 
-   Then main could probably be written as follows:
-
-main:
-   ... INITIALIZE INTERRUPTS AND REGISTERS ... 
-;;; Spawn the "Echo" routine, giving it the stack segment 90 to a0 (hex).
-   mov R0, #90h
-   mov DPTR, #Echo
-   call Spawn
-
-;;; Spawn the "Interpreter" routine, giving it the stack segment a0 to b0 (hex).
-   mov R0, #0a0h
-   mov DPTR, #Interpreter
-   call Spawn
-
-;;; Kill the main process ... it's no longer needed.
-ret
-
-The Echo process will repeatedly obtain a key and then display it.  It
-might be written as follows:
-
-Echo:
-   call GetKey
-   call DisplayKey
-jmp Echo
-
-GetKey will actually carry out the keyboard entry routine.  It will pause
-until the keyboard has been flagged, and then read the key pressed and return:
-
-GetKey:
-   mov R0, #SP_IE0
-   call Pause        ;;; Pause on external interrupt 0.
-   ... READ THE KEY ...
-ret
-
-The Interpreter program will read commands from the serial line and then
-interpret and carry them out.  It, too, will be an infinite loop:
-
-Interpreter:
-   call Receive
-   call Execute
-ret
-
-Receive will wait for the serial line to flag a reception and then read the
-command received:
-
-Receive:
-   mov R0, #SP_RI
-   call Pause        ;;; Pause on serial receive interrupt.
-   ... GET THE COMMAND ...
-ret
-
-   This illustrates how the programmer can write routines to carry out more
-than one action at a time asynchronously without having to destroy the
-integrity of each process by breaking them up and merging them together into
-one large Finite State Machine as is often done in these kinds of applications.
+This illustrates how the programmer can write routines to carry out more than one action at a time asynchronously
+without having to destroy the integrity of each process by breaking them up
+and merging them together into one large Finite State Machine as is often done in these kinds of applications.
 Consequently, modularity is greatly enhanced.

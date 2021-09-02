@@ -1,4 +1,3 @@
-;; kernel.lib
 ;; // Process stack.
 HW    equ 6fh          ;; data 1  ;; int **HW;
 Stack equ 70h          ;; data 8  ;; int *Stack[8];

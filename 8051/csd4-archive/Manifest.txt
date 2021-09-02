@@ -136,7 +136,7 @@ Keep in touch.
 	int.hex		The assembled interrupt demo software.
 
 	«LCD»: A demo for the LCD/keypad library.
-	lcd.{asm,txt}	Demo software for io.lib and user reference; uses kernel_lib.s.
+	lcd.{asm,txt}	Demo software for io_lib.s and user reference; uses kernel_lib.s.
 	lcd.hex		The assembled demo software.
 
 	«IO»: The LCD/keypad library. Requires compatible hardware.

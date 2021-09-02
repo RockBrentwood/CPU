@@ -1,30 +1,30 @@
 CRC / 9-bit RS-232, RS-422, RS-485 demo:
-   This is a demo illustrating (1) 8-bit CRC check sums, (2) 57600,N,9,1
-communications, and (3) RS-422/RS-485 communications.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+This is a demo illustrating
+∙	8-bit CRC check sums,
+∙	57600,N,9,1 communications, and
+∙	RS-422/RS-485 communications.
 
-   crc.asm ... A program that prints out an Intel Hex Format dump of addresses
-               0 to 1fffh in code space.  However, instead of calculating check
-               sums by adding all the bytes on each line, as is done with Intel
-               Hex Format, an 8-bit CRC is produced.
-               This also demonstrates communications at 57600 baud using 9 bit
-               addressing.  The serial address in this program is ':'.  Every
-               key except 's' is echoed.  A hex dump, as described above, is
-               sent when 's' is received.  Responses will only be produced
-               when the address received exactly matches ':'.
-    crc.c .... A C program that will read an CRC-modified intel hex file and
-               verify it.
-  sample.hex.. A sample hex file.
-client/demo.c  A 57600,N,9,1 demonstration client.  This client will work on
-               RS-232, RS-422, and RS-485.
+The files
+	crc.asm			A program that prints out an Intel Hex Format dump of addresses 0 to 1fffh in code space.
+				However, instead of calculating check sums by adding all the bytes on each line,
+				as is done with Intel Hex Format, an 8-bit CRC is produced.
+
+				This also demonstrates communications at 57600 baud using 9 bit addressing.
+				The serial address in this program is ':'.
+				Every key except 's' is echoed.
+				A hex dump, as described above, is sent when 's' is received.
+				Responses will only be produced when the address received exactly matches ':'.
+
+	crc.c			A C program that will read an CRC-modified intel hex file and verify it.
+
+	sample.hex		A sample hex file.
+	../client/demo.c	A 57600,N,9,1 demonstration client.
+				This client will work on RS-232, RS-422, and RS-485.
 
 The CRC polynomial used by both programs is:
+	x⁸ + x⁶ + x⁵ + x³ + x² + x⁰.
 
-                   x^8 + x^6 + x^5 + x^3 + x^2 + x^0.
-
-   The following assumptions are made about RS-485 links:
-
-       * The T0 line enables the transmit driver at the 8051 when it is set,
-         and disables the driver when cleared.
-
-       * OUT1 of the Modem Control Register similarily drives the TX enable
-         line on the PC host's RS-485 communications card.
+The following assumptions are made about RS-485 links:
+∙	The T0 line enables the transmit driver at the 8051 when it is set, and disables the driver when cleared.
+∙	OUT1 of the Modem Control Register similarily drives the TX enable line on the PC host's RS-485 communications card.

@@ -10,7 +10,7 @@ IncX:
    setb C
 CarryX:
    CarryLoop:
-      mov A, @R0 
+      mov A, @R0
       addc A, #0
       mov @R0, A
       inc R0
