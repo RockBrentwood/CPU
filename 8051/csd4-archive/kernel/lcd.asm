@@ -1,5 +1,5 @@
-include "kernel.lib"
-include "io.lib"
+include "kernel_lib.s"
+include "io_lib.s"
 
 PP0: DB "This is a test.", 0
 LCDTest:

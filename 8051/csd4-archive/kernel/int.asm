@@ -1,14 +1,14 @@
-;;; kernel.lib
-;;; /* Process stack. */
-HW    equ 6fh          ;;; data 1  ;;; int **HW;
-Stack equ 70h          ;;; data 8  ;;; int *Stack[8];
+;; kernel.lib
+;; // Process stack.
+HW    equ 6fh          ;; data 1  ;; int **HW;
+Stack equ 70h          ;; data 8  ;; int *Stack[8];
 
-;;; /* Interrupt descriptor table. */
-SP_IE0  equ 79h ;;; data 1
-SP_IE1  equ 7bh ;;; data 1
-SP_EXF2 equ 7ch ;;; data 1
-SP_CCF  equ 7dh ;;; data 1
-SP_BASE equ 7eh ;;; data $(data)
+;; // Interrupt descriptor table.
+SP_IE0  equ 79h ;; data 1
+SP_IE1  equ 7bh ;; data 1
+SP_EXF2 equ 7ch ;; data 1
+SP_CCF  equ 7dh ;; data 1
+SP_BASE equ 7eh ;; data $(data)
 
 include "8051fa.h"
 
@@ -40,7 +40,7 @@ reti
 
 DidBoth:
    mov A, RCAP2H
-   jnb Acc.7, DidTF2 ;;; This determines if TF2 or EXF2 was first.
+   jnb Acc.7, DidTF2 ;; This determines if TF2 or EXF2 was first.
 DidEXF2:
    clr EXF2
    mov R0, #SP_EXF2
@@ -85,49 +85,49 @@ CCX:
    acall Resume
 reti
 
-Start: ;;; Install main(), set its return address to _Die().
-   mov HW, #Stack          ;;; HW = &Stack[0];
-   mov SP, #(SP_BASE - 1)  ;;; SP = SP_BASE - 1;
+Start: ;; Install main(), set its return address to _Die().
+   mov HW, #Stack          ;; HW = &Stack[0];
+   mov SP, #(SP_BASE - 1)  ;; SP = SP_BASE - 1;
    mov DPTR, #_Exit
    push DPL
-   push DPH                ;;; @SP++ = _Exit();
+   push DPH                ;; @SP++ = _Exit();
    acall main
 _Die:
    orl PCon, #1
 sjmp _Die
 
-Pause:                     ;;; void Pause(int @@R0) {
-   mov @R0, SP             ;;;    @R0 = SP;
+Pause:                     ;; void Pause(int @@R0) {
+   mov @R0, SP             ;;    @R0 = SP;
    dec HW
    mov R0, HW
-   mov SP, @R0             ;;;    SP = @--HW;
-ret                        ;;;    "idle until resume";
+   mov SP, @R0             ;;    SP = @--HW;
+ret                        ;;    "idle until resume";
 Resume:
    mov R1, HW
    mov @R1, SP
-   inc HW                  ;;;    @HW++ = SP;
-   mov SP, @R0             ;;;    SP = @R0;
-   mov @R0, #(SP_BASE + 1) ;;;    @R0 = SP_BASE + 1;
-ret                        ;;; }
+   inc HW                  ;;    @HW++ = SP;
+   mov SP, @R0             ;;    SP = @R0;
+   mov @R0, #(SP_BASE + 1) ;;    @R0 = SP_BASE + 1;
+ret                        ;; }
 
-Spawn:                   ;;; int Spawn(int @R0, void *(DPTR())) {
+Spawn:                   ;; int Spawn(int @R0, void *(DPTR())) {
    mov R1, HW
    mov @R1, SP
-   inc HW                ;;;    @HW++ = SP;
+   inc HW                ;;    @HW++ = SP;
    dec R0
-   mov SP, R0            ;;;    SP = --R0;
-   acall _Enter          ;;;    (*DPTR)();
+   mov SP, R0            ;;    SP = --R0;
+   acall _Enter          ;;    (*DPTR)();
 _Exit:
    dec HW
    mov R0, HW
-   mov SP, @R0           ;;;    SP = @--HW;
-ret                      ;;; }
+   mov SP, @R0           ;;    SP = @--HW;
+ret                      ;; }
 _Enter:
    push DPL
    push DPH
 ret
 
-include "io.lib"
+include "io_lib.s"
 
 COUNTERS   equ 13
 COUNT_BASE equ 8
@@ -195,9 +195,9 @@ Sto:
    YY:
 ret
 
-;;; APPLICATION PROGRAM
+;; APPLICATION PROGRAM
 TestIE0:
-   setb Int0 ;;; Latch Int0 for input.
+   setb Int0 ;; Latch Int0 for input.
    clr PX0
    setb IT0
    setb EX0
@@ -213,7 +213,7 @@ LoopIE0:
 sjmp LoopIE0
 
 TestIE1:
-   setb Int1 ;;; Latch Int1 for input.
+   setb Int1 ;; Latch Int1 for input.
    clr PX1
    setb IT1
    setb EX1
@@ -229,7 +229,7 @@ LoopIE1:
 sjmp LoopIE1
 
 TestT2EX:
-   setb T2EX ;;; Latch T2EX for input.
+   setb T2EX ;; Latch T2EX for input.
    clr PT2
    setb CP_RL2
    clr C_T2
@@ -251,7 +251,7 @@ TestCCF:
    mov CCAPM1, #(CAPP + CAPN + ECCF)
    mov CCAPM2, #(CAPP + CAPN + ECCF)
    mov CCAPM3, #(CAPP + CAPN + ECCF)
-   mov CCAPM4, #(CAPP + CAPN + ECCF) ;;; CCF raises on either edge.
+   mov CCAPM4, #(CAPP + CAPN + ECCF) ;; CCF raises on either edge.
    setb CEX0
    setb CEX1
    setb CEX2
