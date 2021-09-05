@@ -55,6 +55,10 @@ Keep in touch.
 
 ./client: «Client»
 	PC-compatible serial routines for RS-232, RS-422, RS-485.
+	These programs use graphics that were written for the Quick C compiler,
+	which (at the time of writing) may be downloaded here:
+		https://winworldpc.com/product/quick-c/2x
+	and run in DOSBox.
 	makefile		Microsoft Quick C 2.5 makefile
 	com.{c,h}		RS-232 interrupt-driven routines for PC.
 	port.h			Generic declarations for the PC's COM ports.
