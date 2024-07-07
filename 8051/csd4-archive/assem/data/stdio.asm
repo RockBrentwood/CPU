@@ -4,7 +4,7 @@ include "kernel.h"
 ;; RS-485 SERIAL COMMUNICATIONS.
 ;; Modes:
 ;; (1) Receive data (REN = 1, T0 = 0, SM2 = 1)
-;; (2) Send data    (REM = 0, T0 = 1)
+;; (2) Send data    (REN = 0, T0 = 1)
 
 global SetPort:
    mov SCON, #11000000b ;; Serial comm: 9 bits, no parity, 1 stop bit.

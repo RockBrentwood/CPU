@@ -1,0 +1,11 @@
+▪	8xc51fa data sheet (Philips)
+	https://pdf1.alldatasheet.com/datasheet-pdf/view/133060/PHILIPS/80C51FA.html
+	https://pdf1.alldatasheet.com/datasheet-pdf/download/66082/INTEL/80C51FA.html
+▪	8051 microcontroller FAQ
+	1994-02-26 (Web)	https://www.cs.cmu.edu/Groups/AI/html/faqs/ai/microcontroller-faq/8051/faq.html
+	1997-01-29 (USENET)	https://groups.google.com/g/comp.arch.embedded/c/x6D-iMAgcw0
+	2000-07-19 (Web)	https://microcontroller.com/embedded/references/faqs/8051-microcontroller-faq.htm
+▪	8051 SFR's
+	https://technobyte.org/8051-special-function-registers-sfr/
+▪	8051 Projects
+	GitHub: https://github.com/prasad01dalavi/8051-projects

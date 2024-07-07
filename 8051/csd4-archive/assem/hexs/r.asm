@@ -106,7 +106,7 @@ ret
 ;; Modes:
 ;; (1) Wait for address (REN = 1, T0 = 0, SM2 = 1)
 ;; (2) Wait for data    (REN = 1, T0 = 0, SM2 = 0)
-;; (3) Send data        (REM = 0, T0 = 1)
+;; (3) Send data        (REN = 0, T0 = 1)
 
 SER_ADDR equ ':'
 

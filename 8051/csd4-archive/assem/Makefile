@@ -10,7 +10,7 @@ X=
 O=.o
 RM=rm -f
 CC=gcc
-CFLAGS=-std=gnu99 -g
+CFLAGS=-g
 
 BINDIR=/usr/local/bin
 
